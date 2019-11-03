@@ -1,0 +1,51 @@
+html, body {
+	padding: 0;
+	margin: 0;
+	font-family: "BioRhyme", "Arial", sans-serif;
+	font-size: 20px;
+	color: black;
+	background: white;
+}
+
+img {
+	display: block;
+}
+
+div.image {
+	display: table-cell;
+	min-width: 300px;
+	position: relative;
+	background: #DDD;
+}
+div.image img {
+	width: 300px;
+}
+div.image div, div.image img {
+	position: absolute;
+	top: 0;
+}
+
+#images {
+	display: table;
+	border-collapse: separate;
+	border-spacing: 4px;
+}
+
+.configuration {
+	margin: 4px;
+	padding: 4px;
+	border: solid 2px #333;
+	width: fit-content;
+}
+
+.memory {
+	position: fixed;
+	right: 4px;
+	top: 4px;
+	background: black;
+	color: white;
+	font-size: 14px;
+	padding: 4px 8px;
+	border-radius: 3px;
+}
+

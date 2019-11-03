@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8"></meta>
+		<title>Upload Test</title>
+		<link href="https://fonts.googleapis.com/css?family=BioRhyme" rel="stylesheet"/>
+		<link rel="stylesheet" type="text/css" href="index.css"/>
+		<script src="jquery-min.js"></script>
+		<script src="uploadtest.js"></script>
+	</head>
+<body>
+	<div class="memory"></div>
+	<div class="configuration">
+		<div>Number of images</div><input id="total" value="1"></input>
+		<div>Snapshot size</div><input id="snapshotSize" value="300"></input>
+		<div>Low snapshot size</div><input id="lowSnapshotSize" value="30"></input>
+		<div><input type="checkbox" id="generateBefore"></input>Generate everything before</div>
+		<input class="load" id="fileinput" type="file" accept="image/*" />
+		<input class="load" type="button" onclick="load()" value="Load" />
+	</div>
+	<div id="images"></div>
+</body>
+</html>
