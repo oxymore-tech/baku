@@ -1,5 +1,5 @@
 [package]
-name = "bakuanimation-davidtest"
+name = "bakuanimation"
 version = "0.1.0"
 authors = ["David Fauthoux <david.fauthoux@gmail.com>"]
 edition = "2018"
