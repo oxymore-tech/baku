@@ -98,7 +98,7 @@ export default class QrReader extends Vue {
   private async startStream(remoteOffer: any) {
     this.localVideo = document.getElementById("localVideo");
     const stream = await navigator.mediaDevices.getUserMedia({
-      video:  {
+      video: {
         width: { min: 1280 },
         height: { min: 720 },
         facingMode: {
@@ -149,10 +149,23 @@ export default class QrReader extends Vue {
 
         var formData = new FormData();
         const blob = imagetoblob(base64);
-        console.log('blob size:', blob.size);
-        formData.append('image', blob, uuid.v4());
+        formData.append("image", blob, uuid.v4());
         var request = new XMLHttpRequest();
-        request.open("POST", `https://${location.hostname}/back/totoproject/upload/`);
+        request.open(
+          "POST",
+          `https://${location.hostname}/back/totoproject/upload/`
+        );
+        request.onreadystatechange = function() {
+          //Appelle une fonction au changement d'état.
+          if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            const pictureId = JSON.parse(this.response)[0];
+            channel.send(JSON.stringify({
+              type: 'upload',
+              message: pictureId
+            }))
+          }
+        };
+
         request.send(formData);
         // var link = document.createElement("a");
 

@@ -44,7 +44,9 @@ export default class QrGenerator extends Vue {
   );
 
   mounted() {
-    const captureButton = document.getElementById("captureButton") as HTMLElement;
+    const captureButton = document.getElementById(
+      "captureButton"
+    ) as HTMLElement;
     captureButton.addEventListener("click", this.capture.bind(this));
     console.log("IsConnected ?", this.$store.state.isConnected);
 
@@ -111,6 +113,11 @@ export default class QrGenerator extends Vue {
 
   private setChannelEvents(channel: RTCDataChannel) {
     channel.onmessage = event => {
+      const data = JSON.parse(event.data);
+      if (data.type === "upload") {
+        // TODO: get img from the server with picture ID
+        const pictureId = data.message;
+      }
       console.log("Message received", event);
     };
     // channel.onopen = () => {
