@@ -20,6 +20,7 @@ use tokio_executor::blocking;
 use uuid::Uuid;
 use warp::{ws::Message, ws::WebSocket, Filter};
 
+
 #[derive(Deserialize)]
 struct Size {
     width: u32,
@@ -154,7 +155,7 @@ async fn handle_get_images(
     Ok(thumbnail_buffer)
 }
 
-async fn handle_stack(project_id: String, body: String) -> Result<(), warp::Rejection> {
+async fn handle_stack(global_lock:Arc<futures::lock::Mutex<usize>>, project_id: String, body: String) -> Result<(), warp::Rejection> {
     let stack_directory = Path::new("stacks");
     let stack_path = Path::join(stack_directory, Path::new(&format!("{}.stack", project_id)));
     create_dir_all(stack_path.parent().unwrap())
@@ -187,7 +188,8 @@ async fn handle_stack(project_id: String, body: String) -> Result<(), warp::Reje
 
     let json_as_string = serde_json::to_string(&json).unwrap();
 
-    //TODO concurrency
+    let mut _lock = global_lock.lock();
+
     let mut written_file = File::create(&stack_path)
         .await
         .map_err(warp::reject::custom)?;
@@ -365,11 +367,15 @@ async fn main() {
                 .body(buffer)
         });
 
+    let global_lock = Arc::new(futures::lock::Mutex::new(0));
+
     let stack = warp::post2()
         .and(warp::path::param())
         .and(warp::path("stack"))
         .and(warp::body::json())
-        .and_then(handle_stack)
+        .and_then(move |project_id, body| {
+            handle_stack(global_lock.clone(), project_id, body)
+        })
         .map(|_| "Stacked");
     let history = warp::get2()
         .and(warp::path::param())
