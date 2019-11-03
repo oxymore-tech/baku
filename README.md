@@ -7,12 +7,12 @@ cargo run
 # start front
 ```
 cd front
-npm install
-npm run build
+yarn
+yarn build
 ts-node server/server.ts 
 ```
 
-# start back
+# start proxy
 ```
 cd proxy
 docker-compose up -d
