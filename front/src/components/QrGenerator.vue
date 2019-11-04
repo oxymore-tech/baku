@@ -1,22 +1,26 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <div class="about">
-    <h1>Qr Generator</h1>
-    <h3>Scannez ce QR-Code depuis l'appli baku-ui depuis votre smartphone:</h3>
-    {{value}}
-    <qrcode :value="value" :options="options" v-if="value"></qrcode>
-    <video id="remoteVideo" autoplay muted playsinline></video>
-    <button id="captureButton">Capture!</button>
+  <div class="qrGenerator">
+    <qrcode :value="value" :options="options" v-if="value && !peerConnected"></qrcode>
+    <video id="remoteVideo" autoplay muted playsinline v-bind:class="{ hidden: !peerConnected }" width="280px" height="157px"></video>
+    <div
+      id="captureButton"
+      class="captureButton"
+      v-bind:class="{ capturing: isCapturing, hidden: !peerConnected }"
+    >Capture!</div>
   </div>
 </template>
 
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import { Map, Set } from "immutable";
+import { Filter, Filters } from "@/components/filters";
 import { WSMessage, WSSocket } from "./socket.class";
 
 @Component
 export default class QrGenerator extends Vue {
+  title = "Qr Generator";
   value = "";
 
   options = {
@@ -25,6 +29,7 @@ export default class QrGenerator extends Vue {
   };
 
   socket = new WSSocket();
+  isCapturing = false;
 
   remoteVideo: any = null;
   peerConnection = new RTCPeerConnection({
@@ -41,10 +46,10 @@ export default class QrGenerator extends Vue {
 
   mounted() {
     const captureButton = document.getElementById(
-      "captureButton"
-    ) as HTMLElement;
-    captureButton.addEventListener("click", this.capture.bind(this));
-    console.log("IsConnected ?", this.$store.state.isConnected);
+          "captureButton"
+        ) as HTMLElement;
+        captureButton.addEventListener("click", this.capture.bind(this));
+    this.$store.commit('plan/addNewPicture', '7949552a-0b9f-42a2-ac34-fc70452fc26b');
 
     this.remoteVideo = document.getElementById("remoteVideo");
 
@@ -109,10 +114,12 @@ export default class QrGenerator extends Vue {
 
   private setChannelEvents(channel: RTCDataChannel) {
     channel.onmessage = event => {
-      const data = JSON.parse(event.data);
+      //TODO: Try to understand why you need TWO json parse
+      const data = JSON.parse(JSON.parse(event.data));
       if (data.type === "upload") {
-        // TODO: get img from the server with picture ID
+        this.isCapturing = false;
         const pictureId = data.message;
+        this.$store.commit('plan/addNewPicture', pictureId);
       }
       console.log("Message received", event);
     };
@@ -146,6 +153,7 @@ export default class QrGenerator extends Vue {
   }
 
   private capture() {
+    this.isCapturing = true;
     this.dataChannel.send(
       JSON.stringify({
         message: "capture",
