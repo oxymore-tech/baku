@@ -31,13 +31,7 @@ export default class QrReader extends Vue {
   socket = new WSSocket();
   localVideo: any;
   error = "";
-  peerConnection = new RTCPeerConnection({
-    iceServers: [
-      {
-        urls: "stun:stun.l.google.com:19302"
-      }
-    ]
-  });
+  peerConnection!: RTCPeerConnection;
 
   activeqrreader = true;
 
@@ -55,6 +49,16 @@ export default class QrReader extends Vue {
           break;
       }
     });
+  }
+
+  onDecode(result: string) {
+    this.peerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.l.google.com:19302"
+        }
+      ]
+    });
 
     this.peerConnection.addEventListener(
       "icecandidate",
@@ -63,14 +67,21 @@ export default class QrReader extends Vue {
 
     this.peerConnection.onconnectionstatechange = event => {
       if (this.peerConnection.connectionState == "connected") {
-        console.log("CONNECTION OK");
         // CONNECTION OK
         this.$store.commit("setupConnection");
       }
+      console.log(this.peerConnection.connectionState);
+      if (this.peerConnection.connectionState === "disconnected") {
+        delete this.peerConnection;
+        this.localVideo.srcObject
+          .getTracks()
+          .forEach(function(track: MediaStreamTrack) {
+            track.stop();
+          });
+        this.activeqrreader = true;
+        this.socketId = undefined;
+      }
     };
-  }
-
-  onDecode(result: string) {
     console.log("onDecode", result, this.socketId);
     if (!this.socketId) {
       this.activeqrreader = false;
@@ -156,16 +167,18 @@ export default class QrReader extends Vue {
         var request = new XMLHttpRequest();
         request.open(
           "POST",
-          `https://${location.hostname}/back/totoproject/upload/`
+          `https://${location.hostname}/back/${data.plan}/upload/`
         );
         request.onreadystatechange = function() {
           //Appelle une fonction au changement d'état.
           if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             const pictureId = JSON.parse(this.response)[0];
-            channel.send(JSON.stringify({
-              type: 'upload',
-              message: pictureId
-            }))
+            channel.send(
+              JSON.stringify({
+                type: "upload",
+                message: pictureId
+              })
+            );
           }
         };
 

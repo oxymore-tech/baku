@@ -3,14 +3,26 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 
+export interface PlanState {
+    pictures: string[],
+    plans: string[],
+    activePlan: string
+}
+
 export const planStore = {
   namespaced: true,
   state: {
-    pictures: [] as string[]
+    pictures: [],
+    plans: ['totoproject', 'plan2'],
+    activePlan: 'totoproject'
   },
   mutations: {
-    addNewPicture(state: any, pictureId: string){
+    addNewPicture(state: PlanState, pictureId: string){
         state.pictures = [...state.pictures, pictureId]
+    },
+    changePlan(state: PlanState, planId: string) {
+        state.activePlan = planId;
+        state.pictures = [];
     }
   },
   actions: {

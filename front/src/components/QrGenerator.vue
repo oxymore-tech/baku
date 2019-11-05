@@ -2,7 +2,15 @@
 <template>
   <div class="qrGenerator">
     <qrcode :value="value" :options="options" v-if="value && !peerConnected"></qrcode>
-    <video id="remoteVideo" autoplay muted playsinline v-bind:class="{ hidden: !peerConnected }" width="280px" height="157px"></video>
+    <video
+      id="remoteVideo"
+      autoplay
+      muted
+      playsinline
+      v-bind:class="{ hidden: !peerConnected }"
+      width="280px"
+      height="157px"
+    ></video>
     <div
       id="captureButton"
       class="captureButton"
@@ -11,6 +19,27 @@
   </div>
 </template>
 
+<style lang="scss">
+.captureButton {
+  font-size: 30px;
+  cursor: pointer;
+  color: #e66359;
+  text-align:center;
+}
+
+#remoteVideo {
+  height: 157px;
+}
+
+.hidden {
+  display: none;
+}
+
+.capturing {
+  color: grey;
+  cursor: progress;
+}
+</style>
 
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
@@ -32,24 +61,20 @@ export default class QrGenerator extends Vue {
   isCapturing = false;
 
   remoteVideo: any = null;
-  peerConnection = new RTCPeerConnection({
-    iceServers: [
-      {
-        urls: "stun:stun.l.google.com:19302"
-      }
-    ]
-  });
-  dataChannel: RTCDataChannel = this.peerConnection.createDataChannel(
-    "channel",
-    {}
-  );
+  peerConnection!: RTCPeerConnection;
+  dataChannel!: RTCDataChannel;
+
+  beforeDestroy() {
+    this.peerConnection.close();
+    delete this.dataChannel;
+    delete this.peerConnection;
+  }
 
   mounted() {
     const captureButton = document.getElementById(
-          "captureButton"
-        ) as HTMLElement;
-        captureButton.addEventListener("click", this.capture.bind(this));
-    this.$store.commit('plan/addNewPicture', '7949552a-0b9f-42a2-ac34-fc70452fc26b');
+      "captureButton"
+    ) as HTMLElement;
+    captureButton.addEventListener("click", this.capture.bind(this));
 
     this.remoteVideo = document.getElementById("remoteVideo");
 
@@ -76,6 +101,15 @@ export default class QrGenerator extends Vue {
       }
     });
 
+  public async createOffer() {
+    this.peerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.l.google.com:19302"
+        }
+      ]
+    });
+
     this.peerConnection.addEventListener(
       "track",
       this.gotRemoteStream.bind(this)
@@ -88,14 +122,13 @@ export default class QrGenerator extends Vue {
 
     this.peerConnection.onconnectionstatechange = event => {
       if (this.peerConnection.connectionState == "connected") {
+        this.peerConnected = true;
         console.log("CONNECTION OK");
         // CONNECTION OK
         this.$store.commit("setupConnection");
       }
     };
-  }
-
-  public async createOffer() {
+    this.dataChannel = this.peerConnection.createDataChannel("channel", {});
     this.setChannelEvents(this.dataChannel);
 
     // Creating the offset
@@ -106,7 +139,6 @@ export default class QrGenerator extends Vue {
       const offer = await this.peerConnection.createOffer(offerOptions);
       await this.peerConnection.setLocalDescription(offer);
       return offer;
-      // TODO: Generate QR code with the offset
     } catch (e) {
       console.error("Error creating offer", e);
     }
@@ -119,7 +151,7 @@ export default class QrGenerator extends Vue {
       if (data.type === "upload") {
         this.isCapturing = false;
         const pictureId = data.message;
-        this.$store.commit('plan/addNewPicture', pictureId);
+        this.$store.commit("plan/addNewPicture", pictureId);
       }
       console.log("Message received", event);
     };
@@ -157,6 +189,7 @@ export default class QrGenerator extends Vue {
     this.dataChannel.send(
       JSON.stringify({
         message: "capture",
+        plan: this.$store.state.plan.activePlan,
         type: "cmd"
       })
     );
