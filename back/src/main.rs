@@ -20,7 +20,6 @@ use tokio_executor::blocking;
 use uuid::Uuid;
 use warp::{ws::Message, ws::WebSocket, Filter};
 
-
 #[derive(Deserialize)]
 struct Size {
     width: u32,
@@ -154,7 +153,11 @@ async fn handle_get_images(
     Ok(thumbnail_buffer)
 }
 
-async fn handle_stack(global_lock:Arc<futures::lock::Mutex<usize>>, project_id: String, body: String) -> Result<(), warp::Rejection> {
+async fn handle_stack(
+    global_lock: Arc<futures::lock::Mutex<usize>>,
+    project_id: String,
+    body: String,
+) -> Result<(), warp::Rejection> {
     let stack_directory = Path::new("stacks");
     let stack_path = Path::join(stack_directory, Path::new(&format!("{}.stack", project_id)));
     create_dir_all(stack_path.parent().unwrap())
@@ -403,19 +406,18 @@ async fn main() {
         .and(warp::path::param())
         .and(warp::path("stack"))
         .and(warp::body::json())
-        .and_then(move |project_id, body| {
-            handle_stack(global_lock.clone(), project_id, body)
-        })
+        .and_then(move |project_id, body| handle_stack(global_lock.clone(), project_id, body))
         .map(|_| "Stacked");
     let history = warp::get2()
         .and(warp::path::param())
+        .and(warp::path("history"))
         .and_then(handle_history)
         .map(|history| warp::reply::json(&history));
 
     let routes = hi
         .or(route)
         .or(stack)
-        // .or(history) // Does not work with fs::dir
+        .or(history)
         .or(get)
         .or(multipart)
         .or(warp::fs::dir("../front/dist"));
