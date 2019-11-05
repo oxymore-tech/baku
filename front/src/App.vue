@@ -10,8 +10,9 @@
     </div>-->
     <nav>
       <h1>Baku animation</h1>
-      <router-link to="/">Capture</router-link>
-      <router-link to="/smartphone">Smartphone PoV</router-link>
+      <router-link to="/home">Home</router-link>
+      <router-link to="/capture">Capture</router-link>
+      <!-- <router-link to="/smartphone">Smartphone PoV</router-link> -->
     </nav>
     <router-view />
   </div>
