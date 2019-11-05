@@ -58,7 +58,7 @@ export default class QrReader extends Vue {
 
     this.peerConnection.addEventListener(
       "icecandidate",
-      this.onIceCandaidate.bind(this)
+      this.onIceCandidate.bind(this)
     );
 
     this.peerConnection.onconnectionstatechange = event => {
@@ -194,7 +194,7 @@ export default class QrReader extends Vue {
     };
   }
 
-  private onIceCandaidate(event: any) {
+  private onIceCandidate(event: any) {
     this.socket.sendWSMessage({action: 'icecandidate', value: event.candidate});
   }
 }

@@ -415,10 +415,10 @@ async fn main() {
     let routes = hi
         .or(route)
         .or(stack)
-        .or(history)
+        // .or(history) // Does not work with fs::dir
         .or(get)
         .or(multipart)
-        .or(warp::fs::dir("res"));
+        .or(warp::fs::dir("../front/dist"));
 
     warp::serve(routes)
         .tls("src/tls/cert.pem", "src/tls/key.rsa")
