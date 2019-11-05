@@ -6,7 +6,7 @@ yarn
 yarn build
 ```
 
-Builed files are in front/dist
+Builded files are in front/dist
 
 # 2) start back
 ```
@@ -14,6 +14,11 @@ cd back
 cargo run
 ```
 
+
+# 3) Test
+- On computer, go to `https://localhost:3030`
+- Get your computer local ip (`ifconfig`)
+- On Smartphone, go to `https://YOUR_IP:3030`
 
 # Troubleshooting
 

@@ -421,7 +421,7 @@ async fn main() {
         .or(warp::fs::dir("../front/dist"));
 
     warp::serve(routes)
-        .tls("src/tls/cert.pem", "src/tls/key.rsa")
+        .tls("src/tls/certificate.pem", "src/tls/key.pem")
         .run(([0, 0, 0, 0], 3030))
         .await;
 }
