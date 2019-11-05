@@ -1,6 +1,7 @@
 html,
 body {
     height: 100%;
+    overflow: hidden;
 }
 
 #app {
@@ -9,6 +10,7 @@ body {
     width: 100%;
     height: 100%;
     background: #9198e5;
+    // background: url(assets/hokusai.jpg) no-repeat center ;
 }
 
 /* #nav {
@@ -57,4 +59,5 @@ nav a.router-link-exact-active {
 .boxContainer {
     border-radius: 8px;
     background: white;
+    padding: 6px;
 }
