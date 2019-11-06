@@ -59,6 +59,16 @@ export default class QrReader extends Vue {
         }
       ]
     });
+  }
+
+  onDecode(result: string) {
+    this.peerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.l.google.com:19302"
+        }
+      ]
+    });
 
     this.peerConnection.addEventListener(
       "icecandidate",
