@@ -46,40 +46,44 @@ async fn handle_multipart(
     project_id: String,
     plan_id: String,
     mut form: warp::multipart::FormData,
-) -> Result<Vec<Uuid>, warp::Rejection> {
+) -> Result<Vec<String>, warp::Rejection> {
     let img_directory = Path::new("upload_files");
 
-    let mut uuids = Vec::new();
+    let mut filenames = Vec::new();
 
     while let Some(part) = form.next().await {
         let part = part.map_err(warp::reject::custom)?;
+        match part.filename() {
+            Some(part_filename) => {
+                let filename = format!("{}-{}", Uuid::new_v4().to_string(), part_filename);
+                let image_path = Path::join(
+                    &Path::join(img_directory, Path::new(&plan_id)),
+                    Path::join(Path::new(&project_id), Path::new(&filename)),
+                );
+                println!("Posting to {}", &image_path.to_str().unwrap());
 
-        let uuid = Uuid::new_v4();
-        let filename = format!("{}.jpg", uuid.to_string());
-        let image_path = Path::join(
-            &Path::join(img_directory, Path::new(&plan_id)),
-            Path::join(Path::new(&project_id), Path::new(&filename)),
-        );
-        println!("Posting to {}", &image_path.to_str().unwrap());
+                let image_buffer = part.concat().await;
 
-        let image_buffer = part.concat().await;
+                create_dir_all(image_path.parent().unwrap())
+                    .await
+                    .map_err(warp::reject::custom)?;
+                let mut image_file = File::create(image_path)
+                    .await
+                    .map_err(warp::reject::custom)?;
+                image_file
+                    .write_all(&image_buffer)
+                    .await
+                    .map_err(warp::reject::custom)?;
+                image_file.sync_data().await.map_err(warp::reject::custom)?;
 
-        create_dir_all(image_path.parent().unwrap())
-            .await
-            .map_err(warp::reject::custom)?;
-        let mut image_file = File::create(image_path)
-            .await
-            .map_err(warp::reject::custom)?;
-        image_file
-            .write_all(&image_buffer)
-            .await
-            .map_err(warp::reject::custom)?;
-        image_file.sync_data().await.map_err(warp::reject::custom)?;
-
-        uuids.push(uuid);
+                filenames.push(filename);
+            }
+            None => {
+            }
+        }
     }
 
-    Ok(uuids)
+    Ok(filenames)
 }
 
 async fn handle_get_images(
@@ -377,7 +381,7 @@ async fn main() {
         .and(warp::path::param())
         .and(warp::multipart::form())
         .and_then(handle_multipart)
-        .map(|uuids| warp::reply::json(&uuids));
+        .map(|filenames| warp::reply::json(&filenames));
 
     let route = warp::path("echo")
         // The `ws2()` filter will prepare the Websocket handshake.
