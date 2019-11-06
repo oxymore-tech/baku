@@ -40,7 +40,7 @@ import store from "@/store";
 })
 export default class StoryboardPreviewComponent extends Vue {
   private onPlanSelectChange(event: any) {
-    this.$store.commit('plan/changePlan', event.target.value)
+    this.$store.commit("plan/changePlan", event.target.value);
   }
 }
 </script>

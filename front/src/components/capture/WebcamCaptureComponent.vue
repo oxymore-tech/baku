@@ -1,7 +1,6 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
   <div class="webcamCapture">
-    <video id="remoteVideo" autoplay muted playsinline width="280px" height="157px"></video>
     <div id="captureButton" class="captureButton" @click="capture()">Capture!</div>
   </div>
 </template>
@@ -32,31 +31,25 @@ import * as uuid from "uuid";
 export default class WebcamCaptureComponent extends Vue {
   @Prop(String)
   readonly deviceId!: string;
-  stream!: MediaStream;
 
   mounted() {
     navigator.mediaDevices
       .getUserMedia({
         video: {
-          width: { min: 640 },
-          height: { min: 480 },
+          width: { min: 640, ideal: 1280 },
+          height: { min: 480, ideal: 720 },
           deviceId: { exact: this.deviceId }
         }
       })
       .then(stream => {
-        this.stream = stream;
-        (document.getElementById(
-          "remoteVideo"
-        ) as HTMLVideoElement).srcObject = this.stream;
+        this.$store.commit('capture/attachMediaStream', stream)
       });
   }
 
   beforeDestroy() {
     // Removing tracks to stop using camera
     // @see: https://developers.google.com/web/updates/2015/07/mediastream-deprecations?hl=en#stop-ended-and-active
-    this.stream.getTracks().forEach(function(track) {
-      track.stop();
-    });
+    this.$store.commit('capture/detachMediaStream');
   }
 
   private capture() {

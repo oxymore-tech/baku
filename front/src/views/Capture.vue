@@ -2,7 +2,8 @@
   <div class="mainFrame">
     <div class="previewBloc">
       <ProjectPreviewComponent />
-      <img id="previewImg" width="1240" height="674" />
+      <video v-if="activeCapture" id="videoCapture" width="1280" height="720" autoplay muted playsinline/>
+      <img v-else id="previewImg" width="1280" height="720" />
       <CaptureToolboxComponent />
     </div>
     <CarrouselComponent />
@@ -16,15 +17,29 @@ import ProjectPreviewComponent from "@/components/capture/ProjectPreviewComponen
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import store from "../store";
+import { mapState } from "vuex";
+
 @Component({
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
     ProjectPreviewComponent
   },
+  computed: {
+    ...mapState("capture", ["activeCapture", "stream"])
+  },
+  watch: {
+    stream(newValue, oldValue) {
+      if (newValue) {
+        (document.getElementById('videoCapture') as HTMLVideoElement).srcObject = newValue;
+      }
+    }
+  },
   store
 })
-export default class Capture extends Vue {}
+export default class Capture extends Vue {
+  mounted() {}
+}
 </script>
 
 <style lang="scss">
@@ -46,5 +61,9 @@ export default class Capture extends Vue {}
   min-width: 640px;
   min-height: 480px;
   background: white;
+}
+
+#videoCapture {
+  max-height: 720px;
 }
 </style>

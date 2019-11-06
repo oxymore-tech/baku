@@ -2,15 +2,6 @@
 <template>
   <div class="qrGenerator">
     <qrcode :value="value" :options="options" v-if="value && !peerConnected"></qrcode>
-    <video
-      id="remoteVideo"
-      autoplay
-      muted
-      playsinline
-      v-bind:class="{ hidden: !peerConnected }"
-      width="280px"
-      height="157px"
-    ></video>
     <div
       id="captureButton"
       class="captureButton"
@@ -25,10 +16,6 @@
   cursor: pointer;
   color: #e66359;
   text-align: center;
-}
-
-#remoteVideo {
-  height: 157px;
 }
 
 .hidden {
@@ -53,7 +40,7 @@ export default class QrGenerator extends Vue {
   value = "";
 
   options = {
-    width: 100,
+    width: 150,
     scale: 1
   };
 
@@ -68,9 +55,12 @@ export default class QrGenerator extends Vue {
   dataChannel!: RTCDataChannel;
 
   beforeDestroy() {
-    this.peerConnection.close();
-    delete this.dataChannel;
-    delete this.peerConnection;
+    this.$store.commit("capture/detachMediaStream");
+    if (this.peerConnection) {
+      this.peerConnection.close();
+      delete this.dataChannel;
+      delete this.peerConnection;
+    }
   }
 
   mounted() {
@@ -78,8 +68,6 @@ export default class QrGenerator extends Vue {
       "captureButton"
     ) as HTMLElement;
     captureButton.addEventListener("click", this.capture.bind(this));
-
-    this.remoteVideo = document.getElementById("remoteVideo");
 
     this.socket.on("connect", () => {
       this.socketId = this.socket.id;
@@ -182,10 +170,7 @@ export default class QrGenerator extends Vue {
 
   private gotRemoteStream(e: any) {
     console.log("pc2 gotRemoteStream");
-    if (this.remoteVideo.srcObject !== e.streams[0]) {
-      this.remoteVideo.srcObject = e.streams[0];
-      console.log("pc2 received remote stream");
-    }
+    this.$store.commit("capture/attachMediaStream", e.streams[0]);
   }
 
   private capture() {
