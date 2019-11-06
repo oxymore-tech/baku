@@ -2,9 +2,26 @@
   <div class="mainFrame">
     <div class="previewBloc">
       <ProjectPreviewComponent />
-      <video v-if="activeCapture" id="videoCapture" width="1280" height="720" autoplay muted playsinline/>
-      <img v-else id="previewImg" width="1280" height="720" />
+      <video
+        v-if="activeCapture"
+        id="videoCapture"
+        width="1280"
+        height="720"
+        autoplay
+        muted
+        playsinline
+      />
+      <img
+        v-else
+        id="previewImg"
+        width="1280"
+        height="720"
+        :src="`https://${location.host}/default/images/${activePlan}/${getActiveFrame}.jpg?width=1280&height=720`"
+      />
       <CaptureToolboxComponent />
+    </div>
+    <div>
+      <span @click="playAnimation()">play</span>
     </div>
     <CarrouselComponent />
   </div>
@@ -17,7 +34,7 @@ import ProjectPreviewComponent from "@/components/capture/ProjectPreviewComponen
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import store from "../store";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 @Component({
   components: {
@@ -26,19 +43,31 @@ import { mapState } from "vuex";
     ProjectPreviewComponent
   },
   computed: {
-    ...mapState("capture", ["activeCapture", "stream"])
+    ...mapState("capture", ["activeCapture", "stream"]),
+    ...mapState("plan", ["activePlan"]),
+    ...mapGetters("plan", ["getActiveFrame"])
   },
   watch: {
     stream(newValue, oldValue) {
       if (newValue) {
-        (document.getElementById('videoCapture') as HTMLVideoElement).srcObject = newValue;
+        (document.getElementById(
+          "videoCapture"
+        ) as HTMLVideoElement).srcObject = newValue;
       }
-    }
+    },
   },
   store
 })
 export default class Capture extends Vue {
+  private isPlaying = false;
+  private loop: any;
+
   mounted() {}
+
+  playAnimation() {
+    this.isPlaying = true;
+    this.loop = setInterval(() => this.$store.dispatch("plan/goToNextFrameAction"), 1000);
+  }
 }
 </script>
 
@@ -60,6 +89,7 @@ export default class Capture extends Vue {
 #previewImg {
   min-width: 640px;
   min-height: 480px;
+  max-height: 720px;
   background: white;
 }
 

@@ -1,17 +1,21 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
   <div class="carrouselContainer">
-    <ul>
-      <img v-for="picture in pictures" v-bind:key="picture" :src="'/back/totoproject/' + picture + '?width=185&height=104'">
-    </ul>
+      <img v-for="picture in pictures" v-bind:key="picture" :src="`https://${location.host}/default/images/${activePlan}/${picture}.jpg?width=185&height=104`">
   </div>
 </template>
 
 <style lang="scss">
 .carrouselContainer {
+  background:white;
   width: 100%;
-  background: white;
-  height: 17vh;
+  height: 104px;
+  overflow-x: scroll;
+  display: inline-flex;
+  img {
+    margin: 0 7px;
+    max-height: 104px;
+  }
 }
 </style>
 
@@ -22,7 +26,7 @@ import store from '@/store'
 
 @Component({
   computed: {
-    ...mapState("plan", ["pictures"])
+    ...mapState("plan", ["pictures", "activePlan"])
   },
   store
 })

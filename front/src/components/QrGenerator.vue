@@ -67,7 +67,7 @@ export default class QrGenerator extends Vue {
     ) as HTMLElement;
     captureButton.addEventListener("click", this.capture.bind(this));
 
-    this.socket.messageListenerFunction = (message => {
+    this.socket.messageListenerFunction = message => {
       switch (message.action) {
         case "getSocketId":
           this.value = message.value;
@@ -88,7 +88,8 @@ export default class QrGenerator extends Vue {
             .then(() => {});
           break;
       }
-    });
+    };
+  }
 
   public async createOffer() {
     this.peerConnection = new RTCPeerConnection({
@@ -140,17 +141,10 @@ export default class QrGenerator extends Vue {
       if (data.type === "upload") {
         this.isCapturing = false;
         const pictureId = data.message;
-        this.$store.commit("plan/addNewPicture", pictureId);
+        this.$store.dispatch("plan/addNewPictureAction", pictureId);
       }
       console.log("Message received", event);
     };
-    // channel.onopen = () => {
-    //   const channelpush = channel.send;
-    //   channel.send = (data: Object) => {
-    //     console.log("Sending message: ", data);
-    //     channelpush(JSON.stringify(data));
-    //   };
-    // };
 
     channel.onerror = function(e) {
       console.error("channel.onerror", JSON.stringify(e, null, "\t"));
@@ -162,7 +156,10 @@ export default class QrGenerator extends Vue {
   }
 
   private onIceCandidate(event: any) {
-    this.socket.sendWSMessage({ action: "icecandidate", value: event.candidate });
+    this.socket.sendWSMessage({
+      action: "icecandidate",
+      value: event.candidate
+    });
   }
 
   private gotRemoteStream(e: any) {
