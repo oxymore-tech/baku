@@ -44,6 +44,7 @@ type Links = Arc<Mutex<HashMap<usize, usize>>>;
 
 async fn handle_multipart(
     project_id: String,
+    plan_id: String,
     mut form: warp::multipart::FormData,
 ) -> Result<Vec<Uuid>, warp::Rejection> {
     let img_directory = Path::new("upload_files");
@@ -56,9 +57,10 @@ async fn handle_multipart(
         let uuid = Uuid::new_v4();
         let filename = format!("{}.jpg", uuid.to_string());
         let image_path = Path::join(
-            img_directory,
+            &Path::join(img_directory, Path::new(&plan_id)),
             Path::join(Path::new(&project_id), Path::new(&filename)),
         );
+        println!("Posting to {}", &image_path.to_str().unwrap());
 
         let image_buffer = part.concat().await;
 
@@ -82,15 +84,17 @@ async fn handle_multipart(
 
 async fn handle_get_images(
     project_id: String,
+    plan_id: String,
     filename: String,
     r: Size,
 ) -> Result<Vec<u8>, warp::Rejection> {
     let thumbs_directory = Path::new("upload_thumbs");
     let thumb_filename = format!("{}-{}x{}", filename, r.width, r.height);
     let thumbnail_path = Path::join(
-        thumbs_directory,
+        &Path::join(thumbs_directory, Path::new(&plan_id)),
         Path::join(Path::new(&project_id), Path::new(&thumb_filename)),
     );
+    println!("Getting from {}", &thumbnail_path.to_str().unwrap());
 
     let mut thumbnail_buffer = Vec::new();
 
@@ -104,7 +108,7 @@ async fn handle_get_images(
     } else {
         let img_directory = Path::new("upload_files");
         let image_path = Path::join(
-            img_directory,
+            &Path::join(img_directory, Path::new(&plan_id)),
             Path::join(Path::new(&project_id), Path::new(&filename)),
         );
         let image = image::open(&image_path).map_err(warp::reject::custom)?;
@@ -370,6 +374,7 @@ async fn main() {
     let multipart = warp::post2()
         .and(warp::path::param())
         .and(warp::path("upload"))
+        .and(warp::path::param())
         .and(warp::multipart::form())
         .and_then(handle_multipart)
         .map(|uuids| warp::reply::json(&uuids));
@@ -391,6 +396,7 @@ async fn main() {
     let get = warp::get2()
         .and(warp::path::param())
         .and(warp::path("images"))
+        .and(warp::path::param())
         .and(warp::path::param())
         .and(warp::query())
         .and_then(handle_get_images)
