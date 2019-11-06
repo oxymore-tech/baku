@@ -1,7 +1,7 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
   <div class="carrouselContainer">
-      <img v-for="picture in pictures" v-bind:key="picture" :src="`https://${location.host}/default/images/${activePlan}/${picture}.jpg?width=185&height=104`">
+      <img v-for="picture in pictures" v-bind:key="picture" :src="`/default/images/${activePlan}/${picture}.jpg?width=185&height=104`">
   </div>
 </template>
 

@@ -16,12 +16,13 @@
         id="previewImg"
         width="1280"
         height="720"
-        :src="`https://${location.host}/default/images/${activePlan}/${getActiveFrame}.jpg?width=1280&height=720`"
+        :src="`/default/images/${activePlan}/${getActiveFrame}.jpg?width=1280&height=720`"
       />
       <CaptureToolboxComponent />
     </div>
     <div>
       <span @click="playAnimation()">play</span>
+      <span @click="pauseAnimation()">pause</span>
     </div>
     <CarrouselComponent />
   </div>
@@ -62,11 +63,16 @@ export default class Capture extends Vue {
   private isPlaying = false;
   private loop: any;
 
-  mounted() {}
+  mounted() {
+  }
 
   playAnimation() {
     this.isPlaying = true;
     this.loop = setInterval(() => this.$store.dispatch("plan/goToNextFrameAction"), 1000);
+  }
+
+  pauseAnimation() {
+    clearInterval(this.loop);
   }
 }
 </script>
