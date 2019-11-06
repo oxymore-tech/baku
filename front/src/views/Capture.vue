@@ -21,8 +21,8 @@
       <CaptureToolboxComponent />
     </div>
     <div>
-      <span @click="playAnimation()">play</span>
-      <span @click="pauseAnimation()">pause</span>
+      <button @click="playAnimation()">play</button>
+      <button @click="pauseAnimation()">pause</button>
     </div>
     <CarrouselComponent />
   </div>
