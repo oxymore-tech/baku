@@ -1,7 +1,7 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
   <div class="about">
-    <h1>{{title}}</h1>
+    <h1>Qr Generator</h1>
     <h3>Scannez ce QR-Code depuis l'appli baku-ui depuis votre smartphone:</h3>
     {{value}}
     <qrcode :value="value" :options="options" v-if="value"></qrcode>
@@ -12,14 +12,11 @@
 
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { Map, Set } from "immutable";
-import { Filter, Filters } from "@/components/filters";
-import io from "socket.io-client";
+import { Component, Vue } from "vue-property-decorator";
+import { WSMessage, WSSocket } from "./socket.class";
 
 @Component
 export default class QrGenerator extends Vue {
-  title = "Qr Generator";
   value = "";
 
   options = {
@@ -27,8 +24,7 @@ export default class QrGenerator extends Vue {
     scale: 1
   };
 
-  socketId = "";
-  socket: SocketIOClient.Socket = io();
+  socket = new WSSocket();
 
   remoteVideo: any = null;
   peerConnection = new RTCPeerConnection({
@@ -52,27 +48,27 @@ export default class QrGenerator extends Vue {
 
     this.remoteVideo = document.getElementById("remoteVideo");
 
-    this.socket.on("connect", () => {
-      this.socketId = this.socket.id;
-      this.value = JSON.stringify(this.socketId);
-    });
-
-    this.socket.on("linkEstablished", (msg: any) => {
-      this.createOffer().then(offer => {
-        this.socket.emit("rtcOffer", offer);
-      });
-    });
-
-    this.socket.on("icecandidate", (msg: any) => {
-      console.log("icecandidate", msg);
-      if (msg) {
-        this.peerConnection.addIceCandidate(msg);
+    this.socket.messageListenerFunction = (message => {
+      switch (message.action) {
+        case "getSocketId":
+          this.value = message.value;
+          break;
+        case "linkEstablished":
+          this.createOffer().then(offer => {
+            this.socket.sendWSMessage({ action: "rtcOffer", value: offer });
+          });
+          break;
+        case "icecandidate":
+          if (message.value) {
+            this.peerConnection.addIceCandidate(message.value);
+          }
+          break;
+        case "rtcAnswer":
+          this.peerConnection
+            .setRemoteDescription(message.value)
+            .then(() => {});
+          break;
       }
-    });
-
-    this.socket.on("rtcAnswer", (msg: any) => {
-      console.log("RTC AnsWER2", msg);
-      this.peerConnection.setRemoteDescription(msg).then(() => {});
     });
 
     this.peerConnection.addEventListener(
@@ -82,7 +78,7 @@ export default class QrGenerator extends Vue {
 
     this.peerConnection.addEventListener(
       "icecandidate",
-      this.onIceCandaidate.bind(this)
+      this.onIceCandidate.bind(this)
     );
 
     this.peerConnection.onconnectionstatechange = event => {
@@ -137,8 +133,8 @@ export default class QrGenerator extends Vue {
     };
   }
 
-  private onIceCandaidate(event: any) {
-    this.socket.emit("icecandidate", event.candidate);
+  private onIceCandidate(event: any) {
+    this.socket.sendWSMessage({ action: "icecandidate", value: event.candidate });
   }
 
   private gotRemoteStream(e: any) {

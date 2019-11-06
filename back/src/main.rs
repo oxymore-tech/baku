@@ -1,5 +1,5 @@
 use futures::{future, Future};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 use std::{
     collections::HashMap,
@@ -20,18 +20,16 @@ use tokio_executor::blocking;
 use uuid::Uuid;
 use warp::{ws::Message, ws::WebSocket, Filter};
 
-
 #[derive(Deserialize)]
 struct Size {
     width: u32,
     height: u32,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct WSMessage {
     action: String,
-    // value: String,
-    socketid: usize,
+    value: Option<serde_json::Value>,
 }
 
 /// Our global unique user id counter.
@@ -155,7 +153,11 @@ async fn handle_get_images(
     Ok(thumbnail_buffer)
 }
 
-async fn handle_stack(global_lock:Arc<futures::lock::Mutex<usize>>, project_id: String, body: String) -> Result<(), warp::Rejection> {
+async fn handle_stack(
+    global_lock: Arc<futures::lock::Mutex<usize>>,
+    project_id: String,
+    body: String,
+) -> Result<(), warp::Rejection> {
     let stack_directory = Path::new("stacks");
     let stack_path = Path::join(stack_directory, Path::new(&format!("{}.stack", project_id)));
     create_dir_all(stack_path.parent().unwrap())
@@ -279,10 +281,10 @@ fn user_connected(
     // })
 }
 
-fn user_message(my_id: usize, msg: Message, users: &Users, links: &Links) {
-    println!("<User#{}>: {:#?}", my_id, msg);
-    // Skip any non-Text messages...
-    let msg = if let Ok(s) = msg.to_str() {
+fn user_message(my_id: usize, original_msg: Message, users: &Users, links: &Links) {
+    println!("<User#{}>: {:#?}", my_id, original_msg);
+
+    let msg = if let Ok(s) = original_msg.to_str() {
         s
     } else {
         return;
@@ -290,21 +292,52 @@ fn user_message(my_id: usize, msg: Message, users: &Users, links: &Links) {
 
     let msg: WSMessage = from_str(msg).unwrap();
 
-    let new_msg = format!("<User#{}>: {:#?}", my_id, msg.action);
-    if msg.action == "link" {
-        links.lock().unwrap().insert(my_id, msg.socketid);
-        links.lock().unwrap().insert(msg.socketid, my_id);
+    if msg.action == "getSocketId" {
+        // We get current user TX
+        let mut dest_tx = users.lock().unwrap().get(&my_id).unwrap().clone();
+        let new_msg: WSMessage = WSMessage {
+            action: String::from("getSocketId"),
+            value: Some(serde_json::from_str(&format!("{}", my_id)).unwrap()),
+        };
+        let new_msg = serde_json::to_string(&new_msg).unwrap();
+        match dest_tx.try_send(Ok(Message::text(new_msg))) {
+            Ok(()) => (println!("Message sent")),
+            Err(_disconnected) => {
+                println!("Message fail");
+            }
+        }
+    } else if msg.action == "link" {
+        let socket_id: usize = serde_json::from_value(msg.value.unwrap()).unwrap();
+
+        println!("Link {} to {}", my_id, socket_id);
+        links.lock().unwrap().insert(my_id, socket_id);
+        links.lock().unwrap().insert(socket_id, my_id);
+
+        let mut dest_tx = users.lock().unwrap().get(&socket_id).unwrap().clone();
+        let new_msg: WSMessage = WSMessage {
+            action: String::from("linkEstablished"),
+            value: Some(serde_json::from_str(&format!("{}", my_id)).unwrap()),
+        };
+        let new_msg = serde_json::to_string(&new_msg).unwrap();
+        match dest_tx.try_send(Ok(Message::text(new_msg))) {
+            Ok(()) => (println!("Message sent")),
+            Err(_disconnected) => {
+                println!("Message fail");
+            }
+        }
     } else {
-        // New message from this user, send it to everyone else (except same uid)...
-        //
-        // We use `retain` instead of a for loop so that we can reap any user that
-        // appears to have disconnected.
-        let dest_id = links.lock().unwrap().get(&my_id).unwrap().clone();
+        // All other message just transit on this server
+        let dest_id = match links.lock().unwrap().get(&my_id) {
+            Some(v) => v.clone(),
+            None => my_id,
+        };
+
         let mut dest_tx = users.lock().unwrap().get(&dest_id).unwrap().clone();
 
-        match dest_tx.try_send(Ok(Message::text(new_msg.clone()))) {
-            Ok(()) => (),
+        match dest_tx.try_send(Ok(original_msg)) {
+            Ok(()) => (println!("OK OK")),
             Err(_disconnected) => {
+                println!("FAIL");
                 // The tx is disconnected, our `user_disconnected` code
                 // should be happening in another task, nothing more to
                 // do here.
@@ -373,12 +406,11 @@ async fn main() {
         .and(warp::path::param())
         .and(warp::path("stack"))
         .and(warp::body::json())
-        .and_then(move |project_id, body| {
-            handle_stack(global_lock.clone(), project_id, body)
-        })
+        .and_then(move |project_id, body| handle_stack(global_lock.clone(), project_id, body))
         .map(|_| "Stacked");
     let history = warp::get2()
         .and(warp::path::param())
+        .and(warp::path("history"))
         .and_then(handle_history)
         .map(|history| warp::reply::json(&history));
 
@@ -388,7 +420,10 @@ async fn main() {
         .or(history)
         .or(get)
         .or(multipart)
-        .or(warp::fs::dir("res"));
+        .or(warp::fs::dir("../front/dist"));
 
-    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(routes)
+        .tls("src/tls/certificate.pem", "src/tls/key.pem")
+        .run(([0, 0, 0, 0], 3030))
+        .await;
 }

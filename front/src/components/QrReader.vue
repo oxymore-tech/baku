@@ -20,16 +20,15 @@ import { QrcodeStream } from "vue-qrcode-reader";
 
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { Map, Set } from "immutable";
-import { Filter, Filters } from "@/components/filters";
-import io from "socket.io-client";
 import * as uuid from "uuid";
+import { WSSocket } from "./socket.class";
 
 @Component({
   components: { QrcodeStream }
 })
 export default class QrReader extends Vue {
-  socketId: string | undefined = undefined;
-  socket = io();
+  socketId: string = '';
+  socket = new WSSocket();
   localVideo: any;
   error = "";
   peerConnection = new RTCPeerConnection({
@@ -43,18 +42,23 @@ export default class QrReader extends Vue {
   activeqrreader = true;
 
   mounted() {
-    this.socket.on("rtcOffer", (msg: any) => {
-      console.log("call startStream ", msg);
-      this.startStream(msg);
-    });
 
-    this.socket.on("icecandidate", (msg: any) => {
-      this.peerConnection.addIceCandidate(msg);
+    this.socket.messageListenerFunction = (message => {
+      switch (message.action) {
+        case "rtcOffer":
+          this.startStream(message.value);
+          break;
+        case "icecandidate":
+          if (message.value) {
+            this.peerConnection.addIceCandidate(message.value);
+          }
+          break;
+      }
     });
 
     this.peerConnection.addEventListener(
       "icecandidate",
-      this.onIceCandaidate.bind(this)
+      this.onIceCandidate.bind(this)
     );
 
     this.peerConnection.onconnectionstatechange = event => {
@@ -70,8 +74,8 @@ export default class QrReader extends Vue {
     console.log("onDecode", result, this.socketId);
     if (!this.socketId) {
       this.activeqrreader = false;
-      this.socketId = result;
-      this.socket.emit("link", this.socketId);
+      this.socketId = JSON.parse(result);
+      this.socket.sendWSMessage({action: 'link', value: this.socketId});
     }
   }
 
@@ -126,10 +130,9 @@ export default class QrReader extends Vue {
     }
 
     try {
-      console.log("createAnswer", this.socketId);
       const answer = await this.peerConnection.createAnswer();
       await this.peerConnection.setLocalDescription(answer);
-      this.socket.emit("rtcAnswer", answer);
+      this.socket.sendWSMessage({action: 'rtcAnswer', value: answer});
     } catch (e) {
       console.error("Failed sending answer", e);
     }
@@ -191,8 +194,8 @@ export default class QrReader extends Vue {
     };
   }
 
-  private onIceCandaidate(event: any) {
-    this.socket.emit("icecandidate", event.candidate);
+  private onIceCandidate(event: any) {
+    this.socket.sendWSMessage({action: 'icecandidate', value: event.candidate});
   }
 }
 
