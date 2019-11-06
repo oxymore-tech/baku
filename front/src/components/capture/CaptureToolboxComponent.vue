@@ -1,18 +1,20 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <div class="boxContainer captureContainer">
-    <h3>mode capture</h3>
-    <select @change="onCaptureDeviceChange($event)">
-      <option value="smartphone" :selected="selectedDevice === 'smartphone'">Smartphone</option>
-      <option
-        v-for="device in devices"
-        v-bind:key="device.deviceId"
-        :value="device.deviceId"
-        :selected="selectedDevice === device.deviceId"
-      >{{device.label}}</option>
-    </select>
-    <QrGenerator v-if="selectedDevice === 'smartphone'" />
-    <WebcamCaptureComponent v-else :deviceId="selectedDevice"/>
+  <div class="boxContainer captureContainer" v-bind:class="{captureInactive: !activeCapture}">
+    <h3 @click="toggleCapture()">mode capture</h3>
+    <div v-if="activeCapture">
+      <select @change="onCaptureDeviceChange($event)">
+        <option value="smartphone" :selected="selectedDevice === 'smartphone'">Smartphone</option>
+        <option
+          v-for="device in devices"
+          v-bind:key="device.deviceId"
+          :value="device.deviceId"
+          :selected="selectedDevice === device.deviceId"
+        >{{device.label}}</option>
+      </select>
+      <QrGenerator v-if="selectedDevice === 'smartphone'" />
+      <WebcamCaptureComponent v-else :deviceId="selectedDevice" />
+    </div>
   </div>
 </template>
 
@@ -21,12 +23,18 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import QrGenerator from "@/components/QrGenerator.vue";
 import WebcamCaptureComponent from "@/components/capture/WebcamCaptureComponent.vue";
+import { mapState } from "vuex";
+import store from "@/store";
 
 @Component({
   components: {
     QrGenerator,
     WebcamCaptureComponent
-  }
+  },
+  computed: {
+    ...mapState("capture", ["activeCapture"])
+  },
+  store
 })
 export default class CaptureToolboxComponent extends Vue {
   devices: MediaDeviceInfo[] = [];
@@ -41,6 +49,10 @@ export default class CaptureToolboxComponent extends Vue {
 
   onCaptureDeviceChange(event: any) {
     this.selectedDevice = event.target.value;
+  }
+
+  toggleCapture() {
+    this.$store.commit("capture/toggleCapture");
   }
 }
 </script>
@@ -57,6 +69,11 @@ export default class CaptureToolboxComponent extends Vue {
   h3 {
     font-size: 23px;
     font-weight: bold;
+    cursor: pointer;
   }
+}
+
+.captureInactive {
+  height: 45px;
 }
 </style>

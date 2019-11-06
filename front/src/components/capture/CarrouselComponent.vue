@@ -13,19 +13,6 @@
   background: white;
   height: 17vh;
 }
-.captureContainer {
-  width: 290px;
-  height: 450px;
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-  align-items: center;
-
-  h3 {
-    font-size: 23px;
-    font-weight: bold;
-  }
-}
 </style>
 
 <script lang="ts">
