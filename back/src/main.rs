@@ -164,7 +164,7 @@ async fn handle_get_images(
 async fn handle_stack(
     global_lock: Arc<futures::lock::Mutex<usize>>,
     project_id: String,
-    body: String,
+    body: serde_json::Value,
 ) -> Result<(), warp::Rejection> {
     let stack_directory = Path::new("stacks");
     let stack_path = Path::join(stack_directory, Path::new(&format!("{}.stack", project_id)));
@@ -172,7 +172,7 @@ async fn handle_stack(
         .await
         .map_err(warp::reject::custom)?;
 
-    let mut json: Vec<String>;
+    let mut json: Vec<serde_json::Value>;
 
     if stack_path.exists() {
         let mut buffer = Vec::new();
@@ -192,7 +192,7 @@ async fn handle_stack(
             },
         }
 
-        println!("{}: Stacking {}", project_id, body);
+        //println!("{}: Stacking {}", project_id, body);
     } else {
         json = Vec::new();
     }
@@ -217,7 +217,7 @@ async fn handle_stack(
     Ok(())
 }
 
-async fn handle_history(project_id: String) -> Result<Vec<String>, warp::Rejection> {
+async fn handle_history(project_id: String) -> Result<Vec<serde_json::Value>, warp::Rejection> {
     let stack_directory = Path::new("stacks");
     let stack_path = Path::join(stack_directory, Path::new(&format!("{}.stack", project_id)));
 
@@ -430,7 +430,7 @@ async fn main() {
         .or(history)
         .or(get)
         .or(multipart)
-        .or(warp::fs::dir("../front/dist"));
+        .or(warp::fs::dir("../front/src/api"));
 
     warp::serve(routes)
         .tls("src/tls/certificate.pem", "src/tls/key.pem")
