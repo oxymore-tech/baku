@@ -68,7 +68,7 @@ export default class Capture extends Vue {
 
   playAnimation() {
     this.isPlaying = true;
-    this.loop = setInterval(() => this.$store.dispatch("plan/goToNextFrameAction"), 1000);
+    this.loop = setInterval(() => this.$store.dispatch("plan/goToNextFrameAction"), 1000 / 12 );
   }
 
   pauseAnimation() {

@@ -113,8 +113,8 @@ export default class QrReader extends Vue {
     this.localVideo = document.getElementById("localVideo");
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        width: { min: 1280 },
-        height: { min: 720 },
+        width: { min: 1280, ideal: 1920 },
+        height: { min: 720 , ideal : 1080 },
         facingMode: {
           exact: "environment"
         }
@@ -157,11 +157,11 @@ export default class QrReader extends Vue {
         canvas.height = video.videoHeight;
         const context2d = canvas.getContext("2d") as CanvasRenderingContext2D;
         context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const base64 = canvas.toDataURL();
+        const base64 = canvas.toDataURL("image/jpeg");
 
         var formData = new FormData();
         const blob = imagetoblob(base64);
-        formData.append("image", blob, uuid.v4());
+        formData.append("image", blob, uuid.v4() + '.jpg');
         var request = new XMLHttpRequest();
         request.open(
           "POST",
