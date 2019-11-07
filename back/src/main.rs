@@ -430,7 +430,7 @@ async fn main() {
         .or(history)
         .or(get)
         .or(multipart)
-        .or(warp::fs::dir("../front/src/api"));
+        .or(warp::fs::dir("../front/dist"));
 
     warp::serve(routes)
         .tls("src/tls/certificate.pem", "src/tls/key.pem")
