@@ -57,8 +57,8 @@ async fn handle_multipart(
             Some(part_filename) => {
                 let filename = format!("{}-{}", Uuid::new_v4().to_string(), part_filename);
                 let image_path = Path::join(
-                    &Path::join(img_directory, Path::new(&plan_id)),
-                    Path::join(Path::new(&project_id), Path::new(&filename)),
+                    &Path::join(img_directory, Path::new(&project_id)),
+                    Path::join(Path::new(&plan_id), Path::new(&filename)),
                 );
                 println!("Posting to {}", &image_path.to_str().unwrap());
 
@@ -95,8 +95,8 @@ async fn handle_get_images(
     let thumbs_directory = Path::new("upload_thumbs");
     let thumb_filename = format!("{}-{}x{}", filename, r.width, r.height);
     let thumbnail_path = Path::join(
-        &Path::join(thumbs_directory, Path::new(&plan_id)),
-        Path::join(Path::new(&project_id), Path::new(&thumb_filename)),
+        &Path::join(thumbs_directory, Path::new(&project_id)),
+        Path::join(Path::new(&plan_id), Path::new(&thumb_filename)),
     );
     println!("Getting from {}", &thumbnail_path.to_str().unwrap());
 
@@ -112,8 +112,8 @@ async fn handle_get_images(
     } else {
         let img_directory = Path::new("upload_files");
         let image_path = Path::join(
-            &Path::join(img_directory, Path::new(&plan_id)),
-            Path::join(Path::new(&project_id), Path::new(&filename)),
+            &Path::join(img_directory, Path::new(&project_id)),
+            Path::join(Path::new(&plan_id), Path::new(&filename)),
         );
         let image = image::open(&image_path).map_err(warp::reject::custom)?;
 
