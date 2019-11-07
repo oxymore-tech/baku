@@ -27,22 +27,15 @@ import { WSSocket } from "./socket.class";
   components: { QrcodeStream }
 })
 export default class QrReader extends Vue {
-  socketId: string = '';
+  socketId: string | undefined = '';
   socket = new WSSocket();
   localVideo: any;
   error = "";
-  peerConnection = new RTCPeerConnection({
-    iceServers: [
-      {
-        urls: "stun:stun.l.google.com:19302"
-      }
-    ]
-  });
+  peerConnection!: RTCPeerConnection;
 
   activeqrreader = true;
 
   mounted() {
-
     this.socket.messageListenerFunction = (message => {
       switch (message.action) {
         case "rtcOffer":
@@ -55,6 +48,16 @@ export default class QrReader extends Vue {
           break;
       }
     });
+  }
+
+  onDecode(result: string) {
+    this.peerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.l.google.com:19302"
+        }
+      ]
+    });
 
     this.peerConnection.addEventListener(
       "icecandidate",
@@ -63,15 +66,22 @@ export default class QrReader extends Vue {
 
     this.peerConnection.onconnectionstatechange = event => {
       if (this.peerConnection.connectionState == "connected") {
-        console.log("CONNECTION OK");
         // CONNECTION OK
         this.$store.commit("setupConnection");
       }
+      console.log(this.peerConnection.connectionState);
+      if (this.peerConnection.connectionState === "disconnected") {
+        delete this.peerConnection;
+        this.localVideo.srcObject
+          .getTracks()
+          .forEach(function(track: MediaStreamTrack) {
+            track.stop();
+          });
+        this.activeqrreader = true;
+        this.socketId = undefined;
+      }
     };
-  }
 
-  onDecode(result: string) {
-    console.log("onDecode", result, this.socketId);
     if (!this.socketId) {
       this.activeqrreader = false;
       this.socketId = JSON.parse(result);
@@ -112,7 +122,6 @@ export default class QrReader extends Vue {
     });
     console.log("Received local stream");
     this.localVideo.srcObject = stream;
-    // TODO: get remoteOffer from QR
 
     this.peerConnection.ondatachannel = event => {
       const dataChannel = event.channel;
@@ -156,16 +165,18 @@ export default class QrReader extends Vue {
         var request = new XMLHttpRequest();
         request.open(
           "POST",
-          `https://${location.hostname}/back/totoproject/upload/`
+          `https://${location.host}/default/upload/${data.plan}`
         );
         request.onreadystatechange = function() {
           //Appelle une fonction au changement d'état.
           if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             const pictureId = JSON.parse(this.response)[0];
-            channel.send(JSON.stringify({
-              type: 'upload',
-              message: pictureId
-            }))
+            channel.send(
+              JSON.stringify({
+                type: "upload",
+                message: pictureId
+              })
+            );
           }
         };
 

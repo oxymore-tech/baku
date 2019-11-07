@@ -1,33 +1,23 @@
 <template>
-    <div id="app">
-        <div id="nav">
+  <div id="app">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet" />
+    <!-- <div id="nav">
             <router-link to="/">Home</router-link>
             |
             <router-link to="/about">About</router-link>
             <router-link to="/computer">Computer PoV</router-link>
             <router-link to="/smartphone">Smartphone PoV</router-link>
-        </div>
-        <router-view/>
-    </div>
+    </div>-->
+    <nav>
+      <h1>Baku animation</h1>
+      <router-link to="/home">Home</router-link>
+      <router-link to="/capture">Capture</router-link>
+      <!-- <router-link to="/smartphone">Smartphone PoV</router-link> -->
+    </nav>
+    <router-view />
+  </div>
 </template>
 
-<style>
-    #app {
-        font-family: "Avenir", Helvetica, Arial, sans-serif;
-        color: #2c3e50;
-    }
-
-    #nav {
-        padding: 30px;
-    }
-
-    #nav a {
-        font-weight: bold;
-        color: #2c3e50;
-        margin-left: 16px;
-    }
-
-    #nav a.router-link-exact-active {
-        color: #42b983;
-    }
+<style lang="scss">
+  @import "styles/style.scss";
 </style>
