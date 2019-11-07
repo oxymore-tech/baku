@@ -183,14 +183,16 @@ async fn handle_stack(
             .await
             .map_err(warp::reject::custom)?;
 
-        let s = match str::from_utf8(&buffer) {
-            Ok(v) => v,
-            Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-        };
+        match str::from_utf8(&buffer) {
+            Ok(s) => {
+                json = from_str(s).map_err(warp::reject::custom)?;
+            },
+            Err(e) => {
+                return Err(warp::reject::custom(e));
+            },
+        }
 
         println!("{}: Stacking {}", project_id, body);
-
-        json = from_str(s).map_err(warp::reject::custom)?;
     } else {
         json = Vec::new();
     }
