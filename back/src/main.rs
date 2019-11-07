@@ -228,12 +228,10 @@ async fn handle_history(project_id: String) -> Result<Vec<String>, warp::Rejecti
             .await
             .map_err(warp::reject::custom)?;
 
-        let s = match str::from_utf8(&buffer) {
-            Ok(v) => v,
-            Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-        };
-
-        Ok(from_str(s).map_err(warp::reject::custom)?)
+        match str::from_utf8(&buffer) {
+            Ok(s) => Ok(from_str(s).map_err(warp::reject::custom)?),
+            Err(e) => Err(warp::reject::custom(e))
+        }
     } else {
         Ok(Vec::new())
     }
