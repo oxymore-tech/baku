@@ -1,54 +1,73 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <div class="about">
-    <h1>Qr Generator</h1>
-    <h3>Scannez ce QR-Code depuis l'appli baku-ui depuis votre smartphone:</h3>
-    {{value}}
-    <qrcode :value="value" :options="options" v-if="value"></qrcode>
-    <video id="remoteVideo" autoplay muted playsinline></video>
-    <button id="captureButton">Capture!</button>
+  <div class="qrGenerator">
+    <qrcode :value="value" :options="options" v-if="value && !peerConnected"></qrcode>
+    <div
+      id="captureButton"
+      class="captureButton"
+      v-bind:class="{ capturing: isCapturing, hidden: !peerConnected }"
+    >Capture!</div>
   </div>
 </template>
 
+<style lang="scss">
+.captureButton {
+  font-size: 30px;
+  cursor: pointer;
+  color: #e66359;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.capturing {
+  color: grey;
+  cursor: progress;
+}
+</style>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import { Map, Set } from "immutable";
+import { Filter, Filters } from "@/components/filters";
 import { WSMessage, WSSocket } from "./socket.class";
 
 @Component
 export default class QrGenerator extends Vue {
+  title = "Qr Generator";
   value = "";
 
   options = {
-    width: 100,
+    width: 150,
     scale: 1
   };
 
   socket = new WSSocket();
+  peerConnected = false;
+  isCapturing = false;
 
   remoteVideo: any = null;
-  peerConnection = new RTCPeerConnection({
-    iceServers: [
-      {
-        urls: "stun:stun.l.google.com:19302"
-      }
-    ]
-  });
-  dataChannel: RTCDataChannel = this.peerConnection.createDataChannel(
-    "channel",
-    {}
-  );
+  peerConnection!: RTCPeerConnection;
+  dataChannel!: RTCDataChannel;
+
+  beforeDestroy() {
+    this.$store.commit("capture/detachMediaStream");
+    if (this.peerConnection) {
+      this.peerConnection.close();
+      delete this.dataChannel;
+      delete this.peerConnection;
+    }
+  }
 
   mounted() {
     const captureButton = document.getElementById(
       "captureButton"
     ) as HTMLElement;
     captureButton.addEventListener("click", this.capture.bind(this));
-    console.log("IsConnected ?", this.$store.state.isConnected);
 
-    this.remoteVideo = document.getElementById("remoteVideo");
-
-    this.socket.messageListenerFunction = (message => {
+    this.socket.messageListenerFunction = message => {
       switch (message.action) {
         case "getSocketId":
           this.value = message.value;
@@ -69,6 +88,16 @@ export default class QrGenerator extends Vue {
             .then(() => {});
           break;
       }
+    };
+  }
+
+  public async createOffer() {
+    this.peerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.l.google.com:19302"
+        }
+      ]
     });
 
     this.peerConnection.addEventListener(
@@ -83,14 +112,13 @@ export default class QrGenerator extends Vue {
 
     this.peerConnection.onconnectionstatechange = event => {
       if (this.peerConnection.connectionState == "connected") {
+        this.peerConnected = true;
         console.log("CONNECTION OK");
         // CONNECTION OK
         this.$store.commit("setupConnection");
       }
     };
-  }
-
-  public async createOffer() {
+    this.dataChannel = this.peerConnection.createDataChannel("channel", {});
     this.setChannelEvents(this.dataChannel);
 
     // Creating the offset
@@ -101,7 +129,6 @@ export default class QrGenerator extends Vue {
       const offer = await this.peerConnection.createOffer(offerOptions);
       await this.peerConnection.setLocalDescription(offer);
       return offer;
-      // TODO: Generate QR code with the offset
     } catch (e) {
       console.error("Error creating offer", e);
     }
@@ -109,20 +136,15 @@ export default class QrGenerator extends Vue {
 
   private setChannelEvents(channel: RTCDataChannel) {
     channel.onmessage = event => {
-      const data = JSON.parse(event.data);
+      //TODO: Try to understand why you need TWO json parse
+      const data = JSON.parse(JSON.parse(event.data));
       if (data.type === "upload") {
-        // TODO: get img from the server with picture ID
+        this.isCapturing = false;
         const pictureId = data.message;
+        this.$store.dispatch("plan/addNewPictureAction", pictureId);
       }
       console.log("Message received", event);
     };
-    // channel.onopen = () => {
-    //   const channelpush = channel.send;
-    //   channel.send = (data: Object) => {
-    //     console.log("Sending message: ", data);
-    //     channelpush(JSON.stringify(data));
-    //   };
-    // };
 
     channel.onerror = function(e) {
       console.error("channel.onerror", JSON.stringify(e, null, "\t"));
@@ -134,21 +156,23 @@ export default class QrGenerator extends Vue {
   }
 
   private onIceCandidate(event: any) {
-    this.socket.sendWSMessage({ action: "icecandidate", value: event.candidate });
+    this.socket.sendWSMessage({
+      action: "icecandidate",
+      value: event.candidate
+    });
   }
 
   private gotRemoteStream(e: any) {
     console.log("pc2 gotRemoteStream");
-    if (this.remoteVideo.srcObject !== e.streams[0]) {
-      this.remoteVideo.srcObject = e.streams[0];
-      console.log("pc2 received remote stream");
-    }
+    this.$store.commit("capture/attachMediaStream", e.streams[0]);
   }
 
   private capture() {
+    this.isCapturing = true;
     this.dataChannel.send(
       JSON.stringify({
         message: "capture",
+        plan: this.$store.state.plan.activePlan,
         type: "cmd"
       })
     );
