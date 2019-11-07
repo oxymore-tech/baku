@@ -70,7 +70,7 @@ export default class WebcamCaptureComponent extends Vue {
 
     var formData = new FormData();
     const blob = imagetoblob(base64);
-    formData.append("image", blob, uuid.v4());
+    formData.append("image", blob, uuid.v4() + ".jpg");
     var request = new XMLHttpRequest();
     request.open(
       "POST",

@@ -16,7 +16,7 @@
         id="previewImg"
         width="1280"
         height="720"
-        :src="`/default/images/${activePlan}/${getActiveFrame}.jpg?width=1280&height=720`"
+        :src="`/default/images/${activePlan}/${getActiveFrame}?width=1280&height=720`"
       />
       <CaptureToolboxComponent />
     </div>

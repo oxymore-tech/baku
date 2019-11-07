@@ -19,7 +19,7 @@ export const planStore = {
     addNewPicture(state: PlanState, pictureId: string) {
       state.pictures = [...state.pictures, pictureId];
       const fullResImage = new Image();
-      fullResImage.src = `/default/images/${state.activePlan}/${pictureId}.jpg?width=1280&height=720`;
+      fullResImage.src = `/default/images/${state.activePlan}/${pictureId}?width=1280&height=720`;
       state.fullResPicturesCache.push(fullResImage);
     },
     changePlan(state: PlanState, planId: string) {
