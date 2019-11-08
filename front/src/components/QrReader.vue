@@ -1,6 +1,6 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div>
+    <h1>QR Reader Page</h1>
 
     <p class="error">{{ error }}</p>
 
@@ -67,6 +67,7 @@ export default class QrReader extends Vue {
     this.peerConnection.onconnectionstatechange = (event) => {
       if (this.peerConnection.connectionState === 'connected') {
         // CONNECTION OK
+        console.log('CONNECTION OK');
         this.$store.commit('setupConnection');
       }
       console.log(this.peerConnection.connectionState);

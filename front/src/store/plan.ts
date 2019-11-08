@@ -1,4 +1,4 @@
-export interface PlanState {
+interface PlanState {
   pictures: string[];
   fullResPicturesCache: HTMLImageElement[];
   plans: string[];

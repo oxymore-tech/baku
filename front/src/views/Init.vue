@@ -15,15 +15,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 export default class Init extends Vue {
 
   public isMobile() {
-    if (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent,
-      )
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
   public created() {

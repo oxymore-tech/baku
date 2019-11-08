@@ -1,4 +1,4 @@
-export interface CaptureState {
+interface CaptureState {
     stream: MediaStream | null;
     activeCapture: boolean;
 }

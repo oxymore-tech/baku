@@ -15,10 +15,6 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    // setupConnection: (context) => {
-    //   context.commit('connected')
-
-    // }
   },
   modules: {
     plan: planStore,
