@@ -6,27 +6,27 @@ export interface WSMessage {
 }
 
 export class WSSocket {
-    messageListenerFunction: (message: WSMessage) => void = () => {};
-    private socket: WebSocket;
+  private socket: WebSocket;
 
-    constructor() {
-        // this.socket = new WebSocket("ws://localhost:3030/echo");
-        console.log('Hostname', location.hostname, location);
-        this.socket = new WebSocket(`wss://${location.hostname}:3030/echo`);
+  constructor() {
+    // this.socket = new WebSocket("ws://localhost:3030/echo");
+    console.log('Hostname', location.hostname, location);
+    this.socket = new WebSocket(`wss://${location.hostname}:3030/echo`);
 
-        this.socket.addEventListener("open", () => {
-            console.log("Socket opened");
-            this.sendWSMessage({ action: "getSocketId" });
-          });
+    this.socket.addEventListener('open', () => {
+      console.log('Socket opened');
+      this.sendWSMessage({ action: 'getSocketId' });
+    });
 
-        this.socket.addEventListener("message", (event) => {
-            console.log("Message received", event.data);
-            const message: WSMessage = JSON.parse(event.data);
-            this.messageListenerFunction(message);
-        });
-    }
+    this.socket.addEventListener('message', (event) => {
+      console.log('Message received', event.data);
+      const message: WSMessage = JSON.parse(event.data);
+      this.messageListenerFunction(message);
+    });
+  }
+  public messageListenerFunction: (message: WSMessage) => void = () => { };
 
-    sendWSMessage(msg: WSMessage) {
-        this.socket.send(JSON.stringify(msg));
-      }
+  public sendWSMessage(msg: WSMessage) {
+    this.socket.send(JSON.stringify(msg));
+  }
 }

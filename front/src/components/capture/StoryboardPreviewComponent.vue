@@ -28,19 +28,19 @@
 
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { mapState } from "vuex";
-import store from "@/store";
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { mapState } from 'vuex';
+import store from '@/store';
 
 @Component({
   computed: {
-    ...mapState("plan", ["activePlan", "plans"])
+    ...mapState('plan', ['activePlan', 'plans']),
   },
-  store
+  store,
 })
 export default class StoryboardPreviewComponent extends Vue {
   private onPlanSelectChange(event: any) {
-    this.$store.commit("plan/changePlan", event.target.value);
+    this.$store.commit('plan/changePlan', event.target.value);
   }
 }
 </script>

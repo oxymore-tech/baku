@@ -20,7 +20,7 @@ export class Filters {
             // CIE luminance for the RGB
             // The human eye is bad at seeing red and blue, so we de-emphasize them.
             const v = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-            d[i] = d[i + 1] = d[i + 2] = v
+            d[i] = d[i + 1] = d[i + 2] = v;
         }
         return pixels;
     }

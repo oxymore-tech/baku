@@ -29,60 +29,60 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue, Watch, Prop } from "vue-property-decorator";
-import * as uuid from "uuid";
+import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
+import * as uuid from 'uuid';
 
 @Component({})
 export default class WebcamCaptureComponent extends Vue {
   @Prop(String)
-  readonly deviceId!: string;
-  isCapturing = false;
+  public readonly deviceId!: string;
+  public isCapturing = false;
 
-  mounted() {
+  public mounted() {
     navigator.mediaDevices
       .getUserMedia({
         video: {
           width: { min: 640, ideal: 1280 },
           height: { min: 480, ideal: 720 },
-          deviceId: { exact: this.deviceId }
-        }
+          deviceId: { exact: this.deviceId },
+        },
       })
-      .then(stream => {
-        this.$store.commit("capture/attachMediaStream", stream);
+      .then((stream) => {
+        this.$store.commit('capture/attachMediaStream', stream);
       });
   }
 
-  beforeDestroy() {
+  public beforeDestroy() {
     // Removing tracks to stop using camera
     // @see: https://developers.google.com/web/updates/2015/07/mediastream-deprecations?hl=en#stop-ended-and-active
-    this.$store.commit("capture/detachMediaStream");
+    this.$store.commit('capture/detachMediaStream');
   }
 
   private capture() {
     this.isCapturing = true;
-    const canvas = document.createElement("canvas");
-    const video = document.getElementById("videoCapture") as any;
+    const canvas = document.createElement('canvas');
+    const video = document.getElementById('videoCapture') as any;
     canvas.width = 640;
     canvas.height = 480;
-    const context2d = canvas.getContext("2d") as CanvasRenderingContext2D;
+    const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const base64 = canvas.toDataURL("image/jpeg");
+    const base64 = canvas.toDataURL('image/jpeg');
 
-    var formData = new FormData();
+    const formData = new FormData();
     const blob = imagetoblob(base64);
-    formData.append("image.jpg", blob, uuid.v4() + ".jpg");
-    var request = new XMLHttpRequest();
+    formData.append('image.jpg', blob, uuid.v4() + '.jpg');
+    const request = new XMLHttpRequest();
     request.open(
-      "POST",
-      `https://${location.host}/default/upload/${this.$store.state.plan.activePlan}`
+      'POST',
+      `https://${location.host}/default/upload/${this.$store.state.plan.activePlan}`,
     );
     const self = this;
     request.onreadystatechange = function() {
-      //Appelle une fonction au changement d'état.
+      // Appelle une fonction au changement d'état.
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
         const pictureId = JSON.parse(this.response)[0];
         self.isCapturing = false;
-        self.$store.dispatch("plan/addNewPictureAction", pictureId);
+        self.$store.dispatch('plan/addNewPictureAction', pictureId);
       }
     };
 
@@ -91,37 +91,37 @@ export default class WebcamCaptureComponent extends Vue {
 }
 
 function b64toBlob(b64Data: string, contentType: string, sliceSize?: number) {
-  contentType = contentType || "";
+  contentType = contentType || '';
   sliceSize = sliceSize || 512;
 
-  var byteCharacters = atob(b64Data);
-  var byteArrays = [];
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
 
-  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    var slice = byteCharacters.slice(offset, offset + sliceSize);
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
 
-    var byteNumbers = new Array(slice.length);
-    for (var i = 0; i < slice.length; i++) {
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
       byteNumbers[i] = slice.charCodeAt(i);
     }
 
-    var byteArray = new Uint8Array(byteNumbers);
+    const byteArray = new Uint8Array(byteNumbers);
 
     byteArrays.push(byteArray);
   }
 
-  var blob = new Blob(byteArrays, { type: contentType });
+  const blob = new Blob(byteArrays, { type: contentType });
   return blob;
 }
 
 function imagetoblob(base64String: string) {
-  var ImageURL = base64String;
+  const ImageURL = base64String;
   // Split the base64 string in data and contentType
-  var block = ImageURL.split(";");
+  const block = ImageURL.split(';');
   // Get the content type of the image
-  var contentType = block[0].split(":")[1]; // In this case "image/gif"
+  const contentType = block[0].split(':')[1]; // In this case "image/gif"
   // get the real base64 content of the file
-  var realData = block[1].split(",")[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
+  const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
 
   // Convert it to a blob to upload
   return b64toBlob(realData, contentType);

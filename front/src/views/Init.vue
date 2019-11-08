@@ -8,28 +8,31 @@ ul {
 }
 </style>
 
-<script>
-export default {
-  name: "Init",
-  methods: {
-    isMobile() {
-      if (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        )
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  },
-  created() {
-    if (this.isMobile()) {
-      this.$router.push("/smartphone");
+<script lang="ts">
+import { Component, Vue, Watch } from 'vue-property-decorator';
+
+@Component
+export default class Init extends Vue {
+
+  public isMobile() {
+    if (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      )
+    ) {
+      return true;
     } else {
-      this.$router.push("/capture");
+      return false;
     }
   }
-};
+
+  public created() {
+    if (this.isMobile()) {
+      this.$router.push('/smartphone');
+    } else {
+      this.$router.push('/capture');
+    }
+  }
+}
+
 </script>

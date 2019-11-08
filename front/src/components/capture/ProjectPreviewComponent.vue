@@ -18,13 +18,13 @@
 
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 
 @Component({
   components: {
-    StoryboardPreviewComponent
-  }
+    StoryboardPreviewComponent,
+  },
 })
 export default class ProjectPreviewComponent extends Vue {
 }

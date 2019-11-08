@@ -29,49 +29,49 @@
 </template>
 
 <script lang="ts">
-import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
-import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
-import ProjectPreviewComponent from "@/components/capture/ProjectPreviewComponent.vue";
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
-import store from "../store";
-import { mapState, mapGetters } from "vuex";
+import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import ProjectPreviewComponent from '@/components/capture/ProjectPreviewComponent.vue';
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
+import store from '../store';
+import { mapState, mapGetters } from 'vuex';
 
 @Component({
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
-    ProjectPreviewComponent
+    ProjectPreviewComponent,
   },
   computed: {
-    ...mapState("capture", ["activeCapture", "stream"]),
-    ...mapState("plan", ["activePlan"]),
-    ...mapGetters("plan", ["getActiveFrame"])
+    ...mapState('capture', ['activeCapture', 'stream']),
+    ...mapState('plan', ['activePlan']),
+    ...mapGetters('plan', ['getActiveFrame']),
   },
   watch: {
     stream(newValue, oldValue) {
       if (newValue) {
         (document.getElementById(
-          "videoCapture"
+          'videoCapture',
         ) as HTMLVideoElement).srcObject = newValue;
       }
     },
   },
-  store
+  store,
 })
 export default class Capture extends Vue {
   private isPlaying = false;
   private loop: any;
 
-  mounted() {
+  public mounted() {
   }
 
-  playAnimation() {
+  public playAnimation() {
     this.isPlaying = true;
-    this.loop = setInterval(() => this.$store.dispatch("plan/goToNextFrameAction"), 1000 / 12 );
+    this.loop = setInterval(() => this.$store.dispatch('plan/goToNextFrameAction'), 1000 / 12 );
   }
 
-  pauseAnimation() {
+  public pauseAnimation() {
     clearInterval(this.loop);
   }
 }

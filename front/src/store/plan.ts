@@ -1,9 +1,9 @@
 export interface PlanState {
-  pictures: string[],
-  fullResPicturesCache: HTMLImageElement[]
-  plans: string[],
-  activePlan: string,
-  activeFrame: number
+  pictures: string[];
+  fullResPicturesCache: HTMLImageElement[];
+  plans: string[];
+  activePlan: string;
+  activeFrame: number;
 }
 
 export const planStore = {
@@ -13,7 +13,7 @@ export const planStore = {
     fullResPicturesCache: [],
     plans: ['plan1', 'plan2'],
     activePlan: 'plan1',
-    activeFrame: 0
+    activeFrame: 0,
   },
   mutations: {
     addNewPicture(state: PlanState, pictureId: string) {
@@ -32,7 +32,7 @@ export const planStore = {
       } else {
         state.activeFrame++;
       }
-    }
+    },
   },
   actions: {
     goToNextFrameAction(context: any) {
@@ -40,11 +40,11 @@ export const planStore = {
     },
     addNewPictureAction(context: any, pictureId: string) {
       context.commit('addNewPicture', pictureId);
-    }
+    },
   },
   getters: {
     getPictures: (state: PlanState) => state.pictures,
-    getActiveFrame: (state: PlanState) => state.pictures.length ? state.pictures[state.activeFrame] : ''
+    getActiveFrame: (state: PlanState) => state.pictures.length ? state.pictures[state.activeFrame] : '',
   },
-  modules: {}
+  modules: {},
 };

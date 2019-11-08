@@ -20,18 +20,18 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { mapState } from "vuex";
-import store from '@/store'
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { mapState } from 'vuex';
+import store from '@/store';
 
 @Component({
   computed: {
-    ...mapState("plan", ["pictures", "activePlan"])
+    ...mapState('plan', ['pictures', 'activePlan']),
   },
-  store
+  store,
 })
 export default class CarrouselComponent extends Vue {
-  mounted() {
+  public mounted() {
     console.log(this.$store);
   }
 }

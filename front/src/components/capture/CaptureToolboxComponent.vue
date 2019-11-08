@@ -20,39 +20,39 @@
 
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import QrGenerator from "@/components/QrGenerator.vue";
-import WebcamCaptureComponent from "@/components/capture/WebcamCaptureComponent.vue";
-import { mapState } from "vuex";
-import store from "@/store";
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import QrGenerator from '@/components/QrGenerator.vue';
+import WebcamCaptureComponent from '@/components/capture/WebcamCaptureComponent.vue';
+import { mapState } from 'vuex';
+import store from '@/store';
 
 @Component({
   components: {
     QrGenerator,
-    WebcamCaptureComponent
+    WebcamCaptureComponent,
   },
   computed: {
-    ...mapState("capture", ["activeCapture"])
+    ...mapState('capture', ['activeCapture']),
   },
-  store
+  store,
 })
 export default class CaptureToolboxComponent extends Vue {
-  devices: MediaDeviceInfo[] = [];
-  selectedDevice = "smartphone";
-  mounted() {
-    navigator.mediaDevices.enumerateDevices().then(devices => {
+  public devices: MediaDeviceInfo[] = [];
+  public selectedDevice = 'smartphone';
+  public mounted() {
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
       this.devices = devices.filter(
-        (input: MediaDeviceInfo) => input.kind === "videoinput"
+        (input: MediaDeviceInfo) => input.kind === 'videoinput',
       );
     });
   }
 
-  onCaptureDeviceChange(event: any) {
+  public onCaptureDeviceChange(event: any) {
     this.selectedDevice = event.target.value;
   }
 
-  toggleCapture() {
-    this.$store.commit("capture/toggleCapture");
+  public toggleCapture() {
+    this.$store.commit('capture/toggleCapture');
   }
 }
 </script>
