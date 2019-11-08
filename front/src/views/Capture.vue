@@ -32,9 +32,8 @@
 import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
 import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
 import ProjectPreviewComponent from '@/components/capture/ProjectPreviewComponent.vue';
-import { Component, Vue, Watch } from 'vue-property-decorator';
-import { Getter } from 'vuex-class';
-import store from '../store';
+import { Component, Vue } from 'vue-property-decorator';
+import store from '@/store';
 import { mapState, mapGetters } from 'vuex';
 
 @Component({
@@ -68,6 +67,7 @@ export default class Capture extends Vue {
 
   public playAnimation() {
     this.isPlaying = true;
+    console.log('this.isPlaying', this.isPlaying);
     this.loop = setInterval(() => this.$store.dispatch('plan/goToNextFrameAction'), 1000 / 12 );
   }
 

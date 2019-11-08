@@ -29,7 +29,7 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as uuid from 'uuid';
 
 @Component({})
@@ -58,7 +58,7 @@ export default class WebcamCaptureComponent extends Vue {
     this.$store.commit('capture/detachMediaStream');
   }
 
-  private capture() {
+  public capture() {
     this.isCapturing = true;
     const canvas = document.createElement('canvas');
     const video = document.getElementById('videoCapture') as any;

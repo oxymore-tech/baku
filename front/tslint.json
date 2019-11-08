@@ -23,7 +23,6 @@
     "interface-name": false,
     "space-before-function-parent": false,
     "no-consecutive-blank-lines": false,
-    "no-unused-variable": true,
     "object-literal-sort-keys": false,
     "ordered-imports": false,
     "quotemark": [

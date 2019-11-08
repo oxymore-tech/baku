@@ -17,9 +17,7 @@
 
 <script lang='ts'>
 import { QrcodeStream } from 'vue-qrcode-reader';
-
-import { Component, Vue, Watch } from 'vue-property-decorator';
-import { Map, Set } from 'immutable';
+import { Component, Vue } from 'vue-property-decorator';
 import * as uuid from 'uuid';
 import { WSSocket } from './socket.class';
 
@@ -134,7 +132,7 @@ export default class QrReader extends Vue {
       .forEach((track) => this.peerConnection.addTrack(track, stream));
     try {
       console.log('remoteOffer', remoteOffer, this.peerConnection);
-      const res = await this.peerConnection.setRemoteDescription(remoteOffer);
+      await this.peerConnection.setRemoteDescription(remoteOffer);
     } catch (e) {
       console.error('Failed to set remote description', e);
     }

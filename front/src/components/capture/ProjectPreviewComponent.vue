@@ -18,7 +18,7 @@
 
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 
 @Component({

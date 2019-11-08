@@ -29,9 +29,8 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
-import { Map, Set } from 'immutable';
-import { WSMessage, WSSocket } from './socket.class';
+import { Component, Vue } from 'vue-property-decorator';
+import { WSSocket } from './socket.class';
 
 @Component
 export default class QrGenerator extends Vue {

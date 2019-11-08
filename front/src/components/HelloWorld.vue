@@ -128,12 +128,13 @@ export default class HelloWorld extends Vue {
       canvas.toBlob((blob) => resolve(blob as Blob), type, quality);
     });
   }
-  private videoStream: MediaStream | null = null;
-  private storageDetails: string = '';
+  public videoStream: MediaStream | null = null;
+  public storageDetails: string = '';
+  public capturing: boolean = false;
+  public captureTypes = ['image/jpeg', 'image/png'];
   private captures: Capture[] = [];
   private cameras: Set<Device> = Set();
   private selectedCamera: string = '';
-  private capturing: boolean = false;
 
   private filters: Filter[] = [
     { name: 'none', unit: 'none', func: Filters.none },
@@ -150,7 +151,7 @@ export default class HelloWorld extends Vue {
   private appliedEffect = 'none';
   private effectValue: number = 5;
 
-  private captureTypes = ['image/jpeg', 'image/png'];
+
   private captureType: string = 'image/jpeg';
   private quality: number = 1;
 

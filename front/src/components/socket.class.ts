@@ -1,6 +1,6 @@
 type WSMessageAction = 'getSocketId' | 'linkEstablished' | 'rtcOffer' | 'icecandidate' | 'rtcAnswer' | 'link';
 
-export interface WSMessage {
+interface WSMessage {
   action: WSMessageAction;
   value?: any;
 }
