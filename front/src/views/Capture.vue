@@ -1,12 +1,12 @@
 <template>
   <div class="mainFrame">
     <div class="previewBloc">
-      <ProjectPreviewComponent />
+      <!-- <ProjectPreviewComponent /> -->
       <video
         v-if="activeCapture"
         id="videoCapture"
-        width="1280"
-        height="720"
+        width="720"
+        height="480"
         autoplay
         muted
         playsinline
@@ -14,8 +14,8 @@
       <img
         v-else
         id="previewImg"
-        width="1280"
-        height="720"
+        width="720"
+        height="480"
         :src="`/default/images/${activePlan}/${getActiveFrame}?width=1280&height=720`"
       />
       <CaptureToolboxComponent />

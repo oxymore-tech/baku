@@ -5,7 +5,7 @@
       id="captureButton"
       class="captureButton"
       @click="capture()"
-      v-bind:class="{ capturing: isCapturing }"
+      v-bind:class="{ capturing: isCapturing, hidden: !peerConnected }"
     >Capture!</div>
   </div>
 </template>
@@ -22,6 +22,10 @@
   height: 157px;
 }
 
+.hidden {
+  display: none;
+}
+
 .capturing {
   color: grey;
   cursor: progress;
@@ -29,37 +33,130 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as uuid from 'uuid';
+import { State } from 'vuex-class';
+import store from '@/store';
 
-@Component({})
+@Component({
+  store,
+})
 export default class WebcamCaptureComponent extends Vue {
   @Prop(String)
   public readonly deviceId!: string;
   public isCapturing = false;
+  public peerConnected = false;
 
-  public mounted() {
-    navigator.mediaDevices
-      .getUserMedia({
-        video: {
-          width: { min: 640, ideal: 1280 },
-          height: { min: 480, ideal: 720 },
-          deviceId: { exact: this.deviceId },
-        },
-      })
-      .then((stream) => {
-        this.$store.commit('capture/attachMediaStream', stream);
-      });
+  @State
+  public dataChannel!: RTCDataChannel;
+
+  public async mounted() {
+    console.log('WebcamCapture mounted', this.deviceId);
+    this.onDeviceIdChanged();
   }
 
   public beforeDestroy() {
     // Removing tracks to stop using camera
     // @see: https://developers.google.com/web/updates/2015/07/mediastream-deprecations?hl=en#stop-ended-and-active
     this.$store.commit('capture/detachMediaStream');
+
+    if (this.$store.state.peerConnection) {
+      this.$store.state.peerConnection.close();
+      this.$store.commit('setPeerConnection', undefined);
+      this.$store.commit('setDataChannel', undefined);
+    }
   }
+
 
   public capture() {
     this.isCapturing = true;
+    if (this.deviceId === 'smartphone') {
+      this.captureSmartphone();
+    } else {
+      this.captureWebcam();
+    }
+  }
+
+  @Watch('deviceId')
+  public onDeviceIdChanged() {
+    this.isCapturing = false;
+    if (this.deviceId !== 'smartphone') {
+      this.setupWebCam();
+    } else {
+      const peerConnected = !!this.$store.state.dataChannel;
+      if (peerConnected) {
+        this.setupSmarphone();
+      } else {
+        this.peerConnected = false;
+        this.$store.commit('capture/detachMediaStream');
+      }
+    }
+  }
+
+  @Watch('dataChannel')
+  public onDataChannelChanged() {
+    console.log('onDataChannelChanged', this.dataChannel);
+    this.peerConnected = !!this.dataChannel;
+    if (this.dataChannel) {
+      this.setChannelEvents(this.dataChannel);
+    }
+    if (this.deviceId === 'smartphone') {
+      this.setupSmarphone();
+    }
+  }
+
+
+  private setChannelEvents(channel: RTCDataChannel) {
+    channel.onmessage = (event) => {
+      // TODO: Try to understand why you need TWO json parse
+      const data = JSON.parse(JSON.parse(event.data));
+      if (data.type === 'upload') {
+        this.isCapturing = false;
+        const pictureId = data.message;
+        this.$store.dispatch('plan/addNewPictureAction', pictureId);
+      }
+      console.log('Message received', event);
+    };
+
+    channel.onerror = (e) => {
+      console.error('channel.onerror', JSON.stringify(e, null, '\t'));
+    };
+
+    channel.onclose = (e) => {
+      console.warn('channel.onclose', JSON.stringify(e, null, '\t'));
+    };
+  }
+
+  private setupSmarphone() {
+    const stream = this.$store.state.stream;
+    console.log('setupSmarphone', stream);
+    this.$store.commit('capture/attachMediaStream', stream);
+  }
+
+  private async setupWebCam() {
+    this.peerConnected = true;
+    const stream = await navigator.mediaDevices
+      .getUserMedia({
+        video: {
+          width: { min: 640, ideal: 1280 },
+          height: { min: 480, ideal: 720 },
+          deviceId: { exact: this.deviceId },
+        },
+      });
+    this.$store.commit('capture/attachMediaStream', stream);
+  }
+
+  private captureSmartphone() {
+    this.dataChannel.send(
+      JSON.stringify({
+        message: 'capture',
+        plan: this.$store.state.plan.activePlan,
+        type: 'cmd',
+      }),
+    );
+  }
+
+  private captureWebcam() {
     const canvas = document.createElement('canvas');
     const video = document.getElementById('videoCapture') as any;
     canvas.width = 640;
@@ -77,7 +174,7 @@ export default class WebcamCaptureComponent extends Vue {
       `https://${location.host}/default/upload/${this.$store.state.plan.activePlan}`,
     );
     const self = this;
-    request.onreadystatechange = function() {
+    request.onreadystatechange = function () {
       // Appelle une fonction au changement d'état.
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
         const pictureId = JSON.parse(this.response)[0];

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Smartphone v-if="isConnected" />
-    <QrReader v-else />
+    <!-- <Smartphone v-if="isConnected" /> -->
+    <QrReader />
   </div>
 </template>
 
