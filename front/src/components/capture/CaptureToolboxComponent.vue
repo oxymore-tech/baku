@@ -3,17 +3,19 @@
   <div class="boxContainer captureContainer" v-bind:class="{captureInactive: !activeCapture}">
     <h3 @click="toggleCapture()">mode capture</h3>
     <div v-if="activeCapture">
-      <select @change="onCaptureDeviceChange($event)">
-        <option value="smartphone" :selected="selectedDevice === 'smartphone'">Smartphone</option>
-        <option
-          v-for="device in devices"
-          v-bind:key="device.deviceId"
-          :value="device.deviceId"
-          :selected="selectedDevice === device.deviceId"
-        >{{device.label}}</option>
-      </select>
-      <QrGenerator v-if="selectedDevice === 'smartphone'" />
-      <WebcamCaptureComponent v-else :deviceId="selectedDevice" />
+      <b-field>
+        <b-select
+          @input="onCaptureDeviceChange(selectedDevice)"
+          placeholder="Select a Camera"
+          :loading="!devices.length"
+          v-model="selectedDevice"
+          size="is-small"
+        >
+          <option v-for="device in devices" :key="device.key" :value="device.key">{{device.label}}</option>
+        </b-select>
+      </b-field>
+      <!-- <QrGenerator v-if="selectedDevice === 'smartphone'" /> -->
+      <WebcamCaptureComponent v-if="selectedDevice" :deviceId="selectedDevice" />
     </div>
   </div>
 </template>
@@ -26,6 +28,11 @@ import WebcamCaptureComponent from '@/components/capture/WebcamCaptureComponent.
 import { mapState } from 'vuex';
 import store from '@/store';
 
+interface Devices {
+  label: string;
+  key: string;
+}
+
 @Component({
   components: {
     QrGenerator,
@@ -37,18 +44,24 @@ import store from '@/store';
   store,
 })
 export default class CaptureToolboxComponent extends Vue {
-  public devices: MediaDeviceInfo[] = [];
-  public selectedDevice = 'smartphone';
-  public mounted() {
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-      this.devices = devices.filter(
-        (input: MediaDeviceInfo) => input.kind === 'videoinput',
-      );
-    });
+  public devices: Devices[] = [];
+  public selectedDevice: string = '';
+  public async  mounted() {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    this.devices = devices
+      .filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
+      .map((input: MediaDeviceInfo) => ({ key: input.deviceId, label: input.label }));
+    this.devices.push({ key: 'smartphone', label: 'Smartphone' });
   }
 
-  public onCaptureDeviceChange(event: any) {
-    this.selectedDevice = event.target.value;
+  public onCaptureDeviceChange() {
+    if (this.selectedDevice === 'smartphone' && !this.$store.state.dataChannel) {
+      this.$buefy.modal.open({
+        parent: this,
+        component: QrGenerator,
+        hasModalCard: true,
+      });
+    }
   }
 
   public toggleCapture() {

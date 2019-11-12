@@ -1,80 +1,74 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <div class="modal-card" style="width: auto">
-    <header class="modal-card-head">
-      <p class="modal-card-title">Synchroniser la caméra smartphone</p>
-    </header>
-    <section class="modal-card-body">
-      <ul>
-        <li>Aller sur XXX avec votre smartphone</li>
-        <li>Autoriser la caméra</li>
-        <li>Fixer le QR Code avec la caméra de votre smartphone</li>
-      </ul>
-      <qrcode :value="qrvalue" :options="options" v-if="qrvalue && status !== 'CONNECTED'"></qrcode>
-      <h1
-        class="title is-4 has-text-warning"
-        v-if="status === 'WAITING'"
-      >Synchronisation en attente...</h1>
-      <h1 class="title is-4 has-text-danger" v-if="status === 'ERROR'">Erreur de synchronisation</h1>
-      <h1 class="title is-4 has-text-success" v-if="status === 'CONNECTED'">Synchronisation OK</h1>
-    </section>
-    <footer class="modal-card-foot">
-      <b-button class="button" type="button" @click="$parent.close()">Fermer</b-button>
-    </footer>
+  <div class="qrGenerator">
+    <qrcode :value="value" :options="options" v-if="value && !peerConnected"></qrcode>
+    <div
+      id="captureButton"
+      class="captureButton"
+      v-bind:class="{ capturing: isCapturing, hidden: !peerConnected }"
+    >Capture!</div>
   </div>
 </template>
 
 <style lang="scss">
+.captureButton {
+  font-size: 30px;
+  cursor: pointer;
+  color: #e66359;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.capturing {
+  color: grey;
+  cursor: progress;
+}
 </style>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { WSSocket } from './socket.class';
-import { State } from 'vuex-class';
-import { SocketStatus } from '../store';
-
-type Status = 'CONNECTED' | 'ERROR' | 'WAITING';
 
 @Component
 export default class QrGenerator extends Vue {
-  public qrvalue = '';
-  public status: Status = 'WAITING';
+  public title = 'Qr Generator';
+  public value = '';
 
   public options = {
-    width: 200,
+    width: 150,
     scale: 1,
   };
 
-  @State
-  private socketStatus!: SocketStatus;
+  public socket = new WSSocket();
+  public peerConnected = false;
+  public isCapturing = false;
 
-  private socket!: WSSocket;
-  private peerConnection!: RTCPeerConnection;
-  private dataChannel!: RTCDataChannel;
-
-  public mounted() {
-    this.socket = new WSSocket();
-    if (this.socketStatus !== 'opened') {
-      this.status = 'ERROR';
-    }
-  }
+  public remoteVideo: any = null;
+  public peerConnection!: RTCPeerConnection;
+  public dataChannel!: RTCDataChannel;
 
   public beforeDestroy() {
-    this.socket.close();
+    this.$store.commit('capture/detachMediaStream');
+    if (this.peerConnection) {
+      this.peerConnection.close();
+      delete this.dataChannel;
+      delete this.peerConnection;
+    }
   }
 
-  @Watch('socketStatus')
-  public onSocketStatusChanged() {
-    if (this.socketStatus !== 'opened') {
-      this.status = 'ERROR';
-      return;
-    }
-    this.status = 'WAITING';
+  public mounted() {
+    const captureButton = document.getElementById(
+      'captureButton',
+    ) as HTMLElement;
+    captureButton.addEventListener('click', this.capture.bind(this));
 
     this.socket.messageListenerFunction = (message) => {
       switch (message.action) {
         case 'getSocketId':
-          this.qrvalue = message.value;
+          this.value = message.value;
           break;
         case 'linkEstablished':
           this.createOffer().then((offer) => {
@@ -116,16 +110,14 @@ export default class QrGenerator extends Vue {
 
     this.peerConnection.onconnectionstatechange = (event) => {
       if (this.peerConnection.connectionState === 'connected') {
-        // CONNECTION OK
+        this.peerConnected = true;
         console.log('CONNECTION OK');
-        this.status = 'CONNECTED';
-        this.$store.commit('setDataChannel', this.dataChannel);
-        this.$store.commit('setPeerCOnnection', this.peerConnection);
+        // CONNECTION OK
         this.$store.commit('setupConnection');
       }
     };
-
     this.dataChannel = this.peerConnection.createDataChannel('channel', {});
+    this.setChannelEvents(this.dataChannel);
 
     // Creating the offset
     try {
@@ -137,10 +129,29 @@ export default class QrGenerator extends Vue {
       return offer;
     } catch (e) {
       console.error('Error creating offer', e);
-      this.status = 'ERROR';
     }
   }
 
+  private setChannelEvents(channel: RTCDataChannel) {
+    channel.onmessage = (event) => {
+      // TODO: Try to understand why you need TWO json parse
+      const data = JSON.parse(JSON.parse(event.data));
+      if (data.type === 'upload') {
+        this.isCapturing = false;
+        const pictureId = data.message;
+        this.$store.dispatch('plan/addNewPictureAction', pictureId);
+      }
+      console.log('Message received', event);
+    };
+
+    channel.onerror = (e) => {
+      console.error('channel.onerror', JSON.stringify(e, null, '\t'));
+    };
+
+    channel.onclose = (e) => {
+      console.warn('channel.onclose', JSON.stringify(e, null, '\t'));
+    };
+  }
 
   private onIceCandidate(event: any) {
     this.socket.sendWSMessage({
@@ -150,7 +161,19 @@ export default class QrGenerator extends Vue {
   }
 
   private gotRemoteStream(e: any) {
+    console.log('pc2 gotRemoteStream');
     this.$store.commit('setMediaStream', e.streams[0]);
+  }
+
+  private capture() {
+    this.isCapturing = true;
+    this.dataChannel.send(
+      JSON.stringify({
+        message: 'capture',
+        plan: this.$store.state.plan.activePlan,
+        type: 'cmd',
+      }),
+    );
   }
 }
 </script>

@@ -1,3 +1,5 @@
+import store from '@/store';
+
 type WSMessageAction = 'getSocketId' | 'linkEstablished' | 'rtcOffer' | 'icecandidate' | 'rtcAnswer' | 'link';
 
 interface WSMessage {
@@ -6,20 +8,24 @@ interface WSMessage {
 }
 
 export class WSSocket {
-  private socket: WebSocket;
+  private socket!: WebSocket;
 
   constructor() {
-    // this.socket = new WebSocket("ws://localhost:3030/echo");
-    console.log('Hostname', location.hostname, location);
-    this.socket = new WebSocket(`wss://${location.hostname}:3030/echo`);
+    try {
+      this.socket = new WebSocket(`wss://${location.hostname}:3030/echo`);
+    } catch (e) {
+      store.commit('setSocketStatus', 'error');
+    }
 
+    this.socket.addEventListener('error', () => {
+      store.commit('setSocketStatus', 'error');
+    });
     this.socket.addEventListener('open', () => {
-      console.log('Socket opened');
+      store.commit('setSocketStatus', 'opened');
       this.sendWSMessage({ action: 'getSocketId' });
     });
 
     this.socket.addEventListener('message', (event) => {
-      console.log('Message received', event.data);
       const message: WSMessage = JSON.parse(event.data);
       this.messageListenerFunction(message);
     });
@@ -28,5 +34,9 @@ export class WSSocket {
 
   public sendWSMessage(msg: WSMessage) {
     this.socket.send(JSON.stringify(msg));
+  }
+  public close() {
+    this.socket.close();
+    store.commit('setSocketStatus', 'closed');
   }
 }
