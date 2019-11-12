@@ -14,7 +14,6 @@
           <option v-for="device in devices" :key="device.key" :value="device.key">{{device.label}}</option>
         </b-select>
       </b-field>
-      <!-- <QrGenerator v-if="selectedDevice === 'smartphone'" /> -->
       <WebcamCaptureComponent v-if="selectedDevice" :deviceId="selectedDevice" />
     </div>
   </div>
@@ -23,7 +22,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import QrGenerator from '@/components/QrGenerator.vue';
+import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
 import WebcamCaptureComponent from '@/components/capture/WebcamCaptureComponent.vue';
 import { mapState } from 'vuex';
 import store from '@/store';
@@ -35,7 +34,7 @@ interface Devices {
 
 @Component({
   components: {
-    QrGenerator,
+    SmartphoneSynchroPopup,
     WebcamCaptureComponent,
   },
   computed: {
@@ -58,7 +57,7 @@ export default class CaptureToolboxComponent extends Vue {
     if (this.selectedDevice === 'smartphone' && !this.$store.state.dataChannel) {
       this.$buefy.modal.open({
         parent: this,
-        component: QrGenerator,
+        component: SmartphoneSynchroPopup,
         hasModalCard: true,
       });
     }
