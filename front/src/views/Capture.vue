@@ -34,7 +34,11 @@ import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
 import ProjectPreviewComponent from '@/components/capture/ProjectPreviewComponent.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import store from '@/store';
-import { mapState, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
+import { State, namespace } from 'vuex-class';
+
+const CaptureNS = namespace('capture');
+const PlanNS = namespace('plan');
 
 @Component({
   components: {
@@ -43,8 +47,6 @@ import { mapState, mapGetters } from 'vuex';
     ProjectPreviewComponent,
   },
   computed: {
-    ...mapState('capture', ['activeCapture', 'stream']),
-    ...mapState('plan', ['activePlan']),
     ...mapGetters('plan', ['getActiveFrame']),
   },
   watch: {
@@ -59,6 +61,13 @@ import { mapState, mapGetters } from 'vuex';
   store,
 })
 export default class Capture extends Vue {
+  @CaptureNS.State
+  public activeCapture!: boolean;
+  @PlanNS.State
+  public activePlan!: string;
+  @PlanNS.State
+  public stream!: MediaStream | null;
+
   private isPlaying = false;
   private loop: any;
 
@@ -68,7 +77,7 @@ export default class Capture extends Vue {
   public playAnimation() {
     this.isPlaying = true;
     console.log('this.isPlaying', this.isPlaying);
-    this.loop = setInterval(() => this.$store.dispatch('plan/goToNextFrameAction'), 1000 / 12 );
+    this.loop = setInterval(() => this.$store.dispatch('plan/goToNextFrameAction'), 1000 / 12);
   }
 
   public pauseAnimation() {

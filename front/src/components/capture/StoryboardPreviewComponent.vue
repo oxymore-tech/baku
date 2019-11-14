@@ -29,16 +29,17 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapState } from 'vuex';
+import { namespace } from 'vuex-class';
 import store from '@/store';
 
-@Component({
-  computed: {
-    ...mapState('plan', ['activePlan', 'plans']),
-  },
-  store,
-})
+const PlanNS = namespace('plan');
+
+@Component
 export default class StoryboardPreviewComponent extends Vue {
+  @PlanNS.State
+  public plans: string[];
+  public activePlan: string;
+
   public onPlanSelectChange(event: any) {
     this.$store.commit('plan/changePlan', event.target.value);
   }

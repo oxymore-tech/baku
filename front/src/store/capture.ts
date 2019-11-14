@@ -21,8 +21,8 @@ export const captureStore = {
             }
             state.stream = null;
         },
-        toggleCapture(state: CaptureState) {
-            state.activeCapture = !state.activeCapture;
+        setActiveCapture(state: CaptureState, activeCapture: boolean) {
+            state.activeCapture = activeCapture;
         },
     },
     actions: {

@@ -21,16 +21,16 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapState } from 'vuex';
+import { namespace } from 'vuex-class';
 import store from '@/store';
 
-@Component({
-  computed: {
-    ...mapState('plan', ['pictures', 'activePlan']),
-  },
-  store,
-})
+const PlanNS = namespace('plan');
+
+@Component
 export default class CarrouselComponent extends Vue {
+  @PlanNS.State
+  public pictures: string[];
+  public activePlan: string;
   public mounted() {
     console.log(this.$store);
   }

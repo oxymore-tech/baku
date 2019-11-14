@@ -38,9 +38,7 @@ import { State } from 'vuex-class';
 import store from '@/store';
 import { Device } from '@/api/device.class';
 
-@Component({
-  store,
-})
+@Component
 export default class WebcamCaptureComponent extends Vue {
   @Prop(Device)
   public readonly device!: Device;
