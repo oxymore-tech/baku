@@ -1,7 +1,7 @@
 <template>
   <div class="mainFrame">
     <div class="previewBloc">
-      <!-- <ProjectPreviewComponent /> -->
+      <ProjectPreviewComponent />
       <video
         v-if="activeCapture"
         id="videoCapture"

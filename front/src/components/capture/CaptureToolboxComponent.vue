@@ -5,16 +5,16 @@
     <div v-if="activeCapture">
       <b-field>
         <b-select
-          @input="onCaptureDeviceChange(selectedDevice)"
+          @input="onCaptureDeviceChange()"
           placeholder="Select a Camera"
           :loading="!devices.length"
-          v-model="selectedDevice"
+          v-model="selectedDeviceId"
           size="is-small"
         >
-          <option v-for="device in devices" :key="device.key" :value="device.key">{{device.label}}</option>
+          <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
         </b-select>
       </b-field>
-      <WebcamCaptureComponent v-if="selectedDevice" :deviceId="selectedDevice" />
+      <CaptureButtonComponent v-if="selectedDevice" :device="selectedDevice" />
     </div>
   </div>
 </template>
@@ -23,19 +23,15 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
-import WebcamCaptureComponent from '@/components/capture/WebcamCaptureComponent.vue';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { mapState } from 'vuex';
 import store from '@/store';
-
-interface Devices {
-  label: string;
-  key: string;
-}
+import { Device } from '../device.class';
 
 @Component({
   components: {
     SmartphoneSynchroPopup,
-    WebcamCaptureComponent,
+    CaptureButtonComponent,
   },
   computed: {
     ...mapState('capture', ['activeCapture']),
@@ -43,18 +39,21 @@ interface Devices {
   store,
 })
 export default class CaptureToolboxComponent extends Vue {
-  public devices: Devices[] = [];
-  public selectedDevice: string = '';
+  public devices: Device[] = [];
+  public selectedDeviceId: string | null = null;
+  public selectedDevice: Device | null = null;
   public async  mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     this.devices = devices
       .filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
-      .map((input: MediaDeviceInfo) => ({ key: input.deviceId, label: input.label }));
-    this.devices.push({ key: 'smartphone', label: 'Smartphone' });
+      .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label)));
+    this.devices.push(new Device('smartphone', 'Smartphone'));
   }
 
   public onCaptureDeviceChange() {
-    if (this.selectedDevice === 'smartphone' && !this.$store.state.dataChannel) {
+    this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
+
+    if (this.selectedDevice && this.selectedDevice.isSmartphone() && !this.$store.state.dataChannel) {
       this.$buefy.modal.open({
         parent: this,
         component: SmartphoneSynchroPopup,
