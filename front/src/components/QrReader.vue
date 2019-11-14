@@ -19,7 +19,7 @@
 import { QrcodeStream } from 'vue-qrcode-reader';
 import { Component, Vue } from 'vue-property-decorator';
 import { WSSocket } from './socket.class';
-import { Device } from './device.class';
+import { Device } from '@/api/device.class';
 
 @Component({
   components: { QrcodeStream },

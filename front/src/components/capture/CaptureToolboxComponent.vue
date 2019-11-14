@@ -26,7 +26,7 @@ import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { mapState } from 'vuex';
 import store from '@/store';
-import { Device } from '../device.class';
+import { Device } from '@/api/device.class';
 
 @Component({
   components: {

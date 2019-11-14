@@ -72,7 +72,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { Map, Set } from 'immutable';
 import { Filter, Filters } from '@/components/filters';
-import { Device } from '@/components/device.class';
+import { Device } from '@/api/device.class';
 
 
 

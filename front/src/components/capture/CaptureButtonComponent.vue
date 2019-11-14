@@ -36,7 +36,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class';
 import store from '@/store';
-import { Device } from '../device.class';
+import { Device } from '@/api/device.class';
 
 @Component({
   store,

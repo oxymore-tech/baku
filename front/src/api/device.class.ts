@@ -1,3 +1,4 @@
+import { UploadService } from '@/api/upload.service';
 import * as uuid from 'uuid';
 
 export class Device {
@@ -22,47 +23,14 @@ export class Device {
     const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
     const base64 = canvas.toDataURL('image/jpeg');
-
-    const formData = new FormData();
     const blob = this.imagetoblob(base64);
-    formData.append('image.jpg', blob, uuid.v4() + '.jpg');
-
-    const response = await this.makeRequest(
-      'POST',
-      `https://${location.host}/default/upload/${planId}`,
-      formData,
-    );
-
+    const response = await UploadService.upload(planId, blob, uuid.v4() + '.jpg');
     const pictureId: string = JSON.parse(response)[0];
     return pictureId;
   }
 
 
-  private makeRequest(method: string, url: string, formData: FormData): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open(method, url);
-      xhr.onload = function () {
-        if (this.status >= 200 && this.status < 300) {
-          resolve(xhr.response);
-        } else {
-          reject({
-            status: this.status,
-            statusText: xhr.statusText,
-          });
-        }
-      };
-      xhr.onerror = function () {
-        reject({
-          status: this.status,
-          statusText: xhr.statusText,
-        });
-      };
-      xhr.send(formData);
-    });
-  }
-
-  private imagetoblob(base64String: string) {
+  private imagetoblob(base64String: string): Blob {
     const ImageURL = base64String;
     // Split the base64 string in data and contentType
     const block = ImageURL.split(';');
@@ -75,7 +43,7 @@ export class Device {
     return this.b64toBlob(realData, contentType);
   }
 
-  private b64toBlob(b64Data: string, contentType: string, sliceSize?: number) {
+  private b64toBlob(b64Data: string, contentType: string, sliceSize?: number): Blob {
     contentType = contentType || '';
     sliceSize = sliceSize || 512;
 
@@ -98,5 +66,4 @@ export class Device {
     const blob = new Blob(byteArrays, { type: contentType });
     return blob;
   }
-
 }
