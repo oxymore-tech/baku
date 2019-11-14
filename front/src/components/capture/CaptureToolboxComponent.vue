@@ -32,7 +32,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import store from '@/store';
 import { Device } from '@/api/device.class';
 
 const CaptureNS = namespace('capture');
@@ -41,14 +40,14 @@ const CaptureNS = namespace('capture');
   components: {
     SmartphoneSynchroPopup,
     CaptureButtonComponent,
-  }
+  },
 })
 export default class CaptureToolboxComponent extends Vue {
   public devices: Device[] = [];
   public selectedDeviceId: string | null = null;
   public selectedDevice: Device | null = null;
   @CaptureNS.State
-  private activeCapture!: boolean;
+  public activeCapture!: boolean;
 
   public async  mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -70,7 +69,7 @@ export default class CaptureToolboxComponent extends Vue {
     }
   }
 
-  public setActiveCapture(isActiveCapture) {
+  public setActiveCapture(isActiveCapture: boolean) {
     this.$store.commit('capture/setActiveCapture', isActiveCapture);
   }
 }

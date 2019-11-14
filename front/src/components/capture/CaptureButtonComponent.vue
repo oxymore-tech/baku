@@ -35,7 +35,6 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class';
-import store from '@/store';
 import { Device } from '@/api/device.class';
 
 @Component

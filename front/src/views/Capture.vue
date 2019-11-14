@@ -32,10 +32,9 @@
 import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
 import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
 import ProjectPreviewComponent from '@/components/capture/ProjectPreviewComponent.vue';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import store from '@/store';
-import { mapGetters } from 'vuex';
-import { State, namespace } from 'vuex-class';
+import { namespace } from 'vuex-class';
 
 const CaptureNS = namespace('capture');
 const PlanNS = namespace('plan');
@@ -46,18 +45,6 @@ const PlanNS = namespace('plan');
     CarrouselComponent,
     ProjectPreviewComponent,
   },
-  computed: {
-    ...mapGetters('plan', ['getActiveFrame']),
-  },
-  watch: {
-    stream(newValue, oldValue) {
-      if (newValue) {
-        (document.getElementById(
-          'videoCapture',
-        ) as HTMLVideoElement).srcObject = newValue;
-      }
-    },
-  },
   store,
 })
 export default class Capture extends Vue {
@@ -65,8 +52,10 @@ export default class Capture extends Vue {
   public activeCapture!: boolean;
   @PlanNS.State
   public activePlan!: string;
-  @PlanNS.State
+  @CaptureNS.State
   public stream!: MediaStream | null;
+  @PlanNS.Getter
+  public getActiveFrame!: string;
 
   private isPlaying = false;
   private loop: any;
@@ -82,6 +71,16 @@ export default class Capture extends Vue {
 
   public pauseAnimation() {
     clearInterval(this.loop);
+  }
+
+  @Watch('stream')
+  public onStreamChange(newValue: MediaStream, oldValue: MediaStream) {
+    console.log('onStreamChange');
+    if (newValue) {
+      (document.getElementById(
+        'videoCapture',
+      ) as HTMLVideoElement).srcObject = newValue;
+    }
   }
 }
 </script>

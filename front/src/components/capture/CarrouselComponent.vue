@@ -22,15 +22,14 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import store from '@/store';
 
 const PlanNS = namespace('plan');
 
 @Component
 export default class CarrouselComponent extends Vue {
   @PlanNS.State
-  public pictures: string[];
-  public activePlan: string;
+  public pictures!: string[];
+  public activePlan!: string;
   public mounted() {
     console.log(this.$store);
   }
