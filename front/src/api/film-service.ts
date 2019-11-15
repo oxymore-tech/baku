@@ -8,14 +8,14 @@ export class FilmService {
 
     async get(id: string): Promise<Film> {
         const events = await this.bakuService.getHistory(id);
-        return this.merge(events);
+        return FilmService.merge(events);
     }
 
     async addPlan(projectId: string, name: string): Promise<void> {
         await this.bakuService.stack(projectId, {action: BakuAction.ADD_PLAN, value: name});
     }
 
-    private merge(events: BakuEvent[]): Film {
+    private static merge(events: BakuEvent[]): Film {
         let title = "Unnamed";
         let synopsis = "Please fill a synopsis";
         let poster = undefined;
