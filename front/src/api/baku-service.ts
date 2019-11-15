@@ -21,8 +21,8 @@ export class BakuService {
         return null;
     }
 
-    stack(projectId: string, event: BakuEvent) {
-
+    stack(projectId: string, event: BakuEvent): Promise<void> {
+        return null;
     }
 
 }

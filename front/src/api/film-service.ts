@@ -11,6 +11,10 @@ export class FilmService {
         return this.merge(events);
     }
 
+    async addPlan(projectId: string, name: string): Promise<void> {
+        await this.bakuService.stack(projectId, {action: BakuAction.ADD_PLAN, value: name});
+    }
+
     private merge(events: BakuEvent[]): Film {
         let title = "Unnamed";
         let synopsis = "Please fill a synopsis";
