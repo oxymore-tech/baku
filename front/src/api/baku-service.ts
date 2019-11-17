@@ -3,7 +3,7 @@ export enum BakuAction {
     UPDATE_SYNOPSIS,
     UPDATE_POSTER,
     ADD_PLAN,
-    INSERT_IMAGE
+    INSERT_IMAGE,
 }
 
 export interface BakuEvent {
@@ -13,16 +13,16 @@ export interface BakuEvent {
 
 export class BakuService {
 
-    upload(projectId: string, id: string, blob: Blob, name: string) {
+    public upload(projectId: string, id: string, blob: Blob, name: string) {
 
     }
 
-    getHistory(projectId: string): Promise<BakuEvent[]> {
-        return null;
+    public getHistory(projectId: string): Promise<BakuEvent[]> {
+        return new Promise((resolve, reject) => []);
     }
 
-    stack(projectId: string, event: BakuEvent): Promise<void> {
-        return null;
+    public stack(projectId: string, event: BakuEvent): Promise<void> {
+        return new Promise((resolve, reject) => {});
     }
 
 }
