@@ -1,3 +1,5 @@
+import * as request from "request-promise";
+
 export enum BakuAction {
     UPDATE_TITLE,
     UPDATE_SYNOPSIS,
@@ -18,6 +20,15 @@ export class BakuService {
     }
 
     public getHistory(projectId: string): Promise<BakuEvent[]> {
+        var options = {
+            uri: '/' + projectId + '/history',
+            json: true
+        };
+
+        request.get(options)
+            .then(function (events) {
+                console.log('User has %d events', events.length);
+            })
         return new Promise((resolve, reject) => []);
     }
 
