@@ -11,8 +11,24 @@ export class FilmService {
         return FilmService.merge(events);
     }
 
+    async updateTitle(projectId: string, title: string): Promise<void> {
+        await this.bakuService.stack(projectId, {action: BakuAction.UPDATE_TITLE, value: title});
+    }
+
+    async updateSynopsis(projectId: string, synopsis: string): Promise<void> {
+        await this.bakuService.stack(projectId, {action: BakuAction.UPDATE_SYNOPSIS, value: synopsis});
+    }
+
+    async updatePoster(projectId: string, poster: ImageRef): Promise<void> {
+        await this.bakuService.stack(projectId, {action: BakuAction.UPDATE_SYNOPSIS, value: poster});
+    }
+
     async addPlan(projectId: string, name: string): Promise<void> {
         await this.bakuService.stack(projectId, {action: BakuAction.ADD_PLAN, value: name});
+    }
+
+    async insertImage(projectId: string, image: ImageRef): Promise<void> {
+        await this.bakuService.stack(projectId, {action: BakuAction.ADD_PLAN, value: image});
     }
 
     private static merge(events: BakuEvent[]): Film {
