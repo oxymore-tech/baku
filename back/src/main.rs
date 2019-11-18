@@ -430,10 +430,17 @@ async fn main() {
         .or(history)
         .or(get)
         .or(multipart)
-        .or(warp::fs::dir("../front/dist"));
+        .or(warp::fs::dir("./front_files/"));
 
+    // println!("port={:#?}", port);
+    // static port: String = match env::var("BAKU_PORT") {
+    //     Ok(val) => val,
+    //     Err(_e) => "3030".to_string(),
+    // };
+
+    println!("Listen to port 0.0.0.0:3030");
     warp::serve(routes)
-        .tls("src/tls/certificate.pem", "src/tls/key.pem")
+        .tls("./certificates/certificate.pem", "./certificates/key.pem")
         .run(([0, 0, 0, 0], 3030))
         .await;
 }
