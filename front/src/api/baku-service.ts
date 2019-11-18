@@ -1,4 +1,4 @@
-import * as request from "request-promise";
+import * as request from 'request-promise-native';
 
 export enum BakuAction {
     UPDATE_TITLE,
@@ -20,16 +20,15 @@ export class BakuService {
     }
 
     public getHistory(projectId: string): Promise<BakuEvent[]> {
-        var options = {
-            uri: '/' + projectId + '/history',
-            json: true
-        };
-
-        request.get(options)
-            .then(function (events) {
-                console.log('User has %d events', events.length);
-            })
-        return new Promise((resolve, reject) => []);
+        let events: BakuEvent[];
+        (async () => {
+          const options = {
+              uri: '/' + projectId + '/history',
+              json: true,
+          };
+          await request.get(options).then((results) => { events = results; });
+        })();
+        return new Promise( (resolve) => events);
     }
 
     public stack(projectId: string, event: BakuEvent): Promise<void> {
