@@ -40,7 +40,7 @@ const CaptureNS = namespace("capture");
   components: {
     SmartphoneSynchroPopup,
     CaptureButtonComponent,
-  },
+  }
 })
 export default class CaptureToolboxComponent extends Vue {
   public devices: Device[] = [];

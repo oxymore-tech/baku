@@ -1,4 +1,5 @@
 import axios from "axios";
+import {ImageRef} from "@/api/film";
 
 export enum BakuAction {
     UPDATE_TITLE,
@@ -17,9 +18,17 @@ export class BakuService {
 
     private static readonly BaseUrl = "https://localhost:3030";
 
-    public upload(projectId: string, id: string, blob: Blob, name: string) {
+    public upload(projectId: string, id: string, blob: Blob, name: string): Promise<ImageRef> {
+        const formData = new FormData();
+        formData.set("file", blob, name);
         return axios
-            .post(`${BakuService.BaseUrl}/${projectId}/upload/${id}`, blob);
+            .post(`${BakuService.BaseUrl}/${projectId}/upload/${id}`, formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                })
+            .then((r) => r.data[0]);
     }
 
     public getHistory(projectId: string): Promise<BakuEvent[]> {

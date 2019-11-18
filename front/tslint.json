@@ -28,6 +28,7 @@
     "quotemark": [
       true,
       "double"
-    ]
+    ],
+    "trailing-comma": false
   }
 }
