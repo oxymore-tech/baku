@@ -6,11 +6,11 @@
 </template>
 
 <script lang="ts">
-import Smartphone from '@/components/Smartphone.vue';
-import QrReader from '@/components/QrReader.vue';
-import { Component, Vue } from 'vue-property-decorator';
-import { State } from 'vuex-class';
-import store from '@/store';
+import Smartphone from "@/components/Smartphone.vue";
+import QrReader from "@/components/QrReader.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { State } from "vuex-class";
+import store from "@/store";
 
 
 @Component({

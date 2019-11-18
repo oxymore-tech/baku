@@ -20,10 +20,10 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
 
-const PlanNS = namespace('plan');
+const PlanNS = namespace("plan");
 
 @Component
 export default class CarrouselComponent extends Vue {

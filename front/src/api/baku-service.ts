@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 export enum BakuAction {
     UPDATE_TITLE,
@@ -15,20 +15,22 @@ export interface BakuEvent {
 
 export class BakuService {
 
+    private static readonly BaseUrl = "https://localhost:3030";
+
     public upload(projectId: string, id: string, blob: Blob, name: string) {
         return axios
-          .post('https://localhost:3030/' + projectId + '/upload/' + id, event);
+            .post(`${BakuService.BaseUrl}/${projectId}/upload/${id}`, blob);
     }
 
     public getHistory(projectId: string): Promise<BakuEvent[]> {
         return axios
-          .get('https://localhost:3030/' + projectId + '/history')
-          .then(response => response.data);
+            .get(`${BakuService.BaseUrl}/${projectId}/history`)
+            .then((response) => response.data);
     }
 
     public stack(projectId: string, event: BakuEvent): Promise<void> {
         return axios
-          .post('https://localhost:3030/' + projectId + '/stack', event);
+            .post(`${BakuService.BaseUrl}/${projectId}/stack`, event);
     }
 
 }

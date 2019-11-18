@@ -9,7 +9,7 @@ ul {
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Init extends Vue {
@@ -20,11 +20,10 @@ export default class Init extends Vue {
 
   public created() {
     if (this.isMobile()) {
-      this.$router.push('/smartphone');
+      this.$router.push("/smartphone");
     } else {
-      this.$router.push('/capture');
+      this.$router.push("/capture");
     }
   }
 }
-
 </script>

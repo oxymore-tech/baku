@@ -3,10 +3,10 @@ export class UploadService {
 
   public static async upload(planId: string, blob: Blob, filename: string): Promise<string> {
     const formData = new FormData();
-    formData.append('image.jpg', blob, filename);
+    formData.append("image.jpg", blob, filename);
 
     return await this.makeRequest(
-      'POST',
+      "POST",
       `/default/upload/${planId}`,
       formData,
     );

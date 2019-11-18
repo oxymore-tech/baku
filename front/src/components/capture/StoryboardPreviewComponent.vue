@@ -28,10 +28,10 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
 
-const PlanNS = namespace('plan');
+const PlanNS = namespace("plan");
 
 @Component
 export default class StoryboardPreviewComponent extends Vue {
@@ -41,7 +41,7 @@ export default class StoryboardPreviewComponent extends Vue {
   public activePlan!: string;
 
   public onPlanSelectChange(event: any) {
-    this.$store.commit('plan/changePlan', event.target.value);
+    this.$store.commit("plan/changePlan", event.target.value);
   }
 }
 </script>

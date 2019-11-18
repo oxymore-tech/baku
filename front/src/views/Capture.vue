@@ -29,15 +29,15 @@
 </template>
 
 <script lang="ts">
-import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-import ProjectPreviewComponent from '@/components/capture/ProjectPreviewComponent.vue';
-import { Component, Vue, Watch } from 'vue-property-decorator';
-import store from '@/store';
-import { namespace } from 'vuex-class';
+import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
+import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
+import ProjectPreviewComponent from "@/components/capture/ProjectPreviewComponent.vue";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import store from "@/store";
+import { namespace } from "vuex-class";
 
-const CaptureNS = namespace('capture');
-const PlanNS = namespace('plan');
+const CaptureNS = namespace("capture");
+const PlanNS = namespace("plan");
 
 @Component({
   components: {
@@ -65,20 +65,20 @@ export default class Capture extends Vue {
 
   public playAnimation() {
     this.isPlaying = true;
-    console.log('this.isPlaying', this.isPlaying);
-    this.loop = setInterval(() => this.$store.dispatch('plan/goToNextFrameAction'), 1000 / 12);
+    console.log("this.isPlaying", this.isPlaying);
+    this.loop = setInterval(() => this.$store.dispatch("plan/goToNextFrameAction"), 1000 / 12);
   }
 
   public pauseAnimation() {
     clearInterval(this.loop);
   }
 
-  @Watch('stream')
+  @Watch("stream")
   public onStreamChange(newValue: MediaStream, oldValue: MediaStream) {
-    console.log('onStreamChange');
+    console.log("onStreamChange");
     if (newValue) {
       (document.getElementById(
-        'videoCapture',
+        "videoCapture",
       ) as HTMLVideoElement).srcObject = newValue;
     }
   }

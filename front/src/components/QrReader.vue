@@ -16,32 +16,32 @@
 
 
 <script lang='ts'>
-import { QrcodeStream } from 'vue-qrcode-reader';
-import { Component, Vue } from 'vue-property-decorator';
-import { WSSocket } from './socket.class';
-import { Device } from '@/api/device.class';
+import { QrcodeStream } from "vue-qrcode-reader";
+import { Component, Vue } from "vue-property-decorator";
+import { WSSocket } from "./socket.class";
+import { Device } from "@/api/device.class";
 
 @Component({
   components: { QrcodeStream },
 })
 export default class QrReader extends Vue {
-  public socketId: string | undefined = '';
+  public socketId: string | undefined = "";
   public socket = new WSSocket();
   public localVideo: any;
-  public error = '';
+  public error = "";
   public peerConnection!: RTCPeerConnection;
 
   public activeqrreader = true;
 
-  private device = new Device('smartphone', 'Smartphone');
+  private device = new Device("smartphone", "Smartphone");
 
   public mounted() {
     this.socket.messageListenerFunction = (message) => {
       switch (message.action) {
-        case 'rtcOffer':
+        case "rtcOffer":
           this.startStream(message.value);
           break;
-        case 'icecandidate':
+        case "icecandidate":
           if (message.value) {
             this.peerConnection.addIceCandidate(message.value);
           }
@@ -54,24 +54,24 @@ export default class QrReader extends Vue {
     this.peerConnection = new RTCPeerConnection({
       iceServers: [
         {
-          urls: 'stun:stun.l.google.com:19302',
+          urls: "stun:stun.l.google.com:19302",
         },
       ],
     });
 
     this.peerConnection.addEventListener(
-      'icecandidate',
+      "icecandidate",
       this.onIceCandidate.bind(this),
     );
 
     this.peerConnection.onconnectionstatechange = (event) => {
-      if (this.peerConnection.connectionState === 'connected') {
+      if (this.peerConnection.connectionState === "connected") {
         // CONNECTION OK
-        console.log('CONNECTION OK');
-        this.$store.commit('setupConnection');
+        console.log("CONNECTION OK");
+        this.$store.commit("setupConnection");
       }
       console.log(this.peerConnection.connectionState);
-      if (this.peerConnection.connectionState === 'disconnected') {
+      if (this.peerConnection.connectionState === "disconnected") {
         delete this.peerConnection;
         this.localVideo.srcObject
           .getTracks()
@@ -86,7 +86,7 @@ export default class QrReader extends Vue {
     if (!this.socketId) {
       this.activeqrreader = false;
       this.socketId = JSON.parse(result);
-      this.socket.sendWSMessage({ action: 'link', value: this.socketId });
+      this.socket.sendWSMessage({ action: "link", value: this.socketId });
     }
   }
 
@@ -94,34 +94,34 @@ export default class QrReader extends Vue {
     try {
       await promise;
     } catch (error) {
-      if (error.name === 'NotAllowedError') {
-        this.error = 'ERROR: you need to grant camera access permisson';
-      } else if (error.name === 'NotFoundError') {
-        this.error = 'ERROR: no camera on this device';
-      } else if (error.name === 'NotSupportedError') {
-        this.error = 'ERROR: secure context required (HTTPS, localhost)';
-      } else if (error.name === 'NotReadableError') {
-        this.error = 'ERROR: is the camera already in use?';
-      } else if (error.name === 'OverconstrainedError') {
-        this.error = 'ERROR: installed cameras are not suitable';
-      } else if (error.name === 'StreamApiNotSupportedError') {
-        this.error = 'ERROR: Stream API is not supported in this browser';
+      if (error.name === "NotAllowedError") {
+        this.error = "ERROR: you need to grant camera access permisson";
+      } else if (error.name === "NotFoundError") {
+        this.error = "ERROR: no camera on this device";
+      } else if (error.name === "NotSupportedError") {
+        this.error = "ERROR: secure context required (HTTPS, localhost)";
+      } else if (error.name === "NotReadableError") {
+        this.error = "ERROR: is the camera already in use?";
+      } else if (error.name === "OverconstrainedError") {
+        this.error = "ERROR: installed cameras are not suitable";
+      } else if (error.name === "StreamApiNotSupportedError") {
+        this.error = "ERROR: Stream API is not supported in this browser";
       }
     }
   }
 
   private async startStream(remoteOffer: any) {
-    this.localVideo = document.getElementById('localVideo');
+    this.localVideo = document.getElementById("localVideo");
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         width: { min: 1280, ideal: 1920 },
         height: { min: 720, ideal: 1080 },
         facingMode: {
-          exact: 'environment',
+          exact: "environment",
         },
       },
     });
-    console.log('Received local stream');
+    console.log("Received local stream");
     this.localVideo.srcObject = stream;
 
     this.peerConnection.ondatachannel = (event) => {
@@ -133,29 +133,29 @@ export default class QrReader extends Vue {
       .getVideoTracks()
       .forEach((track) => this.peerConnection.addTrack(track, stream));
     try {
-      console.log('remoteOffer', remoteOffer, this.peerConnection);
+      console.log("remoteOffer", remoteOffer, this.peerConnection);
       await this.peerConnection.setRemoteDescription(remoteOffer);
     } catch (e) {
-      console.error('Failed to set remote description', e);
+      console.error("Failed to set remote description", e);
     }
 
     try {
       const answer = await this.peerConnection.createAnswer();
       await this.peerConnection.setLocalDescription(answer);
-      this.socket.sendWSMessage({ action: 'rtcAnswer', value: answer });
+      this.socket.sendWSMessage({ action: "rtcAnswer", value: answer });
     } catch (e) {
-      console.error('Failed sending answer', e);
+      console.error("Failed sending answer", e);
     }
   }
 
   private setChannelEvents(channel: RTCDataChannel) {
     channel.onmessage = async (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === 'cmd') {
-        const pictureId = await this.device.capture('localVideo', data.plan);
+      if (data.type === "cmd") {
+        const pictureId = await this.device.capture("localVideo", data.plan);
         channel.send(
           JSON.stringify({
-            type: 'upload',
+            type: "upload",
             message: pictureId,
           }),
         );
@@ -164,28 +164,27 @@ export default class QrReader extends Vue {
     channel.onopen = () => {
       const channelpush = channel.send;
       channel.send = (data: any) => {
-        console.log('Sending message: ', data);
+        console.log("Sending message: ", data);
         channelpush(JSON.stringify(data));
       };
     };
 
     channel.onerror = (e) => {
-      console.error('channel.onerror', JSON.stringify(e, null, '\t'));
+      console.error("channel.onerror", JSON.stringify(e, null, "\t"));
     };
 
     channel.onclose = (e) => {
-      console.warn('channel.onclose', JSON.stringify(e, null, '\t'));
+      console.warn("channel.onclose", JSON.stringify(e, null, "\t"));
     };
   }
 
   private onIceCandidate(event: any) {
     this.socket.sendWSMessage({
-      action: 'icecandidate',
+      action: "icecandidate",
       value: event.candidate,
     });
   }
 }
-
 </script>
 
 <style scoped>

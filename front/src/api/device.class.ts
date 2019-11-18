@@ -1,5 +1,5 @@
-import { UploadService } from '@/api/upload.service';
-import * as uuid from 'uuid';
+import { UploadService } from "@/api/upload.service";
+import * as uuid from "uuid";
 
 export class Device {
 
@@ -12,19 +12,19 @@ export class Device {
   }
 
   public isSmartphone() {
-    return this.id === 'smartphone';
+    return this.id === "smartphone";
   }
 
   public async capture(videoElementTag: string, planId: string): Promise<string> {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     const video = document.getElementById(videoElementTag) as HTMLVideoElement;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
+    const context2d = canvas.getContext("2d") as CanvasRenderingContext2D;
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const base64 = canvas.toDataURL('image/jpeg');
+    const base64 = canvas.toDataURL("image/jpeg");
     const blob = this.imagetoblob(base64);
-    const response = await UploadService.upload(planId, blob, uuid.v4() + '.jpg');
+    const response = await UploadService.upload(planId, blob, uuid.v4() + ".jpg");
     const pictureId: string = JSON.parse(response)[0];
     return pictureId;
   }
@@ -33,18 +33,18 @@ export class Device {
   private imagetoblob(base64String: string): Blob {
     const ImageURL = base64String;
     // Split the base64 string in data and contentType
-    const block = ImageURL.split(';');
+    const block = ImageURL.split(";");
     // Get the content type of the image
-    const contentType = block[0].split(':')[1]; // In this case "image/gif"
+    const contentType = block[0].split(":")[1]; // In this case "image/gif"
     // get the real base64 content of the file
-    const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
+    const realData = block[1].split(",")[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
 
     // Convert it to a blob to upload
     return this.b64toBlob(realData, contentType);
   }
 
   private b64toBlob(b64Data: string, contentType: string, sliceSize?: number): Blob {
-    contentType = contentType || '';
+    contentType = contentType || "";
     sliceSize = sliceSize || 512;
 
     const byteCharacters = atob(b64Data);

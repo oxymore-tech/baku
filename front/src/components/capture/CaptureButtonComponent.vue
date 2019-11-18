@@ -33,9 +33,9 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { State } from 'vuex-class';
-import { Device } from '@/api/device.class';
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import { State } from "vuex-class";
+import { Device } from "@/api/device.class";
 
 @Component
 export default class WebcamCaptureComponent extends Vue {
@@ -48,19 +48,19 @@ export default class WebcamCaptureComponent extends Vue {
   public dataChannel!: RTCDataChannel;
 
   public async mounted() {
-    console.log('WebcamCapture mounted', this.device);
+    console.log("WebcamCapture mounted", this.device);
     this.onDeviceIdChanged();
   }
 
   public beforeDestroy() {
     // Removing tracks to stop using camera
     // @see: https://developers.google.com/web/updates/2015/07/mediastream-deprecations?hl=en#stop-ended-and-active
-    this.$store.commit('capture/detachMediaStream');
+    this.$store.commit("capture/detachMediaStream");
 
     if (this.$store.state.peerConnection) {
       this.$store.state.peerConnection.close();
-      this.$store.commit('setPeerConnection', undefined);
-      this.$store.commit('setDataChannel', undefined);
+      this.$store.commit("setPeerConnection", undefined);
+      this.$store.commit("setDataChannel", undefined);
     }
   }
 
@@ -74,10 +74,10 @@ export default class WebcamCaptureComponent extends Vue {
     }
   }
 
-  @Watch('device')
+  @Watch("device")
   public onDeviceIdChanged() {
     this.isCapturing = false;
-    console.log('this.device.isSmartphone()', this.device.isSmartphone());
+    console.log("this.device.isSmartphone()", this.device.isSmartphone());
     if (!this.device.isSmartphone()) {
       this.setupWebCam();
     } else {
@@ -86,14 +86,14 @@ export default class WebcamCaptureComponent extends Vue {
         this.setupSmarphone();
       } else {
         this.peerConnected = false;
-        this.$store.commit('capture/detachMediaStream');
+        this.$store.commit("capture/detachMediaStream");
       }
     }
   }
 
-  @Watch('dataChannel')
+  @Watch("dataChannel")
   public onDataChannelChanged() {
-    console.log('onDataChannelChanged', this.dataChannel);
+    console.log("onDataChannelChanged", this.dataChannel);
     this.peerConnected = !!this.dataChannel;
     if (this.dataChannel) {
       this.setChannelEvents(this.dataChannel);
@@ -108,26 +108,26 @@ export default class WebcamCaptureComponent extends Vue {
     channel.onmessage = (event) => {
       // TODO: Try to understand why you need TWO json parse
       const data = JSON.parse(JSON.parse(event.data));
-      if (data.type === 'upload') {
+      if (data.type === "upload") {
         this.isCapturing = false;
         const pictureId = data.message;
-        this.$store.dispatch('plan/addNewPictureAction', pictureId);
+        this.$store.dispatch("plan/addNewPictureAction", pictureId);
       }
-      console.log('Message received', event);
+      console.log("Message received", event);
     };
 
     channel.onerror = (e) => {
-      console.error('channel.onerror', JSON.stringify(e, null, '\t'));
+      console.error("channel.onerror", JSON.stringify(e, null, "\t"));
     };
 
     channel.onclose = (e) => {
-      console.warn('channel.onclose', JSON.stringify(e, null, '\t'));
+      console.warn("channel.onclose", JSON.stringify(e, null, "\t"));
     };
   }
 
   private setupSmarphone() {
     const stream = this.$store.state.stream;
-    this.$store.commit('capture/attachMediaStream', stream);
+    this.$store.commit("capture/attachMediaStream", stream);
   }
 
   private async setupWebCam() {
@@ -140,25 +140,24 @@ export default class WebcamCaptureComponent extends Vue {
           deviceId: { exact: this.device.id },
         },
       });
-    this.$store.commit('capture/attachMediaStream', stream);
+    this.$store.commit("capture/attachMediaStream", stream);
   }
 
   private captureSmartphone() {
     this.dataChannel.send(
       JSON.stringify({
-        message: 'capture',
+        message: "capture",
         plan: this.$store.state.plan.activePlan,
-        type: 'cmd',
+        type: "cmd",
       }),
     );
   }
 
   private async captureWebcam() {
-    const pictureId = await this.device.capture('videoCapture', this.$store.state.plan.activePlan);
+    const pictureId = await this.device.capture("videoCapture", this.$store.state.plan.activePlan);
 
     this.isCapturing = false;
-    this.$store.dispatch('plan/addNewPictureAction', pictureId);
+    this.$store.dispatch("plan/addNewPictureAction", pictureId);
   }
 }
-
 </script>

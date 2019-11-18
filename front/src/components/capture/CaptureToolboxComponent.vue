@@ -28,13 +28,13 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
-import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import { Device } from '@/api/device.class';
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import SmartphoneSynchroPopup from "@/components/SmartphoneSynchroPopup.vue";
+import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
+import { Device } from "@/api/device.class";
 
-const CaptureNS = namespace('capture');
+const CaptureNS = namespace("capture");
 
 @Component({
   components: {
@@ -52,9 +52,9 @@ export default class CaptureToolboxComponent extends Vue {
   public async  mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     this.devices = devices
-      .filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
+      .filter((input: MediaDeviceInfo) => input.kind === "videoinput")
       .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label)));
-    this.devices.push(new Device('smartphone', 'Smartphone'));
+    this.devices.push(new Device("smartphone", "Smartphone"));
   }
 
   public onCaptureDeviceChange() {
@@ -70,7 +70,7 @@ export default class CaptureToolboxComponent extends Vue {
   }
 
   public setActiveCapture(isActiveCapture: boolean) {
-    this.$store.commit('capture/setActiveCapture', isActiveCapture);
+    this.$store.commit("capture/setActiveCapture", isActiveCapture);
   }
 }
 </script>

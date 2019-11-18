@@ -1,12 +1,12 @@
-import {BakuAction, BakuEvent, BakuService} from '@/api/baku-service';
-import {Film, ImageRef, Plan} from '@/api/film';
-import {List} from 'immutable';
+import {BakuAction, BakuEvent, BakuService} from "@/api/baku-service";
+import {Film, ImageRef, Plan} from "@/api/film";
+import {List} from "immutable";
 
 export class FilmService {
 
     private static merge(events: BakuEvent[]): Film {
-        let title = 'Unnamed';
-        let synopsis = 'Please fill a synopsis';
+        let title = "Unnamed";
+        let synopsis = "Please fill a synopsis";
         let poster;
         let plans: List<Plan> = List();
 
