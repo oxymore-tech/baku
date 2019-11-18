@@ -1,4 +1,4 @@
-import * as request from 'request-promise-native';
+import axios from 'axios';
 
 export enum BakuAction {
     UPDATE_TITLE,
@@ -16,23 +16,19 @@ export interface BakuEvent {
 export class BakuService {
 
     public upload(projectId: string, id: string, blob: Blob, name: string) {
-
+        return axios
+          .post('https://localhost:3030/' + projectId + '/upload/' + id, event);
     }
 
     public getHistory(projectId: string): Promise<BakuEvent[]> {
-        let events: BakuEvent[];
-        (async () => {
-          const options = {
-              uri: '/' + projectId + '/history',
-              json: true,
-          };
-          await request.get(options).then((results) => { events = results; });
-        })();
-        return new Promise( (resolve) => events);
+        return axios
+          .get('https://localhost:3030/' + projectId + '/history')
+          .then(response => response.data);
     }
 
     public stack(projectId: string, event: BakuEvent): Promise<void> {
-        return new Promise((resolve, reject) => {});
+        return axios
+          .post('https://localhost:3030/' + projectId + '/stack', event);
     }
 
 }
