@@ -11,8 +11,8 @@ export const planStore = {
   state: {
     pictures: [],
     fullResPicturesCache: [],
-    plans: ['plan1', 'plan2'],
-    activePlan: 'plan1',
+    plans: ["plan1", "plan2"],
+    activePlan: "plan1",
     activeFrame: 0,
   },
   mutations: {
@@ -36,15 +36,15 @@ export const planStore = {
   },
   actions: {
     goToNextFrameAction(context: any) {
-      context.commit('goToNextFrame');
+      context.commit("goToNextFrame");
     },
     addNewPictureAction(context: any, pictureId: string) {
-      context.commit('addNewPicture', pictureId);
+      context.commit("addNewPicture", pictureId);
     },
   },
   getters: {
     getPictures: (state: PlanState) => state.pictures,
-    getActiveFrame: (state: PlanState) => state.pictures.length ? state.pictures[state.activeFrame] : '',
+    getActiveFrame: (state: PlanState) => state.pictures.length ? state.pictures[state.activeFrame] : "",
   },
   modules: {},
 };

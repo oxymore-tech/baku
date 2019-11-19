@@ -1,11 +1,11 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import { planStore } from './plan';
-import { captureStore } from './capture';
+import Vue from "vue";
+import Vuex from "vuex";
+import { planStore } from "./plan";
+import { captureStore } from "./capture";
 
 Vue.use(Vuex);
 
-export type SocketStatus = 'opened' | 'closed' | 'error';
+export type SocketStatus = "opened" | "closed" | "error";
 
 export default new Vuex.Store({
   state: {
@@ -13,27 +13,27 @@ export default new Vuex.Store({
     dataChannel: null as null | RTCDataChannel,
     stream: undefined as undefined | MediaStream,
     isConnected: false,
-    socketStatus: 'closed' as SocketStatus,
+    socketStatus: "closed" as SocketStatus,
   },
   mutations: {
     setupConnection(state) {
-      console.log('SETUP CONNECTION');
+      console.log("SETUP CONNECTION");
       state.isConnected = true;
     },
     setPeerConnection(state, peerConnection: RTCPeerConnection) {
-      console.log('setPeerConnection', peerConnection);
+      console.log("setPeerConnection", peerConnection);
       state.peerConnection = peerConnection;
     },
     setDataChannel(state, dataChannel: RTCDataChannel) {
-      console.log('setDataChannel', dataChannel);
+      console.log("setDataChannel", dataChannel);
       state.dataChannel = dataChannel;
     },
     setMediaStream(state, stream: MediaStream) {
-      console.log('setMediaStream', stream);
+      console.log("setMediaStream", stream);
       state.stream = stream;
   },
     setSocketStatus(state, status: SocketStatus) {
-      console.log('setSocketStatus', status);
+      console.log("setSocketStatus", status);
       state.socketStatus = status;
     },
   },
