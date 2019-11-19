@@ -1,5 +1,5 @@
 import axios from "axios";
-import {ImageRef} from "@/api/film";
+import {ImageRef} from "@/api/film-service";
 
 export enum BakuAction {
     UPDATE_TITLE,
