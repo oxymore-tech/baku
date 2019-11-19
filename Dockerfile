@@ -20,12 +20,11 @@ COPY back/src/ src/
 RUN cargo build --release
 
 
-FROM alpine
-# FROM debian
+FROM debian:stable
 EXPOSE 443
 VOLUME /app/certificates/
 WORKDIR /app
+COPY ./certificates ./certificates
 COPY --from=front-builder /app/dist ./front_files
-COPY --from=back-builder /app/src/tls ./certificates
 COPY --from=back-builder /app/target/release/bakuanimation .
-CMD ./back/bakuanimation
+CMD ./bakuanimation
