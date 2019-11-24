@@ -9,8 +9,9 @@ body {
     color: #455054;
     width: 100%;
     height: 100%;
-    background: #9198e5;
-    backdrop-filter: blur(10px);
+    background: url("assets/main-background.jpg") 0% 0% no-repeat padding-box;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
 }
 
 /* #nav {
@@ -29,8 +30,8 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(rgba(255, 255, 255, 0.5),
-            rgba(200, 200, 200, 0.5));
+    background: linear-gradient(rgba(255, 255, 255, 0.7),
+            rgba(200, 200, 200, 0.7));
     backdrop-filter: blur(30px);
 }
 
