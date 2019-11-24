@@ -39,14 +39,21 @@
   import {Device} from "@/api/device.class";
 
   @Component
-  export default class WebcamCaptureComponent extends Vue {
+  export default class CaptureButtonComponent extends Vue {
     @Prop(Device)
     public readonly device!: Device;
-    public isCapturing = false;
-    public peerConnected = false;
+
+    @Prop()
+    public projectId!: string;
+
+    @Prop()
+    public activePlan!: string;
 
     @State
     public dataChannel!: RTCDataChannel;
+
+    public isCapturing = false;
+    public peerConnected = false;
 
     public async mounted() {
       console.log("WebcamCapture mounted", this.device);
@@ -64,7 +71,6 @@
         this.$store.commit("setDataChannel", undefined);
       }
     }
-
 
     public capture() {
       this.isCapturing = true;
@@ -103,7 +109,6 @@
         this.setupSmarphone();
       }
     }
-
 
     private setChannelEvents(channel: RTCDataChannel) {
       channel.onmessage = (event) => {
@@ -148,15 +153,15 @@
       this.dataChannel.send(
         JSON.stringify({
           message: "capture",
-          projectId: this.$store.state.project.id,
-          plan: this.$store.state.project.activePlan,
+          projectId: this.projectId,
+          plan: this.activePlan,
           type: "cmd",
         }),
       );
     }
 
     private async captureWebcam() {
-      const pictureId = await this.device.capture("videoCapture", this.$store.state.project.id, this.$store.state.project.activePlan);
+      const pictureId = await this.device.capture("videoCapture", this.projectId, this.activePlan);
 
       this.isCapturing = false;
       await this.$store.dispatch("project/addNewPictureAction", pictureId);

@@ -22,13 +22,16 @@
         <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
       </b-select>
     </b-field>
-    <CaptureButtonComponent v-if="selectedDevice" :device="selectedDevice"/>
+    <CaptureButtonComponent v-if="selectedDevice"
+                            :device="selectedDevice"
+                            :projectId="projectId"
+                            :activePlan="activePlan"/>
   </b-collapse>
 </template>
 
 
 <script lang="ts">
-  import {Component, Vue} from "vue-property-decorator";
+  import {Component, Prop, Vue} from "vue-property-decorator";
   import {namespace} from "vuex-class";
   import SmartphoneSynchroPopup from "@/components/SmartphoneSynchroPopup.vue";
   import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
@@ -49,10 +52,16 @@
     @CaptureNS.State
     public activeCapture!: boolean;
 
+    @Prop()
+    public projectId!: string;
+
+    @Prop()
+    public activePlan!: string;
+
     public async mounted() {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter((input: MediaDeviceInfo) => input.kind === "videoinput")
-        .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label || "Caméra non reconnue")));
+        .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label || "Unknown camera")));
       const deviceIds = [...new Set(videoDevices.map(d => d.id))];
       this.devices = deviceIds
         .map((id) => videoDevices.find((d) => d.id == id) as Device);

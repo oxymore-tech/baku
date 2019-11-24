@@ -1,9 +1,10 @@
+import {Film, FilmService, ImageRef} from "@/api/film-service";
+
 interface ProjectState {
   pictures: string[];
   fullResPicturesCache: HTMLImageElement[];
-  plans: string[];
+  film: Film
   id: string;
-  activePlan: string;
   activeFrame: number;
 }
 
@@ -12,17 +13,16 @@ export const ProjectStore = {
   state: {
     pictures: [],
     fullResPicturesCache: [],
-    plans: ["plan1", "plan2"],
-    id: "to_set",
-    activePlan: "plan1",
+    film: null,
+    id: null,
     activeFrame: 0,
   },
   mutations: {
-    addNewPicture(state: ProjectState, pictureId: string) {
-      state.pictures = [...state.pictures, pictureId];
-      const fullResImage = new Image();
-      fullResImage.src = `/default/images/${state.activePlan}/${pictureId}?width=1280&height=720`;
-      state.fullResPicturesCache.push(fullResImage);
+    setFilm(state: ProjectState, payload: { projectId: string, film: Film }) {
+      state.id = payload.projectId;
+      state.film = payload.film;
+      state.activeFrame = 0;
+      console.log("film s", state);
     },
     changePlan(state: ProjectState, planId: string) {
       state.activePlan = planId;
@@ -37,6 +37,19 @@ export const ProjectStore = {
     },
   },
   actions: {
+    async loadProject(context: any, projectId: string) {
+      const filmService = new FilmService();
+      const film = await filmService.get(projectId);
+      console.log("film", film);
+      await context.commit("setFilm", {projectId, film});
+    },
+    addImageToPlan(state: ProjectState, payload: { planId: string, imageIndex: number, image: ImageRef }) {
+      // TODO 
+      /*state.pictures = [...state.pictures, pictureId];
+      const fullResImage = new Image();
+      fullResImage.src = `/default/images/${state.activePlan}/${pictureId}?width=1280&height=720`;
+      state.fullResPicturesCache.push(fullResImage);*/
+    },
     goToNextFrameAction(context: any) {
       context.commit("goToNextFrame");
     },
