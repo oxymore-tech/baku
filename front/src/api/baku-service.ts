@@ -18,11 +18,11 @@ export class BakuService {
 
     private static readonly BaseUrl = "https://localhost:3030";
 
-    public upload(projectId: string, id: string, blob: Blob, name: string): Promise<ImageRef> {
+    public upload(projectId: string, planId: string, blob: Blob, name: string): Promise<ImageRef> {
         const formData = new FormData();
         formData.set("file", blob, name);
         return axios
-            .post(`${BakuService.BaseUrl}/${projectId}/upload/${id}`, formData,
+            .post(`${BakuService.BaseUrl}/${projectId}/upload/${planId}`, formData,
                 {
                     headers: {
                         "Content-Type": "multipart/form-data"
