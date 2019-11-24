@@ -34,17 +34,17 @@
     import {namespace} from "vuex-class";
     import {BakuService} from "@/api/baku-service";
 
-    const PlanNS = namespace("plan");
+    const ProjectNS = namespace("project");
 
     @Component
     export default class StoryboardPreviewComponent extends Vue {
-        @PlanNS.State
+        @ProjectNS.State
         public plans!: string[];
-        @PlanNS.State
+        @ProjectNS.State
         public activePlan!: string;
 
         public onPlanSelectChange(event: any) {
-            this.$store.commit("plan/changePlan", event.target.value);
+            this.$store.commit("project/changePlan", event.target.value);
         }
 
         public async test() {

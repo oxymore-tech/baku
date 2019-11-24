@@ -111,7 +111,7 @@ export default class WebcamCaptureComponent extends Vue {
       if (data.type === "upload") {
         this.isCapturing = false;
         const pictureId = data.message;
-        this.$store.dispatch("plan/addNewPictureAction", pictureId);
+        this.$store.dispatch("project/addNewPictureAction", pictureId);
       }
       console.log("Message received", event);
     };
@@ -147,17 +147,18 @@ export default class WebcamCaptureComponent extends Vue {
     this.dataChannel.send(
       JSON.stringify({
         message: "capture",
-        plan: this.$store.state.plan.activePlan,
+        projectId: this.$store.state.project.projectId,
+        plan: this.$store.state.project.activePlan,
         type: "cmd",
       }),
     );
   }
 
   private async captureWebcam() {
-    const pictureId = await this.device.capture("videoCapture", this.$store.state.plan.activePlan);
+    const pictureId = await this.device.capture("videoCapture", this.$store.state.project.id,this.$store.state.project.id);
 
     this.isCapturing = false;
-    this.$store.dispatch("plan/addNewPictureAction", pictureId);
+    this.$store.dispatch("project/addNewPictureAction", pictureId);
   }
 }
 </script>

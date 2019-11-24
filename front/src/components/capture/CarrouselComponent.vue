@@ -23,11 +23,11 @@
 import { Component, Vue } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 
-const PlanNS = namespace("plan");
+const ProjectNS = namespace("project");
 
 @Component
 export default class CarrouselComponent extends Vue {
-  @PlanNS.State
+  @ProjectNS.State
   public pictures!: string[];
   public activePlan!: string;
   public mounted() {

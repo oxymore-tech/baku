@@ -1,7 +1,9 @@
-import { UploadService } from "@/api/upload.service";
 import * as uuid from "uuid";
+import {BakuService} from "@/api/baku-service";
 
 export class Device {
+
+  private readonly bakuService: BakuService = new BakuService();
 
   public readonly id: string;
   public readonly label: string;
@@ -15,7 +17,7 @@ export class Device {
     return this.id === "smartphone";
   }
 
-  public async capture(videoElementTag: string, planId: string): Promise<string> {
+  public async capture(videoElementTag: string, projectId: string, planId: string): Promise<string> {
     const canvas = document.createElement("canvas");
     const video = document.getElementById(videoElementTag) as HTMLVideoElement;
     canvas.width = video.videoWidth;
@@ -24,16 +26,12 @@ export class Device {
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
     const base64 = canvas.toDataURL("image/jpeg");
     const blob = this.imagetoblob(base64);
-    const response = await UploadService.upload(planId, blob, uuid.v4() + ".jpg");
-    const pictureId: string = JSON.parse(response)[0];
-    return pictureId;
+    return await this.bakuService.upload(projectId, planId, blob, uuid.v4() + ".jpg");
   }
 
-
   private imagetoblob(base64String: string): Blob {
-    const ImageURL = base64String;
     // Split the base64 string in data and contentType
-    const block = ImageURL.split(";");
+    const block = base64String.split(";");
     // Get the content type of the image
     const contentType = block[0].split(":")[1]; // In this case "image/gif"
     // get the real base64 content of the file
@@ -63,7 +61,7 @@ export class Device {
       byteArrays.push(byteArray);
     }
 
-    const blob = new Blob(byteArrays, { type: contentType });
+    const blob = new Blob(byteArrays, {type: contentType});
     return blob;
   }
 }
