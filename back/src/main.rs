@@ -47,7 +47,7 @@ async fn handle_multipart(
     plan_id: String,
     mut form: warp::multipart::FormData,
 ) -> Result<Vec<String>, warp::Rejection> {
-    let img_directory = Path::new("upload_files");
+    let img_directory = Path::new("./data/files/");
 
     let mut filenames = Vec::new();
 
@@ -92,7 +92,7 @@ async fn handle_get_images(
     filename: String,
     r: Size,
 ) -> Result<Vec<u8>, warp::Rejection> {
-    let thumbs_directory = Path::new("upload_thumbs");
+    let thumbs_directory = Path::new("./data/thumbs/");
     let thumb_filename = format!("{}-{}x{}", filename, r.width, r.height);
     let thumbnail_path = Path::join(
         &Path::join(thumbs_directory, Path::new(&project_id)),
@@ -110,7 +110,7 @@ async fn handle_get_images(
             .await
             .map_err(warp::reject::custom)?;
     } else {
-        let img_directory = Path::new("upload_files");
+        let img_directory = Path::new("./data/files/");
         let image_path = Path::join(
             &Path::join(img_directory, Path::new(&project_id)),
             Path::join(Path::new(&plan_id), Path::new(&filename)),
@@ -430,10 +430,17 @@ async fn main() {
         .or(history)
         .or(get)
         .or(multipart)
-        .or(warp::fs::dir("../front/dist"));
+        .or(warp::fs::dir("./front_files/"));
 
+    // println!("port={:#?}", port);
+    // static port: String = match env::var("BAKU_PORT") {
+    //     Ok(val) => val,
+    //     Err(_e) => "3030".to_string(),
+    // };
+
+    println!("Listen to port 0.0.0.0:3030");
     warp::serve(routes)
-        .tls("src/tls/certificate.pem", "src/tls/key.pem")
+        .tls("./certificates/certificate.pem", "./certificates/key.pem")
         .run(([0, 0, 0, 0], 3030))
         .await;
 }
