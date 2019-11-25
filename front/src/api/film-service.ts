@@ -1,4 +1,4 @@
-import {BakuAction, BakuEvent, BakuService} from "@/api/baku-service";
+import { BakuAction, BakuEvent, BakuService } from "@/api/baku-service";
 import uuid from "uuid";
 
 export type ImageRef = string;
@@ -22,30 +22,35 @@ export class FilmService {
 
   public async get(id: string): Promise<Film> {
     const events = await this.bakuService.getHistory(id);
-    return FilmService.merge(events);
+    return FilmService.merge(events, id);
+  }
+
+  public async getHistory(id: string): Promise<BakuEvent[]> {
+    return await this.bakuService.getHistory(id);
   }
 
   public async updateTitle(projectId: string, title: string): Promise<void> {
-    await this.bakuService.stack(projectId, {action: BakuAction.UPDATE_TITLE, value: title});
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_TITLE, value: title });
   }
 
   public async updateSynopsis(projectId: string, synopsis: string): Promise<void> {
-    await this.bakuService.stack(projectId, {action: BakuAction.UPDATE_SYNOPSIS, value: synopsis});
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: synopsis });
   }
 
   public async updatePoster(projectId: string, poster: ImageRef): Promise<void> {
-    await this.bakuService.stack(projectId, {action: BakuAction.UPDATE_SYNOPSIS, value: poster});
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: poster });
   }
 
   public async addPlan(projectId: string, name: string): Promise<void> {
-    await this.bakuService.stack(projectId, {action: BakuAction.ADD_PLAN, value: name});
+    await this.bakuService.stack(projectId, { action: BakuAction.ADD_PLAN, value: name });
   }
 
-  public async insertImage(projectId: string, image: ImageRef): Promise<void> {
-    await this.bakuService.stack(projectId, {action: BakuAction.ADD_PLAN, value: image});
+  public async insertImage(projectId: string, planId: string, imgIndex: number, image: ImageRef): Promise<BakuEvent> {
+    await this.bakuService.stack(projectId, { action: BakuAction.INSERT_IMAGE, value: { planId: planId, imageIndex: imgIndex, image: image } });
+    return { action: BakuAction.INSERT_IMAGE, value: { planId: planId, imageIndex: imgIndex, image: image }};
   }
 
-  private static merge(events: BakuEvent[]): Film {
+  public static merge(events: BakuEvent[], projectId: string): Film {
     let title = "Unnamed";
     let synopsis = "Please fill a synopsis";
     let poster;
@@ -63,15 +68,16 @@ export class FilmService {
           poster = event.value;
           break;
         case BakuAction.ADD_PLAN:
-          const {id, name} = event.value as { id: string, name: string };
-          plans.push({id, name, images: []});
+          const { id, name } = event.value as { id: string, name: string };
+          plans.push({ id, name, images: [] });
           break;
         case BakuAction.INSERT_IMAGE:
-          const {planIndex, imageIndex, image} =
-            event.value as { planIndex: number, imageIndex: number, image: ImageRef };
-          const plan = plans[planIndex];
+          const { planId, imageIndex, image } =
+            event.value as { planId: string, imageIndex: number, image: ImageRef };
+          const plan = plans.find(plan => plan.id === planId);
+          const planIndex = plans.findIndex(plan => plan.id === planId);
           if (!plan) {
-            throw new Error(`Plan ${planIndex} should exist for project ${title}`);
+            throw new Error(`Plan ${planId} should exist for project ${title}`);
           }
           plan.images.splice(imageIndex, 0, image);
           plans.splice(planIndex, 1, plan);
@@ -80,8 +86,9 @@ export class FilmService {
     }
 
     if (plans.length == 0) {
-      plans.push({id: uuid(), name: "Default plan", images: []});
+      plans.push({ id: uuid(), name: "Default plan", images: [] });
+      new BakuService().stack(projectId, { action: BakuAction.ADD_PLAN, value: { id: plans[0].id, name: plans[0].name} });
     }
-    return {title, synopsis, poster, plans};
+    return { title, synopsis, poster, plans };
   }
 }

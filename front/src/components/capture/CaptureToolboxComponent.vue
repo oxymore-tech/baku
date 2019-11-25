@@ -25,7 +25,8 @@
     <CaptureButtonComponent v-if="selectedDevice"
                             :device="selectedDevice"
                             :projectId="projectId"
-                            :activePlan="activePlan"/>
+                            :activePlan="activePlan"
+                            :activeIndex="activeIndex"/>
   </b-collapse>
 </template>
 
@@ -58,7 +59,11 @@
     @Prop()
     public activePlan!: string;
 
+    @Prop()
+    public activeIndex!: number;
+
     public async mounted() {
+      this.activeIndex;
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter((input: MediaDeviceInfo) => input.kind === "videoinput")
         .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label || "Unknown camera")));

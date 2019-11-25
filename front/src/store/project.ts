@@ -1,11 +1,12 @@
 import {Film, FilmService, ImageRef} from "@/api/film-service";
+import { BakuEvent } from '@/api/baku-service';
 
 interface ProjectState {
   pictures: string[];
   fullResPicturesCache: HTMLImageElement[];
-  film: Film
   id: string;
   activeFrame: number;
+  history: BakuEvent[]
 }
 
 export const ProjectStore = {
@@ -16,50 +17,41 @@ export const ProjectStore = {
     film: null,
     id: null,
     activeFrame: 0,
+    history: []
   },
   mutations: {
-    setFilm(state: ProjectState, payload: { projectId: string, film: Film }) {
+    setFilm(state: ProjectState, payload: { projectId: string, filmHistory: BakuEvent[] }) {
       state.id = payload.projectId;
-      state.film = payload.film;
+      state.history = payload.filmHistory;
       state.activeFrame = 0;
-      console.log("film s", state);
     },
-    changePlan(state: ProjectState, planId: string) {
-      state.activePlan = planId;
-      state.pictures = [];
-    },
-    goToNextFrame(state: ProjectState) {
-      if (state.activeFrame === state.pictures.length - 1) {
-        state.activeFrame = 0;
-      } else {
-        state.activeFrame++;
-      }
+    addToLocalHistory(state: ProjectState, event: BakuEvent) {
+      state.history.push(event);
     },
   },
   actions: {
     async loadProject(context: any, projectId: string) {
       const filmService = new FilmService();
-      const film = await filmService.get(projectId);
-      console.log("film", film);
-      await context.commit("setFilm", {projectId, film});
+      // const film = await filmService.get(projectId);
+      const filmHistory = await filmService.getHistory(projectId);
+      await context.commit("setFilm", {projectId, filmHistory});
     },
-    addImageToPlan(state: ProjectState, payload: { planId: string, imageIndex: number, image: ImageRef }) {
-      // TODO 
-      /*state.pictures = [...state.pictures, pictureId];
-      const fullResImage = new Image();
-      fullResImage.src = `/default/images/${state.activePlan}/${pictureId}?width=1280&height=720`;
-      state.fullResPicturesCache.push(fullResImage);*/
-    },
-    goToNextFrameAction(context: any) {
-      context.commit("goToNextFrame");
-    },
-    addNewPictureAction(context: any, pictureId: string) {
-      context.commit("addNewPicture", pictureId);
+    async addImageToPlan( context: {commit: any, state: ProjectState}, payload: { planId: string, imageIndex: number, image: ImageRef }) {
+       const insertEvent = await new FilmService().insertImage(
+        context.state.id,
+        payload.planId,
+        payload.imageIndex,
+        payload.image
+      );
+      context.commit("addToLocalHistory", insertEvent);
     },
   },
   getters: {
     getPictures: (state: ProjectState) => state.pictures,
-    getActiveFrame: (state: ProjectState) => state.pictures.length ? state.pictures[state.activeFrame] : "",
+    film: (state: ProjectState) => {
+      return FilmService.merge(state.history, state.id);
+    },
+    getPlan: (state: ProjectState) => (id: string) =>  FilmService.merge(state.history, state.id).plans.find(plan => plan.id === id)
   },
   modules: {},
 };
