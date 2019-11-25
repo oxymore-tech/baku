@@ -9,20 +9,19 @@ ul {
 </style>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Init extends Vue {
-
-  public isMobile() {
+  public static isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
   public created() {
-    if (this.isMobile()) {
-      this.$router.push("/smartphone");
+    if (Init.isMobile()) {
+      this.$router.push('/smartphone');
     } else {
-      this.$router.push("/capture");
+      this.$router.push('/capture');
     }
   }
 }

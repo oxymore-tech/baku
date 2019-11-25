@@ -30,28 +30,29 @@
 
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
-    import {namespace} from "vuex-class";
-    import {BakuService} from "@/api/baku-service";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { BakuService } from '@/api/baku-service';
 
-    const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
     @Component
-    export default class StoryboardPreviewComponent extends Vue {
+export default class StoryboardPreviewComponent extends Vue {
         @ProjectNS.State
         public plans!: string[];
+
         @ProjectNS.State
         public activePlan!: string;
 
         public onPlanSelectChange(event: any) {
-            this.$store.commit("project/changePlan", event.target.value);
+          this.$store.commit('project/changePlan', event.target.value);
         }
 
-        public async test() {
-            const bakuService = new BakuService();
-            const blob = new Blob();
-            const ref = await bakuService.upload("1", "0", blob, "test");
-            console.log("Uploaded ", ref);
+        public static async test() {
+          const bakuService = new BakuService();
+          const blob = new Blob();
+          const ref = await bakuService.upload('1', '0', blob, 'test');
+          console.log('Uploaded ', ref);
         }
-    }
+}
 </script>
