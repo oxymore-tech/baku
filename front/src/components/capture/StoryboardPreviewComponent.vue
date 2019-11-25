@@ -8,8 +8,8 @@
       <option
         v-for="plan in plans"
         :key="plan.id"
-        :value="plan"
-        :selected="plan === activePlan"
+        :value="plan.id"
+        :selected="plan.id === activePlanId"
       >{{plan.name}}
       </option>
     </select>
@@ -39,10 +39,11 @@
     public plans!: Plan[];
 
     @Prop()
-    public activePlan!: Plan;
+    public activePlanId!: string;
 
     public onChange(event: any) {
-      this.$emit('change', event.target.value)
+      this.$store.dispatch('project/changeActivePlan', this.plans.findIndex(plan => plan.id === event.target.value));
+      // this.$emit('change', event.target.value)
     }
 
   }

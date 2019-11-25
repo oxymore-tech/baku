@@ -1,7 +1,7 @@
 <template>
   <div class="mainFrame">
     <div class="previewBloc">
-      <StoryboardPreviewComponent :plans="film.plans" v-model="activePlan" />
+      <StoryboardPreviewComponent :plans="film.plans" :activePlanId="getActivePlanId" />
       <video
         v-if="activeCapture"
         id="videoCapture"
@@ -13,18 +13,18 @@
       />
       <div v-else>
         <img
-          v-if="activePlanId"
+          v-if="getActivePlan"
           id="previewImg"
           width="720"
           height="480"
-          :src="`/default/images/${activePlanId}/${getPlan(activePlanId).images[0]}?width=1280&height=720`"
+          :src="`/default/images/${getActivePlan.id}/${getActivePlan.images[activeFrame]}?width=1280&height=720`"
         />
       </div>
       <CaptureToolboxComponent
-        v-if="activePlanId"
+        v-if="getActivePlan"
         :projectId="id"
-        :activePlan="activePlanId"
-        :activeIndex="getPlan(activePlanId).images.length"
+        :activePlan="getActivePlan.id"
+        :activeIndex="getActivePlan.images.length"
       />
     </div>
     <div>
@@ -32,10 +32,10 @@
       <button @click="pauseAnimation()">pause</button>
     </div>
     <CarrouselComponent
-      v-if="activePlanId"
+      v-if="getActivePlan"
       :projectId="id"
-      :activePlan="activePlanId"
-      :images="getPlan(activePlanId).images"
+      :activePlan="getActivePlan.id"
+      :images="getActivePlan.images"
     />
   </div>
 </template>
@@ -62,13 +62,19 @@ const ProjectNS = namespace("project");
 })
 export default class Capture extends Vue {
   @ProjectNS.State
-  public id!: string;
+  public id!: string; 
+  
+  @ProjectNS.Getter
+  public getActivePlanId!: string;
 
   @ProjectNS.Getter
   public film!: Film;  
   
   @ProjectNS.Getter
-  public getPlan!: (id: string) => Plan;
+  public getActivePlan!: Plan;
+  
+  @ProjectNS.State
+  public activeFrame!: number;
 
   @CaptureNS.State
   public activeCapture!: boolean;
@@ -76,21 +82,18 @@ export default class Capture extends Vue {
   @CaptureNS.State
   public stream!: MediaStream | null;
 
-  public activePlanId: string | null = null;
   private isPlaying = false;
   private loop: any;
 
   public mounted() {
-    this.activePlanId = this.film.plans[0].id;
   }
 
   public playAnimation() {
     this.isPlaying = true;
-    // console.log("this.isPlaying", this.isPlaying);
-    // this.loop = setInterval(
-    //   () => this.$store.dispatch("project/goToNextFrameAction"),
-    //   1000 / 12
-    // );
+    this.loop = setInterval(
+      () => {this.$store.dispatch("project/goToNextFrameAction")},
+      1000 / 12
+    );
   }
 
   public pauseAnimation() {

@@ -1,4 +1,4 @@
-import {Film, FilmService, ImageRef} from "@/api/film-service";
+import { FilmService, ImageRef} from "@/api/film-service";
 import { BakuEvent } from '@/api/baku-service';
 
 interface ProjectState {
@@ -6,6 +6,7 @@ interface ProjectState {
   fullResPicturesCache: HTMLImageElement[];
   id: string;
   activeFrame: number;
+  activePlanIndex: number;
   history: BakuEvent[]
 }
 
@@ -14,9 +15,9 @@ export const ProjectStore = {
   state: {
     pictures: [],
     fullResPicturesCache: [],
-    film: null,
     id: null,
     activeFrame: 0,
+    activePlanIndex: 0,
     history: []
   },
   mutations: {
@@ -27,6 +28,16 @@ export const ProjectStore = {
     },
     addToLocalHistory(state: ProjectState, event: BakuEvent) {
       state.history.push(event);
+    },
+    changeActivePlan(state: ProjectState, planIndex: number) {
+      state.activePlanIndex = planIndex;
+    },
+    goToNextFrame(state: ProjectState) {
+      if (state.activeFrame === FilmService.merge(state.history, state.id).plans[state.activePlanIndex].images.length - 1) {
+        state.activeFrame = 0;
+      } else {
+        state.activeFrame++;
+      }
     },
   },
   actions: {
@@ -45,13 +56,20 @@ export const ProjectStore = {
       );
       context.commit("addToLocalHistory", insertEvent);
     },
+    changeActivePlan(context: any, planIndex: number) {
+      context.commit("changeActivePlan", planIndex);
+    },
+    goToNextFrameAction(context: any) {
+      context.commit("goToNextFrame");
+    },
   },
   getters: {
     getPictures: (state: ProjectState) => state.pictures,
     film: (state: ProjectState) => {
       return FilmService.merge(state.history, state.id);
     },
-    getPlan: (state: ProjectState) => (id: string) =>  FilmService.merge(state.history, state.id).plans.find(plan => plan.id === id)
+    getActivePlan: (state: ProjectState) => FilmService.merge(state.history, state.id).plans[state.activePlanIndex],
+    getActivePlanId: (_state: ProjectState, getters: any) => getters.getActivePlan.id
   },
   modules: {},
 };
