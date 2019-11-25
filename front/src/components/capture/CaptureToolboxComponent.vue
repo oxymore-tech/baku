@@ -1,91 +1,85 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <div class="boxContainer captureContainer" v-bind:class="{captureInactive: !activeCapture}">
-    <h3 @click="toggleCapture()">mode capture</h3>
-    <div v-if="activeCapture">
-      <b-field>
-        <b-select
-          @input="onCaptureDeviceChange(selectedDevice)"
-          placeholder="Select a Camera"
-          :loading="!devices.length"
-          v-model="selectedDevice"
-          size="is-small"
-        >
-          <option v-for="device in devices" :key="device.key" :value="device.key">{{device.label}}</option>
-        </b-select>
-      </b-field>
-      <WebcamCaptureComponent v-if="selectedDevice" :deviceId="selectedDevice" />
+  <b-collapse
+    aria-id="contentIdForA11y2"
+    class="panel"
+    :open="activeCapture"
+    @open="setActiveCapture(true)"
+    @close="setActiveCapture(false)"
+  >
+    <div slot="trigger" class="panel-heading" role="button" aria-controls="contentIdForA11y2">
+      <strong>mode capture</strong>
     </div>
-  </div>
+
+    <b-field>
+      <b-select
+        @input="onCaptureDeviceChange()"
+        placeholder="Select a Camera"
+        :loading="!devices.length"
+        v-model="selectedDeviceId"
+        size="is-small"
+      >
+        <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
+      </b-select>
+    </b-field>
+    <CaptureButtonComponent v-if="selectedDevice" :device="selectedDevice"/>
+  </b-collapse>
 </template>
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
-import WebcamCaptureComponent from '@/components/capture/WebcamCaptureComponent.vue';
-import { mapState } from 'vuex';
-import store from '@/store';
+  import {Component, Vue} from "vue-property-decorator";
+  import {namespace} from "vuex-class";
+  import SmartphoneSynchroPopup from "@/components/SmartphoneSynchroPopup.vue";
+  import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
+  import {Device} from "@/api/device.class";
 
-interface Devices {
-  label: string;
-  key: string;
-}
+  const CaptureNS = namespace("capture");
 
-@Component({
-  components: {
-    SmartphoneSynchroPopup,
-    WebcamCaptureComponent,
-  },
-  computed: {
-    ...mapState('capture', ['activeCapture']),
-  },
-  store,
-})
-export default class CaptureToolboxComponent extends Vue {
-  public devices: Devices[] = [];
-  public selectedDevice: string = '';
-  public async  mounted() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    this.devices = devices
-      .filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
-      .map((input: MediaDeviceInfo) => ({ key: input.deviceId, label: input.label }));
-    this.devices.push({ key: 'smartphone', label: 'Smartphone' });
-  }
+  @Component({
+    components: {
+      SmartphoneSynchroPopup,
+      CaptureButtonComponent,
+    }
+  })
+  export default class CaptureToolboxComponent extends Vue {
+    public devices: Device[] = [];
+    public selectedDeviceId: string | null = null;
+    public selectedDevice: Device | null = null;
+    @CaptureNS.State
+    public activeCapture!: boolean;
 
-  public onCaptureDeviceChange() {
-    if (this.selectedDevice === 'smartphone' && !this.$store.state.dataChannel) {
-      this.$buefy.modal.open({
-        parent: this,
-        component: SmartphoneSynchroPopup,
-        hasModalCard: true,
-      });
+    public async mounted() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter((input: MediaDeviceInfo) => input.kind === "videoinput")
+        .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label || "Caméra non reconnue")));
+      const deviceIds = [...new Set(videoDevices.map(d => d.id))];
+      this.devices = deviceIds
+        .map((id) => videoDevices.find((d) => d.id == id) as Device);
+      this.devices.push(new Device("smartphone", "Smartphone"));
+    }
+
+    public onCaptureDeviceChange() {
+      this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
+
+      if (this.selectedDevice && this.selectedDevice.isSmartphone() && !this.$store.state.dataChannel) {
+        this.$buefy.modal.open({
+          parent: this,
+          component: SmartphoneSynchroPopup,
+          hasModalCard: true,
+        });
+      }
+    }
+
+    public setActiveCapture(isActiveCapture: boolean) {
+      this.$store.commit("capture/setActiveCapture", isActiveCapture);
     }
   }
-
-  public toggleCapture() {
-    this.$store.commit('capture/toggleCapture');
-  }
-}
 </script>
 
 <style lang="scss">
-.captureContainer {
-  width: 290px;
-  height: 450px;
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-  align-items: center;
-
-  h3 {
-    font-size: 23px;
-    font-weight: bold;
-    cursor: pointer;
+  .collapse-content {
+    background-color: white;
+    padding: 6px;
   }
-}
-
-.captureInactive {
-  height: 45px;
-}
 </style>

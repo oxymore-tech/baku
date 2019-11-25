@@ -1,7 +1,7 @@
 <template>
   <div class="mainFrame">
     <div class="previewBloc">
-      <!-- <ProjectPreviewComponent /> -->
+      <ProjectPreviewComponent />
       <video
         v-if="activeCapture"
         id="videoCapture"
@@ -29,12 +29,15 @@
 </template>
 
 <script lang="ts">
-import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-import ProjectPreviewComponent from '@/components/capture/ProjectPreviewComponent.vue';
-import { Component, Vue } from 'vue-property-decorator';
-import store from '@/store';
-import { mapState, mapGetters } from 'vuex';
+import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
+import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
+import ProjectPreviewComponent from "@/components/capture/ProjectPreviewComponent.vue";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import store from "@/store";
+import { namespace } from "vuex-class";
+
+const CaptureNS = namespace("capture");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
@@ -42,23 +45,18 @@ import { mapState, mapGetters } from 'vuex';
     CarrouselComponent,
     ProjectPreviewComponent,
   },
-  computed: {
-    ...mapState('capture', ['activeCapture', 'stream']),
-    ...mapState('plan', ['activePlan']),
-    ...mapGetters('plan', ['getActiveFrame']),
-  },
-  watch: {
-    stream(newValue, oldValue) {
-      if (newValue) {
-        (document.getElementById(
-          'videoCapture',
-        ) as HTMLVideoElement).srcObject = newValue;
-      }
-    },
-  },
   store,
 })
 export default class Capture extends Vue {
+  @CaptureNS.State
+  public activeCapture!: boolean;
+  @ProjectNS.State
+  public activePlan!: string;
+  @CaptureNS.State
+  public stream!: MediaStream | null;
+  @ProjectNS.Getter
+  public getActiveFrame!: string;
+
   private isPlaying = false;
   private loop: any;
 
@@ -67,12 +65,22 @@ export default class Capture extends Vue {
 
   public playAnimation() {
     this.isPlaying = true;
-    console.log('this.isPlaying', this.isPlaying);
-    this.loop = setInterval(() => this.$store.dispatch('plan/goToNextFrameAction'), 1000 / 12 );
+    console.log("this.isPlaying", this.isPlaying);
+    this.loop = setInterval(() => this.$store.dispatch("project/goToNextFrameAction"), 1000 / 12);
   }
 
   public pauseAnimation() {
     clearInterval(this.loop);
+  }
+
+  @Watch("stream")
+  public onStreamChange(newValue: MediaStream, oldValue: MediaStream) {
+    console.log("onStreamChange");
+    if (newValue) {
+      (document.getElementById(
+        "videoCapture",
+      ) as HTMLVideoElement).srcObject = newValue;
+    }
   }
 }
 </script>

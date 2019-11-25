@@ -1,16 +1,18 @@
 html,
 body {
-    height: 100%;
-    overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 }
 
 #app {
-    font-family: "Montserrat", Helvetica, Arial, sans-serif;
-    color: #455054;
-    width: 100%;
-    height: 100%;
-    background: #9198e5;
-    backdrop-filter: blur(10px);
+  font-family: "Montserrat", Helvetica, Arial, sans-serif;
+  color: #455054;
+  width: 100%;
+  height: 100%;
+  //background: url("assets/main-background.jpg") 0% 0% no-repeat padding-box;
+  background: linear-gradient(#09203f, #537895);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
 }
 
 /* #nav {
@@ -24,41 +26,41 @@ body {
     } */
 
 nav {
-    width: 100%;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(rgba(255, 255, 255, 0.5),
-            rgba(200, 200, 200, 0.5));
-    backdrop-filter: blur(30px);
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(rgba(255, 255, 255, 0.7),
+    rgba(200, 200, 200, 0.7));
+  backdrop-filter: blur(30px);
 }
 
 nav h1 {
-    font-size: 32px;
-    position: absolute;
-    font: Bold 32px/12px Montserrat;
-    left: 24px;
+  font-size: 32px;
+  position: absolute;
+  font: Bold 32px/12px Montserrat;
+  left: 24px;
 }
 
 nav a {
-    width: 135px;
-    height: 35px;
-    font-weight: bold;
-    font-size: 18px;
-    text-align: center;
-    padding-top: 4px;
-    color: #455054;
+  width: 135px;
+  height: 35px;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+  padding-top: 4px;
+  color: #455054;
 }
 
 nav a.router-link-exact-active {
-    color: white;
-    background: #fbb10d;
-    border-radius: 17px;
+  color: white;
+  background: #fbb10d;
+  border-radius: 17px;
 }
 
 .boxContainer {
-    border-radius: 8px;
-    background: white;
-    padding: 6px;
+  border-radius: 8px;
+  background: white;
+  padding: 6px;
 }

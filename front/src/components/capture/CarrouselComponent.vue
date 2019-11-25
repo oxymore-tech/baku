@@ -1,7 +1,7 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
   <div class="carrouselContainer">
-      <img v-for="picture in pictures" v-bind:key="picture" :src="`/default/images/${activePlan}/${picture}?width=185&height=104`">
+      <img v-for="picture in pictures" v-bind:key="picture" :src="`/${id}/images/${activePlan}/${picture}?width=185&height=104`">
   </div>
 </template>
 
@@ -20,17 +20,23 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { mapState } from 'vuex';
-import store from '@/store';
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
 
-@Component({
-  computed: {
-    ...mapState('plan', ['pictures', 'activePlan']),
-  },
-  store,
-})
+const ProjectNS = namespace("project");
+
+@Component
 export default class CarrouselComponent extends Vue {
+  
+  @ProjectNS.State
+  public pictures!: string[];
+
+  @ProjectNS.State
+  public activePlan!: string;
+  
+  @ProjectNS.State
+  public id!: string;
+  
   public mounted() {
     console.log(this.$store);
   }
