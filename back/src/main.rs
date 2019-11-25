@@ -47,7 +47,7 @@ async fn handle_multipart(
     plan_id: String,
     mut form: warp::multipart::FormData,
 ) -> Result<Vec<String>, warp::Rejection> {
-    let img_directory = Path::new("upload_files");
+    let img_directory = Path::new("./data/files/");
 
     let mut filenames = Vec::new();
 
@@ -92,7 +92,7 @@ async fn handle_get_images(
     filename: String,
     r: Size,
 ) -> Result<Vec<u8>, warp::Rejection> {
-    let thumbs_directory = Path::new("upload_thumbs");
+    let thumbs_directory = Path::new("./data/thumbs/");
     let thumb_filename = format!("{}-{}x{}", filename, r.width, r.height);
     let thumbnail_path = Path::join(
         &Path::join(thumbs_directory, Path::new(&project_id)),
@@ -110,7 +110,7 @@ async fn handle_get_images(
             .await
             .map_err(warp::reject::custom)?;
     } else {
-        let img_directory = Path::new("upload_files");
+        let img_directory = Path::new("./data/files/");
         let image_path = Path::join(
             &Path::join(img_directory, Path::new(&project_id)),
             Path::join(Path::new(&plan_id), Path::new(&filename)),
