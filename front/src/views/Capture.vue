@@ -41,38 +41,38 @@
 </template>
 
 <script lang="ts">
-import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
-import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
-import { Component, Vue, Watch } from "vue-property-decorator";
-import store from "@/store";
-import { namespace } from "vuex-class";
-import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
-import { Film, Plan } from "@/api/film-service";
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import store from '@/store';
+import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
+import { Film, Plan } from '@/api/film-service';
 
-const CaptureNS = namespace("capture");
-const ProjectNS = namespace("project");
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
 
 @Component({
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
-    StoryboardPreviewComponent
+    StoryboardPreviewComponent,
   },
-  store
+  store,
 })
 export default class Capture extends Vue {
   @ProjectNS.State
-  public id!: string; 
-  
+  public id!: string;
+
   @ProjectNS.Getter
   public getActivePlanId!: string;
 
   @ProjectNS.Getter
-  public film!: Film;  
-  
+  public film!: Film;
+
   @ProjectNS.Getter
   public getActivePlan!: Plan;
-  
+
   @ProjectNS.State
   public activeFrame!: number;
 
@@ -83,6 +83,7 @@ export default class Capture extends Vue {
   public stream!: MediaStream | null;
 
   private isPlaying = false;
+
   private loop: any;
 
   public mounted() {
@@ -91,8 +92,8 @@ export default class Capture extends Vue {
   public playAnimation() {
     this.isPlaying = true;
     this.loop = setInterval(
-      () => {this.$store.dispatch("project/goToNextFrameAction")},
-      1000 / 12
+      () => { this.$store.dispatch('project/goToNextFrameAction'); },
+      1000 / 12,
     );
   }
 
@@ -100,18 +101,18 @@ export default class Capture extends Vue {
     clearInterval(this.loop);
   }
 
-  @Watch("stream")
+  @Watch('stream')
   public onStreamChange(newValue: MediaStream, oldValue: MediaStream) {
-    console.log("onStreamChange");
+    console.log('onStreamChange');
     if (newValue) {
       (document.getElementById(
-        "videoCapture"
+        'videoCapture',
       ) as HTMLVideoElement).srcObject = newValue;
     }
   }
 
   public onActivePlanSelected(plan: Plan) {
-    console.log("plan selected", plan);
+    console.log('plan selected', plan);
   }
 }
 </script>

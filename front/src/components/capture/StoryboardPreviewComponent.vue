@@ -30,12 +30,12 @@
 
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import {Plan} from '@/api/film-service';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Plan } from '@/api/film-service';
 
   @Component
-  export default class StoryboardPreviewComponent extends Vue {
-    @Prop({required: true})
+export default class StoryboardPreviewComponent extends Vue {
+    @Prop({ required: true })
     public plans!: Plan[];
 
     @Prop()
@@ -45,6 +45,5 @@
       this.$store.dispatch('project/changeActivePlan', this.plans.findIndex(plan => plan.id === event.target.value));
       // this.$emit('change', event.target.value)
     }
-
-  }
+}
 </script>

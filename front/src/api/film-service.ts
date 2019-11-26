@@ -1,5 +1,5 @@
-import { BakuAction, BakuEvent, BakuService } from "@/api/baku-service";
-import uuid from "uuid";
+import uuid from 'uuid';
+import { BakuAction, BakuEvent, BakuService } from '@/api/baku-service';
 
 export type ImageRef = string;
 
@@ -17,7 +17,6 @@ export interface Plan {
 }
 
 export class FilmService {
-
   private readonly bakuService: BakuService = new BakuService();
 
   public async get(id: string): Promise<Film> {
@@ -46,15 +45,15 @@ export class FilmService {
   }
 
   public async insertImage(projectId: string, planId: string, imgIndex: number, image: ImageRef): Promise<BakuEvent> {
-    await this.bakuService.stack(projectId, { action: BakuAction.INSERT_IMAGE, value: { planId: planId, imageIndex: imgIndex, image: image } });
-    return { action: BakuAction.INSERT_IMAGE, value: { planId: planId, imageIndex: imgIndex, image: image }};
+    await this.bakuService.stack(projectId, { action: BakuAction.INSERT_IMAGE, value: { planId, imageIndex: imgIndex, image } });
+    return { action: BakuAction.INSERT_IMAGE, value: { planId, imageIndex: imgIndex, image } };
   }
 
   public static merge(events: BakuEvent[], projectId: string): Film {
-    let title = "Unnamed";
-    let synopsis = "Please fill a synopsis";
+    let title = 'Unnamed';
+    let synopsis = 'Please fill a synopsis';
     let poster;
-    let plans: Plan[] = [];
+    const plans: Plan[] = [];
 
     for (const event of events) {
       switch (event.action) {
@@ -72,8 +71,7 @@ export class FilmService {
           plans.push({ id, name, images: [] });
           break;
         case BakuAction.INSERT_IMAGE:
-          const { planId, imageIndex, image } =
-            event.value as { planId: string, imageIndex: number, image: ImageRef };
+          const { planId, imageIndex, image } = event.value as { planId: string, imageIndex: number, image: ImageRef };
           const plan = plans.find(plan => plan.id === planId);
           const planIndex = plans.findIndex(plan => plan.id === planId);
           if (!plan) {
@@ -86,9 +84,11 @@ export class FilmService {
     }
 
     if (plans.length == 0) {
-      plans.push({ id: uuid(), name: "Default plan", images: [] });
-      new BakuService().stack(projectId, { action: BakuAction.ADD_PLAN, value: { id: plans[0].id, name: plans[0].name} });
+      plans.push({ id: uuid(), name: 'Default plan', images: [] });
+      new BakuService().stack(projectId, { action: BakuAction.ADD_PLAN, value: { id: plans[0].id, name: plans[0].name } });
     }
-    return { title, synopsis, poster, plans };
+    return {
+      title, synopsis, poster, plans,
+    };
   }
 }

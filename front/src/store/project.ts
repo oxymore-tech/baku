@@ -1,4 +1,4 @@
-import { FilmService, ImageRef} from "@/api/film-service";
+import { FilmService, ImageRef } from '@/api/film-service';
 import { BakuEvent } from '@/api/baku-service';
 
 interface ProjectState {
@@ -18,7 +18,7 @@ export const ProjectStore = {
     id: null,
     activeFrame: 0,
     activePlanIndex: 0,
-    history: []
+    history: [],
   },
   mutations: {
     setFilm(state: ProjectState, payload: { projectId: string, filmHistory: BakuEvent[] }) {
@@ -45,31 +45,29 @@ export const ProjectStore = {
       const filmService = new FilmService();
       // const film = await filmService.get(projectId);
       const filmHistory = await filmService.getHistory(projectId);
-      await context.commit("setFilm", {projectId, filmHistory});
+      await context.commit('setFilm', { projectId, filmHistory });
     },
-    async addImageToPlan( context: {commit: any, state: ProjectState}, payload: { planId: string, imageIndex: number, image: ImageRef }) {
-       const insertEvent = await new FilmService().insertImage(
+    async addImageToPlan(context: {commit: any, state: ProjectState}, payload: { planId: string, imageIndex: number, image: ImageRef }) {
+      const insertEvent = await new FilmService().insertImage(
         context.state.id,
         payload.planId,
         payload.imageIndex,
-        payload.image
+        payload.image,
       );
-      context.commit("addToLocalHistory", insertEvent);
+      context.commit('addToLocalHistory', insertEvent);
     },
     changeActivePlan(context: any, planIndex: number) {
-      context.commit("changeActivePlan", planIndex);
+      context.commit('changeActivePlan', planIndex);
     },
     goToNextFrameAction(context: any) {
-      context.commit("goToNextFrame");
+      context.commit('goToNextFrame');
     },
   },
   getters: {
     getPictures: (state: ProjectState) => state.pictures,
-    film: (state: ProjectState) => {
-      return FilmService.merge(state.history, state.id);
-    },
+    film: (state: ProjectState) => FilmService.merge(state.history, state.id),
     getActivePlan: (state: ProjectState) => FilmService.merge(state.history, state.id).plans[state.activePlanIndex],
-    getActivePlanId: (_state: ProjectState, getters: any) => getters.getActivePlan.id
+    getActivePlanId: (_state: ProjectState, getters: any) => getters.getActivePlan.id,
   },
   modules: {},
 };

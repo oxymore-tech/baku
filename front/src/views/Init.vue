@@ -9,15 +9,14 @@
 </style>
 
 <script lang="ts">
-  import {Component, Vue} from "vue-property-decorator";
-  import {namespace} from "vuex-class";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
 
-  const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
   @Component
-  export default class Init extends Vue {
-
-    @ProjectNS.Action("loadProject")
+export default class Init extends Vue {
+    @ProjectNS.Action('loadProject')
     private loadProjectAction!: Function;
 
     public isMobile() {
@@ -25,14 +24,14 @@
     }
 
     public async created() {
-      const projectId = this.$route.query.project || "default";
+      const projectId = this.$route.query.project || 'default';
       await this.loadProjectAction(projectId);
       if (this.isMobile()) {
-        await this.$router.push("/smartphone");
+        await this.$router.push('/smartphone');
       } else {
-        await this.$router.push("/capture");
+        await this.$router.push('/capture');
       }
     }
-  }
+}
 
 </script>
