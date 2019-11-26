@@ -85,7 +85,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { ImageRef } from "@/api/film-service";
-import { ImageRef } from "../../api/film-service";
 
 @Component
 export default class CarrouselComponent extends Vue {
@@ -115,7 +114,7 @@ export default class CarrouselComponent extends Vue {
     return leftCarrousel;
   }
 
-  get computedActiveImage(): ImageRef {
+  get computedActiveImage(): ImageRef | null {
     return this.activeCapture ? null : this.images[this.activeImage];
   }
 

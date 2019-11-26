@@ -38,8 +38,6 @@ import {
 } from 'vue-property-decorator';
 import { State } from 'vuex-class';
 import { Device } from '@/api/device.class';
-import { BakuService, BakuAction } from '../../api/baku-service';
-import { FilmService } from '../../api/film-service';
 
 @Component
 export default class CaptureButtonComponent extends Vue {

@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 import { BakuAction, BakuEvent, BakuService } from '@/api/baku-service';
 
 export type ImageRef = string;
@@ -40,8 +40,10 @@ export class FilmService {
     await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: poster });
   }
 
-  public async addPlan(projectId: string, name: string): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.ADD_PLAN, value: name });
+  public async addPlan(projectId: string, name: string): Promise<BakuEvent> {
+    const event = { action: BakuAction.ADD_PLAN, value: { id: uuid.v4(), name } };
+    await this.bakuService.stack(projectId, event);
+    return event;
   }
 
   public async insertImage(projectId: string, planId: string, imgIndex: number, image: ImageRef): Promise<BakuEvent> {
@@ -81,11 +83,6 @@ export class FilmService {
           plans.splice(planIndex, 1, plan);
           break;
       }
-    }
-
-    if (plans.length == 0) {
-      plans.push({ id: uuid(), name: 'Default plan', images: [] });
-      new BakuService().stack(projectId, { action: BakuAction.ADD_PLAN, value: { id: plans[0].id, name: plans[0].name } });
     }
     return {
       title, synopsis, poster, plans,
