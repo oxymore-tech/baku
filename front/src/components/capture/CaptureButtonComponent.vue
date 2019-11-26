@@ -153,27 +153,27 @@ export default class CaptureButtonComponent extends Vue {
         deviceId: { exact: this.device.id }
       }
     });
-    this.$store.commit("capture/attachMediaStream", stream);
+    this.$store.commit('capture/attachMediaStream', stream);
   }
 
   private captureSmartphone() {
     this.dataChannel.send(
       JSON.stringify({
-        message: "capture",
+        message: 'capture',
         projectId: this.projectId,
         plan: this.activePlan,
-        type: "cmd"
+        type: 'cmd'
       })
     );
   }
 
   private async captureWebcam() {
     const pictureId = await this.device.capture(
-      "videoCapture",
+      'videoCapture',
       this.projectId,
       this.activePlan
     );
-    this.$store.dispatch("project/addImageToPlan", {
+    this.$store.dispatch('project/addImageToPlan', {
       planId: this.activePlan,
       imageIndex: this.activeIndex,
       image: pictureId

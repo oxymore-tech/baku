@@ -30,8 +30,8 @@
 
 
 <script lang="ts">
-  import {Component, Prop, Vue} from "vue-property-decorator";
-  import {Plan} from "@/api/film-service";
+  import {Component, Prop, Vue} from 'vue-property-decorator';
+  import {Plan} from '@/api/film-service';
 
   @Component
   export default class StoryboardPreviewComponent extends Vue {
