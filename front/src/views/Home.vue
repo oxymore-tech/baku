@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div class="leftPanel">
-      toto
+      Lorem Ipsum
       <button @click="onCreateProject">Créer un film</button>
     </div>
     <div class="rightPanel"></div>
