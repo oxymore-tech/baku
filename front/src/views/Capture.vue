@@ -84,7 +84,7 @@ export default class Capture extends Vue {
   @CaptureNS.State
   public stream!: MediaStream | null;
 
-  private isPlaying = false;
+  isPlaying = false;
 
   private loop: any;
 
