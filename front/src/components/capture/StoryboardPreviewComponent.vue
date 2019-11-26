@@ -1,58 +1,49 @@
 <template>
-    <div class="boxContainer storyboard-preview-container">
-        <div>
-            <h4>Storyboard</h4>
-        </div>
-        <img src="@/assets/storyboard.png"/>
-        <select @change="onPlanSelectChange($event)">
-            <option
-                    v-for="plan in plans"
-                    v-bind:key="plan"
-                    :value="plan"
-                    :selected="plan === activePlan"
-            >{{plan}}
-            </option>
-        </select>
-        <b-button label="Test" @click="test"/>
+  <div class="boxContainer storyboard-preview-container">
+    <div>
+      <h4>Storyboard</h4>
     </div>
+    <img src="@/assets/storyboard.png"/>
+    <select @change="onChange">
+      <option
+        v-for="plan in plans"
+        :key="plan.id"
+        :value="plan.id"
+        :selected="plan.id === activePlanId"
+      >{{plan.name}}
+      </option>
+    </select>
+  </div>
 </template>
 
 <style lang="scss">
-    .storyboard-preview-container {
-        width: 290px;
+  .storyboard-preview-container {
+    width: 290px;
+    height: 256px;
 
-        h4 {
-            font-size: 28px;
-            font-weight: bold;
-        }
+    h4 {
+      font-size: 28px;
+      font-weight: bold;
     }
+  }
 </style>
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { BakuService } from '@/api/baku-service';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Plan } from '@/api/film-service';
 
-const ProjectNS = namespace('project');
-
-    @Component
+  @Component
 export default class StoryboardPreviewComponent extends Vue {
-        @ProjectNS.State
-        public plans!: string[];
+    @Prop({ required: true })
+    public plans!: Plan[];
 
-        @ProjectNS.State
-        public activePlan!: string;
+    @Prop()
+    public activePlanId!: string;
 
-        public onPlanSelectChange(event: any) {
-          this.$store.commit('project/changePlan', event.target.value);
-        }
-
-        public static async test() {
-          const bakuService = new BakuService();
-          const blob = new Blob();
-          const ref = await bakuService.upload('1', '0', blob, 'test');
-          console.log('Uploaded ', ref);
-        }
+    public onChange(event: any) {
+      this.$store.dispatch('project/changeActivePlan', this.plans.findIndex(plan => plan.id === event.target.value));
+      // this.$emit('change', event.target.value)
+    }
 }
 </script>

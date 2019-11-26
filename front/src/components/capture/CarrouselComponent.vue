@@ -1,46 +1,133 @@
-<!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
   <div class="carrouselContainer">
+    <!-- LEFT PART OF THE CARROUSEL -->
+    <template v-for="image in computedLeftCarrousel">
+      <template v-if="image !== null">
+        <img
+          class="carrouselThumb"
+          :key="image"
+          :alt="image"
+          :src="`/${projectId}/images/${activePlan}/${image}?width=185&height=104`"
+        />
+      </template>
+      <template v-else>
+        <div :key="image" class="carrouselThumb"></div>
+      </template>
+    </template>
+
+    <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
+    <template v-if="computedActiveImage !== null">
       <img
-       v-for="picture in pictures"
-       v-bind:key="picture"
-       :src="`/${id}/images/${activePlan}/${picture}?width=185&height=104`">
+        class="carrouselThumb active"
+        :alt="computedActiveImage"
+        :src="`/${projectId}/images/${activePlan}/${computedActiveImage}?width=185&height=104`"
+      />
+    </template>
+    <template v-else>
+      <div class="carrouselThumb active">
+        <img class="captureIcon" src="@/assets/camera-solid-orange.svg" />
+      </div>
+    </template>
+
+    <!-- RIGHT PART OF THE CARROUSEL -->
+    <template v-for="image in computedRightCarrousel">
+      <template v-if="image !== null">
+        <img
+          class="carrouselThumb"
+          :key="image"
+          :alt="image"
+          :src="`/${projectId}/images/${activePlan}/${image}?width=185&height=104`"
+        />
+      </template>
+      <template v-else>
+        <div :key="image" class="carrouselThumb"></div>
+      </template>
+    </template>
   </div>
 </template>
 
 <style lang="scss">
 .carrouselContainer {
-  background:white;
+  background: white;
   width: 100%;
   height: 104px;
-  overflow-x: scroll;
   display: inline-flex;
-  img {
+  padding: 12px 21px;
+  align-items: center;
+
+  .carrouselThumb {
+    height: 78px;
+    width: 140px;
     margin: 0 7px;
-    max-height: 104px;
+    border: 1px solid #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .inSelection {
+    border: 1px solid #27a2bb;
+  }
+
+  .active {
+    border: 2px solid #455054;
+    box-sizing: content-box;
+    border-radius: 3px;
+  }
+
+  .captureIcon {
+    width: 48px;
+    height: 43px;
   }
 }
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-
-const ProjectNS = namespace('project');
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { ImageRef } from "@/api/film-service";
+import { ImageRef } from "../../api/film-service";
 
 @Component
 export default class CarrouselComponent extends Vue {
-  @ProjectNS.State
-  public pictures!: string[];
+  @Prop()
+  public images!: ImageRef[];
 
-  @ProjectNS.State
+  @Prop()
+  public projectId!: string;
+
+  @Prop()
   public activePlan!: string;
 
-  @ProjectNS.State
-  public id!: string;
+  @Prop()
+  public activeImage!: number;
 
-  public mounted() {
-    console.log(this.$store);
+  @Prop()
+  public activeCapture!: boolean;
+
+  get computedLeftCarrousel(): ImageRef[] {
+    const sliceIndex = this.activeCapture
+      ? this.images.length
+      : this.activeImage;
+    const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-5);
+    const leftCarrousel = Array(5 - leftImagesAvaible.length)
+      .fill(null)
+      .concat(leftImagesAvaible);
+    return leftCarrousel;
+  }
+
+  get computedActiveImage(): ImageRef {
+    return this.activeCapture ? null : this.images[this.activeImage];
+  }
+
+  get computedRightCarrousel(): ImageRef[] {
+    const sliceIndex = this.activeCapture
+      ? this.images.length
+      : this.activeImage + 1;
+    const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
+    const rightCarrousel = rightImagesAvaible.concat(
+      Array(6 - rightImagesAvaible.length).fill(null)
+    );
+    return rightCarrousel;
   }
 }
 </script>

@@ -19,20 +19,20 @@
         v-model="selectedDeviceId"
         size="is-small"
       >
-        <option
-          v-for="device in devices"
-          :key="device.id"
-          :value="device.id">{{device.label}}
-        </option>
+        <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
       </b-select>
     </b-field>
-    <CaptureButtonComponent v-if="selectedDevice" :device="selectedDevice"/>
+    <CaptureButtonComponent v-if="selectedDevice"
+                            :device="selectedDevice"
+                            :projectId="projectId"
+                            :activePlan="activePlan"
+                            :activeIndex="activeIndex"/>
   </b-collapse>
 </template>
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
@@ -55,6 +55,15 @@ export default class CaptureToolboxComponent extends Vue {
 
     @CaptureNS.State
     public activeCapture!: boolean;
+
+    @Prop()
+    public projectId!: string;
+
+    @Prop()
+    public activePlan!: string;
+
+    @Prop()
+    public activeIndex!: number;
 
     public async mounted() {
       const devices = await navigator.mediaDevices.enumerateDevices();

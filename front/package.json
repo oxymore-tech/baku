@@ -14,7 +14,6 @@
     "buefy": "^0.8.6",
     "caman": "^4.1.2",
     "core-js": "^3.3.2",
-    "immutable": "^4.0.0-rc.12",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
     "uuid": "^3.3.3",
@@ -44,6 +43,7 @@
     "rxjs-tslint-rules": "^4.26.1",
     "tslint-consistent-codestyle": "^1.16.0",
     "typescript": "~3.5.3",
+    "uuidv4": "^6.0.0",
     "vue-template-compiler": "^2.6.10",
     "vuex-module-decorators": "^0.10.1"
   }
