@@ -36,6 +36,7 @@
       :projectId="id"
       :activePlan="getActivePlan.id"
       :images="getActivePlan.images"
+      :activeImage="activeFrame"
     />
   </div>
 </template>
