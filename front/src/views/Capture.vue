@@ -37,6 +37,7 @@
       :activePlan="getActivePlan.id"
       :images="getActivePlan.images"
       :activeImage="activeFrame"
+      :activeCapture="activeCapture"
     />
   </div>
 </template>

@@ -1,5 +1,6 @@
 <template>
   <div class="carrouselContainer">
+    <!-- LEFT PART OF THE CARROUSEL -->
     <template v-for="image in computedLeftCarrousel">
       <template v-if="image !== null">
         <img
@@ -13,11 +14,22 @@
         <div :key="image" class="carrouselThumb"></div>
       </template>
     </template>
-    <img
-      class="carrouselThumb active"
-      :alt="computedActiveImage"
-      :src="`/${projectId}/images/${activePlan}/${computedActiveImage}?width=185&height=104`"
-    />
+
+    <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
+    <template v-if="computedActiveImage !== null">
+      <img
+        class="carrouselThumb active"
+        :alt="computedActiveImage"
+        :src="`/${projectId}/images/${activePlan}/${computedActiveImage}?width=185&height=104`"
+      />
+    </template>
+    <template v-else>
+      <div class="carrouselThumb active">
+        <img class="captureIcon" src="@/assets/camera-solid-orange.svg" />
+      </div>
+    </template>
+
+    <!-- RIGHT PART OF THE CARROUSEL -->
     <template v-for="image in computedRightCarrousel">
       <template v-if="image !== null">
         <img
@@ -41,12 +53,16 @@
   height: 104px;
   display: inline-flex;
   padding: 12px 21px;
+  align-items: center;
 
   .carrouselThumb {
     height: 78px;
-    width: 140px;;
+    width: 140px;
     margin: 0 7px;
     border: 1px solid #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .inSelection {
@@ -54,8 +70,14 @@
   }
 
   .active {
-    border: 2px solid black;
+    border: 2px solid #455054;
+    box-sizing: content-box;
     border-radius: 3px;
+  }
+
+  .captureIcon {
+    width: 48px;
+    height: 43px;
   }
 }
 </style>
@@ -79,8 +101,14 @@ export default class CarrouselComponent extends Vue {
   @Prop()
   public activeImage!: number;
 
+  @Prop()
+  public activeCapture!: boolean;
+
   get computedLeftCarrousel(): ImageRef[] {
-    const leftImagesAvaible = this.images.slice(0, this.activeImage).slice(-5);
+    const sliceIndex = this.activeCapture
+      ? this.images.length
+      : this.activeImage;
+    const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-5);
     const leftCarrousel = Array(5 - leftImagesAvaible.length)
       .fill(null)
       .concat(leftImagesAvaible);
@@ -88,11 +116,14 @@ export default class CarrouselComponent extends Vue {
   }
 
   get computedActiveImage(): ImageRef {
-    return this.images[this.activeImage];
+    return this.activeCapture ? null : this.images[this.activeImage];
   }
 
   get computedRightCarrousel(): ImageRef[] {
-    const rightImagesAvaible = this.images.slice(this.activeImage +1 ).slice(0, 6);
+    const sliceIndex = this.activeCapture
+      ? this.images.length
+      : this.activeImage + 1;
+    const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
     const rightCarrousel = rightImagesAvaible.concat(
       Array(6 - rightImagesAvaible.length).fill(null)
     );
