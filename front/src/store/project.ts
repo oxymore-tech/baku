@@ -1,4 +1,4 @@
-import { FilmService, ImageRef } from "@/api/film-service";
+import { FilmService, ImageRef, Film, Plan } from "@/api/film-service";
 import { BakuEvent } from "@/api/baku-service";
 
 interface ProjectState {
@@ -7,7 +7,7 @@ interface ProjectState {
   id: string;
   activeFrame: number;
   activePlanIndex: number;
-  history: BakuEvent[]
+  history: BakuEvent[];
 }
 
 export const ProjectStore = {
@@ -33,7 +33,7 @@ export const ProjectStore = {
       state.activePlanIndex = planIndex;
     },
     goToNextFrame(state: ProjectState) {
-      if (state.activeFrame === FilmService.merge(state.history, state.id).plans[state.activePlanIndex].images.length - 1) {
+      if (state.activeFrame === FilmService.merge(state.history).plans[state.activePlanIndex].images.length - 1) {
         state.activeFrame = 0;
       } else {
         state.activeFrame++;
@@ -70,9 +70,9 @@ export const ProjectStore = {
   },
   getters: {
     getPictures: (state: ProjectState) => state.pictures,
-    film: (state: ProjectState) => FilmService.merge(state.history, state.id),
-    getActivePlan: (state: ProjectState) => FilmService.merge(state.history, state.id).plans[state.activePlanIndex],
-    getActivePlanId: (state: ProjectState, getters: any) => getters.getActivePlan.id,
+    film: (state: ProjectState): Film => FilmService.merge(state.history),
+    getActivePlan: (state: ProjectState, getters: any): Plan => getters.film.plans[state.activePlanIndex],
+    getActivePlanId: (state: ProjectState, getters: any): string => getters.getActivePlan.id,
   },
   modules: {},
 };
