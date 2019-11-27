@@ -17,41 +17,7 @@ export interface Plan {
 }
 
 export class FilmService {
-  private readonly bakuService: BakuService = new BakuService();
-
-  public async get(id: string): Promise<Film> {
-    const events = await this.bakuService.getHistory(id);
-    return FilmService.merge(events, id);
-  }
-
-  public async getHistory(id: string): Promise<BakuEvent[]> {
-    return await this.bakuService.getHistory(id);
-  }
-
-  public async updateTitle(projectId: string, title: string): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_TITLE, value: title });
-  }
-
-  public async updateSynopsis(projectId: string, synopsis: string): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: synopsis });
-  }
-
-  public async updatePoster(projectId: string, poster: ImageRef): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: poster });
-  }
-
-  public async addPlan(projectId: string, name: string): Promise<BakuEvent> {
-    const event = { action: BakuAction.ADD_PLAN, value: { id: uuid.v4(), name } };
-    await this.bakuService.stack(projectId, event);
-    return event;
-  }
-
-  public async insertImage(projectId: string, planId: string, imgIndex: number, image: ImageRef): Promise<BakuEvent> {
-    await this.bakuService.stack(projectId, { action: BakuAction.INSERT_IMAGE, value: { planId, imageIndex: imgIndex, image } });
-    return { action: BakuAction.INSERT_IMAGE, value: { planId, imageIndex: imgIndex, image } };
-  }
-
-  public static merge(events: BakuEvent[], projectId: string): Film {
+  public static merge(events: BakuEvent[]): Film {
     let title = 'Unnamed';
     let synopsis = 'Please fill a synopsis';
     let poster;
@@ -87,5 +53,39 @@ export class FilmService {
     return {
       title, synopsis, poster, plans,
     };
+  }
+
+  private readonly bakuService: BakuService = new BakuService();
+
+  public async get(id: string): Promise<Film> {
+    const events = await this.bakuService.getHistory(id);
+    return FilmService.merge(events);
+  }
+
+  public async getHistory(id: string): Promise<BakuEvent[]> {
+    return await this.bakuService.getHistory(id);
+  }
+
+  public async updateTitle(projectId: string, title: string): Promise<void> {
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_TITLE, value: title });
+  }
+
+  public async updateSynopsis(projectId: string, synopsis: string): Promise<void> {
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: synopsis });
+  }
+
+  public async updatePoster(projectId: string, poster: ImageRef): Promise<void> {
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: poster });
+  }
+
+  public async addPlan(projectId: string, name: string): Promise<BakuEvent> {
+    const event = { action: BakuAction.ADD_PLAN, value: { id: uuid.v4(), name } };
+    await this.bakuService.stack(projectId, event);
+    return event;
+  }
+
+  public async insertImage(projectId: string, planId: string, imgIndex: number, image: ImageRef): Promise<BakuEvent> {
+    await this.bakuService.stack(projectId, { action: BakuAction.INSERT_IMAGE, value: { planId, imageIndex: imgIndex, image } });
+    return { action: BakuAction.INSERT_IMAGE, value: { planId, imageIndex: imgIndex, image } };
   }
 }

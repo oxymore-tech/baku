@@ -1,6 +1,6 @@
 interface CaptureState {
-    stream: MediaStream | null;
-    activeCapture: boolean;
+  stream: MediaStream | null;
+  activeCapture: boolean;
 }
 
 export const captureStore = {
@@ -26,6 +26,12 @@ export const captureStore = {
     },
   },
   actions: {
+    setActiveCapture(context: { commit: any, state: CaptureState }, activeCapture: boolean) {
+      context.commit("setActiveCapture", activeCapture);
+      if (activeCapture === false) {
+        context.commit("detachMediaStream");
+      }
+    },
   },
   getters: {
   },

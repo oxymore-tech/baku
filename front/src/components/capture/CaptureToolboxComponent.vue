@@ -92,7 +92,7 @@ export default class CaptureToolboxComponent extends Vue {
     }
 
     public setActiveCapture(isActiveCapture: boolean) {
-      this.$store.commit('capture/setActiveCapture', isActiveCapture);
+      this.$store.dispatch('capture/setActiveCapture', isActiveCapture);
     }
 }
 </script>
