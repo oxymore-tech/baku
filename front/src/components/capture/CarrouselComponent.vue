@@ -17,7 +17,7 @@
 
     <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
     <template v-if="computedActiveImage !== null">
-      <img
+      <img v-if="computedActiveImage !== undefined"
         class="carrouselThumb active"
         :alt="computedActiveImage"
         :src="`/${projectId}/images/${activePlan}/${computedActiveImage}?width=185&height=104`"

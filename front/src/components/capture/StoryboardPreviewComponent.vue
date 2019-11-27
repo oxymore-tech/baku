@@ -2,17 +2,9 @@
   <div class="boxContainer storyboard-preview-container">
     <div>
       <h4>Storyboard</h4>
+      <button @click="onDisplayPlansStack()">Le bouton pour ouvrir la stack</button>
     </div>
     <img src="@/assets/storyboard.png"/>
-    <select @change="onChange">
-      <option
-        v-for="plan in plans"
-        :key="plan.id"
-        :value="plan.id"
-        :selected="plan.id === activePlanId"
-      >{{plan.name}}
-      </option>
-    </select>
   </div>
 </template>
 
@@ -41,9 +33,11 @@ export default class StoryboardPreviewComponent extends Vue {
     @Prop()
     public activePlanId!: string;
 
-    public onChange(event: any) {
-      this.$store.dispatch('project/changeActivePlan', this.plans.findIndex(plan => plan.id === event.target.value));
-      // this.$emit('change', event.target.value)
+    @Prop()
+    public displayPlansStack!: boolean
+
+    public onDisplayPlansStack() {
+      this.$emit('changedisplayplansstack');
     }
 }
 </script>
