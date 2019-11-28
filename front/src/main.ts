@@ -18,6 +18,6 @@ Vue.component(VueQrcode.name, VueQrcode);
 
 new Vue({
   router,
-  render: h => h(App),
+  render: (h) => h(App),
   store,
 }).$mount('#app');

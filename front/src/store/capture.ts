@@ -27,9 +27,9 @@ export const captureStore = {
   },
   actions: {
     setActiveCapture(context: { commit: any, state: CaptureState }, activeCapture: boolean) {
-      context.commit("setActiveCapture", activeCapture);
+      context.commit('setActiveCapture', activeCapture);
       if (activeCapture === false) {
-        context.commit("detachMediaStream");
+        context.commit('detachMediaStream');
       }
     },
   },

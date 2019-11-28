@@ -26,25 +26,24 @@
     "vuex-class": "^0.3.2"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
     "@vue/cli": "^4.0.0",
     "@vue/cli-plugin-babel": "^4.0.0",
-    "@vue/cli-plugin-eslint": "^4.0.5",
+    "@vue/cli-plugin-eslint": "^4.1.1",
     "@vue/cli-plugin-router": "^4.0.0",
-    "@vue/cli-plugin-typescript": "^4.0.0",
+    "@vue/cli-plugin-typescript": "^4.1.1",
     "@vue/cli-plugin-vuex": "^4.0.0",
     "@vue/cli-service": "^4.0.0",
-    "@vue/eslint-config-airbnb": "^4.0.0",
-    "@vue/eslint-config-typescript": "^4.0.0",
-    "codelyzer": "^5.2.0",
-    "eslint": "^5.16.0",
+    "@vue/eslint-config-airbnb": "^5.0.0",
+    "@vue/eslint-config-typescript": "^5.0.1",
+    "eslint": "^6.7.1",
     "eslint-config-typescript": "^3.0.0",
-    "eslint-plugin-vue": "^5.2.3",
+    "eslint-plugin-vue": "^6.0.1",
     "prettier": "^1.18.2",
-    "rxjs-tslint-rules": "^4.26.1",
-    "tslint-consistent-codestyle": "^1.16.0",
-    "typescript": "~3.5.3",
+    "typescript": "~3.7.2",
     "uuidv4": "^6.0.0",
     "vue-template-compiler": "^2.6.10",
-    "vuex-module-decorators": "^0.10.1"
+    "vuex-module-decorators": "^0.11.0"
   }
 }

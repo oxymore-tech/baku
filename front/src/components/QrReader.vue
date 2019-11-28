@@ -9,8 +9,19 @@
       <b>{{ socketId }}</b>
     </p>
 
-    <qrcode-stream @decode="onDecode" @init="onInit" v-if="activeqrreader" />
-    <video id="localVideo" autoplay playsinline v-else width="1920" height="1080"></video>
+    <qrcode-stream
+      @decode="onDecode"
+      @init="onInit"
+      v-if="activeqrreader"
+    />
+    <video
+      id="localVideo"
+      autoplay
+      playsinline
+      v-else
+      width="1920"
+      height="1080"
+    ></video>
   </div>
 </template>
 
@@ -69,7 +80,7 @@ export default class QrReader extends Vue {
       this.onIceCandidate.bind(this),
     );
 
-    this.peerConnection.onconnectionstatechange = (event) => {
+    this.peerConnection.onconnectionstatechange = (_event) => {
       if (this.peerConnection.connectionState === 'connected') {
         // CONNECTION OK
         console.log('CONNECTION OK');
@@ -136,7 +147,7 @@ export default class QrReader extends Vue {
 
     stream
       .getVideoTracks()
-      .forEach(track => this.peerConnection.addTrack(track, stream));
+      .forEach((track) => this.peerConnection.addTrack(track, stream));
     try {
       console.log('remoteOffer', remoteOffer, this.peerConnection);
       await this.peerConnection.setRemoteDescription(remoteOffer);

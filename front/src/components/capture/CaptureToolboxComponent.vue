@@ -7,7 +7,12 @@
     @open="setActiveCapture(true)"
     @close="setActiveCapture(false)"
   >
-    <div slot="trigger" class="panel-heading" role="button" aria-controls="contentIdForA11y2">
+    <div
+      slot="trigger"
+      class="panel-heading"
+      role="button"
+      aria-controls="contentIdForA11y2"
+    >
       <strong>mode capture</strong>
     </div>
 
@@ -19,14 +24,20 @@
         v-model="selectedDeviceId"
         size="is-small"
       >
-        <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
+        <option
+          v-for="device in devices"
+          :key="device.id"
+          :value="device.id"
+        >{{device.label}}</option>
       </b-select>
     </b-field>
-    <CaptureButtonComponent v-if="selectedDevice"
-                            :device="selectedDevice"
-                            :projectId="projectId"
-                            :activePlan="activePlan"
-                            :activeIndex="activeIndex"/>
+    <CaptureButtonComponent
+      v-if="selectedDevice"
+      :device="selectedDevice"
+      :projectId="projectId"
+      :activePlan="activePlan"
+      :activeIndex="activeIndex"
+    />
   </b-collapse>
 </template>
 
@@ -40,66 +51,66 @@ import { Device } from '@/api/device.class';
 
 const CaptureNS = namespace('capture');
 
-  @Component({
-    components: {
-      SmartphoneSynchroPopup,
-      CaptureButtonComponent,
-    },
-  })
+@Component({
+  components: {
+    SmartphoneSynchroPopup,
+    CaptureButtonComponent,
+  },
+})
 export default class CaptureToolboxComponent extends Vue {
-    public devices: Device[] = [];
+  public devices: Device[] = [];
 
-    public selectedDeviceId: string | null = null;
+  public selectedDeviceId: string | null = null;
 
-    public selectedDevice: Device | null = null;
+  public selectedDevice: Device | null = null;
 
-    @CaptureNS.State
-    public activeCapture!: boolean;
+  @CaptureNS.State
+  public activeCapture!: boolean;
 
-    @Prop()
-    public projectId!: string;
+  @Prop()
+  public projectId!: string;
 
-    @Prop()
-    public activePlan!: string;
+  @Prop()
+  public activePlan!: string;
 
-    @Prop()
-    public activeIndex!: number;
+  @Prop()
+  public activeIndex!: number;
 
-    public async mounted() {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
-        .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label || 'Caméra non reconnue')));
-      const deviceIds = [...new Set(videoDevices.map(d => d.id))];
-      this.devices = deviceIds
-        .map(id => videoDevices.find(d => d.id === id) as Device);
-      this.devices.push(new Device('smartphone', 'Smartphone'));
+  public async mounted() {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoDevices = devices.filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
+      .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label || 'Caméra non reconnue')));
+    const deviceIds = [...new Set(videoDevices.map((d) => d.id))];
+    this.devices = deviceIds
+      .map((id) => videoDevices.find((d) => d.id === id) as Device);
+    this.devices.push(new Device('smartphone', 'Smartphone'));
+  }
+
+  public onCaptureDeviceChange() {
+    this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
+
+    if (
+      this.selectedDevice
+      && this.selectedDevice.isSmartphone()
+      && !this.$store.state.dataChannel
+    ) {
+      this.$buefy.modal.open({
+        parent: this,
+        component: SmartphoneSynchroPopup,
+        hasModalCard: true,
+      });
     }
+  }
 
-    public onCaptureDeviceChange() {
-      this.selectedDevice = this.devices.find(d => d.id === this.selectedDeviceId) || null;
-
-      if (
-        this.selectedDevice
-        && this.selectedDevice.isSmartphone()
-        && !this.$store.state.dataChannel
-      ) {
-        this.$buefy.modal.open({
-          parent: this,
-          component: SmartphoneSynchroPopup,
-          hasModalCard: true,
-        });
-      }
-    }
-
-    public setActiveCapture(isActiveCapture: boolean) {
-      this.$store.dispatch('capture/setActiveCapture', isActiveCapture);
-    }
+  public setActiveCapture(isActiveCapture: boolean) {
+    this.$store.dispatch('capture/setActiveCapture', isActiveCapture);
+  }
 }
 </script>
 
 <style lang="scss">
-  .collapse-content {
-    background-color: white;
-    padding: 6px;
-  }
+.collapse-content {
+  background-color: white;
+  padding: 6px;
+}
 </style>

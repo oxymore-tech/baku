@@ -16,17 +16,26 @@
           class="planPreview"
           :src="`/${projectId}/images/${plan.id}/${plan.images[0]}?width=292&height=193`"
         />
-        <div class="planPreview" v-else></div>
+        <div
+          class="planPreview"
+          v-else
+        ></div>
         <div class="cardFooter">
           <span class="planName">{{plan.name}}</span>
-          <a class="activatePlan" @click="activatePlan(plan.id)">Ouvrir le plan</a>
+          <a
+            class="activatePlan"
+            @click="activatePlan(plan.id)"
+          >Ouvrir le plan</a>
         </div>
       </div>
       <div class="planCard">
         <div class="planPreview"></div>
         <div class="cardFooter">
           <span class="planName">Nouveau Plan</span>
-          <a class="activatePlan" @click="createNewPlan()">Créer un nouveau plan</a>
+          <a
+            class="activatePlan"
+            @click="createNewPlan()"
+          >Créer un nouveau plan</a>
         </div>
       </div>
     </div>
@@ -103,8 +112,8 @@
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { Plan } from "../api/film-service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Plan } from '../api/film.service';
 
 @Component
 export default class PlansStack extends Vue {
@@ -117,18 +126,18 @@ export default class PlansStack extends Vue {
   @Prop({ required: true })
   public projectId!: string;
 
-  closeStack() {
-    this.$emit("closestack");
+  public closeStack() {
+    this.$emit('closestack');
   }
 
-  activatePlan(id: string) {
-    const planIndex = this.plans.findIndex(plan => plan.id === id);
-    this.$store.dispatch("project/changeActivePlan", planIndex);
-    this.$emit("closestack");
+  public activatePlan(id: string) {
+    const planIndex = this.plans.findIndex((plan) => plan.id === id);
+    this.$store.dispatch('project/changeActivePlan', planIndex);
+    this.$emit('closestack');
   }
 
-  createNewPlan() {
-    this.$store.dispatch("project/createPlan", "Nouveau Plan");
+  public createNewPlan() {
+    this.$store.dispatch('project/createPlan', 'Nouveau Plan');
   }
 }
 </script>

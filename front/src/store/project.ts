@@ -1,5 +1,7 @@
-import { FilmService, ImageRef, Film, Plan } from "@/api/film-service";
-import { BakuEvent } from "@/api/baku-service";
+import {
+  FilmService, Film, Plan,
+} from '@/api/film.service';
+import { BakuEvent, ImageRef } from '@/api/baku.service';
 
 interface ProjectState {
   pictures: string[];
@@ -41,31 +43,31 @@ export const ProjectStore = {
     },
   },
   actions: {
-    async loadProject(context: any, projectId: string) {
+    async loadProject(context: any, projectId: string): Promise<void> {
       const filmService = new FilmService();
       // const film = await filmService.get(projectId);
       const filmHistory = await filmService.getHistory(projectId);
-      await context.commit("setFilm", { projectId, filmHistory });
+      await context.commit('setFilm', { projectId, filmHistory });
     },
     async addImageToPlan(context: { commit: any, state: ProjectState },
-      payload: { planId: string, imageIndex: number, image: ImageRef }) {
+      payload: { planId: string, imageIndex: number, image: ImageRef }): Promise<void> {
       const insertEvent = await new FilmService().insertImage(
         context.state.id,
         payload.planId,
         payload.imageIndex,
         payload.image,
       );
-      context.commit("addToLocalHistory", insertEvent);
+      context.commit('addToLocalHistory', insertEvent);
     },
     changeActivePlan(context: { commit: any, state: ProjectState }, planIndex: number) {
-      context.commit("changeActivePlan", planIndex);
+      context.commit('changeActivePlan', planIndex);
     },
     goToNextFrameAction(context: any) {
-      context.commit("goToNextFrame");
+      context.commit('goToNextFrame');
     },
-    async createPlan(context: { commit: any, state: ProjectState }, name = "Default plan") {
+    async createPlan(context: { commit: any, state: ProjectState }, name = 'Default plan'): Promise<void> {
       const createEvent = await new FilmService().addPlan(context.state.id, name);
-      context.commit("addToLocalHistory", createEvent);
+      context.commit('addToLocalHistory', createEvent);
     },
   },
   getters: {

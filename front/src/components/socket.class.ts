@@ -12,7 +12,7 @@ export class WSSocket {
 
   constructor() {
     try {
-      this.socket = new WebSocket(`wss://${location.hostname}:3030/echo`);
+      this.socket = new WebSocket(`wss://${window.location.hostname}:3030/echo`);
     } catch (e) {
       store.commit('setSocketStatus', 'error');
     }

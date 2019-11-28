@@ -15,10 +15,10 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component({})
 export default class App extends Vue {

@@ -1,6 +1,9 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <div class="modal-card" style="width: auto">
+  <div
+    class="modal-card"
+    style="width: auto"
+  >
     <header class="modal-card-head">
       <p class="modal-card-title">Synchroniser la caméra smartphone</p>
     </header>
@@ -10,21 +13,34 @@
         <li>Autoriser la caméra</li>
         <li>Fixer le QR Code avec la caméra de votre smartphone</li>
       </ul>
-      <qrcode :value="qrvalue" :options="options" v-if="qrvalue && status !== 'CONNECTED'"></qrcode>
+      <qrcode
+        :value="qrvalue"
+        :options="options"
+        v-if="qrvalue && status !== 'CONNECTED'"
+      ></qrcode>
       <h1
         class="title is-4 has-text-warning"
-        v-if="status === 'WAITING'">
+        v-if="status === 'WAITING'"
+      >
         Synchronisation en attente...
       </h1>
       <h1
         class="title is-4 has-text-danger"
-        v-if="status === 'ERROR'">
+        v-if="status === 'ERROR'"
+      >
         Erreur de synchronisation
       </h1>
-      <h1 class="title is-4 has-text-success" v-if="status === 'CONNECTED'">Synchronisation OK</h1>
+      <h1
+        class="title is-4 has-text-success"
+        v-if="status === 'CONNECTED'"
+      >Synchronisation OK</h1>
     </section>
     <footer class="modal-card-foot">
-      <b-button class="button" type="button" @click="$parent.close()">Fermer</b-button>
+      <b-button
+        class="button"
+        type="button"
+        @click="$parent.close()"
+      >Fermer</b-button>
     </footer>
   </div>
 </template>
@@ -124,7 +140,7 @@ export default class QrGenerator extends Vue {
       this.onIceCandidate.bind(this),
     );
 
-    this.peerConnection.onconnectionstatechange = (event) => {
+    this.peerConnection.onconnectionstatechange = (_event) => {
       if (this.peerConnection.connectionState === 'connected') {
         // CONNECTION OK
         console.log('CONNECTION OK');

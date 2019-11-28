@@ -1,12 +1,12 @@
 import * as uuid from 'uuid';
-import { BakuService } from '@/api/baku-service';
+import { BakuService } from '@/api/baku.service';
 
 export class Device {
-  private readonly bakuService: BakuService = new BakuService();
-
   public readonly id: string;
 
   public readonly label: string;
+
+  private readonly bakuService: BakuService = new BakuService();
 
   constructor(id: string, label: string) {
     this.id = id;
@@ -26,7 +26,7 @@ export class Device {
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
     const base64 = canvas.toDataURL('image/jpeg');
     const blob = this.imagetoblob(base64);
-    return await this.bakuService.upload(projectId, planId, blob, `${uuid.v4()}.jpg`);
+    return this.bakuService.upload(projectId, planId, blob, `${uuid.v4()}.jpg`);
   }
 
   private imagetoblob(base64String: string): Blob {
@@ -41,10 +41,7 @@ export class Device {
     return this.b64toBlob(realData, contentType);
   }
 
-  private b64toBlob(b64Data: string, contentType: string, sliceSize?: number): Blob {
-    contentType = contentType || '';
-    sliceSize = sliceSize || 512;
-
+  private b64toBlob(b64Data: string, contentType: string = '', sliceSize: number = 512): Blob {
     const byteCharacters = atob(b64Data);
     const byteArrays = [];
 

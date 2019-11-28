@@ -1,7 +1,7 @@
 import * as uuid from 'uuid';
-import { BakuAction, BakuEvent, BakuService } from '@/api/baku-service';
-
-export type ImageRef = string;
+import {
+  BakuAction, BakuEvent, BakuService, ImageRef,
+} from '@/api/baku.service';
 
 export interface Film {
   readonly title: string;
@@ -23,7 +23,7 @@ export class FilmService {
     let poster;
     const plans: Plan[] = [];
 
-    for (const event of events) {
+    events.forEach((event) => {
       switch (event.action) {
         case BakuAction.UPDATE_TITLE:
           title = event.value;
@@ -34,22 +34,26 @@ export class FilmService {
         case BakuAction.UPDATE_POSTER:
           poster = event.value;
           break;
-        case BakuAction.ADD_PLAN:
+        case BakuAction.ADD_PLAN: {
           const { id, name } = event.value as { id: string, name: string };
           plans.push({ id, name, images: [] });
           break;
-        case BakuAction.INSERT_IMAGE:
+        }
+        case BakuAction.INSERT_IMAGE: {
           const { planId, imageIndex, image } = event.value as { planId: string, imageIndex: number, image: ImageRef };
-          const plan = plans.find(plan => plan.id === planId);
-          const planIndex = plans.findIndex(plan => plan.id === planId);
+          const plan = plans.find((p) => p.id === planId);
+          const planIndex = plans.findIndex((p) => p.id === planId);
           if (!plan) {
             throw new Error(`Plan ${planId} should exist for project ${title}`);
           }
           plan.images.splice(imageIndex, 0, image);
           plans.splice(planIndex, 1, plan);
           break;
+        }
+        default:
+          break;
       }
-    }
+    });
     return {
       title, synopsis, poster, plans,
     };
@@ -63,7 +67,7 @@ export class FilmService {
   }
 
   public async getHistory(id: string): Promise<BakuEvent[]> {
-    return await this.bakuService.getHistory(id);
+    return this.bakuService.getHistory(id);
   }
 
   public async updateTitle(projectId: string, title: string): Promise<void> {

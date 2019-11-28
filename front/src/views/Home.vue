@@ -17,39 +17,38 @@
 </style>
 
 
-
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import * as uuid from "uuid";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import * as uuid from 'uuid';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component
 export default class Init extends Vue {
-  @ProjectNS.Action("loadProject")
-  private loadProjectAction!: Function;
+  @ProjectNS.Action('loadProject')
+  private loadProjectAction!: (projectId: string) => Promise<void>;
 
-  @ProjectNS.Action("createPlan")
-  private createPlanAction!: Function;
+  @ProjectNS.Action('createPlan')
+  private createPlanAction!: (name?: string) => Promise<void>;
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
+      navigator.userAgent,
     );
   }
 
-  created() {
+  public created() {
     if (this.isMobile()) {
-      this.$router.push("/smartphone");
+      this.$router.push('/smartphone');
     }
   }
 
-  async onCreateProject() {
+  public async onCreateProject() {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
     await this.createPlanAction();
-    await this.$router.push("/capture");
+    await this.$router.push('/capture');
   }
 }
 </script>

@@ -1,7 +1,12 @@
 <template>
   <div>
     <h1>Smartphone LocalVideo</h1>
-    <video id="localVideo" playsinline autoplay muted></video>
+    <video
+      id="localVideo"
+      playsinline
+      autoplay
+      muted
+    ></video>
   </div>
 </template>
 
