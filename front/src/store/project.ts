@@ -60,7 +60,7 @@ export const ProjectStore = {
       );
       context.commit('addToLocalHistory', insertEvent);
     },
-    changeActiveShot(context:any, shotIndex: number) {
+    changeActiveShot(context: any, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },
     goToNextFrameAction(context: any) {

@@ -32,6 +32,12 @@
               :src="`/api/${id}/images/${getActiveShot.id}/${getActiveShot.images[activeFrame]}?width=1280&height=720`"
             />
           </div>
+          <img
+            style="display:none"
+            v-for="image in getActiveShot.images"
+            :key="image"
+            :src="`/api/${id}/images/${getActiveShot.id}/${image}?width=1280&height=720`"
+          />
         </div>
         <CaptureToolboxComponent
           v-if="getActiveShot"
@@ -57,27 +63,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-import store from '@/store';
-import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-import ShotsStack from '@/components/ShotsStack.vue';
-import { Movie, Shot } from '@/api/movie.service';
-import Project from './Project.vue';
+import { Component, Watch } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
+import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
+import store from "@/store";
+import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
+import ShotsStack from "@/components/ShotsStack.vue";
+import { Movie, Shot } from "@/api/movie.service";
+import Project from "./Project.vue";
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+const CaptureNS = namespace("capture");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
     StoryboardPreviewComponent,
-    ShotsStack,
+    ShotsStack
   },
-  store,
+  store
 })
 export default class Capture extends Project {
   @ProjectNS.State
@@ -107,13 +113,13 @@ export default class Capture extends Project {
 
   private loop: any;
 
-  public mounted() { }
+  public mounted() {}
 
   public playAnimation() {
     if (!this.isPlaying) {
       this.isPlaying = true;
       this.loop = setInterval(() => {
-        this.$store.dispatch('project/goToNextFrameAction');
+        this.$store.dispatch("project/goToNextFrameAction");
       }, 1000 / 12);
     }
   }
@@ -123,18 +129,18 @@ export default class Capture extends Project {
     this.isPlaying = false;
   }
 
-  @Watch('stream')
+  @Watch("stream")
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
-    console.log('onStreamChange');
+    console.log("onStreamChange");
     if (newValue) {
       (document.getElementById(
-        'videoCapture',
+        "videoCapture"
       ) as HTMLVideoElement).srcObject = newValue;
     }
   }
 
   public onActiveShotSelected(shot: Shot) {
-    console.log('shot selected', shot);
+    console.log("shot selected", shot);
   }
 }
 </script>
