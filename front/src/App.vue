@@ -4,7 +4,11 @@
 
     <nav v-if="id">
       <h1>Baku animation</h1>
+      <router-link to="/">Scenario</router-link>
+      <router-link to="/">Storyboard</router-link>
       <router-link to="/capture">Capture</router-link>
+      <router-link to="/">Montage</router-link>
+      <router-link to="/">Collaboratif</router-link>
     </nav>
     <router-view />
   </div>
