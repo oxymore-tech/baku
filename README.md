@@ -45,5 +45,5 @@ Builded files are in front/dist
 ```
 cd back
 cargo build
-cargo run
+cargo run <port>
 ```
