@@ -66,8 +66,12 @@ export const ProjectStore = {
       context.commit('goToNextFrame');
     },
     async createPlan(context: { commit: any, state: ProjectState }, name = 'Default plan'): Promise<void> {
-      const createEvent = await new FilmService().addPlan(context.state.id, name);
-      context.commit('addToLocalHistory', createEvent);
+      const event = await new FilmService().addPlan(context.state.id, name);
+      context.commit('addToLocalHistory', event);
+    },
+    async renamePlan(context: { commit: any, state: ProjectState }, { planId, name }: any): Promise<void> {
+      const event = await new FilmService().renamePlan(context.state.id, planId, name);
+      context.commit('addToLocalHistory', event);
     },
   },
   getters: {

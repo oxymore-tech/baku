@@ -7,6 +7,7 @@ export enum BakuAction {
   UPDATE_SYNOPSIS,
   UPDATE_POSTER,
   ADD_PLAN,
+  RENAME_PLAN,
   INSERT_IMAGE,
 }
 

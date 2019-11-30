@@ -50,7 +50,18 @@ export class FilmService {
           plans.splice(planIndex, 1, plan);
           break;
         }
-        default:
+        case BakuAction.RENAME_PLAN: {
+          const { planId, name } = event.value as { planId: string, name: string };
+
+          const planIndex = plans.findIndex(p => p.id === planId);
+          const plan = plans.find(p => p.id === planId);
+          if (!plan) {
+            throw new Error(`Plan ${planId} should exist for project ${title}`);
+          }
+          plans.splice(planIndex, 1, { id: plan.id, name, images: plan.images });
+          break;
+        }
+        defult:
           break;
       }
     });
@@ -84,6 +95,13 @@ export class FilmService {
 
   public async addPlan(projectId: string, name: string): Promise<BakuEvent> {
     const event = { action: BakuAction.ADD_PLAN, value: { id: uuid.v4(), name } };
+    await this.bakuService.stack(projectId, event);
+    return event;
+  }
+
+  public async renamePlan(projectId: string, planId: string, name: string): Promise<BakuEvent> {
+    console.log("api:" + planId + " " + name)
+    const event = { action: BakuAction.RENAME_PLAN, value: { planId, name } };
     await this.bakuService.stack(projectId, event);
     return event;
   }

@@ -22,6 +22,14 @@
         ></div>
         <div class="cardFooter">
           <span class="planName">{{plan.name}}</span>
+          <input
+            v-model="plan.name"
+            type="text"
+            class="planName"/>
+          <a
+            class="activatePlan"
+            @click="renamePlan(plan.id)"
+          >Renommer le plan</a>
           <a
             class="activatePlan"
             @click="activatePlan(plan.id)"
@@ -134,6 +142,13 @@ export default class PlansStack extends Vue {
     const planIndex = this.plans.findIndex((plan) => plan.id === id);
     this.$store.dispatch('project/changeActivePlan', planIndex);
     this.$emit('closestack');
+  }
+
+  public renamePlan(planId: string) {
+    const name = this.plans.find(plan => plan.id === planId).name;
+    if (name) {
+      this.$store.dispatch('project/renamePlan', { planId, name });
+    }
   }
 
   public createNewPlan() {
