@@ -42,7 +42,7 @@ export default class App extends Vue {
     const projectId = this.$route.params.projectid;
     if(projectId){
       await this.loadProjectAction(projectId);
-      await this.$router.push(`/capture/${projectId}`);
+      await this.$router.push(`/${projectId}/capture`);
     }
   }
 

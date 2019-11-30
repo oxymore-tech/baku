@@ -18,17 +18,19 @@
 
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import * as uuid from 'uuid';
-import Project from './Project.vue';
 
 const ProjectNS = namespace('project');
 
 @Component
-export default class Init extends Project {
+export default class Init extends Vue {
   @ProjectNS.Action('createShot')
   private createShotAction!: (name?: string) => Promise<void>;
+
+  @ProjectNS.Action('loadProject')
+  protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -40,13 +42,18 @@ export default class Init extends Project {
     if (this.isMobile()) {
       this.$router.push('/smartphone');
     }
+    const projectId = this.$route.params.projectid;
+    if(projectId){
+      await this.loadProjectAction(projectId);
+      return await this.$router.push(`/${projectId}/capture`);
+    }
   }
 
   public async onCreateProject() {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
     await this.createShotAction('Nouveau plan');
-    await this.$router.push(`/capture/${projectId}`);
+    await this.$router.push(`/${projectId}/capture`);
   }
 }
 </script>
