@@ -18,7 +18,7 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import * as uuid from 'uuid';
 import Project from './Project.vue';

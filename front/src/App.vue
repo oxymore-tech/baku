@@ -3,7 +3,7 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet" />
 
     <nav v-if="id">
-      <h1>Baku animation</h1>
+      <img src="@/assets/baku_logo.svg" class="bakulogo" alt="bakuanimation"/>
       <router-link to="/">Scenario</router-link>
       <router-link to="/">Storyboard</router-link>
       <router-link to="/capture">Capture</router-link>
