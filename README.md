@@ -1,29 +1,49 @@
+# Start local instance
+-----------------------
 
-# 1) start front
+### Prerequisites
+  - docker
+  - docker-compose
+
+### Start baku
+```
+cp docker-compose.yml.dist docker-compose.yml
+docker-compose up -d
+```
+
+### Computer connection
+- visit `https://localhost:3030`
+- ignore certifiacte warnings
+
+### Smartphone connection
+- On the computer: get ip `ip a`
+- On the smartphone: 
+  * connect to the same wifi network as your computer
+  * visit `https://<computer_ip>:3030`
+
+# Troubleshooting
+-----------------
+
+### Erreur ERR_INVALID_CERTIFICATE
+Run chrome/chromium with the parameter `ignore-certificate-errors`
+```
+chromium -ignore-certificate-errors&
+```
+
+# Contribution
+--------------
+
+### build front
 ```
 cd front
 yarn
 yarn build
 ```
-
 Builded files are in front/dist
 
-# 2) start back
+### build back
 ```
 cd back
+cargo build
 cargo run
-```
-
-
-# 3) Test
-- On computer, go to `https://localhost:3030`
-- Get your computer local ip (`ifconfig`)
-- On Smartphone, go to `https://YOUR_IP:3030`
-
-# Troubleshooting
-
-## Erreur ERR_INVALID_CERTIFICATE
-Run chrome/chromium with the parameter `ignore-certificate-errors`
-```
-chromium -ignore-certificate-errors&
 ```

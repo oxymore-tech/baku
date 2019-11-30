@@ -1,10 +1,15 @@
+import {
+  FilmService, Film, Plan,
+} from '@/api/film.service';
+import { BakuEvent, ImageRef } from '@/api/baku.service';
+
 interface ProjectState {
   pictures: string[];
   fullResPicturesCache: HTMLImageElement[];
-  plans: string[];
   id: string;
-  activePlan: string;
   activeFrame: number;
+  activePlanIndex: number;
+  history: BakuEvent[];
 }
 
 export const ProjectStore = {
@@ -12,24 +17,25 @@ export const ProjectStore = {
   state: {
     pictures: [],
     fullResPicturesCache: [],
-    plans: ["plan1", "plan2"],
-    id: "to_set",
-    activePlan: "plan1",
+    id: null,
     activeFrame: 0,
+    activePlanIndex: 0,
+    history: [],
   },
   mutations: {
-    addNewPicture(state: ProjectState, pictureId: string) {
-      state.pictures = [...state.pictures, pictureId];
-      const fullResImage = new Image();
-      fullResImage.src = `/default/images/${state.activePlan}/${pictureId}?width=1280&height=720`;
-      state.fullResPicturesCache.push(fullResImage);
+    setFilm(state: ProjectState, payload: { projectId: string, filmHistory: BakuEvent[] }) {
+      state.id = payload.projectId;
+      state.history = payload.filmHistory;
+      state.activeFrame = 0;
     },
-    changePlan(state: ProjectState, planId: string) {
-      state.activePlan = planId;
-      state.pictures = [];
+    addToLocalHistory(state: ProjectState, event: BakuEvent) {
+      state.history.push(event);
+    },
+    changeActivePlan(state: ProjectState, planIndex: number) {
+      state.activePlanIndex = planIndex;
     },
     goToNextFrame(state: ProjectState) {
-      if (state.activeFrame === state.pictures.length - 1) {
+      if (state.activeFrame === FilmService.merge(state.history).plans[state.activePlanIndex].images.length - 1) {
         state.activeFrame = 0;
       } else {
         state.activeFrame++;
@@ -37,16 +43,40 @@ export const ProjectStore = {
     },
   },
   actions: {
-    goToNextFrameAction(context: any) {
-      context.commit("goToNextFrame");
+    async loadProject(context: any, projectId: string): Promise<void> {
+      const filmService = new FilmService();
+      // const film = await filmService.get(projectId);
+      const filmHistory = await filmService.getHistory(projectId);
+      await context.commit('setFilm', { projectId, filmHistory });
     },
-    addNewPictureAction(context: any, pictureId: string) {
-      context.commit("addNewPicture", pictureId);
+    async addImageToPlan(context: any,
+      payload: { planId: string, imageIndex: number, image: ImageRef }): Promise<void> {
+      const insertEvent = await new FilmService().insertImage(
+        context.state.id,
+        payload.planId,
+        payload.imageIndex,
+        payload.image,
+        context.rootState.user.username
+      );
+      context.commit('addToLocalHistory', insertEvent);
+    },
+    changeActivePlan(context:any, planIndex: number) {
+      context.commit('changeActivePlan', planIndex);
+    },
+    goToNextFrameAction(context: any) {
+      context.commit('goToNextFrame');
+    },
+    async createPlan(context: any, name = 'Default plan'): Promise<void> {
+      const createEvent = await new FilmService().addPlan(context.state.id, name, context.rootState.user.username);
+      console.log(context);
+      context.commit('addToLocalHistory', createEvent);
     },
   },
   getters: {
     getPictures: (state: ProjectState) => state.pictures,
-    getActiveFrame: (state: ProjectState) => state.pictures.length ? state.pictures[state.activeFrame] : "",
+    film: (state: ProjectState): Film => FilmService.merge(state.history),
+    getActivePlan: (state: ProjectState, getters: any): Plan => getters.film.plans[state.activePlanIndex],
+    getActivePlanId: (state: ProjectState, getters: any): string => getters.getActivePlan ? getters.getActivePlan.id : undefined,
   },
   modules: {},
 };

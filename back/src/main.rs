@@ -47,39 +47,37 @@ async fn handle_multipart(
     plan_id: String,
     mut form: warp::multipart::FormData,
 ) -> Result<Vec<String>, warp::Rejection> {
-    let img_directory = Path::new("upload_files");
+    let img_directory = Path::new("./data/files/");
 
     let mut filenames = Vec::new();
 
     while let Some(part) = form.next().await {
         let part = part.map_err(warp::reject::custom)?;
-        match part.filename() {
-            Some(part_filename) => {
-                let filename = format!("{}-{}", Uuid::new_v4().to_string(), part_filename);
-                let image_path = Path::join(
-                    &Path::join(img_directory, Path::new(&project_id)),
-                    Path::join(Path::new(&plan_id), Path::new(&filename)),
-                );
-                println!("Posting to {}", &image_path.to_str().unwrap());
+        // match part.filename() {
+        //     if let Some(part_filename) => {
+        if let Some(part_filename) = part.filename() {
+            let filename = format!("{}-{}", Uuid::new_v4().to_string(), part_filename);
+            let image_path = Path::join(
+                &Path::join(img_directory, Path::new(&project_id)),
+                Path::join(Path::new(&plan_id), Path::new(&filename)),
+            );
+            println!("Posting to {}", &image_path.to_str().unwrap());
 
-                let image_buffer = part.concat().await;
+            let image_buffer = part.concat().await;
 
-                create_dir_all(image_path.parent().unwrap())
-                    .await
-                    .map_err(warp::reject::custom)?;
-                let mut image_file = File::create(image_path)
-                    .await
-                    .map_err(warp::reject::custom)?;
-                image_file
-                    .write_all(&image_buffer)
-                    .await
-                    .map_err(warp::reject::custom)?;
-                image_file.sync_data().await.map_err(warp::reject::custom)?;
+            create_dir_all(image_path.parent().unwrap())
+                .await
+                .map_err(warp::reject::custom)?;
+            let mut image_file = File::create(image_path)
+                .await
+                .map_err(warp::reject::custom)?;
+            image_file
+                .write_all(&image_buffer)
+                .await
+                .map_err(warp::reject::custom)?;
+            image_file.sync_data().await.map_err(warp::reject::custom)?;
 
-                filenames.push(filename);
-            }
-            None => {
-            }
+            filenames.push(filename);
         }
     }
 
@@ -92,7 +90,7 @@ async fn handle_get_images(
     filename: String,
     r: Size,
 ) -> Result<Vec<u8>, warp::Rejection> {
-    let thumbs_directory = Path::new("upload_thumbs");
+    let thumbs_directory = Path::new("./data/thumbs/");
     let thumb_filename = format!("{}-{}x{}", filename, r.width, r.height);
     let thumbnail_path = Path::join(
         &Path::join(thumbs_directory, Path::new(&project_id)),
@@ -110,7 +108,7 @@ async fn handle_get_images(
             .await
             .map_err(warp::reject::custom)?;
     } else {
-        let img_directory = Path::new("upload_files");
+        let img_directory = Path::new("./data/files/");
         let image_path = Path::join(
             &Path::join(img_directory, Path::new(&project_id)),
             Path::join(Path::new(&plan_id), Path::new(&filename)),
@@ -279,9 +277,9 @@ fn user_connected(
         })
         // for_each will keep processing as long as the user stays
         // connected. Once they disconnect, then...
-        .then(move |result| {
+        .then(move |_result| {
             user_disconnected(my_id, &users2);
-            future::ok(result)
+            future::ok(())
         })
     // If at any time, there was a websocket error, log here...
     // .map_err(move |e| {
@@ -336,7 +334,7 @@ fn user_message(my_id: usize, original_msg: Message, users: &Users, links: &Link
     } else {
         // All other message just transit on this server
         let dest_id = match links.lock().unwrap().get(&my_id) {
-            Some(v) => v.clone(),
+            Some(v) => *v,
             None => my_id,
         };
 
@@ -432,10 +430,17 @@ async fn main() {
         .or(history)
         .or(get)
         .or(multipart)
-        .or(warp::fs::dir("../front/dist"));
+        .or(warp::fs::dir("./front_files/"));
 
+    // println!("port={:#?}", port);
+    // static port: String = match env::var("BAKU_PORT") {
+    //     Ok(val) => val,
+    //     Err(_e) => "3030".to_string(),
+    // };
+
+    println!("Listen to port 0.0.0.0:3030");
     warp::serve(routes)
-        .tls("src/tls/certificate.pem", "src/tls/key.pem")
+        .tls("./certificates/certificate.pem", "./certificates/key.pem")
         .run(([0, 0, 0, 0], 3030))
         .await;
 }

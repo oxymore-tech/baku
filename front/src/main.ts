@@ -1,11 +1,12 @@
+import Vue from 'vue';
+import Buefy from 'buefy';
+import VueQrcodeReader from 'vue-qrcode-reader';
+import VueQrcode from '@chenfengyuan/vue-qrcode';
+import 'buefy/dist/buefy.css';
+import App from './App.vue';
+import router from './router';
+import store from './store';
 
-import Vue from "vue";
-import Buefy from "buefy";
-import VueQrcodeReader from "vue-qrcode-reader";
-import VueQrcode from "@chenfengyuan/vue-qrcode";
-import "buefy/dist/buefy.css";
-import App from "./App.vue";
-import router from "./router";
 
 Vue.config.productionTip = false;
 
@@ -16,6 +17,7 @@ Vue.use(VueQrcode);
 Vue.component(VueQrcode.name, VueQrcode);
 
 new Vue({
-    router,
-    render: (h) => h(App),
-}).$mount("#app");
+  router,
+  render: (h) => h(App),
+  store,
+}).$mount('#app');

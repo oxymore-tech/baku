@@ -1,3 +1,6 @@
+docker-compose.yml
+data
+
 .DS_Store
 node_modules
 /dist

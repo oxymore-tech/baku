@@ -1,6 +1,6 @@
-import store from "@/store";
+import store from '@/store';
 
-type WSMessageAction = "getSocketId" | "linkEstablished" | "rtcOffer" | "icecandidate" | "rtcAnswer" | "link";
+type WSMessageAction = 'getSocketId' | 'linkEstablished' | 'rtcOffer' | 'icecandidate' | 'rtcAnswer' | 'link';
 
 interface WSMessage {
   action: WSMessageAction;
@@ -12,31 +12,33 @@ export class WSSocket {
 
   constructor() {
     try {
-      this.socket = new WebSocket(`wss://${location.hostname}:3030/echo`);
+      this.socket = new WebSocket(`wss://${window.location.hostname}:3030/echo`);
     } catch (e) {
-      store.commit("setSocketStatus", "error");
+      store.commit('webrtc/setSocketStatus', 'error');
     }
 
-    this.socket.addEventListener("error", () => {
-      store.commit("setSocketStatus", "error");
+    this.socket.addEventListener('error', () => {
+      store.commit('webrtc/setSocketStatus', 'error');
     });
-    this.socket.addEventListener("open", () => {
-      store.commit("setSocketStatus", "opened");
-      this.sendWSMessage({ action: "getSocketId" });
+    this.socket.addEventListener('open', () => {
+      store.commit('webrtc/setSocketStatus', 'opened');
+      this.sendWSMessage({ action: 'getSocketId' });
     });
 
-    this.socket.addEventListener("message", (event) => {
+    this.socket.addEventListener('message', (event) => {
       const message: WSMessage = JSON.parse(event.data);
       this.messageListenerFunction(message);
     });
   }
+
   public messageListenerFunction: (message: WSMessage) => void = () => { };
 
   public sendWSMessage(msg: WSMessage) {
     this.socket.send(JSON.stringify(msg));
   }
+
   public close() {
     this.socket.close();
-    store.commit("setSocketStatus", "closed");
+    store.commit('webrtc/setSocketStatus', 'closed');
   }
 }

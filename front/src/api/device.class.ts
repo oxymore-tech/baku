@@ -1,12 +1,12 @@
-import * as uuid from "uuid";
-import {BakuService} from "@/api/baku-service";
+import * as uuid from 'uuid';
+import { BakuService } from '@/api/baku.service';
 
 export class Device {
+  public readonly id: string;
+
+  public readonly label: string;
 
   private readonly bakuService: BakuService = new BakuService();
-
-  public readonly id: string;
-  public readonly label: string;
 
   constructor(id: string, label: string) {
     this.id = id;
@@ -14,37 +14,34 @@ export class Device {
   }
 
   public isSmartphone() {
-    return this.id === "smartphone";
+    return this.id === 'smartphone';
   }
 
   public async capture(videoElementTag: string, projectId: string, planId: string): Promise<string> {
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     const video = document.getElementById(videoElementTag) as HTMLVideoElement;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    const context2d = canvas.getContext("2d") as CanvasRenderingContext2D;
+    const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const base64 = canvas.toDataURL("image/jpeg");
+    const base64 = canvas.toDataURL('image/jpeg');
     const blob = this.imagetoblob(base64);
-    return await this.bakuService.upload(projectId, planId, blob, uuid.v4() + ".jpg");
+    return this.bakuService.upload(projectId, planId, blob, `${uuid.v4()}.jpg`);
   }
 
   private imagetoblob(base64String: string): Blob {
     // Split the base64 string in data and contentType
-    const block = base64String.split(";");
+    const block = base64String.split(';');
     // Get the content type of the image
-    const contentType = block[0].split(":")[1]; // In this case "image/gif"
+    const contentType = block[0].split(':')[1]; // In this case "image/gif"
     // get the real base64 content of the file
-    const realData = block[1].split(",")[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
+    const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
 
     // Convert it to a blob to upload
     return this.b64toBlob(realData, contentType);
   }
 
-  private b64toBlob(b64Data: string, contentType: string, sliceSize?: number): Blob {
-    contentType = contentType || "";
-    sliceSize = sliceSize || 512;
-
+  private b64toBlob(b64Data: string, contentType: string = '', sliceSize: number = 512): Blob {
     const byteCharacters = atob(b64Data);
     const byteArrays = [];
 
@@ -61,7 +58,7 @@ export class Device {
       byteArrays.push(byteArray);
     }
 
-    const blob = new Blob(byteArrays, {type: contentType});
+    const blob = new Blob(byteArrays, { type: contentType });
     return blob;
   }
 }

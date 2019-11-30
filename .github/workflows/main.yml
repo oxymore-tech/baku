@@ -1,0 +1,32 @@
+name: CI
+
+on: [push]
+
+jobs:
+
+  lint_vue:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install eslint
+      run:  cd front && npm install --save-dev
+    - name: Lint vue files
+      run:  cd front && npx eslint --ext .vue src
+
+  lint_rust:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Lint rust
+      run:  cd back && cargo check
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build docker images using cache
+      uses: whoan/docker-build-with-cache-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        image_name: bakuanimation/baku
