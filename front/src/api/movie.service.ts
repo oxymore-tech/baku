@@ -47,12 +47,10 @@ export class MovieService {
         case BakuAction.MOVIE_INSERT_IMAGE: {
           const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: ImageRef };
           updateShot(shotId, (shot: Shot) => {
-            return {
-              id: shot.id,
-              name: shot.name,
-              images: shot.images.splice(imageIndex, 0, image),
-            }
+            shot.images.splice(imageIndex, 0, image)
+            return shot;
           });
+
           break;
         }
         case BakuAction.SHOT_ADD: {
