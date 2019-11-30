@@ -21,6 +21,16 @@ const routes = [
     component: () => import('../views/Capture.vue'),
   },
   {
+    path: '/home',
+    name: 'Home',
+    component: Home,
+  },
+  {
+    path: '/home/:projectid',
+    name: 'Home',
+    component: Home,
+  },
+  {
     path: '/:projectid',
     name: 'Home',
     component: Home,
