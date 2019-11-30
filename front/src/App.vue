@@ -3,8 +3,13 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet" />
 
     <nav v-if="id">
-      <h1>Baku animation</h1>
+      <img src="@/assets/baku_logo.svg" class="bakulogo" alt="bakuanimation"/>
+      <button @click="openProjectSettings()">settings</button>
+      <router-link to="/">Scenario</router-link>
+      <router-link to="/">Storyboard</router-link>
       <router-link to="/capture">Capture</router-link>
+      <router-link to="/">Montage</router-link>
+      <router-link to="/">Collaboratif</router-link>
     </nav>
     <router-view />
   </div>
@@ -17,10 +22,15 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
+import ProjectSettingsPopup from "@/components/ProjectSettingsPopup.vue";
 
 const ProjectNS = namespace('project');
 
-@Component({})
+@Component({
+  components: {
+    ProjectSettingsPopup,
+  },
+})
 export default class App extends Vue {
   @ProjectNS.State
   public id!: string;
@@ -34,6 +44,14 @@ export default class App extends Vue {
       await this.loadProjectAction(projectId);
       await this.$router.push(`/${projectId}/capture`);
     }
+  }
+
+  public openProjectSettings() {
+    this.$buefy.modal.open({
+      parent: this,
+      component: ProjectSettingsPopup,
+      hasModalCard: true,
+    });
   }
 }
 </script>

@@ -66,6 +66,17 @@ export const ProjectStore = {
     goToNextFrameAction(context: any) {
       context.commit('goToNextFrame');
     },
+
+    async updateTitle(context: any, title: string) {
+      const event = await new MovieService().updateTitle(context.state.id, title, context.rootState.user.username);
+      context.commit('addToLocalHistory', event);
+    },
+
+    async updateSynopsis(context: any, synopsis: string) {
+      const event = await new MovieService().updateSynopsis(context.state.id, synopsis, context.rootState.user.username);
+      context.commit('addToLocalHistory', event);
+    },
+
     async createShot(context: any, name = 'Default shot'): Promise<void> {
       const createEvent = await new MovieService().addShot(context.state.id, name, context.rootState.user.username);
       console.log(context);
