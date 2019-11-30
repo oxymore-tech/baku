@@ -4,15 +4,15 @@
     style="width: auto"
   >
     <header class="modal-card-head">
-      <p class="modal-card-title">Réglages du films</p>
+      <p class="modal-card-title">Réglages du film</p>
     </header>
     <section class="modal-card-body">
       <span>Votre film est automatiquement installé à l'adresse suivante :</span><br>
       <a :href="url+'/#/'+id">{{url+'/#/'+id}}</a><br>
       <span>Titre du film</span><br>
-      <input type="text" :value="film.title" @blur="setTitle($event)"/><br>
+      <input type="text" :value="movie.title" @blur="setTitle($event)"/><br>
       <span>Synopsis</span><br>
-      <input type="text" :value="film.synopsis" @blur="setSynopsis($event)"/><br>
+      <input type="text" :value="movie.synopsis" @blur="setSynopsis($event)"/><br>
     </section>
   </div>
 </template>
@@ -25,7 +25,7 @@
 
   import {Component, Vue} from 'vue-property-decorator';
   import {namespace} from "vuex-class";
-  import {Film} from "@/api/film.service";
+  import {Movie} from "@/api/movie.service";
 
   const ProjectNS = namespace('project');
 
@@ -34,13 +34,13 @@
     @ProjectNS.State
     public id!: string;
     @ProjectNS.Getter
-    public film!: Film;
+    public movie!: Movie;
 
     public url = window.location.origin;
 
     public setTitle(event: any) {
       let newTitle = event.target.value;
-      if (newTitle !== this.film.title) {
+      if (newTitle !== this.movie.title) {
         this.$store.dispatch("project/updateTitle", newTitle);
       }
     }
@@ -48,7 +48,7 @@
     public setSynopsis(event: any) {
       let newSynopsis = event.target.value;
       console.log(newSynopsis);
-      if (newSynopsis !== this.film.synopsis) {
+      if (newSynopsis !== this.movie.synopsis) {
         this.$store.dispatch("project/updateSynopsis", newSynopsis);
       }
     }

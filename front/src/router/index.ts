@@ -21,6 +21,16 @@ const routes = [
     component: () => import('../views/Capture.vue'),
   },
   {
+    path: '/home',
+    name: 'Home',
+    component: Home,
+  },
+  {
+    path: '/home/:projectid',
+    name: 'Home',
+    component: Home,
+  },
+  {
     path: '/:projectid',
     name: 'Home',
     component: Home,
@@ -33,7 +43,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  mode: 'hash',
+  mode: 'history',
   base: process.env.BASE_URL,
   routes,
 });

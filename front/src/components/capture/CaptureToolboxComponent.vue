@@ -35,7 +35,7 @@
       v-if="selectedDevice"
       :device="selectedDevice"
       :projectId="projectId"
-      :activePlan="activePlan"
+      :activeShot="activeShot"
       :activeIndex="activeIndex"
     />
   </b-collapse>
@@ -71,7 +71,7 @@ export default class CaptureToolboxComponent extends Vue {
   public projectId!: string;
 
   @Prop()
-  public activePlan!: string;
+  public activeShot!: string;
 
   @Prop()
   public activeIndex!: number;
