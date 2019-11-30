@@ -126,7 +126,6 @@ export default class Capture extends Project {
   }
 
   public animate() {
-    console.log("coucou");
     if (this.activeFrame === this.getActiveShot.images.length - 1) {
       this.activeFrame = 0;
     } else {
