@@ -29,7 +29,7 @@
             <img
               v-if="getActiveShot && getActiveShot.images[activeFrame]"
               id="previewImg"
-              :src="`/${id}/images/${getActiveShot.id}/${getActiveShot.images[activeFrame]}?width=1280&height=720`"
+              :src="`/api/${id}/images/${getActiveShot.id}/${getActiveShot.images[activeFrame]}?width=1280&height=720`"
             />
           </div>
         </div>

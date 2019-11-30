@@ -7,7 +7,7 @@
           class="carrouselThumb"
           :key="image"
           :alt="image"
-          :src="`/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+          :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
         />
       </template>
       <template v-else>
@@ -24,7 +24,7 @@
         v-if="computedActiveImage !== undefined"
         class="carrouselThumb active"
         :alt="computedActiveImage"
-        :src="`/${projectId}/images/${activeShot}/${computedActiveImage}?width=185&height=104`"
+        :src="`/api/${projectId}/images/${activeShot}/${computedActiveImage}?width=185&height=104`"
       />
     </template>
     <template v-else>
@@ -43,7 +43,7 @@
           class="carrouselThumb"
           :key="image"
           :alt="image"
-          :src="`/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+          :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
         />
       </template>
       <template v-else>

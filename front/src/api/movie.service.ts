@@ -71,7 +71,7 @@ export class MovieService {
           });
           break;
         }
-        defult:
+        default:
           break;
       }
     });
@@ -110,9 +110,9 @@ export class MovieService {
   }
 
   public async renameShot(projectId: string, shotId: string, name: string, username: string): Promise<BakuEvent> {
-    const event = { 
-      action: BakuAction.SHOT_RENAME, 
-      value: { shotId, name }, 
+    const event = {
+      action: BakuAction.SHOT_RENAME,
+      value: { shotId, name },
       user: username,
     };
     await this.bakuService.stack(projectId, event);
