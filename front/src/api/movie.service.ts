@@ -89,12 +89,16 @@ export class MovieService {
     return this.bakuService.getHistory(id);
   }
 
-  public async updateTitle(projectId: string, title: string, username: string): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.MOVIE_UPDATE_TITLE, value: title, user: username  });
+  public async updateTitle(projectId: string, title: string, username: string): Promise<BakuEvent> {
+    const event: BakuEvent = { action: BakuAction.MOVIE_UPDATE_TITLE, value: title, user: username  };
+    await this.bakuService.stack(projectId, event);
+    return event;
   }
 
-  public async updateSynopsis(projectId: string, synopsis: string, username: string): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.MOVIE_UPDATE_SYNOPSIS, value: synopsis, user: username  });
+  public async updateSynopsis(projectId: string, synopsis: string, username: string): Promise<BakuEvent> {
+    const event: BakuEvent = { action: BakuAction.MOVIE_UPDATE_SYNOPSIS, value: synopsis, user: username  };
+    await this.bakuService.stack(projectId, event);
+    return event;
   }
 
   public async updatePoster(projectId: string, poster: ImageRef, username: string): Promise<void> {
