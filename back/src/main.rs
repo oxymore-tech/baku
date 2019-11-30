@@ -84,6 +84,20 @@ async fn handle_multipart(
     Ok(filenames)
 }
 
+async fn handle_index(
+    path: String,
+) -> Result<Vec<u8>, warp::Rejection> {
+    let thumbnail_path = Path::new(&path);
+    let mut thumbnail_buffer = Vec::new();
+    let mut f = File::open(&thumbnail_path)
+        .await
+        .map_err(warp::reject::custom)?;
+    f.read_to_end(&mut thumbnail_buffer)
+        .await
+        .map_err(warp::reject::custom)?;
+    Ok(thumbnail_buffer)
+}
+
 async fn handle_get_images(
     project_id: String,
     plan_id: String,
@@ -425,12 +439,25 @@ async fn main() {
         .and_then(handle_history)
         .map(|history| warp::reply::json(&history));
 
+    let resource_path = "front_files";
+    let index_path = format!("{}/index.html", resource_path);
+    let index_path_filter = warp::any().map(move || index_path.clone());
+    let index = warp::get2()
+        .and(index_path_filter)
+        .and_then(handle_index)
+        .map(|buffer| {
+            warp::http::Response::builder()
+                .header("Content-Type", "text/html; Charset='UTF-8'")
+                .body(buffer)
+        });
+
     let routes = echo
         .or(stack)
         .or(history)
         .or(get)
         .or(multipart)
-        .or(warp::fs::dir("./front_files/"));
+        .or(warp::fs::dir(resource_path))
+        .or(index);
 
     // println!("port={:#?}", port);
     // static port: String = match env::var("BAKU_PORT") {
