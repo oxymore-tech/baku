@@ -1,5 +1,5 @@
 <template>
-  <div>{{ this.$route.params.projectid}}</div>
+  <div></div>
 </template>
 
 <style>
