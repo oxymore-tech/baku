@@ -373,9 +373,8 @@ async fn main() {
     let users = warp::any().map(move || users.clone());
     let links = warp::any().map(move || links.clone());
 
-    let hi = warp::get2().and(warp::path("hi").map(|| "Hello, World!"));
-
     let multipart = warp::post2()
+        .and(warp::path("api"))
         .and(warp::path::param())
         .and(warp::path("upload"))
         .and(warp::path::param())
@@ -383,7 +382,8 @@ async fn main() {
         .and_then(handle_multipart)
         .map(|filenames| warp::reply::json(&filenames));
 
-    let route = warp::path("echo")
+    let echo = warp::path("echo")
+        //.and(warp::path("api"))
         // The `ws2()` filter will prepare the Websocket handshake.
         .and(warp::ws2())
         .and(users)
@@ -398,6 +398,7 @@ async fn main() {
         });
 
     let get = warp::get2()
+        .and(warp::path("api"))
         .and(warp::path::param())
         .and(warp::path("images"))
         .and(warp::path::param())
@@ -413,19 +414,20 @@ async fn main() {
     let global_lock = Arc::new(futures::lock::Mutex::new(0));
 
     let stack = warp::post2()
+        .and(warp::path("api"))
         .and(warp::path::param())
         .and(warp::path("stack"))
         .and(warp::body::json())
         .and_then(move |project_id, body| handle_stack(global_lock.clone(), project_id, body))
         .map(|_| "Stacked");
     let history = warp::get2()
+        .and(warp::path("api"))
         .and(warp::path::param())
         .and(warp::path("history"))
         .and_then(handle_history)
         .map(|history| warp::reply::json(&history));
 
-    let routes = hi
-        .or(route)
+    let routes = echo
         .or(stack)
         .or(history)
         .or(get)
