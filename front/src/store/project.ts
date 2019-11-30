@@ -76,7 +76,7 @@ export const ProjectStore = {
     getPictures: (state: ProjectState) => state.pictures,
     film: (state: ProjectState): Film => FilmService.merge(state.history),
     getActivePlan: (state: ProjectState, getters: any): Plan => getters.film.plans[state.activePlanIndex],
-    getActivePlanId: (state: ProjectState, getters: any): string => getters.getActivePlan.id,
+    getActivePlanId: (state: ProjectState, getters: any): string => getters.getActivePlan ? getters.getActivePlan.id : undefined,
   },
   modules: {},
 };
