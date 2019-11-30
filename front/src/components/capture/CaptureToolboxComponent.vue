@@ -37,6 +37,7 @@
       :projectId="projectId"
       :activeShot="activeShot"
       :activeIndex="activeIndex"
+      v-on:moveactiveframe="$emit('moveactiveframe', $event)"
     />
   </b-collapse>
 </template>

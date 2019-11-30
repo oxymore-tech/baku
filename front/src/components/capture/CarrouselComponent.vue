@@ -1,13 +1,14 @@
 <template>
   <div class="carrouselContainer">
     <!-- LEFT PART OF THE CARROUSEL -->
-    <template v-for="image in computedLeftCarrousel">
+    <template v-for="(image, index) in computedLeftCarrousel">
       <template v-if="image !== null">
         <img
           class="carrouselThumb"
           :key="image"
           :alt="image"
           :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+          @click="moveToImage(index - computedLeftCarrousel.length)"
         />
       </template>
       <template v-else>
@@ -37,13 +38,14 @@
     </template>
 
     <!-- RIGHT PART OF THE CARROUSEL -->
-    <template v-for="image in computedRightCarrousel">
+    <template v-for="(image, index) in computedRightCarrousel">
       <template v-if="image !== null">
         <img
           class="carrouselThumb"
           :key="image"
           :alt="image"
           :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+          @click="moveToImage(index + 1)"
         />
       </template>
       <template v-else>
@@ -115,7 +117,7 @@ export default class CarrouselComponent extends Vue {
 
   get computedLeftCarrousel(): ImageRef[] {
     const sliceIndex = this.activeCapture
-      ? this.images.length
+      ? this.activeImage + 1
       : this.activeImage;
     const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-5);
     const leftCarrousel = Array(5 - leftImagesAvaible.length)
@@ -129,14 +131,16 @@ export default class CarrouselComponent extends Vue {
   }
 
   get computedRightCarrousel(): ImageRef[] {
-    const sliceIndex = this.activeCapture
-      ? this.images.length
-      : this.activeImage + 1;
+    const sliceIndex = this.activeImage + 1
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
     const rightCarrousel = rightImagesAvaible.concat(
       Array(6 - rightImagesAvaible.length).fill(null),
     );
     return rightCarrousel;
+  }
+
+  public moveToImage(indexToMove: number) {
+    this.$emit("moveactiveframe", indexToMove);
   }
 }
 </script>

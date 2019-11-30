@@ -45,7 +45,8 @@
           v-if="getActiveShot"
           :projectId="id"
           :activeShot="getActiveShot.id"
-          :activeIndex="getActiveShot.images.length"
+          :activeIndex="activeFrame + 1"
+          v-on:moveactiveframe="moveActiveFrame($event)"
         />
       </div>
       <div>
@@ -59,6 +60,7 @@
         :images="getActiveShot.images"
         :activeImage="activeFrame"
         :activeCapture="activeCapture"
+        v-on:moveactiveframe="moveActiveFrame($event)"
       />
     </template>
   </div>
@@ -149,6 +151,10 @@ export default class Capture extends Project {
 
   public onActiveShotSelected(shot: Shot) {
     console.log("shot selected", shot);
+  }
+
+  public moveActiveFrame(event: number) {
+    this.activeFrame += event;
   }
 }
 </script>

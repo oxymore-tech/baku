@@ -77,13 +77,14 @@ export default class CaptureButtonComponent extends Vue {
     }
   }
 
-  public capture() {
+  public async capture() {
     this.isCapturing = true;
     if (this.device.isSmartphone()) {
-      this.captureSmartphone();
+      await this.captureSmartphone();
     } else {
-      this.captureWebcam();
+      await this.captureWebcam();
     }
+    this.$emit("moveactiveframe", 1);
   }
 
   @Watch('device')

@@ -24,7 +24,6 @@ export const ProjectStore = {
     setMovie(state: ProjectState, payload: { projectId: string, movieHistory: BakuEvent[] }) {
       state.id = payload.projectId;
       state.history = payload.movieHistory;
-      state.activeFrame = 0;
     },
     addToLocalHistory(state: ProjectState, event: BakuEvent) {
       state.history.push(event);
