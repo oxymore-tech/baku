@@ -8,6 +8,7 @@ export interface Movie {
   readonly synopsis: string;
   readonly poster?: ImageRef;
   readonly shots: Shot[];
+  readonly fps: number;
 }
 
 export interface Shot {
@@ -22,6 +23,7 @@ export class MovieService {
     let title = 'Unnamed';
     let synopsis = 'Please fill a synopsis';
     let poster;
+    let fps = 12;
     const shots: Shot[] = [];
 
     const updateShot = function(shotId: string, updateFn: (shot: Shot) => Shot) {
@@ -69,12 +71,16 @@ export class MovieService {
           });
           break;
         }
+        case BakuAction.CHANGE_FPS: {
+          fps = event.value
+          break;
+        }
         default:
           break;
       }
     });
     return {
-      title, synopsis, poster, shots,
+      title, synopsis, poster, shots, fps
     };
   }
 
@@ -117,6 +123,12 @@ export class MovieService {
       value: { shotId, name },
       user: username,
     };
+    await this.bakuService.stack(projectId, event);
+    return event;
+  }
+
+  public async changeFps(projectId: string, fps: number, username: string): Promise<BakuEvent> {
+    const event = { action: BakuAction.CHANGE_FPS, value: fps, user: username};
     await this.bakuService.stack(projectId, event);
     return event;
   }

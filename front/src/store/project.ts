@@ -73,6 +73,10 @@ export const ProjectStore = {
       const event = await new MovieService().renameShot(context.state.id, shotId, name, context.rootState.user.username);
       context.commit('addToLocalHistory', event);
     },
+    async changeFps(context: any, fps: number): Promise<void> {
+      const event = await new MovieService().changeFps(context.state.id, fps, context.rootState.user.username);
+      context.commit('addToLocalHistory', event);
+    },
   },
   getters: {
     getPictures: (state: ProjectState) => state.pictures,

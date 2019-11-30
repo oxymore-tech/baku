@@ -9,6 +9,7 @@ export enum BakuAction {
   MOVIE_INSERT_IMAGE,
   SHOT_ADD,
   SHOT_RENAME,
+  CHANGE_FPS
 }
 
 export interface BakuEvent {

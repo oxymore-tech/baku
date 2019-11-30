@@ -121,7 +121,7 @@ export default class Capture extends Project {
   public playAnimation() {
     if (!this.isPlaying) {
       this.isPlaying = true;
-      this.loop = setInterval(() => this.animate(), 1000 / 12);
+      this.loop = setInterval(() => this.animate(), 1000 / this.movie.fps);
     }
   }
 

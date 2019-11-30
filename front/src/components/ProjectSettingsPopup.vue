@@ -13,6 +13,8 @@
       <input type="text" :value="movie.title" @blur="setTitle($event)"/><br>
       <span>Synopsis</span><br>
       <input type="text" :value="movie.synopsis" @blur="setSynopsis($event)"/><br>
+      <span>Frequence</span><br>
+      <input type="number" :value="movie.fps" @blur="setFps($event)"/><br>
     </section>
   </div>
 </template>
@@ -47,9 +49,15 @@
 
     public setSynopsis(event: any) {
       let newSynopsis = event.target.value;
-      console.log(newSynopsis);
       if (newSynopsis !== this.movie.synopsis) {
         this.$store.dispatch("project/updateSynopsis", newSynopsis);
+      }
+    }
+
+    public setFps(event: any) {
+      let newFps = event.target.value;
+      if (newFps !== this.movie.fps) {
+        this.$store.dispatch("project/changeFps", newFps);
       }
     }
 
