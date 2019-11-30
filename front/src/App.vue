@@ -23,7 +23,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import ProjectSettingsPopup from "@/components/ProjectSettingsPopup.vue";
+import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
 
 const ProjectNS = namespace('project');
 
@@ -41,7 +41,7 @@ export default class App extends Vue {
 
   public async created() {
     const projectId = this.$route.params.projectid;
-    if(projectId){
+    if (projectId) {
       await this.loadProjectAction(projectId);
       await this.$router.push(`/${projectId}/capture`);
     }

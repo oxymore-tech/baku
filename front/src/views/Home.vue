@@ -43,9 +43,9 @@ export default class Init extends Vue {
       this.$router.push('/smartphone');
     }
     const projectId = this.$route.params.projectid;
-    if(projectId){
+    if (projectId) {
       await this.loadProjectAction(projectId);
-      return await this.$router.push(`/${projectId}/capture`);
+      await this.$router.push(`/${projectId}/capture`);
     }
   }
 

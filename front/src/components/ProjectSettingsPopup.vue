@@ -25,41 +25,41 @@
 
 <script lang="ts">
 
-  import {Component, Vue} from 'vue-property-decorator';
-  import {namespace} from "vuex-class";
-  import {Movie} from "@/api/movie.service";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Movie } from '@/api/movie.service';
 
-  const ProjectNS = namespace('project');
+const ProjectNS = namespace('project');
 
   @Component
-  export default class ProjectSettingsPopup extends Vue {
+export default class ProjectSettingsPopup extends Vue {
     @ProjectNS.State
     public id!: string;
+
     @ProjectNS.Getter
     public movie!: Movie;
 
     public url = window.location.origin;
 
     public setTitle(event: any) {
-      let newTitle = event.target.value;
+      const newTitle = event.target.value;
       if (newTitle !== this.movie.title) {
-        this.$store.dispatch("project/updateTitle", newTitle);
+        this.$store.dispatch('project/updateTitle', newTitle);
       }
     }
 
     public setSynopsis(event: any) {
-      let newSynopsis = event.target.value;
+      const newSynopsis = event.target.value;
       if (newSynopsis !== this.movie.synopsis) {
-        this.$store.dispatch("project/updateSynopsis", newSynopsis);
+        this.$store.dispatch('project/updateSynopsis', newSynopsis);
       }
     }
 
     public setFps(event: any) {
-      let newFps = event.target.value;
+      const newFps = event.target.value;
       if (newFps !== this.movie.fps) {
-        this.$store.dispatch("project/changeFps", newFps);
+        this.$store.dispatch('project/changeFps', newFps);
       }
     }
-
-  }
+}
 </script>

@@ -84,7 +84,7 @@ export default class CaptureButtonComponent extends Vue {
     } else {
       await this.captureWebcam();
     }
-    this.$emit("moveactiveframe", 1);
+    this.$emit('moveactiveframe', 1);
   }
 
   @Watch('device')

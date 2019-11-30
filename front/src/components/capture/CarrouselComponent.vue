@@ -86,8 +86,8 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { ImageRef } from "@/api/baku.service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { ImageRef } from '@/api/baku.service';
 
 @Component
 export default class CarrouselComponent extends Vue {
@@ -125,29 +125,29 @@ export default class CarrouselComponent extends Vue {
     const sliceIndex = this.activeImage + 1;
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
     const rightCarrousel = rightImagesAvaible.concat(
-      Array(6 - rightImagesAvaible.length).fill(null)
+      Array(6 - rightImagesAvaible.length).fill(null),
     );
     return rightCarrousel;
   }
 
   public moveToImage(indexToMove: number) {
-    this.$emit("moveactiveframe", indexToMove);
+    this.$emit('moveactiveframe', indexToMove);
   }
 
   mounted() {
-    window.addEventListener("keydown", (e: KeyboardEvent) => {
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
       let indexToMove = 0;
-      switch(e.keyCode){
-        case 37 :
-          indexToMove= this.activeImage > 0 ? -1 : 0
+      switch (e.keyCode) {
+        case 37:
+          indexToMove = this.activeImage > 0 ? -1 : 0;
           break;
         case 39:
-          indexToMove = this.images.length -1 > this.activeImage ? 1 : 0
+          indexToMove = this.images.length - 1 > this.activeImage ? 1 : 0;
           break;
         default:
           indexToMove = 0;
       }
-      this.$emit("moveactiveframe", indexToMove);
+      this.$emit('moveactiveframe', indexToMove);
     });
   }
 }

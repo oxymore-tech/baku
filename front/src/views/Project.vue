@@ -14,7 +14,7 @@ export default class Project extends Vue {
 
   public async created() {
     const projectId = this.$route.params.projectid;
-    if(projectId){
+    if (projectId) {
       await this.loadProjectAction(projectId);
     } else {
       await this.$router.push('/home');
