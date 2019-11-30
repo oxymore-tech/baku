@@ -72,8 +72,8 @@ export default class CaptureButtonComponent extends Vue {
 
     if (this.$store.state.peerConnection) {
       this.$store.state.peerConnection.close();
-      this.$store.commit('setPeerConnection', undefined);
-      this.$store.commit('setDataChannel', undefined);
+      this.$store.commit('webrtc/setPeerConnection', undefined);
+      this.$store.commit('webrtc/setDataChannel', undefined);
     }
   }
 

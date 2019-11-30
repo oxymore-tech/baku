@@ -52,7 +52,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class';
 import { WSSocket } from './socket.class';
-import { SocketStatus } from '../store';
+import { SocketStatus } from '../store/webrtc';
 
 type Status = 'CONNECTED' | 'ERROR' | 'WAITING';
 
@@ -145,9 +145,9 @@ export default class QrGenerator extends Vue {
         // CONNECTION OK
         console.log('CONNECTION OK');
         this.status = 'CONNECTED';
-        this.$store.commit('setDataChannel', this.dataChannel);
-        this.$store.commit('setPeerCOnnection', this.peerConnection);
-        this.$store.commit('setupConnection');
+        this.$store.commit('webrtc/setDataChannel', this.dataChannel);
+        this.$store.commit('webrtc/setPeerCOnnection', this.peerConnection);
+        this.$store.commit('webrtc/setupConnection');
       }
     };
 
@@ -177,7 +177,7 @@ export default class QrGenerator extends Vue {
   }
 
   private gotRemoteStream(e: any) {
-    this.$store.commit('setMediaStream', e.streams[0]);
+    this.$store.commit('webrtc/setMediaStream', e.streams[0]);
   }
 }
 </script>

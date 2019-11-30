@@ -84,7 +84,7 @@ export default class QrReader extends Vue {
       if (this.peerConnection.connectionState === 'connected') {
         // CONNECTION OK
         console.log('CONNECTION OK');
-        this.$store.commit('setupConnection');
+        this.$store.commit('webrtc/setupConnection');
       }
       console.log(this.peerConnection.connectionState);
       if (this.peerConnection.connectionState === 'disconnected') {
