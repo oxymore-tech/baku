@@ -17,11 +17,21 @@ export interface Shot {
 }
 
 export class MovieService {
+
   public static merge(events: BakuEvent[]): Movie {
     let title = 'Unnamed';
     let synopsis = 'Please fill a synopsis';
     let poster;
     const shots: Shot[] = [];
+
+    const updateShot = function(shotId: string, updateFn: (shot: Shot) => Shot) {
+      const shotIndex = shots.findIndex(p => p.id === shotId);
+      const shot = shots.find((p) => p.id === shotId);
+      if (!shot) {
+        throw new Error(`shot ${shotId} should exist for project ${title}`);
+      }
+      shots.splice(shotIndex, 1, updateFn(shot));
+    }
 
     events.forEach((event) => {
       switch (event.action) {
@@ -34,31 +44,31 @@ export class MovieService {
         case BakuAction.MOVIE_UPDATE_POSTER:
           poster = event.value;
           break;
+        case BakuAction.MOVIE_INSERT_IMAGE: {
+          const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: ImageRef };
+          updateShot(shotId, (shot: Shot) => {
+            return {
+              id: shot.id,
+              name: shot.name,
+              images: shot.images.splice(imageIndex, 0, image),
+            }
+          });
+          break;
+        }
         case BakuAction.SHOT_ADD: {
           const { shotId, name } = event.value as { shotId: string, name: string };
           shots.push({ id: shotId, name, images: [] });
           break;
         }
-        case BakuAction.MOVIE_INSERT_IMAGE: {
-          const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: ImageRef };
-          const shot = shots.find((p) => p.id === shotId);
-          const shotIndex = shots.findIndex((p) => p.id === shotId);
-          if (!shot) {
-            throw new Error(`shot ${shotId} should exist for project ${title}`);
-          }
-          shot.images.splice(imageIndex, 0, image);
-          shots.splice(shotIndex, 1, shot);
-          break;
-        }
         case BakuAction.SHOT_RENAME: {
           const { shotId, name } = event.value as { shotId: string, name: string };
-
-          const shotIndex = shots.findIndex(p => p.id === shotId);
-          const shot = shots.find(p => p.id === shotId);
-          if (!shot) {
-            throw new Error(`shot ${shotId} should exist for project ${title}`);
-          }
-          shots.splice(shotIndex, 1, { id: shot.id, name, images: shot.images });
+          updateShot(shotId, (shot: Shot) => {
+            return {
+              id: shot.id,
+              name,
+              images: shot.images,
+            }
+          });
           break;
         }
         defult:

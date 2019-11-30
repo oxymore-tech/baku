@@ -71,7 +71,7 @@ export const ProjectStore = {
       console.log(context);
       context.commit('addToLocalHistory', createEvent);
     },
-    async renameShot(context: any, { shotId, name }: any): Promise<void> {
+    async renameShot(context: any, { shotId, name }: Record<string, string>): Promise<void> {
       const event = await new MovieService().renameShot(context.state.id, shotId, name, context.rootState.user.username);
       context.commit('addToLocalHistory', event);
     },
