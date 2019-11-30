@@ -11,19 +11,24 @@ const routes = [
     component: Home,
   },
   {
-    path: '/capture',
-    name: 'capture',
-    component: () => import('../views/Capture.vue'),
-  },
-  {
     path: '/smartphone',
     name: 'smartphone',
     component: () => import('../views/SmartphoneView.vue'),
   },
   {
-    path: '/project/:projectid',
-    name: 'Project',
-    component: () => import('../views/Project.vue'),
+    path: '/capture',
+    name: 'capture',
+    component: () => import('../views/Capture.vue'),
+  },
+  {
+    path: '/:projectid',
+    name: 'Home',
+    component: Home,
+  },
+  {
+    path: '/capture/:projectid',
+    name: 'capture',
+    component: () => import('../views/Capture.vue'),
   },
 ];
 

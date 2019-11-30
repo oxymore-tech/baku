@@ -28,5 +28,16 @@ const ProjectNS = namespace('project');
 export default class App extends Vue {
   @ProjectNS.State
   public id!: string;
+
+  @ProjectNS.Action('loadProject')
+  private loadProjectAction!: (projectId: string) => Promise<void>;
+
+  public async created() {
+    const projectId = this.$route.params.projectid;
+    if(projectId){
+      await this.loadProjectAction(projectId);
+      await this.$router.push(`/capture/${projectId}`);
+    }
+  }
 }
 </script>

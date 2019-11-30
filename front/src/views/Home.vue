@@ -21,14 +21,12 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import * as uuid from 'uuid';
+import Project from './Project.vue';
 
 const ProjectNS = namespace('project');
 
 @Component
-export default class Init extends Vue {
-  @ProjectNS.Action('loadProject')
-  private loadProjectAction!: (projectId: string) => Promise<void>;
-
+export default class Init extends Project {
   @ProjectNS.Action('createPlan')
   private createPlanAction!: (name?: string) => Promise<void>;
 
@@ -38,7 +36,7 @@ export default class Init extends Vue {
     );
   }
 
-  public created() {
+  public async created() {
     if (this.isMobile()) {
       this.$router.push('/smartphone');
     }
@@ -48,7 +46,7 @@ export default class Init extends Vue {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
     await this.createPlanAction();
-    await this.$router.push('/capture');
+    await this.$router.push(`/capture/${projectId}`);
   }
 }
 </script>
