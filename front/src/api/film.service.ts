@@ -70,26 +70,31 @@ export class FilmService {
     return this.bakuService.getHistory(id);
   }
 
-  public async updateTitle(projectId: string, title: string): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_TITLE, value: title });
+  public async updateTitle(projectId: string, title: string, username: string): Promise<void> {
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_TITLE, value: title, user: username  });
   }
 
-  public async updateSynopsis(projectId: string, synopsis: string): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: synopsis });
+  public async updateSynopsis(projectId: string, synopsis: string, username: string): Promise<void> {
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: synopsis, user: username  });
   }
 
-  public async updatePoster(projectId: string, poster: ImageRef): Promise<void> {
-    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: poster });
+  public async updatePoster(projectId: string, poster: ImageRef, username: string): Promise<void> {
+    await this.bakuService.stack(projectId, { action: BakuAction.UPDATE_SYNOPSIS, value: poster,user: username  });
   }
 
-  public async addPlan(projectId: string, name: string): Promise<BakuEvent> {
-    const event = { action: BakuAction.ADD_PLAN, value: { id: uuid.v4(), name } };
+  public async addPlan(projectId: string, name: string, username: string): Promise<BakuEvent> {
+    const event: BakuEvent = { action: BakuAction.ADD_PLAN, value: { id: uuid.v4(), name }, user: username };
     await this.bakuService.stack(projectId, event);
     return event;
   }
 
-  public async insertImage(projectId: string, planId: string, imgIndex: number, image: ImageRef): Promise<BakuEvent> {
-    await this.bakuService.stack(projectId, { action: BakuAction.INSERT_IMAGE, value: { planId, imageIndex: imgIndex, image } });
-    return { action: BakuAction.INSERT_IMAGE, value: { planId, imageIndex: imgIndex, image } };
+  public async insertImage(projectId: string, planId: string, imgIndex: number, image: ImageRef, username: string): Promise<BakuEvent> {
+    const event: BakuEvent = {
+      action: BakuAction.INSERT_IMAGE,
+      value: { planId, imageIndex: imgIndex, image },
+      user: username
+    };
+    await this.bakuService.stack(projectId, event);
+    return event;
   }
 }

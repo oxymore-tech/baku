@@ -49,24 +49,26 @@ export const ProjectStore = {
       const filmHistory = await filmService.getHistory(projectId);
       await context.commit('setFilm', { projectId, filmHistory });
     },
-    async addImageToPlan(context: { commit: any, state: ProjectState },
+    async addImageToPlan(context: any,
       payload: { planId: string, imageIndex: number, image: ImageRef }): Promise<void> {
       const insertEvent = await new FilmService().insertImage(
         context.state.id,
         payload.planId,
         payload.imageIndex,
         payload.image,
+        context.rootState.user.username
       );
       context.commit('addToLocalHistory', insertEvent);
     },
-    changeActivePlan(context: { commit: any, state: ProjectState }, planIndex: number) {
+    changeActivePlan(context:any, planIndex: number) {
       context.commit('changeActivePlan', planIndex);
     },
     goToNextFrameAction(context: any) {
       context.commit('goToNextFrame');
     },
-    async createPlan(context: { commit: any, state: ProjectState }, name = 'Default plan'): Promise<void> {
-      const createEvent = await new FilmService().addPlan(context.state.id, name);
+    async createPlan(context: any, name = 'Default plan'): Promise<void> {
+      const createEvent = await new FilmService().addPlan(context.state.id, name, context.rootState.user.username);
+      console.log(context);
       context.commit('addToLocalHistory', createEvent);
     },
   },

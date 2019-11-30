@@ -13,6 +13,7 @@ export enum BakuAction {
 export interface BakuEvent {
   readonly action: BakuAction;
   readonly value: any;
+  readonly user: string;
 }
 
 export class BakuService {
