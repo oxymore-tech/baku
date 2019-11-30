@@ -46,7 +46,7 @@ export default class Init extends Project {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
     await this.createShotAction('Nouveau plan');
-    await this.$router.push(`/capture/${projectId}`);
+    await this.$router.push(`/${projectId}/capture`);
   }
 }
 </script>

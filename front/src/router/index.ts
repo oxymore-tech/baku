@@ -26,17 +26,17 @@ const routes = [
     component: Home,
   },
   {
-    path: '/home/:projectid',
-    name: 'Home',
-    component: Home,
-  },
-  {
     path: '/:projectid',
     name: 'Home',
     component: Home,
   },
   {
-    path: '/capture/:projectid',
+    path: '/:projectid/home',
+    name: 'Home',
+    component: Home,
+  },
+  {
+    path: '/:projectid/capture',
     name: 'capture',
     component: () => import('../views/Capture.vue'),
   },
