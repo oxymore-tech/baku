@@ -145,9 +145,9 @@ export default class ShotsStack extends Vue {
   }
 
   public renameShot(shotId: string) {
-    const name = this.shots.find(shot => shot.id === shotId).name;
-    if (name) {
-      this.$store.dispatch('project/renameShot', { shotId, name });
+    const shot = this.shots.find((shot) => shot.id === shotId);
+    if (shot) {
+      this.$store.dispatch('project/renameShot', { shotId, name: shot.name });
     }
   }
 
