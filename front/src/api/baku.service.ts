@@ -18,7 +18,7 @@ export interface BakuEvent {
 }
 
 export class BakuService {
-  private static readonly BaseUrl = '';
+  private static readonly BaseUrl = '/api';
 
   public upload(projectId: string, shotId: string, blob: Blob, name: string): Promise<ImageRef> {
     const formData = new FormData();
