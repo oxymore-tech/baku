@@ -7,7 +7,6 @@ interface ProjectState {
   pictures: string[];
   fullResPicturesCache: HTMLImageElement[];
   id: string;
-  activeFrame: number;
   activeShotIndex: number;
   history: BakuEvent[];
 }
@@ -18,7 +17,6 @@ export const ProjectStore = {
     pictures: [],
     fullResPicturesCache: [],
     id: null,
-    activeFrame: 0,
     activeShotIndex: 0,
     history: [],
   },
@@ -33,13 +31,6 @@ export const ProjectStore = {
     },
     changeActiveShot(state: ProjectState, shotIndex: number) {
       state.activeShotIndex = shotIndex;
-    },
-    goToNextFrame(state: ProjectState) {
-      if (state.activeFrame === MovieService.merge(state.history).shots[state.activeShotIndex].images.length - 1) {
-        state.activeFrame = 0;
-      } else {
-        state.activeFrame++;
-      }
     },
   },
   actions: {
@@ -62,9 +53,6 @@ export const ProjectStore = {
     },
     changeActiveShot(context: any, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
-    },
-    goToNextFrameAction(context: any) {
-      context.commit('goToNextFrame');
     },
 
     async updateTitle(context: any, title: string) {

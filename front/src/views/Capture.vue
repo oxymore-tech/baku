@@ -32,12 +32,14 @@
               :src="`/api/${id}/images/${getActiveShot.id}/${getActiveShot.images[activeFrame]}?width=1280&height=720`"
             />
           </div>
-          <img
-            style="display:none"
-            v-for="image in getActiveShot.images"
-            :key="image"
-            :src="`/api/${id}/images/${getActiveShot.id}/${image}?width=1280&height=720`"
-          />
+          <template v-if="getActiveShot">
+            <img
+              style="display:none"
+              v-for="image in getActiveShot.images"
+              :key="image"
+              :src="`/api/${id}/images/${getActiveShot.id}/${image}?width=1280&height=720`"
+            />
+          </template>
         </div>
         <CaptureToolboxComponent
           v-if="getActiveShot"
@@ -98,8 +100,7 @@ export default class Capture extends Project {
   @ProjectNS.Getter
   public getActiveShot!: Shot;
 
-  @ProjectNS.State
-  public activeFrame!: number;
+  public activeFrame: number = 0;
 
   @CaptureNS.State
   public activeCapture!: boolean;
@@ -118,9 +119,16 @@ export default class Capture extends Project {
   public playAnimation() {
     if (!this.isPlaying) {
       this.isPlaying = true;
-      this.loop = setInterval(() => {
-        this.$store.dispatch("project/goToNextFrameAction");
-      }, 1000 / 12);
+      this.loop = setInterval(() => this.animate(), 1000 / 12);
+    }
+  }
+
+  public animate() {
+    console.log("coucou");
+    if (this.activeFrame === this.getActiveShot.images.length - 1) {
+      this.activeFrame = 0;
+    } else {
+      this.activeFrame++;
     }
   }
 
