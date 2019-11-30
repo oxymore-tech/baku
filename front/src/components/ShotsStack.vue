@@ -29,11 +29,11 @@
           <a
             class="activateShot"
             @click="renameShot(shot.id)"
-          >Renommer le shot</a>
+          >Renommer le plan</a>
           <a
             class="activateShot"
             @click="activateShot(shot.id)"
-          >Ouvrir le shot</a>
+          >Ouvrir le plan</a>
         </div>
       </div>
       <div class="shotCard">
@@ -43,7 +43,7 @@
           <a
             class="activateShot"
             @click="createNewShot()"
-          >Créer un nouveau shot</a>
+          >Créer un nouveau plan</a>
         </div>
       </div>
     </div>

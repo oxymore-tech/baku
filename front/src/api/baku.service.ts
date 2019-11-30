@@ -3,11 +3,12 @@ import axios from 'axios';
 export type ImageRef = string;
 
 export enum BakuAction {
-  UPDATE_TITLE,
-  UPDATE_SYNOPSIS,
-  UPDATE_POSTER,
-  ADD_PLAN,
-  INSERT_IMAGE,
+  MOVIE_UPDATE_TITLE,
+  MOVIE_UPDATE_SYNOPSIS,
+  MOVIE_UPDATE_POSTER,
+  MOVIE_INSERT_IMAGE,
+  SHOT_ADD,
+  SHOT_RENAME,
 }
 
 export interface BakuEvent {
@@ -19,11 +20,11 @@ export interface BakuEvent {
 export class BakuService {
   private static readonly BaseUrl = '';
 
-  public upload(projectId: string, planId: string, blob: Blob, name: string): Promise<ImageRef> {
+  public upload(projectId: string, shotId: string, blob: Blob, name: string): Promise<ImageRef> {
     const formData = new FormData();
     formData.set('file', blob, name);
     return axios
-      .post(`${BakuService.BaseUrl}/${projectId}/upload/${planId}`, formData,
+      .post(`${BakuService.BaseUrl}/${projectId}/upload/${shotId}`, formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',

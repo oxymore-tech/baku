@@ -1,19 +1,19 @@
 <template>
   <div class="mainFrame">
-    <PlansStack
-      v-if="displayPlansStack"
+    <ShotsStack
+      v-if="displayShotsStack"
       :projectId="id"
-      :plans="film.plans"
-      :activePlanId="getActivePlanId"
-      v-on:closestack="displayPlansStack=false"
+      :shots="movie.shots"
+      :activeShotId="getActiveShotId"
+      v-on:closestack="displayShotsStack=false"
     />
     <template v-else>
       <div class="previewBloc">
         <StoryboardPreviewComponent
-          :plans="film.plans"
-          :activePlanId="getActivePlanId"
-          :displayPlansStack="displayPlansStack"
-          v-on:changedisplayplansstack="displayPlansStack = true"
+          :shots="movie.shots"
+          :activeShotId="getActiveShotId"
+          :displayShotsStack="displayShotsStack"
+          v-on:changedisplayshotsstack="displayShotsStack = true"
         />
         <video
           v-if="activeCapture"
@@ -27,17 +27,17 @@
         <div v-else>
           <div class="previewContainer">
             <img
-              v-if="getActivePlan && getActivePlan.images[activeFrame]"
+              v-if="getActiveShot && getActiveShot.images[activeFrame]"
               id="previewImg"
-              :src="`/${id}/images/${getActivePlan.id}/${getActivePlan.images[activeFrame]}?width=1280&height=720`"
+              :src="`/${id}/images/${getActiveShot.id}/${getActiveShot.images[activeFrame]}?width=1280&height=720`"
             />
           </div>
         </div>
         <CaptureToolboxComponent
-          v-if="getActivePlan"
+          v-if="getActiveShot"
           :projectId="id"
-          :activePlan="getActivePlan.id"
-          :activeIndex="getActivePlan.images.length"
+          :activeShot="getActiveShot.id"
+          :activeIndex="getActiveShot.images.length"
         />
       </div>
       <div>
@@ -45,10 +45,10 @@
         <button @click="pauseAnimation()">pause</button>
       </div>
       <CarrouselComponent
-        v-if="getActivePlan"
+        v-if="getActiveShot"
         :projectId="id"
-        :activePlan="getActivePlan.id"
-        :images="getActivePlan.images"
+        :activeShot="getActiveShot.id"
+        :images="getActiveShot.images"
         :activeImage="activeFrame"
         :activeCapture="activeCapture"
       />
@@ -63,8 +63,8 @@ import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponen
 import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
 import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-import PlansStack from '@/components/PlansStack.vue';
-import { Film, Plan } from '@/api/film.service';
+import ShotsStack from '@/components/ShotsStack.vue';
+import { Movie, Shot } from '@/api/movie.service';
 import Project from './Project.vue';
 
 const CaptureNS = namespace('capture');
@@ -75,7 +75,7 @@ const ProjectNS = namespace('project');
     CaptureToolboxComponent,
     CarrouselComponent,
     StoryboardPreviewComponent,
-    PlansStack,
+    ShotsStack,
   },
   store,
 })
@@ -84,13 +84,13 @@ export default class Capture extends Project {
   public id!: string;
 
   @ProjectNS.Getter
-  public getActivePlanId!: string;
+  public getActiveShotId!: string;
 
   @ProjectNS.Getter
-  public film!: Film;
+  public movie!: Movie;
 
   @ProjectNS.Getter
-  public getActivePlan!: Plan;
+  public getActiveShot!: Shot;
 
   @ProjectNS.State
   public activeFrame!: number;
@@ -103,7 +103,7 @@ export default class Capture extends Project {
 
   public isPlaying = false;
 
-  public displayPlansStack = false;
+  public displayShotsStack = false;
 
   private loop: any;
 
@@ -133,8 +133,8 @@ export default class Capture extends Project {
     }
   }
 
-  public onActivePlanSelected(plan: Plan) {
-    console.log('plan selected', plan);
+  public onActiveShotSelected(shot: Shot) {
+    console.log('shot selected', shot);
   }
 }
 </script>

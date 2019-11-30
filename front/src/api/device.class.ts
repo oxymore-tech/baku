@@ -17,7 +17,7 @@ export class Device {
     return this.id === 'smartphone';
   }
 
-  public async capture(videoElementTag: string, projectId: string, planId: string): Promise<string> {
+  public async capture(videoElementTag: string, projectId: string, shotId: string): Promise<string> {
     const canvas = document.createElement('canvas');
     const video = document.getElementById(videoElementTag) as HTMLVideoElement;
     canvas.width = video.videoWidth;
@@ -26,7 +26,7 @@ export class Device {
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
     const base64 = canvas.toDataURL('image/jpeg');
     const blob = this.imagetoblob(base64);
-    return this.bakuService.upload(projectId, planId, blob, `${uuid.v4()}.jpg`);
+    return this.bakuService.upload(projectId, shotId, blob, `${uuid.v4()}.jpg`);
   }
 
   private imagetoblob(base64String: string): Blob {

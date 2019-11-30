@@ -1,6 +1,6 @@
 import {
-  FilmService, Film, Plan,
-} from '@/api/film.service';
+  MovieService, Movie, Shot,
+} from '@/api/movie.service';
 import { BakuEvent, ImageRef } from '@/api/baku.service';
 
 interface ProjectState {
@@ -8,7 +8,7 @@ interface ProjectState {
   fullResPicturesCache: HTMLImageElement[];
   id: string;
   activeFrame: number;
-  activePlanIndex: number;
+  activeShotIndex: number;
   history: BakuEvent[];
 }
 
@@ -19,23 +19,23 @@ export const ProjectStore = {
     fullResPicturesCache: [],
     id: null,
     activeFrame: 0,
-    activePlanIndex: 0,
+    activeShotIndex: 0,
     history: [],
   },
   mutations: {
-    setFilm(state: ProjectState, payload: { projectId: string, filmHistory: BakuEvent[] }) {
+    setMovie(state: ProjectState, payload: { projectId: string, movieHistory: BakuEvent[] }) {
       state.id = payload.projectId;
-      state.history = payload.filmHistory;
+      state.history = payload.movieHistory;
       state.activeFrame = 0;
     },
     addToLocalHistory(state: ProjectState, event: BakuEvent) {
       state.history.push(event);
     },
-    changeActivePlan(state: ProjectState, planIndex: number) {
-      state.activePlanIndex = planIndex;
+    changeActiveShot(state: ProjectState, shotIndex: number) {
+      state.activeShotIndex = shotIndex;
     },
     goToNextFrame(state: ProjectState) {
-      if (state.activeFrame === FilmService.merge(state.history).plans[state.activePlanIndex].images.length - 1) {
+      if (state.activeFrame === MovieService.merge(state.history).shots[state.activeShotIndex].images.length - 1) {
         state.activeFrame = 0;
       } else {
         state.activeFrame++;
@@ -44,39 +44,43 @@ export const ProjectStore = {
   },
   actions: {
     async loadProject(context: any, projectId: string): Promise<void> {
-      const filmService = new FilmService();
-      // const film = await filmService.get(projectId);
-      const filmHistory = await filmService.getHistory(projectId);
-      await context.commit('setFilm', { projectId, filmHistory });
+      const movieService = new MovieService();
+      // const movie = await movieService.get(projectId);
+      const movieHistory = await movieService.getHistory(projectId);
+      await context.commit('setMovie', { projectId, movieHistory });
     },
-    async addImageToPlan(context: any,
-      payload: { planId: string, imageIndex: number, image: ImageRef }): Promise<void> {
-      const insertEvent = await new FilmService().insertImage(
+    async addImageToShot(context: any,
+      payload: { shotId: string, imageIndex: number, image: ImageRef }): Promise<void> {
+      const insertEvent = await new MovieService().insertImage(
         context.state.id,
-        payload.planId,
+        payload.shotId,
         payload.imageIndex,
         payload.image,
         context.rootState.user.username
       );
       context.commit('addToLocalHistory', insertEvent);
     },
-    changeActivePlan(context:any, planIndex: number) {
-      context.commit('changeActivePlan', planIndex);
+    changeActiveShot(context:any, shotIndex: number) {
+      context.commit('changeActiveShot', shotIndex);
     },
     goToNextFrameAction(context: any) {
       context.commit('goToNextFrame');
     },
-    async createPlan(context: any, name = 'Default plan'): Promise<void> {
-      const createEvent = await new FilmService().addPlan(context.state.id, name, context.rootState.user.username);
+    async createShot(context: any, name = 'Default shot'): Promise<void> {
+      const createEvent = await new MovieService().addShot(context.state.id, name, context.rootState.user.username);
       console.log(context);
       context.commit('addToLocalHistory', createEvent);
+    },
+    async renameShot(context: any, { shotId, name }: any): Promise<void> {
+      const event = await new MovieService().renameShot(context.state.id, shotId, name, context.rootState.user.username);
+      context.commit('addToLocalHistory', event);
     },
   },
   getters: {
     getPictures: (state: ProjectState) => state.pictures,
-    film: (state: ProjectState): Film => FilmService.merge(state.history),
-    getActivePlan: (state: ProjectState, getters: any): Plan => getters.film.plans[state.activePlanIndex],
-    getActivePlanId: (state: ProjectState, getters: any): string => getters.getActivePlan ? getters.getActivePlan.id : undefined,
+    movie: (state: ProjectState): Movie => MovieService.merge(state.history),
+    getActiveShot: (state: ProjectState, getters: any): Shot => getters.movie.shots[state.activeShotIndex],
+    getActiveShotId: (state: ProjectState, getters: any): string => getters.getActiveShot ? getters.getActiveShot.id : undefined,
   },
   modules: {},
 };

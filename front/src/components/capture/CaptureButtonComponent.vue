@@ -48,7 +48,7 @@ export default class CaptureButtonComponent extends Vue {
   public projectId!: string;
 
   @Prop()
-  public activePlan!: string;
+  public activeShot!: string;
 
   @Prop()
   public activeIndex!: number;
@@ -123,8 +123,8 @@ export default class CaptureButtonComponent extends Vue {
       if (data.type === 'upload') {
         this.isCapturing = false;
         const pictureId = data.message;
-        this.$store.dispatch('project/addImageToPlan', {
-          planId: this.activePlan,
+        this.$store.dispatch('project/addImageToShot', {
+          shotId: this.activeShot,
           imageIndex: this.activeIndex,
           image: pictureId,
         });
@@ -165,7 +165,7 @@ export default class CaptureButtonComponent extends Vue {
       JSON.stringify({
         message: 'capture',
         projectId: this.projectId,
-        plan: this.activePlan,
+        shot: this.activeShot,
         type: 'cmd',
       }),
     );
@@ -175,10 +175,10 @@ export default class CaptureButtonComponent extends Vue {
     const pictureId = await this.device.capture(
       'videoCapture',
       this.projectId,
-      this.activePlan,
+      this.activeShot,
     );
-    this.$store.dispatch('project/addImageToPlan', {
-      planId: this.activePlan,
+    this.$store.dispatch('project/addImageToShot', {
+      shotId: this.activeShot,
       imageIndex: this.activeIndex,
       image: pictureId,
     });
