@@ -7,7 +7,7 @@
           class="carrouselThumb"
           :key="image"
           :alt="image"
-          :src="`/${projectId}/images/${activePlan}/${image}?width=185&height=104`"
+          :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
         />
       </template>
       <template v-else>
@@ -24,7 +24,7 @@
         v-if="computedActiveImage !== undefined"
         class="carrouselThumb active"
         :alt="computedActiveImage"
-        :src="`/${projectId}/images/${activePlan}/${computedActiveImage}?width=185&height=104`"
+        :src="`/api/${projectId}/images/${activeShot}/${computedActiveImage}?width=185&height=104`"
       />
     </template>
     <template v-else>
@@ -43,7 +43,7 @@
           class="carrouselThumb"
           :key="image"
           :alt="image"
-          :src="`/${projectId}/images/${activePlan}/${image}?width=185&height=104`"
+          :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
         />
       </template>
       <template v-else>
@@ -105,7 +105,7 @@ export default class CarrouselComponent extends Vue {
   public projectId!: string;
 
   @Prop()
-  public activePlan!: string;
+  public activeShot!: string;
 
   @Prop()
   public activeImage!: number;

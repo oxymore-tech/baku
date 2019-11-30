@@ -2,7 +2,7 @@
   <div class="boxContainer storyboard-preview-container">
     <div>
       <h4>Storyboard</h4>
-      <button @click="onDisplayPlansStack()">Le bouton pour ouvrir la stack</button>
+      <button @click="onDisplayShotsStack()">Le bouton pour ouvrir la stack</button>
     </div>
     <img src="@/assets/storyboard.png" />
   </div>
@@ -23,21 +23,21 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Plan } from '@/api/film.service';
+import { Shot } from '@/api/movie.service';
 
 @Component
 export default class StoryboardPreviewComponent extends Vue {
   @Prop({ required: true })
-  public plans!: Plan[];
+  public shots!: Shot[];
 
   @Prop()
-  public activePlanId!: string;
+  public activeShotId!: string;
 
   @Prop()
-  public displayPlansStack!: boolean;
+  public displayShotsStack!: boolean;
 
-  public onDisplayPlansStack() {
-    this.$emit('changedisplayplansstack');
+  public onDisplayShotsStack() {
+    this.$emit('changedisplayshotsstack');
   }
 }
 </script>
