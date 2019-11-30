@@ -10,7 +10,7 @@ export default class Project extends Vue {
   public history!: string;
 
   @ProjectNS.Action('loadProject')
-  private loadProjectAction!: (projectId: string) => Promise<void>;
+  protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public async created() {
     const projectId = this.$route.params.projectid;
