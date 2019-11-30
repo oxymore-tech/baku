@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
 import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
@@ -65,6 +65,7 @@ import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import PlansStack from '@/components/PlansStack.vue';
 import { Film, Plan } from '@/api/film.service';
+import Project from './Project.vue';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -78,7 +79,7 @@ const ProjectNS = namespace('project');
   },
   store,
 })
-export default class Capture extends Vue {
+export default class Capture extends Project {
   @ProjectNS.State
   public id!: string;
 
