@@ -8,7 +8,7 @@
     </header>
     <section class="modal-card-body">
       <span>Votre film est automatiquement installé à l'adresse suivante :</span><br>
-      <a :href="url+'/#/'+id">{{url+'/#/'+id}}</a><br>
+      <a :href="url+'/'+id">{{url+'/'+id}}</a><br>
       <span>Titre du film</span><br>
       <input type="text" :value="movie.title" @blur="setTitle($event)"/><br>
       <span>Synopsis</span><br>
