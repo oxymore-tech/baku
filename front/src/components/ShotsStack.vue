@@ -82,7 +82,7 @@
 
 .shotCard {
   width: 292px;
-  height: 260px;
+  height: 300px;
   background: #ffffff 0% 0% no-repeat padding-box;
   border-radius: 16px;
   opacity: 1;

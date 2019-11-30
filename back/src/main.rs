@@ -19,6 +19,7 @@ use tokio::{
 use tokio_executor::blocking;
 use uuid::Uuid;
 use warp::{ws::Message, ws::WebSocket, Filter};
+use std::env;
 
 #[derive(Deserialize)]
 struct Size {
@@ -377,6 +378,15 @@ fn user_disconnected(my_id: usize, users: &Users) {
 async fn main() {
     let _ = pretty_env_logger::try_init();
 
+    let args: Vec<String> = env::args().collect();
+    let https_port: u16;
+    if args.len() < 2 {
+        println!("*** Port should be specified in the command line ***");
+        https_port = 3030;
+    } else {
+        https_port = args[1].parse().unwrap();
+    }
+
     // Keep track of all connected users, key is usize, value
     // is a websocket sender.
     let users = Arc::new(Mutex::new(HashMap::new()));
@@ -459,15 +469,10 @@ async fn main() {
         .or(warp::fs::dir(resource_path))
         .or(index);
 
-    // println!("port={:#?}", port);
-    // static port: String = match env::var("BAKU_PORT") {
-    //     Ok(val) => val,
-    //     Err(_e) => "3030".to_string(),
-    // };
-
-    println!("Listen to port 0.0.0.0:3030");
+    println!("Listening to port 0.0.0.0:{}", https_port);
     warp::serve(routes)
         .tls("./certificates/certificate.pem", "./certificates/key.pem")
-        .run(([0, 0, 0, 0], 3030))
+        .run(([0, 0, 0, 0], https_port))
         .await;
+
 }
