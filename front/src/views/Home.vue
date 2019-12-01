@@ -66,18 +66,18 @@
 
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import * as uuid from "uuid";
+import { Vue, Component } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import * as uuid from 'uuid';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component
 export default class Init extends Vue {
-  @ProjectNS.Action("createShot")
+  @ProjectNS.Action('createShot')
   private createShotAction!: (name?: string) => Promise<void>;
 
-  @ProjectNS.Action("loadProject")
+  @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public description = `Baku est une rencontre entre instituteurs, artistes et développeurs.
@@ -88,20 +88,20 @@ export default class Init extends Vue {
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
+      navigator.userAgent,
     );
   }
 
   public async created() {
     if (this.isMobile()) {
-      this.$router.push({ name: "smartphone" });
+      this.$router.push({ name: 'smartphone' });
     }
     const { projectId } = this.$route.params;
     if (projectId) {
       await this.loadProjectAction(projectId);
       await this.$router.push({
-        name: "captureShots",
-        params: { projectId }
+        name: 'captureShots',
+        params: { projectId },
       });
     }
   }
@@ -109,9 +109,9 @@ export default class Init extends Vue {
   public async onCreateProject() {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
-    await this.createShotAction("Nouveau plan");
+    await this.createShotAction('Nouveau plan');
     await this.$router.push({
-      name: "captureShot",
+      name: 'captureShot',
       params: {
         projectId,
         shotId: this.activeShotId,

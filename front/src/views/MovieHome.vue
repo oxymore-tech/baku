@@ -77,12 +77,12 @@
 </style>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import { Movie } from "@/api/movie.service";
-import Project from "./Project.vue";
+import { Component } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Movie } from '@/api/movie.service';
+import Project from './Project.vue';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component
 export default class Init extends Project {
@@ -94,10 +94,10 @@ export default class Init extends Project {
 
   public async onAccessProject() {
     await this.$router.push({
-      name: "captureShots",
+      name: 'captureShots',
       params: {
-        projectId: this.id
-      }
+        projectId: this.id,
+      },
     });
   }
 }
