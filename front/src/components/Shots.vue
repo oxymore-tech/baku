@@ -1,8 +1,13 @@
 <template>
-  <div class="shotsStack">
-    <div class="shotsStackTitle">
+  <div class="shots">
+    <div class="shotsTitle">
       <h3>Choisir un plan</h3>
-      <button @click="closeStack()">Le bouton pour quitter</button>
+
+      <button 
+         v-if="projectId"
+         @click="openCurrentShot()">
+         Accéder au dernier plan</button>
+
     </div>
     <div class="shotCardsContainer">
       <div
@@ -51,14 +56,14 @@
 </template>
 
 <style lang="scss">
-.shotsStack {
+.shots {
   width: 100%;
   height: 100%;
   background: #f2f2f2;
   display: flex;
   flex-direction: column;
 
-  .shotsStackTitle {
+  .shotsTitle {
     margin: 0 24px;
 
     h3 {
@@ -124,7 +129,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Shot } from '../api/movie.service';
 
 @Component
-export default class ShotsStack extends Vue {
+export default class Shots extends Vue {
   @Prop({ required: true })
   public shots!: Shot[];
 
@@ -134,8 +139,8 @@ export default class ShotsStack extends Vue {
   @Prop({ required: true })
   public projectId!: string;
 
-  public closeStack() {
-    this.$emit('closestack');
+  public openCurrentShot() {
+    this.$emit('openCurrentShot');
   }
 
   public activateShot(id: string) {

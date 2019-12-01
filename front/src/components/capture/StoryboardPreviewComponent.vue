@@ -2,7 +2,7 @@
   <div class="boxContainer storyboard-preview-container">
     <div>
       <h4>Storyboard</h4>
-      <button @click="onDisplayShotsStack()">Le bouton pour ouvrir la stack</button>
+      <button @click="onDisplayShots()">Voir la liste des plans</button>
     </div>
     <img src="@/assets/storyboard.png" />
   </div>
@@ -36,12 +36,12 @@ export default class StoryboardPreviewComponent extends Vue {
   public activeShotId!: string;
 
   @Prop()
-  public displayShotsStack!: boolean;
+  public displayShots!: boolean;
 
   @ProjectNS.State
   public id!: string;
 
-  public onDisplayShotsStack() {
+  public onDisplayShots() {
     this.$router.push('/movies/' + this.id + '/shots/');
   }
 }

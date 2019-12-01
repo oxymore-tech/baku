@@ -1,10 +1,10 @@
 <template>
   <div class="mainFrame">
-    <ShotsStack
+    <Shots
       :projectId="id"
       :shots="movie.shots"
       :activeShotId="getActiveShotId"
-      v-on:closestack="displayShotsStack=false"
+      v-on:openCurrentShot="openCapture"
     />
   </div>
 </template>
@@ -13,14 +13,14 @@
 import { Component } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 import store from "@/store";
-import ShotsStack from "@/components/ShotsStack.vue";
+import Shots from "@/components/Shots.vue";
 import { Movie, Shot } from "@/api/movie.service";
 import Project from "./Project.vue";
 
 const ProjectNS = namespace("project");
 @Component({
   components: {
-    ShotsStack
+    Shots
   },
   store
 })
@@ -36,6 +36,10 @@ export default class Capture extends Project {
 
   @ProjectNS.Getter
   public getActiveShot!: Shot;
+
+  public async openCapture() {
+    await this.$router.push('/movies/' + this.id + '/shots/' + this.getActiveShotId);
+  }
 }
 </script>
 

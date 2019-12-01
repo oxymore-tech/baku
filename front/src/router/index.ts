@@ -31,7 +31,7 @@ const routes = [
   },
   {
     path: '/movies/:projectid/shots/',
-    component: () => import('../views/ShotChoice.vue'),
+    component: () => import('../views/Shots.vue'),
   },
   {
     name: "shotCapture",
