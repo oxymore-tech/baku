@@ -1,19 +1,10 @@
 <template>
   <div class="mainFrame">
-    <ShotsStack
-      v-if="displayShotsStack"
-      :projectId="id"
-      :shots="movie.shots"
-      :activeShotId="getActiveShotId"
-      v-on:closestack="displayShotsStack=false"
-    />
-    <template v-else>
+    <template>
       <div class="previewBloc">
         <StoryboardPreviewComponent
           :shots="movie.shots"
           :activeShotId="getActiveShotId"
-          :displayShotsStack="displayShotsStack"
-          v-on:changedisplayshotsstack="displayShotsStack = true"
         />
         <video
           v-if="activeCapture"
@@ -32,17 +23,26 @@
               :src="`/api/${id}/images/${getActiveShot.id}/${getActiveShot.images[activeFrame]}?width=1280&height=720`"
             />
           </div>
+          <template v-if="computedPremiewImages">
+            <img
+              style="display:none"
+              v-for="(image, index) in computedPremiewImages"
+              :key="index"
+              :src="`/api/${id}/images/${getActiveShot.id}/${image}?width=1280&height=720`"
+            />
+          </template>
         </div>
         <CaptureToolboxComponent
           v-if="getActiveShot"
           :projectId="id"
           :activeShot="getActiveShot.id"
-          :activeIndex="getActiveShot.images.length"
+          :activeIndex="activeFrame + 1"
+          v-on:moveactiveframe="moveActiveFrame($event)"
         />
       </div>
       <div>
-        <button @click="playAnimation()">play</button>
-        <button @click="pauseAnimation()">pause</button>
+        <i class="icon-play baku-button" style="color:#FBB10D;" @click="playAnimation()" />
+        <i class="icon-pause baku-button" @click="pauseAnimation()" />
       </div>
       <CarrouselComponent
         v-if="getActiveShot"
@@ -51,31 +51,32 @@
         :images="getActiveShot.images"
         :activeImage="activeFrame"
         :activeCapture="activeCapture"
+        v-on:moveactiveframe="moveActiveFrame($event)"
       />
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Watch } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-import store from '@/store';
-import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-import ShotsStack from '@/components/ShotsStack.vue';
-import { Movie, Shot } from '@/api/movie.service';
-import Project from './Project.vue';
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+import { Component, Watch } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
+import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
+import store from "@/store";
+import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
+import { Movie, Shot } from "@/api/movie.service";
+import Project from "./Project.vue";
+import { ImageRef } from '@/api/baku.service';
+
+const CaptureNS = namespace("capture");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
     StoryboardPreviewComponent,
-    ShotsStack,
   },
   store,
 })
@@ -92,8 +93,7 @@ export default class Capture extends Project {
   @ProjectNS.Getter
   public getActiveShot!: Shot;
 
-  @ProjectNS.State
-  public activeFrame!: number;
+  public activeFrame: number = 0;
 
   @CaptureNS.State
   public activeCapture!: boolean;
@@ -103,18 +103,22 @@ export default class Capture extends Project {
 
   public isPlaying = false;
 
-  public displayShotsStack = false;
-
   private loop: any;
 
-  public mounted() { }
+  public mounted() {}
 
   public playAnimation() {
     if (!this.isPlaying) {
       this.isPlaying = true;
-      this.loop = setInterval(() => {
-        this.$store.dispatch('project/goToNextFrameAction');
-      }, 1000 / 12);
+      this.loop = setInterval(() => this.animate(), 1000 / this.movie.fps);
+    }
+  }
+
+  public animate() {
+    if (this.activeFrame === this.getActiveShot.images.length - 1) {
+      this.activeFrame = 0;
+    } else {
+      this.activeFrame++;
     }
   }
 
@@ -125,7 +129,6 @@ export default class Capture extends Project {
 
   @Watch('stream')
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
-    console.log('onStreamChange');
     if (newValue) {
       (document.getElementById(
         'videoCapture',
@@ -133,8 +136,15 @@ export default class Capture extends Project {
     }
   }
 
-  public onActiveShotSelected(shot: Shot) {
-    console.log('shot selected', shot);
+  get computedPremiewImages(): ImageRef[] {
+    if (!this.getActiveShot) {
+      return [];
+    }
+    return this.getActiveShot.images.slice(this.activeFrame, this.activeFrame + 25);
+  }
+
+  public moveActiveFrame(event: number) {
+    this.activeFrame += event;
   }
 }
 </script>

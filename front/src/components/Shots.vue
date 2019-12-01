@@ -1,8 +1,8 @@
 <template>
-  <div class="shotsStack">
-    <div class="shotsStackTitle">
+  <div class="shots">
+    <div class="shotsTitle">
       <h3>Choisir un plan</h3>
-      <button @click="closeStack()">Le bouton pour quitter</button>
+      <i class="icon-close baku-button" @click="close()"></i>
     </div>
     <div class="shotCardsContainer">
       <div
@@ -14,36 +14,20 @@
         <img
           v-if="shot.images[0]"
           class="shotPreview"
-          :src="`/${projectId}/images/${shot.id}/${shot.images[0]}?width=292&height=193`"
+          :src="`/api/${projectId}/images/${shot.id}/${shot.images[0]}?width=292&height=193`"
         />
-        <div
-          class="shotPreview"
-          v-else
-        ></div>
+        <div class="shotPreview" v-else>Hello, No preview Here!</div>
         <div class="cardFooter">
-          <span class="shotName">{{shot.name}}</span>
-          <input
-            v-model="shot.name"
-            type="text"
-            class="shotName"/>
-          <a
-            class="activateShot"
-            @click="renameShot(shot.id)"
-          >Renommer le plan</a>
-          <a
-            class="activateShot"
-            @click="activateShot(shot.id)"
-          >Ouvrir le plan</a>
+          <input v-model="shot.name" type="text" class="shotName" />
+          <i class="icon-edit baku-button" @click="renameShot(shot.id)" />
+          <a class="activateShot" @click="activateShot(shot.id)">Ouvrir le plan</a>
         </div>
       </div>
       <div class="shotCard">
         <div class="shotPreview"></div>
         <div class="cardFooter">
           <span class="shotName">Nouveau Plan</span>
-          <a
-            class="activateShot"
-            @click="createNewShot()"
-          >Créer un nouveau plan</a>
+          <a class="activateShot" @click="createNewShot()">Créer un nouveau plan</a>
         </div>
       </div>
     </div>
@@ -51,15 +35,18 @@
 </template>
 
 <style lang="scss">
-.shotsStack {
+.shots {
   width: 100%;
   height: 100%;
   background: #f2f2f2;
   display: flex;
   flex-direction: column;
 
-  .shotsStackTitle {
+  .shotsTitle {
     margin: 0 24px;
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: space-between;
 
     h3 {
       font-size: 28px;
@@ -82,7 +69,7 @@
 
 .shotCard {
   width: 292px;
-  height: 260px;
+  height: 300px;
   background: #ffffff 0% 0% no-repeat padding-box;
   border-radius: 16px;
   opacity: 1;
@@ -124,7 +111,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Shot } from '../api/movie.service';
 
 @Component
-export default class ShotsStack extends Vue {
+export default class Shots extends Vue {
   @Prop({ required: true })
   public shots!: Shot[];
 
@@ -134,20 +121,20 @@ export default class ShotsStack extends Vue {
   @Prop({ required: true })
   public projectId!: string;
 
-  public closeStack() {
-    this.$emit('closestack');
+  public close() {
+    this.$emit('close');
   }
 
   public activateShot(id: string) {
     const shotIndex = this.shots.findIndex((shot) => shot.id === id);
     this.$store.dispatch('project/changeActiveShot', shotIndex);
-    this.$emit('closestack');
+    this.$emit('close');
   }
 
   public renameShot(shotId: string) {
-    const name = this.shots.find(shot => shot.id === shotId).name;
-    if (name) {
-      this.$store.dispatch('project/renameShot', { shotId, name });
+    const selectedShot = this.shots.find((shot) => shot.id === shotId);
+    if (selectedShot) {
+      this.$store.dispatch('project/renameShot', { shotId, name: selectedShot.name });
     }
   }
 

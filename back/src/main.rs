@@ -430,6 +430,7 @@ async fn main() {
         .map(|buffer| {
             warp::http::Response::builder()
                 .header("Content-Type", "image/jpg")
+                .header("cache-control", "max-age=604800")
                 .body(buffer)
         });
 

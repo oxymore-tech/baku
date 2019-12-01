@@ -7,7 +7,6 @@ interface ProjectState {
   pictures: string[];
   fullResPicturesCache: HTMLImageElement[];
   id: string;
-  activeFrame: number;
   activeShotIndex: number;
   history: BakuEvent[];
 }
@@ -18,7 +17,6 @@ export const ProjectStore = {
     pictures: [],
     fullResPicturesCache: [],
     id: null,
-    activeFrame: 0,
     activeShotIndex: 0,
     history: [],
   },
@@ -26,20 +24,12 @@ export const ProjectStore = {
     setMovie(state: ProjectState, payload: { projectId: string, movieHistory: BakuEvent[] }) {
       state.id = payload.projectId;
       state.history = payload.movieHistory;
-      state.activeFrame = 0;
     },
     addToLocalHistory(state: ProjectState, event: BakuEvent) {
       state.history.push(event);
     },
     changeActiveShot(state: ProjectState, shotIndex: number) {
       state.activeShotIndex = shotIndex;
-    },
-    goToNextFrame(state: ProjectState) {
-      if (state.activeFrame === MovieService.merge(state.history).shots[state.activeShotIndex].images.length - 1) {
-        state.activeFrame = 0;
-      } else {
-        state.activeFrame++;
-      }
     },
   },
   actions: {
@@ -60,12 +50,20 @@ export const ProjectStore = {
       );
       context.commit('addToLocalHistory', insertEvent);
     },
-    changeActiveShot(context:any, shotIndex: number) {
+    changeActiveShot(context: any, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },
-    goToNextFrameAction(context: any) {
-      context.commit('goToNextFrame');
+
+    async updateTitle(context: any, title: string) {
+      const event = await new MovieService().updateTitle(context.state.id, title, context.rootState.user.username);
+      context.commit('addToLocalHistory', event);
     },
+
+    async updateSynopsis(context: any, synopsis: string) {
+      const event = await new MovieService().updateSynopsis(context.state.id, synopsis, context.rootState.user.username);
+      context.commit('addToLocalHistory', event);
+    },
+
     async createShot(context: any, name = 'Default shot'): Promise<void> {
       const createEvent = await new MovieService().addShot(context.state.id, name, context.rootState.user.username);
       console.log(context);
@@ -73,6 +71,10 @@ export const ProjectStore = {
     },
     async renameShot(context: any, { shotId, name }: Record<string, string>): Promise<void> {
       const event = await new MovieService().renameShot(context.state.id, shotId, name, context.rootState.user.username);
+      context.commit('addToLocalHistory', event);
+    },
+    async changeFps(context: any, fps: number): Promise<void> {
+      const event = await new MovieService().changeFps(context.state.id, fps, context.rootState.user.username);
       context.commit('addToLocalHistory', event);
     },
   },

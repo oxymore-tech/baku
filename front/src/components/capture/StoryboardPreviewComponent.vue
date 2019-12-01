@@ -1,8 +1,8 @@
 <template>
   <div class="boxContainer storyboard-preview-container">
-    <div>
+    <div class="storyboard-preview-header">
       <h4>Storyboard</h4>
-      <button @click="onDisplayShotsStack()">Le bouton pour ouvrir la stack</button>
+      <i class="icon-grid baku-button" @click="onDisplayShots()" />
     </div>
     <img src="@/assets/storyboard.png" />
   </div>
@@ -13,9 +13,20 @@
   width: 290px;
   height: 256px;
 
-  h4 {
-    font-size: 28px;
-    font-weight: bold;
+  .storyboard-preview-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    h4 {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    i {
+      font-size: 28px;
+    }
   }
 }
 </style>
@@ -23,8 +34,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
 import { Shot } from '@/api/movie.service';
 
+const ProjectNS = namespace('project');
 @Component
 export default class StoryboardPreviewComponent extends Vue {
   @Prop({ required: true })
@@ -34,10 +47,18 @@ export default class StoryboardPreviewComponent extends Vue {
   public activeShotId!: string;
 
   @Prop()
-  public displayShotsStack!: boolean;
+  public displayShots!: boolean;
 
-  public onDisplayShotsStack() {
-    this.$emit('changedisplayshotsstack');
+  @ProjectNS.State
+  public id!: string;
+
+  public onDisplayShots() {
+    this.$router.push({
+      name: 'captureShots',
+      params: {
+        projectId: this.id,
+      },
+    });
   }
 }
 </script>

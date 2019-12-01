@@ -1,44 +1,38 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
+import Shots from '../views/Shots.vue';
+import Capture from '../views/Capture.vue';
+import MovieHome from '../views/MovieHome.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
   {
+    name: 'home',
     path: '/',
-    name: 'Home',
     component: Home,
   },
+
   {
-    path: '/smartphone',
     name: 'smartphone',
+    path: '/smartphone',
     component: () => import('../views/SmartphoneView.vue'),
   },
   {
-    path: '/capture',
-    name: 'capture',
-    component: () => import('../views/Capture.vue'),
+    name: 'movieHome',
+    path: '/movies/:projectId',
+    component: MovieHome,
   },
   {
-    path: '/home',
-    name: 'Home',
-    component: Home,
+    name: 'captureShots',
+    path: '/movies/:projectId/capture/shots',
+    component: Shots,
   },
   {
-    path: '/home/:projectid',
-    name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/:projectid',
-    name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/capture/:projectid',
-    name: 'capture',
-    component: () => import('../views/Capture.vue'),
+    name: "captureShot",
+    path: '/movies/:projectId/capture/shots/:shotId',
+    component: Capture,
   },
 ];
 
@@ -47,5 +41,6 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 });
+
 
 export default router;
