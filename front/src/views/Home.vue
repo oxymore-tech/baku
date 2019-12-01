@@ -75,16 +75,13 @@ const ProjectNS = namespace('project');
 @Component
 export default class Init extends Vue {
   @ProjectNS.Action('createShot')
-  private createShotAction!: (name?: string) => Promise<void>;
+  private createShotAction!: (name?: string) => Promise<string>;
 
   @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public description = `Baku est une rencontre entre instituteurs, artistes et développeurs.
   C’est une plateforme de création de films d’animation collaborative destinée aux enfants.`;
-
-  @ProjectNS.State
-  public activeShotId!: string;
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -109,12 +106,12 @@ export default class Init extends Vue {
   public async onCreateProject() {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
-    await this.createShotAction('Nouveau plan');
+    const shotId = await this.createShotAction('Nouveau plan');
     await this.$router.push({
       name: 'captureShot',
       params: {
         projectId,
-        shotId: this.activeShotId,
+        shotId,
       }
     });
   }
