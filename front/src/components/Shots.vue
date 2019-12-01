@@ -107,8 +107,8 @@
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { Shot } from "../api/movie.service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Shot } from '../api/movie.service';
 
 @Component
 export default class Shots extends Vue {

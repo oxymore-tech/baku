@@ -13,8 +13,8 @@ export default class Project extends Vue {
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public async created() {
-    const projectId = this.$route.params.projectId;
-    if(projectId){
+    const { projectId } = this.$route.params;
+    if (projectId) {
       await this.loadProjectAction(projectId);
     } else {
       await this.$router.push({ name: 'home' });

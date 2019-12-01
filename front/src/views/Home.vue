@@ -44,12 +44,13 @@ export default class Init extends Vue {
   @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
-  public lorem =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+  public lorem =`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+     ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`;
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
+      navigator.userAgent,
     );
   }
 
@@ -57,12 +58,12 @@ export default class Init extends Vue {
     if (this.isMobile()) {
       this.$router.push({ name: 'smartphone' });
     }
-    const projectId = this.$route.params.projectId;
-    if(projectId){
+    const { projectId } = this.$route.params;
+    if (projectId) {
       await this.loadProjectAction(projectId);
       await this.$router.push({
         name: 'captureShots',
-        params: { projectId }
+        params: { projectId },
       });
     }
   }
@@ -73,7 +74,7 @@ export default class Init extends Vue {
     await this.createShotAction('Nouveau plan');
     await this.$router.push({
       name: 'captureShots',
-      params: { projectId }
+      params: { projectId },
     });
   }
 }

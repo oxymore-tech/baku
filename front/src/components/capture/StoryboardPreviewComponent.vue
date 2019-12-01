@@ -34,10 +34,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
 import { Shot } from '@/api/movie.service';
-import { namespace } from "vuex-class";
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 @Component
 export default class StoryboardPreviewComponent extends Vue {
   @Prop({ required: true })
@@ -57,7 +57,7 @@ export default class StoryboardPreviewComponent extends Vue {
       name: 'captureShots',
       params: {
         projectId: this.id,
-      }
+      },
     });
   }
 }

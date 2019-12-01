@@ -10,14 +10,6 @@
       </div>
       <router-link to="/">Scenario</router-link>
       <router-link to="/">Storyboard</router-link>
-      <!--
-      <router-link v-if="activeShotId" :to="{ name: 'captureShot', params: { projectId: ${id}, shotId: ${activeShotId} } }">
-        Capture
-      </router-link>
-      <router-link v-else :to="{ name: 'captureShots', params: { projectId: ${id} } }">
-        Capture
-      </router-link>
-      -->
       <router-link v-if="activeShotId" :to="`/movies/${id}/capture/shots/${activeShotId}`">Capture</router-link>
       <router-link v-else :to="`/movies/${id}/capture/shots/`">Capture</router-link>
       <router-link to="/">Montage</router-link>
@@ -49,10 +41,10 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import ProjectSettingsPopup from "@/components/ProjectSettingsPopup.vue";
-import { Movie } from "./api/movie.service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
+import { Movie } from './api/movie.service';
 
 const ProjectNS = namespace('project');
 
