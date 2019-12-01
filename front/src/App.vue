@@ -2,24 +2,26 @@
   <div id="app">
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet" />
 
-    <nav v-if="id">
+    <nav>
       <div class="left-nav">
         <img src="@/assets/baku_logo.svg" class="bakulogo" alt="bakuanimation" />
-        <span class="movie-title" v-if="movie !==undefined">{{movie.title}}</span>
-        <i class="icon-cog baku-button" @click="openProjectSettings()" />
+        <span class="movie-title" v-if="id && movie !==undefined">{{movie.title}}</span>
+        <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
-      <router-link to="/">Scenario</router-link>
-      <router-link to="/">Storyboard</router-link>
-      <router-link v-if="activeShotId" :to="`/movies/${id}/capture/shots/${activeShotId}`">Capture</router-link>
-      <router-link v-else :to="`/movies/${id}/capture/shots/`">Capture</router-link>
-      <router-link to="/">Montage</router-link>
-      <router-link to="/">Collaboratif</router-link>
+      <template v-if="id">
+        <router-link to="/">Scenario</router-link>
+        <router-link to="/">Storyboard</router-link>
+        <router-link v-if="activeShotId" :to="`/movies/${id}/capture/shots/${activeShotId}`">Capture</router-link>
+        <router-link v-else :to="`/movies/${id}/capture/shots/`">Capture</router-link>
+        <router-link to="/">Montage</router-link>
+        <router-link to="/">Collaboratif</router-link>
+      </template>
     </nav>
     <router-view />
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" >
 @import "styles/style.scss";
 @import "styles/font.css";
 
