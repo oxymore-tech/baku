@@ -55,9 +55,9 @@ public final class GenerateStackAndThumbnails {
 	
 	public static void main(String[] args) throws Exception {
 		boolean multipleShots;
-		if (args[1].equals("multiple")) {
+		if (args[0].equals("multiple")) {
 			multipleShots = true;
-		} else if (args[1].equals("single")) {
+		} else if (args[0].equals("single")) {
 			multipleShots = false;
 		} else {
 			throw new Exception("multiple|single allowed only");
