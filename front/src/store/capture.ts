@@ -33,7 +33,7 @@ export const captureStore = {
     },
   },
   actions: {
-    selectDevice(context: { commit: any, state: CaptureState }, device: Device) {
+    selectDevice(context: { commit: any, state: CaptureState }, device: Device | null) {
       context.commit('setDevice', device);
     },
 
