@@ -50,8 +50,8 @@
         />
       </div>
       <div>
-        <button @click="playAnimation()">play</button>
-        <button @click="pauseAnimation()">pause</button>
+        <i class="icon-play baku-button" style="color:#FBB10D;" @click="playAnimation()" />
+        <i class="icon-pause baku-button" @click="pauseAnimation()" />
       </div>
       <CarrouselComponent
         v-if="getActiveShot"

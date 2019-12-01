@@ -3,8 +3,11 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet" />
 
     <nav v-if="id">
-      <img src="@/assets/baku_logo.svg" class="bakulogo" alt="bakuanimation"/>
-      <button @click="openProjectSettings()">settings</button>
+      <div class="left-nav">
+        <img src="@/assets/baku_logo.svg" class="bakulogo" alt="bakuanimation" />
+        <span class="movie-title" v-if="movie !==undefined">{{movie.title}}</span>
+        <i class="icon-cog baku-button" @click="openProjectSettings()" />
+      </div>
       <router-link to="/">Scenario</router-link>
       <router-link to="/">Storyboard</router-link>
       <router-link v-if="id" :to="`/${id}/capture`">Capture</router-link>
@@ -18,25 +21,46 @@
 
 <style lang="scss">
 @import "styles/style.scss";
+@import "styles/font.css";
+
+.left-nav {
+  position: absolute;
+  left: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.movie-title {
+  font-size: 24px;
+  margin: 0 24px;
+  overflow: hidden;
+  /* height: 100%; */
+  text-overflow: clip;
+  white-space: nowrap;
+}
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import ProjectSettingsPopup from "@/components/ProjectSettingsPopup.vue";
+import { Movie } from "./api/movie.service";
 
-const ProjectNS = namespace('project');
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
-    ProjectSettingsPopup,
-  },
+    ProjectSettingsPopup
+  }
 })
 export default class App extends Vue {
   @ProjectNS.State
   public id!: string;
 
-  @ProjectNS.Action('loadProject')
+  @ProjectNS.Getter
+  public movie!: Movie;
+
+  @ProjectNS.Action("loadProject")
   private loadProjectAction!: (projectId: string) => Promise<void>;
 
   public async created() {
@@ -51,7 +75,7 @@ export default class App extends Vue {
     this.$buefy.modal.open({
       parent: this,
       component: ProjectSettingsPopup,
-      hasModalCard: true,
+      hasModalCard: true
     });
   }
 }
