@@ -101,19 +101,20 @@ public final class GenerateStackAndThumbnails {
 						continue;
 					}
 					
-					System.out.println("IMAGE " + file.getName());
 
 					String imageName = "image-" + format(imageIndex) + ".jpg";
 					
 					File thumbnailFile = new File(new File(projectThumbnailDir, shotId), imageName + "-" + thumbnailWidth + "x" + thumbnailHeight);
 					thumbnailFile.getParentFile().mkdirs();
 					if (!thumbnailFile.exists()) {
+						System.out.println("THUMBNAIL " + thumbnailFile.getAbsolutePath());
 						save(reduce(load(file), thumbnailWidth, thumbnailHeight), thumbnailFile);
 					}
 	
 					File imageFile = new File(new File(projectImageDir, shotId), imageName);
 					imageFile.getParentFile().mkdirs();
 					if (!imageFile.exists()) {
+						System.out.println("IMAGE " + file.getAbsolutePath());
 						Files.copy(file, imageFile);
 					}
 	
