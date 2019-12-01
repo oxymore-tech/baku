@@ -32,11 +32,11 @@
               :src="`/api/${id}/images/${getActiveShot.id}/${getActiveShot.images[activeFrame]}?width=1280&height=720`"
             />
           </div>
-          <template v-if="getActiveShot">
+          <template v-if="computedPremiewImages">
             <img
               style="display:none"
-              v-for="image in getActiveShot.images"
-              :key="image"
+              v-for="(image, index) in computedPremiewImages"
+              :key="index"
               :src="`/api/${id}/images/${getActiveShot.id}/${image}?width=1280&height=720`"
             />
           </template>
@@ -76,6 +76,7 @@ import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewCo
 import ShotsStack from '@/components/ShotsStack.vue';
 import { Movie, Shot } from '@/api/movie.service';
 import Project from './Project.vue';
+import { ImageRef } from '@/api/baku.service';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -140,7 +141,6 @@ export default class Capture extends Project {
 
   @Watch('stream')
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
-    console.log('onStreamChange');
     if (newValue) {
       (document.getElementById(
         'videoCapture',
@@ -148,8 +148,11 @@ export default class Capture extends Project {
     }
   }
 
-  public onActiveShotSelected(shot: Shot) {
-    console.log('shot selected', shot);
+  get computedPremiewImages(): ImageRef[] {
+    if (!this.getActiveShot) {
+      return [];
+    }
+    return this.getActiveShot.images.slice(this.activeFrame, this.activeFrame + 25);
   }
 
   public moveActiveFrame(event: number) {
