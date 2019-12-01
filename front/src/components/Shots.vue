@@ -4,7 +4,6 @@
       <h3>Choisir un plan</h3>
 
       <button 
-         v-if="projectId"
          @click="openCurrentShot()">
          Accéder au dernier plan</button>
 
@@ -143,10 +142,10 @@ export default class Shots extends Vue {
     this.$emit('openCurrentShot');
   }
 
-  public activateShot(id: string) {
-    const shotIndex = this.shots.findIndex((shot) => shot.id === id);
+  public activateShot(shotId: string) {
+    const shotIndex = this.shots.findIndex((shot) => shot.id === shotId);
     this.$store.dispatch('project/changeActiveShot', shotIndex);
-    this.$router.push('/movies/' + this.projectId + '/shots/' + id);
+    this.$emit('openCurrentShot');
   }
 
   public renameShot(shotId: string) {

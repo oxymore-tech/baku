@@ -34,7 +34,12 @@ export default class Init extends Project {
   public movie!: Movie;
 
   public async onCreateProject() {
-    await this.$router.push('/movies/' + this.id + '/shots');
+    await this.$router.push({
+      name: 'captureShots',
+      params: {
+        projectId: this.id,
+      }
+    });
   }
 }
 </script>

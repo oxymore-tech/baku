@@ -40,12 +40,15 @@ export default class Init extends Vue {
 
   public async created() {
     if (this.isMobile()) {
-      this.$router.push('/smartphone');
+      this.$router.push({ name: 'smartphone' });
     }
-    const projectId = this.$route.params.projectid;
-    if (projectId) {
+    const projectId = this.$route.params.projectId;
+    if(projectId){
       await this.loadProjectAction(projectId);
-      await this.$router.push(`/${projectId}/capture`);
+      await this.$router.push({
+        name: 'captureShots',
+        params: { projectId }
+      });
     }
   }
 
@@ -53,7 +56,10 @@ export default class Init extends Vue {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
     await this.createShotAction('Nouveau plan');
-    await this.$router.push(`/movies/${projectId}/shots`);
+    await this.$router.push({
+      name: 'captureShots',
+      params: { projectId }
+    });
   }
 }
 </script>

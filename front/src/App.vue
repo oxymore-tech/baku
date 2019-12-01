@@ -7,8 +7,16 @@
       <button @click="openProjectSettings()">settings</button>
       <router-link to="/">Scenario</router-link>
       <router-link to="/">Storyboard</router-link>
-      <router-link v-if="id" :to="`/movies/${id}/shots`">Capture</router-link>
-      <router-link v-else to="/capture">Capture</router-link>
+      <!--
+      <router-link v-if="activeShotId" :to="{ name: 'captureShot', params: { projectId: ${id}, shotId: ${activeShotId} } }">
+        Capture
+      </router-link>
+      <router-link v-else :to="{ name: 'captureShots', params: { projectId: ${id} } }">
+        Capture
+      </router-link>
+      -->
+      <router-link v-if="activeShotId" :to="`/movies/${id}/capture/shots/${activeShotId}`">Capture</router-link>
+      <router-link v-else :to="`/movies/${id}/capture/shots/`">Capture</router-link>
       <router-link to="/">Montage</router-link>
       <router-link to="/">Collaboratif</router-link>
     </nav>
@@ -21,7 +29,7 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
 
@@ -35,6 +43,9 @@ const ProjectNS = namespace('project');
 export default class App extends Vue {
   @ProjectNS.State
   public id!: string;
+
+  @Prop()
+  public activeShotId!: string;
 
   public openProjectSettings() {
     this.$buefy.modal.open({

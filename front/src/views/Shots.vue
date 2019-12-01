@@ -38,7 +38,13 @@ export default class Capture extends Project {
   public getActiveShot!: Shot;
 
   public async openCapture() {
-    await this.$router.push('/movies/' + this.id + '/shots/' + this.getActiveShotId);
+    await this.$router.push({
+      name: 'captureShot',
+      params: {
+        projectId: this.id,
+        shotId: this.getActiveShotId,
+      }
+    });
   }
 }
 </script>

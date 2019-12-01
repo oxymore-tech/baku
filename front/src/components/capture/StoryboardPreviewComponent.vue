@@ -42,7 +42,12 @@ export default class StoryboardPreviewComponent extends Vue {
   public id!: string;
 
   public onDisplayShots() {
-    this.$router.push('/movies/' + this.id + '/shots/');
+    this.$router.push({
+      name: 'captureShots',
+      params: {
+        projectId: this.id,
+      }
+    });
   }
 }
 </script>
