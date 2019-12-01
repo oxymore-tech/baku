@@ -83,7 +83,12 @@ public final class GenerateStackAndThumbnails {
 			for (File shotDirectory : list(allProjectDir)) {
 				System.out.println("SHOT " + shotDirectory.getName());
 				
-				String shotId = "shot-" + format(shotIndex);
+				String shotId;
+				if (!multipleShots) {
+					shotId = "shot-" + format(0);
+				} else {
+					shotId = "shot-" + format(shotIndex);
+				}
 				if (multipleShots || (shotIndex == 0)) {
 					JsonObject shotEvent = new JsonObject();
 					shotEvent.add("action", new JsonPrimitive(4));
@@ -135,9 +140,7 @@ public final class GenerateStackAndThumbnails {
 					imageIndex++;
 				}
 				
-				if (multipleShots) {
-					shotIndex++;
-				}
+				shotIndex++;
 			}
 
 			projectStackFile.getParentFile().mkdirs();
