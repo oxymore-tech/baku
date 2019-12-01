@@ -125,9 +125,8 @@ export default class Shots extends Vue {
     this.$emit('close');
   }
 
-  public activateShot(id: string) {
-    const shotIndex = this.shots.findIndex((shot) => shot.id === id);
-    this.$store.dispatch('project/changeActiveShot', shotIndex);
+  public activateShot(shotId: string) {
+    this.$store.dispatch('project/changeActiveShot', shotId);
     this.$emit('close');
   }
 

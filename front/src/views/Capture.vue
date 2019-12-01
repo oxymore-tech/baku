@@ -4,7 +4,7 @@
       <div class="previewBloc">
         <StoryboardPreviewComponent
           :shots="movie.shots"
-          :activeShotId="getActiveShotId"
+          :activeShotId="activeShotId"
         />
         <video
           v-if="activeCapture"
@@ -84,8 +84,8 @@ export default class Capture extends Project {
   @ProjectNS.State
   public id!: string;
 
-  @ProjectNS.Getter
-  public getActiveShotId!: string;
+  @ProjectNS.State
+  public activeShotId!: string;
 
   @ProjectNS.Getter
   public movie!: Movie;
@@ -105,7 +105,9 @@ export default class Capture extends Project {
 
   private loop: any;
 
-  public mounted() {}
+  public mounted() {
+    this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
+  }
 
   public playAnimation() {
     if (!this.isPlaying) {

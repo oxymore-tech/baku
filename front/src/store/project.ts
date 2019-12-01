@@ -7,7 +7,7 @@ interface ProjectState {
   pictures: string[];
   fullResPicturesCache: HTMLImageElement[];
   id: string;
-  activeShotIndex: number;
+  activeShotId: string;
   history: BakuEvent[];
 }
 
@@ -17,7 +17,7 @@ export const ProjectStore = {
     pictures: [],
     fullResPicturesCache: [],
     id: null,
-    activeShotIndex: 0,
+    activeShotId: undefined,
     history: [],
   },
   mutations: {
@@ -28,8 +28,8 @@ export const ProjectStore = {
     addToLocalHistory(state: ProjectState, event: BakuEvent) {
       state.history.push(event);
     },
-    changeActiveShot(state: ProjectState, shotIndex: number) {
-      state.activeShotIndex = shotIndex;
+    changeActiveShot(state: ProjectState, shotId: string) {
+      state.activeShotId = shotId;
     },
   },
   actions: {
@@ -81,8 +81,10 @@ export const ProjectStore = {
   getters: {
     getPictures: (state: ProjectState) => state.pictures,
     movie: (state: ProjectState): Movie => MovieService.merge(state.history),
-    getActiveShot: (state: ProjectState, getters: any): Shot => getters.movie.shots[state.activeShotIndex],
-    getActiveShotId: (state: ProjectState, getters: any): string => getters.getActiveShot ? getters.getActiveShot.id : undefined,
+
+    getActiveShot: (state: ProjectState, getters: any): Shot => 
+      getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId)
+
   },
   modules: {},
 };

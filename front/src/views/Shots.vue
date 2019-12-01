@@ -3,7 +3,7 @@
     <Shots
       :projectId="id"
       :shots="movie.shots"
-      :activeShotId="getActiveShotId"
+      :activeShotId="activeShotId"
       v-on:close="openCapture"
     />
   </div>
@@ -31,8 +31,8 @@ export default class Capture extends Project {
   @ProjectNS.Getter
   public movie!: Movie;
 
-  @ProjectNS.Getter
-  public getActiveShotId!: string;
+  @ProjectNS.State
+  public activeShotId!: string;
 
   @ProjectNS.Getter
   public getActiveShot!: Shot;
@@ -42,7 +42,7 @@ export default class Capture extends Project {
       name: 'captureShot',
       params: {
         projectId: this.id,
-        shotId: this.getActiveShotId,
+        shotId: this.activeShotId,
       },
     });
   }
