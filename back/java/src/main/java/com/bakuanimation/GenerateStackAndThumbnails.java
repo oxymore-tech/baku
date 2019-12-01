@@ -54,6 +54,14 @@ public final class GenerateStackAndThumbnails {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		boolean multipleShots;
+		if (args[1].equals("multiple")) {
+			multipleShots = true;
+		} else if (args[1].equals("single")) {
+			multipleShots = false;
+		} else {
+			throw new Exception("multiple|single allowed only");
+		}
 		int thumbnailWidth = 185;
 		int thumbnailHeight = 104;
 		String user = "Lovely Anole";
@@ -70,20 +78,22 @@ public final class GenerateStackAndThumbnails {
 			File projectStackFile = new File(stackDir, projectName + ".stack");
 
 			JsonArray stack = new JsonArray();
-
+			
 			int shotIndex = 0;
 			for (File shotDirectory : list(allProjectDir)) {
 				System.out.println("SHOT " + shotDirectory.getName());
 				
 				String shotId = "shot-" + format(shotIndex);
-				JsonObject shotEvent = new JsonObject();
-				shotEvent.add("action", new JsonPrimitive(4));
-				shotEvent.add("user", new JsonPrimitive(user));
-				JsonObject shot = new JsonObject();
-				shot.add("name", new JsonPrimitive("Nouveau plan"));
-				shot.add("shotId", new JsonPrimitive(shotId));
-				shotEvent.add("value", shot);
-				stack.add(shotEvent);
+				if (multipleShots || (shotIndex == 0)) {
+					JsonObject shotEvent = new JsonObject();
+					shotEvent.add("action", new JsonPrimitive(4));
+					shotEvent.add("user", new JsonPrimitive(user));
+					JsonObject shot = new JsonObject();
+					shot.add("name", new JsonPrimitive("Nouveau plan"));
+					shot.add("shotId", new JsonPrimitive(shotId));
+					shotEvent.add("value", shot);
+					stack.add(shotEvent);
+				}
 				
 				int imageIndex = 0;
 				for (File file : list(shotDirectory)) {
@@ -97,11 +107,15 @@ public final class GenerateStackAndThumbnails {
 					
 					File thumbnailFile = new File(new File(projectThumbnailDir, shotId), imageName + "-" + thumbnailWidth + "x" + thumbnailHeight);
 					thumbnailFile.getParentFile().mkdirs();
-					save(reduce(load(file), thumbnailWidth, thumbnailHeight), thumbnailFile);
+					if (!thumbnailFile.exists()) {
+						save(reduce(load(file), thumbnailWidth, thumbnailHeight), thumbnailFile);
+					}
 	
 					File imageFile = new File(new File(projectImageDir, shotId), imageName);
 					imageFile.getParentFile().mkdirs();
-					Files.copy(file, imageFile);
+					if (!imageFile.exists()) {
+						Files.copy(file, imageFile);
+					}
 	
 					JsonObject imageEvent = new JsonObject();
 					imageEvent.add("action", new JsonPrimitive(3));
@@ -116,7 +130,9 @@ public final class GenerateStackAndThumbnails {
 					imageIndex++;
 				}
 				
-				shotIndex++;
+				if (multipleShots) {
+					shotIndex++;
+				}
 			}
 
 			projectStackFile.getParentFile().mkdirs();
