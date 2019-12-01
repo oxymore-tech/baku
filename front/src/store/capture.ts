@@ -1,5 +1,8 @@
+import { Device } from '@/api/device.class';
+
 interface CaptureState {
   stream: MediaStream | null;
+  activeDevice: Device,
   activeCapture: boolean;
 }
 
@@ -7,6 +10,7 @@ export const captureStore = {
   namespaced: true,
   state: {
     stream: null,
+    activeDevice: null,
     activeCapture: false,
   },
   mutations: {
@@ -24,8 +28,15 @@ export const captureStore = {
     setActiveCapture(state: CaptureState, activeCapture: boolean) {
       state.activeCapture = activeCapture;
     },
+    setDevice(state: CaptureState, device: Device) {
+      state.activeDevice = device;
+    },
   },
   actions: {
+    selectDevice(context: { commit: any, state: CaptureState }, device: Device) {
+      context.commit('setDevice', device);
+    },
+
     setActiveCapture(context: { commit: any, state: CaptureState }, activeCapture: boolean) {
       context.commit('setActiveCapture', activeCapture);
       if (!activeCapture) {

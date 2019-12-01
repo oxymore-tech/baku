@@ -6,7 +6,9 @@
       class="captureButton"
       @click="capture()"
       v-bind:class="{ capturing: isCapturing, hidden: !peerConnected }"
-    >Capture!</div>
+    >
+    <img class="captureIcon" src="@/assets/camera-solid-orange.svg" />
+    </div>
   </div>
 </template>
 
@@ -29,6 +31,11 @@
 .capturing {
   color: grey;
   cursor: progress;
+}
+
+.captureIcon {
+  width: 48px;
+  height: 43px;
 }
 </style>
 

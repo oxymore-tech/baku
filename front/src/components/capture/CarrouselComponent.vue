@@ -31,7 +31,14 @@
     </template>
     <template v-else>
       <div class="carrouselThumb active">
-        <img class="captureIcon" src="@/assets/camera-solid-orange.svg"/>
+        <CaptureButtonComponent
+          v-if="activeDevice"
+          :device="activeDevice"
+          :projectId="projectId"
+          :activeShot="activeShot"
+          :activeIndex="activeImage+1"
+          v-on:moveactiveframe="$emit('moveactiveframe', $event)"
+        />
       </div>
     </template>
 
@@ -93,19 +100,23 @@
       box-sizing: content-box;
       border-radius: 3px;
     }
-
-    .captureIcon {
-      width: 48px;
-      height: 43px;
-    }
   }
 </style>
 
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
   import {ImageRef} from '@/api/baku.service';
+  import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+  import { Device } from '@/api/device.class';
 
-  @Component
+const CaptureNS = namespace('capture');
+
+@Component({
+  components: {
+    CaptureButtonComponent,
+  },
+})
   export default class CarrouselComponent extends Vue {
     @Prop()
     public images!: ImageRef[];
@@ -121,6 +132,9 @@
 
     @Prop()
     public activeCapture!: boolean;
+
+    @CaptureNS.State
+    public activeDevice!: Device;
 
     get computedLeftCarrousel(): ImageRef[] {
       const sliceIndex = this.activeCapture
