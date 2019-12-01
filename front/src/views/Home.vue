@@ -53,7 +53,7 @@ export default class Init extends Vue {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
     await this.createShotAction('Nouveau plan');
-    await this.$router.push(`/${projectId}/capture`);
+    await this.$router.push(`/movies/${projectId}/shots`);
   }
 }
 </script>

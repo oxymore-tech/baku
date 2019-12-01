@@ -141,7 +141,7 @@ export default class ShotsStack extends Vue {
   public activateShot(id: string) {
     const shotIndex = this.shots.findIndex((shot) => shot.id === id);
     this.$store.dispatch('project/changeActiveShot', shotIndex);
-    this.$emit('closestack');
+    this.$router.push('/movies/' + this.projectId + '/shots/' + id);
   }
 
   public renameShot(shotId: string) {

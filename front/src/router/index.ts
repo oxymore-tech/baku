@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
+import MovieHome from '../views/MovieHome.vue';
 
 Vue.use(VueRouter);
 
@@ -22,22 +23,19 @@ const routes = [
   },
   {
     path: '/home',
-    name: 'Home',
     component: Home,
   },
   {
-    path: '/:projectid',
-    name: 'Home',
-    component: Home,
+    path: '/movies/:projectid',
+    component: MovieHome,
   },
   {
-    path: '/:projectid/home',
-    name: 'Home',
-    component: Home,
+    path: '/movies/:projectid/shots/',
+    component: () => import('../views/ShotChoice.vue'),
   },
   {
-    path: '/:projectid/capture',
-    name: 'capture',
+    name: "shotCapture",
+    path: '/movies/:projectid/shots/:shotId/',
     component: () => import('../views/Capture.vue'),
   },
 ];
@@ -47,5 +45,6 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 });
+
 
 export default router;
