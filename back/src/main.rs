@@ -179,7 +179,7 @@ async fn handle_stack(
     project_id: String,
     body: serde_json::Value,
 ) -> Result<(), warp::Rejection> {
-    let stack_directory = Path::new("stacks");
+    let stack_directory = Path::new("data/stacks");
     let stack_path = Path::join(stack_directory, Path::new(&format!("{}.stack", project_id)));
     create_dir_all(stack_path.parent().unwrap())
         .await
@@ -231,7 +231,7 @@ async fn handle_stack(
 }
 
 async fn handle_history(project_id: String) -> Result<Vec<serde_json::Value>, warp::Rejection> {
-    let stack_directory = Path::new("stacks");
+    let stack_directory = Path::new("data/stacks");
     let stack_path = Path::join(stack_directory, Path::new(&format!("{}.stack", project_id)));
 
     if stack_path.exists() {

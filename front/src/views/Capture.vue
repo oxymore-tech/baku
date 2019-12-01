@@ -59,18 +59,18 @@
 
 <script lang="ts">
 
-import { Component, Watch } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
-import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
-import store from "@/store";
-import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
-import { Movie, Shot } from "@/api/movie.service";
-import Project from "./Project.vue";
+import { Component, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import store from '@/store';
+import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
+import { Movie, Shot } from '@/api/movie.service';
+import Project from './Project.vue';
 import { ImageRef } from '@/api/baku.service';
 
-const CaptureNS = namespace("capture");
-const ProjectNS = namespace("project");
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
 
 @Component({
   components: {
@@ -93,7 +93,7 @@ export default class Capture extends Project {
   @ProjectNS.Getter
   public getActiveShot!: Shot;
 
-  public activeFrame: number = -1;
+  public activeFrame: number = 0;
 
   @CaptureNS.State
   public activeCapture!: boolean;
@@ -107,6 +107,10 @@ export default class Capture extends Project {
 
   public mounted() {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
+  }
+
+  public async created() {
+    this.activeFrame = (this.getActiveShot && this.getActiveShot.images.length == 0) ? -1 : 0;
   }
 
   public playAnimation() {
@@ -146,12 +150,14 @@ export default class Capture extends Project {
   }
 
   public moveActiveFrame(event: number) {
-    this.activeFrame += event;
+    let tmp = this.activeFrame + event;
+    let minFrame = this.activeCapture ? -1 : 0;
+    this.activeFrame = Math.max(minFrame,Math.min(this.getActiveShot.images.length-1, tmp));
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .mainFrame {
   height: calc(100% - 48px);
   display: flex;

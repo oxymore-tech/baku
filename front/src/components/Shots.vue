@@ -59,6 +59,9 @@
   width: 100%;
   flex: 1;
   display: flex;
+  flex-wrap: wrap;
+  overflow: scroll;
+  justify-content: center;
 }
 
 .shotPreview {

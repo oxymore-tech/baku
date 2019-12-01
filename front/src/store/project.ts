@@ -64,10 +64,10 @@ export const ProjectStore = {
       context.commit('addToLocalHistory', event);
     },
 
-    async createShot(context: any, name = 'Default shot'): Promise<void> {
+    async createShot(context: any, name = 'Default shot'): Promise<string> {
       const createEvent = await new MovieService().addShot(context.state.id, name, context.rootState.user.username);
-      console.log(context);
       context.commit('addToLocalHistory', createEvent);
+      return createEvent.value.shotId;
     },
     async renameShot(context: any, { shotId, name }: Record<string, string>): Promise<void> {
       const event = await new MovieService().renameShot(context.state.id, shotId, name, context.rootState.user.username);
@@ -82,7 +82,7 @@ export const ProjectStore = {
     getPictures: (state: ProjectState) => state.pictures,
     movie: (state: ProjectState): Movie => MovieService.merge(state.history),
 
-    getActiveShot: (state: ProjectState, getters: any): Shot => 
+    getActiveShot: (state: ProjectState, getters: any): Shot =>
       getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId)
 
   },
