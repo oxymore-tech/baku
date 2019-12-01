@@ -6,7 +6,7 @@
     </div>
     <img src="@/assets/storyboard.png" />
     <img
-       v-if="getActiveShot.images[0]"
+       v-if="getActiveShot && getActiveShot.images[0]"
        class="shotPreview"
        :src="`/api/${id}/images/${getActiveShot.id}/${getActiveShot.images[0]}?width=292&height=193`"
      />
