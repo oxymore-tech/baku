@@ -4,7 +4,6 @@
       <h4>Storyboard</h4>
       <i class="icon-grid baku-button" @click="onDisplayShots()" />
     </div>
-    <img src="@/assets/storyboard.png" />
     <img
        v-if="getActiveShot && getActiveShot.images[0]"
        class="shotPreview"
@@ -17,7 +16,7 @@
 <style lang="scss">
 .storyboard-preview-container {
   width: 290px;
-  height: 450px;
+  height: 250px;
 
   .storyboard-preview-header {
     display: inline-flex;
