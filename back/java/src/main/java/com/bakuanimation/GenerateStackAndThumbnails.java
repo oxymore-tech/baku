@@ -11,8 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -27,6 +25,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.jpeg.JpegDirectory;
 import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -50,52 +49,73 @@ public final class GenerateStackAndThumbnails {
 		return directories;
 	}
 	
+	private static String format(int i) {
+		return String.format("%03d", i);
+	}
+	
 	public static void main(String[] args) throws Exception {
 		int thumbnailWidth = 185;
 		int thumbnailHeight = 104;
-		String projectName = "premier";
 		String user = "Lovely Anole";
-		File thumbnailDir = new File(new File("../upload_thumbs"), projectName);
-		File stackFile = new File(new File("../stacks"), projectName + ".stack");
-		JsonArray stack = new JsonArray();
-		for (File dir : list(new File("data/PremFois_SEQI_720p_decoupe"))) {
-			String shotId = "shot-" + dir.getName();
-			JsonObject shotEvent = new JsonObject();
-			shotEvent.add("action", new JsonPrimitive(4));
-			shotEvent.add("user", new JsonPrimitive(user));
-			JsonObject shot = new JsonObject();
-			shot.add("name", new JsonPrimitive("Nouveau plan"));
-			shot.add("shotId", new JsonPrimitive(shotId));
-			shotEvent.add("value", shot);
-			stack.add(shotEvent);
-			
-			int imageIndex = 0;
-			for (File file : list(dir)) {
-				if (!file.getName().endsWith(".jpg")) {
-					continue;
+
+		File thumbnailDir = new File("upload_thumbs");
+		File imageDir = new File("upload_files");
+		File stackDir = new File("stacks");
+
+		for (File allProjectDir : list(new File("movie_data"))) {
+			String projectName = allProjectDir.getName();
+			File projectThumbnailDir = new File(thumbnailDir, projectName);
+			File projectImageDir = new File(imageDir, projectName);
+			File projectStackFile = new File(stackDir, projectName + ".stack");
+
+			JsonArray stack = new JsonArray();
+
+			int shotIndex = 0;
+			for (File shotDirectory : list(allProjectDir)) {
+				String shotId = "shot-" + format(shotIndex);
+				JsonObject shotEvent = new JsonObject();
+				shotEvent.add("action", new JsonPrimitive(4));
+				shotEvent.add("user", new JsonPrimitive(user));
+				JsonObject shot = new JsonObject();
+				shot.add("name", new JsonPrimitive("Nouveau plan"));
+				shot.add("shotId", new JsonPrimitive(shotId));
+				shotEvent.add("value", shot);
+				stack.add(shotEvent);
+				
+				int imageIndex = 0;
+				for (File file : list(shotDirectory)) {
+					if (!file.getName().endsWith(".jpg")) {
+						continue;
+					}
+					
+					String imageName = "image-" + format(imageIndex) + ".jpg";
+					
+					File thumbnailFile = new File(new File(projectThumbnailDir, shotId), imageName + "-" + thumbnailWidth + "x" + thumbnailHeight);
+					thumbnailFile.getParentFile().mkdirs();
+					save(reduce(load(file), thumbnailWidth, thumbnailHeight), thumbnailFile);
+	
+					File imageFile = new File(new File(projectImageDir, shotId), imageName);
+					imageFile.getParentFile().mkdirs();
+					Files.copy(file, imageFile);
+	
+					JsonObject imageEvent = new JsonObject();
+					imageEvent.add("action", new JsonPrimitive(3));
+					imageEvent.add("user", new JsonPrimitive(user));
+					JsonObject image = new JsonObject();
+					image.add("image", new JsonPrimitive(imageName));
+					image.add("imageIndex", new JsonPrimitive(imageIndex));
+					image.add("shotId", new JsonPrimitive(shotId));
+					imageEvent.add("value", image);
+					stack.add(imageEvent);
+					
+					imageIndex++;
 				}
 				
-				File thumbnailFile = new File(new File(thumbnailDir, shotId), file.getName() + "-" + thumbnailWidth + "x" + thumbnailHeight);
-				thumbnailFile.getParentFile().mkdirs();
-				save(reduce(load(file), thumbnailWidth, thumbnailHeight), thumbnailFile);
-
-				JsonObject imageEvent = new JsonObject();
-				imageEvent.add("action", new JsonPrimitive(3));
-				imageEvent.add("user", new JsonPrimitive(user));
-				JsonObject image = new JsonObject();
-				image.add("image", new JsonPrimitive(file.getName()));
-				image.add("imageIndex", new JsonPrimitive(imageIndex));
-				image.add("shotId", new JsonPrimitive(shotId));
-				imageEvent.add("value", image);
-				stack.add(imageEvent);
-				
-				imageIndex++;
+				shotIndex++;
 			}
-		}
 
-		stackFile.getParentFile().mkdirs();
-		try (Writer w = new OutputStreamWriter(new FileOutputStream(stackFile), Charsets.UTF_8)) {
-			w.write(stack.toString());
+			projectStackFile.getParentFile().mkdirs();
+			Files.write(stack.toString().getBytes(Charsets.UTF_8), projectStackFile);
 		}
 	}
 	
