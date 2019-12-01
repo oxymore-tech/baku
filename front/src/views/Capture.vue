@@ -151,7 +151,7 @@ export default class Capture extends Project {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .mainFrame {
   height: calc(100% - 48px);
   display: flex;
