@@ -16,6 +16,9 @@
         <router-link to="/">Montage</router-link>
         <router-link to="/">Collaboratif</router-link>
       </template>
+      <div class="right-nav">
+        {{ username }}
+      </div>
     </nav>
     <router-view />
   </div>
@@ -30,6 +33,11 @@
   left: 24px;
   display: flex;
   align-items: center;
+}
+
+.right-nav {
+  position: absolute;
+  right: 24px;
 }
 
 .movie-title {
@@ -49,6 +57,7 @@ import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
 import { Movie } from './api/movie.service';
 
 const ProjectNS = namespace('project');
+const UserNS = namespace('user');
 
 @Component({
   components: {
@@ -64,6 +73,9 @@ export default class App extends Vue {
 
   @ProjectNS.State
   public activeShotId!: string;
+
+  @UserNS.State
+  public username!: string;
 
   public openProjectSettings() {
     this.$buefy.modal.open({
