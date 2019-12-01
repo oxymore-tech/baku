@@ -43,17 +43,17 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import ProjectSettingsPopup from "@/components/ProjectSettingsPopup.vue";
-import { Movie } from "./api/movie.service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
+import { Movie } from './api/movie.service';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component({
   components: {
-    ProjectSettingsPopup
-  }
+    ProjectSettingsPopup,
+  },
 })
 export default class App extends Vue {
   @ProjectNS.State
@@ -69,7 +69,7 @@ export default class App extends Vue {
     this.$buefy.modal.open({
       parent: this,
       component: ProjectSettingsPopup,
-      hasModalCard: true
+      hasModalCard: true,
     });
   }
 }
