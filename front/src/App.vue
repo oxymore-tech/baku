@@ -7,7 +7,7 @@
       <button @click="openProjectSettings()">settings</button>
       <router-link to="/">Scenario</router-link>
       <router-link to="/">Storyboard</router-link>
-      <router-link v-if="id" :to="`/${id}/capture`">Capture</router-link>
+      <router-link v-if="id" :to="`/movies/${id}/shots`">Capture</router-link>
       <router-link v-else to="/capture">Capture</router-link>
       <router-link to="/">Montage</router-link>
       <router-link to="/">Collaboratif</router-link>
