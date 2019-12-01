@@ -1,34 +1,42 @@
 <template>
   <div class="main">
     <div class="leftPanel panel">
-      <img src="@/assets/baku_logo_vert.png" />
-      <h3>Bienvenue de Baku</h3>
-      <span>{{ lorem }}</span>
+      <div class="welcomediv">
+        <img src="@/assets/baku_logo_solo.png" />
+        <h3>Bienvenue sur Baku</h3>
+      </div>
+      <span>{{ description }}</span>
       <button class="createButton" @click="onCreateProject">Créer un film</button>
     </div>
     <div class="rightPanel panel"></div>
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .main {
   background: white;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 48px);
   display: inline-flex;
   align-items: center;
 }
 
 .leftPanel {
+  flex: 1;
+
+  .welcomediv {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   h3 {
-    font-size: 52;
+    font-size: 96px;
     font-weight: bold;
   }
 
   img {
-    height: 550px;
-    width: 438px;
-    margin: 0 auto;
+    width: 364px;
   }
 
   .createButton {
@@ -45,11 +53,14 @@
   }
 }
 
+.rightPanel {
+  width:519px;
+}
+
 .panel {
   padding: 24px;
   display: flex;
   flex-direction: column;
-  width: 50%;
 }
 </style>
 
@@ -69,9 +80,8 @@ export default class Init extends Vue {
   @ProjectNS.Action("loadProject")
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
-  public lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-     ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`;
+  public description = `Baku est une rencontre entre instituteurs, artistes et développeurs.
+  C’est une plateforme de création de films d’animation collaborative destinée aux enfants.`;
 
   @ProjectNS.Getter
   public getActiveShotId!: string;
