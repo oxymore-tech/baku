@@ -14,9 +14,9 @@
         <img
           v-if="shot.images[0]"
           class="shotPreview"
-          :src="`/${projectId}/images/${shot.id}/${shot.images[0]}?width=292&height=193`"
+          :src="`/api/${projectId}/images/${shot.id}/${shot.images[0]}?width=292&height=193`"
         />
-        <div class="shotPreview" v-else></div>
+        <div class="shotPreview" v-else>Hello, No preview Here!</div>
         <div class="cardFooter">
           <input v-model="shot.name" type="text" class="shotName" />
           <i class="icon-edit baku-button" @click="renameShot(shot.id)" />
