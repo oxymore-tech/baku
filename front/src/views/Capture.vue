@@ -93,7 +93,7 @@ export default class Capture extends Project {
   @ProjectNS.Getter
   public getActiveShot!: Shot;
 
-  public activeFrame: number = 0;
+  public activeFrame: number = -1;
 
   @CaptureNS.State
   public activeCapture!: boolean;

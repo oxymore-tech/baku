@@ -94,8 +94,8 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ImageRef } from '@/api/baku.service';
+  import {Component, Prop, Vue} from 'vue-property-decorator';
+  import {ImageRef} from '@/api/baku.service';
 
   @Component
 export default class CarrouselComponent extends Vue {
@@ -119,10 +119,9 @@ export default class CarrouselComponent extends Vue {
       ? this.activeImage + 1
       : this.activeImage;
     const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-5);
-    const leftCarrousel = Array(5 - leftImagesAvaible.length)
+    return Array(5 - leftImagesAvaible.length)
       .fill(null)
       .concat(leftImagesAvaible);
-    return leftCarrousel;
   }
 
   get computedActiveImage(): ImageRef | null {
@@ -132,10 +131,9 @@ export default class CarrouselComponent extends Vue {
   get computedRightCarrousel(): ImageRef[] {
     const sliceIndex = this.activeImage + 1;
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
-    const rightCarrousel = rightImagesAvaible.concat(
+    return rightImagesAvaible.concat(
       Array(6 - rightImagesAvaible.length).fill(null),
     );
-    return rightCarrousel;
   }
 
   get computedNextImages(): ImageRef[] {
