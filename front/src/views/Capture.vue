@@ -109,7 +109,7 @@ export default class Capture extends Project {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
   }
 
-  public created() {
+  public async created() {
     this.activeFrame = (this.getActiveShot && this.getActiveShot.images.length == 0) ? -1 : 0;
   }
 
@@ -150,7 +150,9 @@ export default class Capture extends Project {
   }
 
   public moveActiveFrame(event: number) {
-    this.activeFrame += event;
+    let tmp = this.activeFrame + event;
+    let minFrame = this.activeCapture ? -1 : 0;
+    this.activeFrame = Math.max(minFrame,Math.min(this.getActiveShot.images.length-1, tmp));
   }
 }
 </script>
