@@ -114,7 +114,7 @@ public final class GenerateStackAndThumbnails {
 					File imageFile = new File(new File(projectImageDir, shotId), imageName);
 					imageFile.getParentFile().mkdirs();
 					if (!imageFile.exists()) {
-						System.out.println("IMAGE " + file.getAbsolutePath());
+						System.out.println("IMAGE " + imageFile.getAbsolutePath());
 						Files.copy(file, imageFile);
 					}
 	
