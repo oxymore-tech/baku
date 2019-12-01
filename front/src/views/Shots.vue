@@ -4,7 +4,7 @@
       :projectId="id"
       :shots="movie.shots"
       :activeShotId="getActiveShotId"
-      v-on:openCurrentShot="openCapture"
+      v-on:close="openCapture"
     />
   </div>
 </template>

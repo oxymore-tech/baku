@@ -30,7 +30,7 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import * as uuid from 'uuid';
 
@@ -47,6 +47,9 @@ export default class Init extends Vue {
   public lorem =`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
      ut labore et dolore magna aliqua. Ut enim ad minim veniam,
       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`;
+
+  @ProjectNS.Getter
+  public getActiveShotId!: string;
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -73,8 +76,11 @@ export default class Init extends Vue {
     await this.loadProjectAction(projectId);
     await this.createShotAction('Nouveau plan');
     await this.$router.push({
-      name: 'captureShots',
-      params: { projectId },
+      name: 'captureShot',
+      params: {
+        projectId,
+        shotId: this.getActiveShotId,
+      }
     });
   }
 }

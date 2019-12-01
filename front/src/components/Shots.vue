@@ -2,7 +2,7 @@
   <div class="shots">
     <div class="shotsTitle">
       <h3>Choisir un plan</h3>
-      <i class="icon-close baku-button" @click="closeStack()"></i>
+      <i class="icon-close baku-button" @click="close()"></i>
     </div>
     <div class="shotCardsContainer">
       <div
@@ -121,14 +121,14 @@ export default class Shots extends Vue {
   @Prop({ required: true })
   public projectId!: string;
 
-  public closeStack() {
-    this.$emit('closestack');
+  public close() {
+    this.$emit('close');
   }
 
   public activateShot(id: string) {
     const shotIndex = this.shots.findIndex((shot) => shot.id === id);
     this.$store.dispatch('project/changeActiveShot', shotIndex);
-    this.$emit('closestack');
+    this.$emit('close');
   }
 
   public renameShot(shotId: string) {
