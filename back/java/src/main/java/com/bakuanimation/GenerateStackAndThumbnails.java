@@ -83,7 +83,7 @@ public final class GenerateStackAndThumbnails {
 				imageEvent.add("action", new JsonPrimitive(3));
 				imageEvent.add("user", new JsonPrimitive(user));
 				JsonObject image = new JsonObject();
-				image.add("image", new JsonPrimitive("Nouveau plan"));
+				image.add("image", new JsonPrimitive(file.getName()));
 				image.add("imageIndex", new JsonPrimitive(imageIndex));
 				image.add("shotId", new JsonPrimitive(shotId));
 				imageEvent.add("value", image);
