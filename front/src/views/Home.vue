@@ -8,7 +8,16 @@
       <span>{{ description }}</span>
       <button class="createButton" @click="onCreateProject">Créer un film</button>
     </div>
-    <div class="rightPanel panel"></div>
+    <div class="rightPanel panel">
+      <div class="premierCard">
+        <img src="@/assets/PremFois.jpg" />
+        <div class="cardFooter">
+          <p class="movieTitle">Mes premières fois</p>
+          <p style="font-size:14px;">{{ premierSynopsis }}</p>
+          <p class="openPremier" @click="openPremier">Ouvrir le film</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -54,7 +63,49 @@
 }
 
 .rightPanel {
-  width:519px;
+  width: 600px;
+
+  .premierCard {
+    width: 519px;
+    height: 509px;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #0000001a;
+    border-radius: 16px;
+    opacity: 1;
+    margin: 24px;
+    font-size: 16px/6px;
+    letter-spacing: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    img {
+      height: 339px;
+      width: 519px;
+    }
+
+    .cardFooter {
+      padding: 7px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .movieTitle {
+        font-size: 32px;
+      }
+
+      .openPremier {
+        color: #e66359;
+        text-align: right;
+        cursor: pointer;
+      }
+    }
+
+    .shotName {
+      text-align: left;
+      color: #455054;
+    }
+  }
 }
 
 .panel {
@@ -66,39 +117,43 @@
 
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import * as uuid from 'uuid';
+import { Vue, Component } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import * as uuid from "uuid";
 
-const ProjectNS = namespace('project');
+const ProjectNS = namespace("project");
 
 @Component
 export default class Init extends Vue {
-  @ProjectNS.Action('createShot')
+  @ProjectNS.Action("createShot")
   private createShotAction!: (name?: string) => Promise<string>;
 
-  @ProjectNS.Action('loadProject')
+  @ProjectNS.Action("loadProject")
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public description = `Baku est une rencontre entre instituteurs, artistes et développeurs.
   C’est une plateforme de création de films d’animation collaborative destinée aux enfants.`;
 
+  public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
+  Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
+  souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées.`;
+
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
+      navigator.userAgent
     );
   }
 
   public async created() {
     if (this.isMobile()) {
-      this.$router.push({ name: 'smartphone' });
+      this.$router.push({ name: "smartphone" });
     }
     const { projectId } = this.$route.params;
     if (projectId) {
       await this.loadProjectAction(projectId);
       await this.$router.push({
-        name: 'captureShots',
-        params: { projectId },
+        name: "captureShots",
+        params: { projectId }
       });
     }
   }
@@ -106,13 +161,22 @@ export default class Init extends Vue {
   public async onCreateProject() {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
-    const shotId = await this.createShotAction('Nouveau plan');
+    const shotId = await this.createShotAction("Nouveau plan");
     await this.$router.push({
-      name: 'captureShot',
+      name: "captureShot",
       params: {
         projectId,
-        shotId,
-      },
+        shotId
+      }
+    });
+  }
+
+  public async openPremier() {
+    await this.$router.push({
+      name: "movieHome",
+      params: {
+        projectId: "premier"
+      }
     });
   }
 }
