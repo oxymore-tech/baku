@@ -1,19 +1,10 @@
 <template>
   <div class="mainFrame">
-    <ShotsStack
-      v-if="displayShotsStack"
-      :projectId="id"
-      :shots="movie.shots"
-      :activeShotId="getActiveShotId"
-      v-on:closestack="displayShotsStack=false"
-    />
-    <template v-else>
+    <template>
       <div class="previewBloc">
         <StoryboardPreviewComponent
           :shots="movie.shots"
           :activeShotId="getActiveShotId"
-          :displayShotsStack="displayShotsStack"
-          v-on:changedisplayshotsstack="displayShotsStack = true"
         />
         <video
           v-if="activeCapture"
@@ -67,26 +58,23 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-import store from '@/store';
-import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-import ShotsStack from '@/components/ShotsStack.vue';
-import { Movie, Shot } from '@/api/movie.service';
-import Project from './Project.vue';
-import { ImageRef } from '@/api/baku.service';
+import { Component, Watch } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
+import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
+import store from "@/store";
+import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
+import { Movie, Shot } from "@/api/movie.service";
+import Project from "./Project.vue";
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+const CaptureNS = namespace("capture");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
     StoryboardPreviewComponent,
-    ShotsStack,
   },
   store,
 })
@@ -112,8 +100,6 @@ export default class Capture extends Project {
   public stream!: MediaStream | null;
 
   public isPlaying = false;
-
-  public displayShotsStack = false;
 
   private loop: any;
 

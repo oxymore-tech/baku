@@ -1,6 +1,6 @@
 <template>
-  <div class="shotsStack">
-    <div class="shotsStackTitle">
+  <div class="shots">
+    <div class="shotsTitle">
       <h3>Choisir un plan</h3>
       <i class="icon-close baku-button" @click="closeStack()"></i>
     </div>
@@ -35,14 +35,14 @@
 </template>
 
 <style lang="scss">
-.shotsStack {
+.shots {
   width: 100%;
   height: 100%;
   background: #f2f2f2;
   display: flex;
   flex-direction: column;
 
-  .shotsStackTitle {
+  .shotsTitle {
     margin: 0 24px;
     display: inline-flex;
     align-items: baseline;
@@ -111,7 +111,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { Shot } from "../api/movie.service";
 
 @Component
-export default class ShotsStack extends Vue {
+export default class Shots extends Vue {
   @Prop({ required: true })
   public shots!: Shot[];
 
@@ -122,27 +122,24 @@ export default class ShotsStack extends Vue {
   public projectId!: string;
 
   public closeStack() {
-    this.$emit("closestack");
+    this.$emit('closestack');
   }
 
   public activateShot(id: string) {
-    const shotIndex = this.shots.findIndex(shot => shot.id === id);
-    this.$store.dispatch("project/changeActiveShot", shotIndex);
-    this.$emit("closestack");
+    const shotIndex = this.shots.findIndex((shot) => shot.id === id);
+    this.$store.dispatch('project/changeActiveShot', shotIndex);
+    this.$emit('closestack');
   }
 
   public renameShot(shotId: string) {
-    const selectedShot = this.shots.find(shot => shot.id === shotId);
+    const selectedShot = this.shots.find((shot) => shot.id === shotId);
     if (selectedShot) {
-      this.$store.dispatch("project/renameShot", {
-        shotId,
-        name: selectedShot.name
-      });
+      this.$store.dispatch('project/renameShot', { shotId, name: selectedShot.name });
     }
   }
 
   public createNewShot() {
-    this.$store.dispatch("project/createShot", "Nouveau Plan");
+    this.$store.dispatch('project/createShot', 'Nouveau Plan');
   }
 }
 </script>

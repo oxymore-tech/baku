@@ -30,18 +30,18 @@
 
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import * as uuid from "uuid";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import * as uuid from 'uuid';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component
 export default class Init extends Vue {
-  @ProjectNS.Action("createShot")
+  @ProjectNS.Action('createShot')
   private createShotAction!: (name?: string) => Promise<void>;
 
-  @ProjectNS.Action("loadProject")
+  @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public lorem =
@@ -55,20 +55,26 @@ export default class Init extends Vue {
 
   public async created() {
     if (this.isMobile()) {
-      this.$router.push("/smartphone");
+      this.$router.push({ name: 'smartphone' });
     }
-    const projectId = this.$route.params.projectid;
-    if (projectId) {
+    const projectId = this.$route.params.projectId;
+    if(projectId){
       await this.loadProjectAction(projectId);
-      await this.$router.push(`/${projectId}/capture`);
+      await this.$router.push({
+        name: 'captureShots',
+        params: { projectId }
+      });
     }
   }
 
   public async onCreateProject() {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
-    await this.createShotAction("Nouveau plan");
-    await this.$router.push(`/${projectId}/capture`);
+    await this.createShotAction('Nouveau plan');
+    await this.$router.push({
+      name: 'captureShots',
+      params: { projectId }
+    });
   }
 }
 </script>

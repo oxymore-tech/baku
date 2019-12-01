@@ -10,8 +10,16 @@
       </div>
       <router-link to="/">Scenario</router-link>
       <router-link to="/">Storyboard</router-link>
-      <router-link v-if="id" :to="`/${id}/capture`">Capture</router-link>
-      <router-link v-else to="/capture">Capture</router-link>
+      <!--
+      <router-link v-if="activeShotId" :to="{ name: 'captureShot', params: { projectId: ${id}, shotId: ${activeShotId} } }">
+        Capture
+      </router-link>
+      <router-link v-else :to="{ name: 'captureShots', params: { projectId: ${id} } }">
+        Capture
+      </router-link>
+      -->
+      <router-link v-if="activeShotId" :to="`/movies/${id}/capture/shots/${activeShotId}`">Capture</router-link>
+      <router-link v-else :to="`/movies/${id}/capture/shots/`">Capture</router-link>
       <router-link to="/">Montage</router-link>
       <router-link to="/">Collaboratif</router-link>
     </nav>
@@ -41,17 +49,17 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 import ProjectSettingsPopup from "@/components/ProjectSettingsPopup.vue";
 import { Movie } from "./api/movie.service";
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component({
   components: {
-    ProjectSettingsPopup
-  }
+    ProjectSettingsPopup,
+  },
 })
 export default class App extends Vue {
   @ProjectNS.State
@@ -60,22 +68,14 @@ export default class App extends Vue {
   @ProjectNS.Getter
   public movie!: Movie;
 
-  @ProjectNS.Action("loadProject")
-  private loadProjectAction!: (projectId: string) => Promise<void>;
-
-  public async created() {
-    const projectId = this.$route.params.projectid;
-    if (projectId) {
-      await this.loadProjectAction(projectId);
-      await this.$router.push(`/${projectId}/capture`);
-    }
-  }
+  @Prop()
+  public activeShotId!: string;
 
   public openProjectSettings() {
     this.$buefy.modal.open({
       parent: this,
       component: ProjectSettingsPopup,
-      hasModalCard: true
+      hasModalCard: true,
     });
   }
 }

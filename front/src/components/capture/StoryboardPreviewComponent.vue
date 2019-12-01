@@ -2,7 +2,7 @@
   <div class="boxContainer storyboard-preview-container">
     <div class="storyboard-preview-header">
       <h4>Storyboard</h4>
-      <i class="icon-grid baku-button" @click="onDisplayShotsStack()" />
+      <i class="icon-grid baku-button" @click="onDisplayShots()" />
     </div>
     <img src="@/assets/storyboard.png" />
   </div>
@@ -33,9 +33,11 @@
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { Shot } from "@/api/movie.service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Shot } from '@/api/movie.service';
+import { namespace } from "vuex-class";
 
+const ProjectNS = namespace("project");
 @Component
 export default class StoryboardPreviewComponent extends Vue {
   @Prop({ required: true })
@@ -45,10 +47,18 @@ export default class StoryboardPreviewComponent extends Vue {
   public activeShotId!: string;
 
   @Prop()
-  public displayShotsStack!: boolean;
+  public displayShots!: boolean;
 
-  public onDisplayShotsStack() {
-    this.$emit("changedisplayshotsstack");
+  @ProjectNS.State
+  public id!: string;
+
+  public onDisplayShots() {
+    this.$router.push({
+      name: 'captureShots',
+      params: {
+        projectId: this.id,
+      }
+    });
   }
 }
 </script>
