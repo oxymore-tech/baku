@@ -2,7 +2,7 @@ import { Device } from '@/api/device.class';
 
 interface CaptureState {
   stream: MediaStream | null;
-  activeDevice: Device,
+  activeDevice: Device | null,
   activeCapture: boolean;
 }
 
@@ -28,7 +28,7 @@ export const captureStore = {
     setActiveCapture(state: CaptureState, activeCapture: boolean) {
       state.activeCapture = activeCapture;
     },
-    setDevice(state: CaptureState, device: Device) {
+    setDevice(state: CaptureState, device: Device | null) {
       state.activeDevice = device;
     },
   },

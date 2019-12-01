@@ -75,7 +75,7 @@ export default class CaptureToolboxComponent extends Vue {
 
   public onCaptureDeviceChange() {
     this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
-    this.selectDeviceAction((this.selectedDevice) as Device);
+    this.selectDeviceAction(this.selectedDevice);
 
     if (
       this.selectedDevice
