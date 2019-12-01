@@ -93,7 +93,7 @@ export default class Capture extends Project {
   @ProjectNS.Getter
   public getActiveShot!: Shot;
 
-  public activeFrame: number = -1;
+  public activeFrame: number = 0;
 
   @CaptureNS.State
   public activeCapture!: boolean;
@@ -107,6 +107,10 @@ export default class Capture extends Project {
 
   public mounted() {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
+  }
+
+  public created() {
+    this.activeFrame = (this.getActiveShot && this.getActiveShot.images.length == 0) ? -1 : 0;
   }
 
   public playAnimation() {
