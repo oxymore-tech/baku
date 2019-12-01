@@ -10,19 +10,19 @@
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import store from "@/store";
-import Shots from "@/components/Shots.vue";
-import { Movie, Shot } from "@/api/movie.service";
-import Project from "./Project.vue";
+import { Component } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import store from '@/store';
+import Shots from '@/components/Shots.vue';
+import { Movie, Shot } from '@/api/movie.service';
+import Project from './Project.vue';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 @Component({
   components: {
-    Shots
+    Shots,
   },
-  store
+  store,
 })
 export default class Capture extends Project {
   @ProjectNS.State
@@ -43,7 +43,7 @@ export default class Capture extends Project {
       params: {
         projectId: this.id,
         shotId: this.getActiveShotId,
-      }
+      },
     });
   }
 }

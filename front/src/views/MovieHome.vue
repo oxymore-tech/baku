@@ -18,9 +18,9 @@
 </style>
 
 <script lang="ts">
-import { Movie } from "@/api/movie.service";
 import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
+import { Movie } from '@/api/movie.service';
 import Project from './Project.vue';
 
 const ProjectNS = namespace('project');
@@ -38,7 +38,7 @@ export default class Init extends Project {
       name: 'captureShots',
       params: {
         projectId: this.id,
-      }
+      },
     });
   }
 }

@@ -2,11 +2,7 @@
   <div class="shots">
     <div class="shotsTitle">
       <h3>Choisir un plan</h3>
-
-      <button 
-         @click="openCurrentShot()">
-         Accéder au dernier plan</button>
-
+      <i class="icon-close baku-button" @click="closeStack()"></i>
     </div>
     <div class="shotCardsContainer">
       <div
@@ -20,34 +16,18 @@
           class="shotPreview"
           :src="`/${projectId}/images/${shot.id}/${shot.images[0]}?width=292&height=193`"
         />
-        <div
-          class="shotPreview"
-          v-else
-        ></div>
+        <div class="shotPreview" v-else></div>
         <div class="cardFooter">
-          <span class="shotName">{{shot.name}}</span>
-          <input
-            v-model="shot.name"
-            type="text"
-            class="shotName"/>
-          <a
-            class="activateShot"
-            @click="renameShot(shot.id)"
-          >Renommer le plan</a>
-          <a
-            class="activateShot"
-            @click="activateShot(shot.id)"
-          >Ouvrir le plan</a>
+          <input v-model="shot.name" type="text" class="shotName" />
+          <i class="icon-edit baku-button" @click="renameShot(shot.id)" />
+          <a class="activateShot" @click="activateShot(shot.id)">Ouvrir le plan</a>
         </div>
       </div>
       <div class="shotCard">
         <div class="shotPreview"></div>
         <div class="cardFooter">
           <span class="shotName">Nouveau Plan</span>
-          <a
-            class="activateShot"
-            @click="createNewShot()"
-          >Créer un nouveau plan</a>
+          <a class="activateShot" @click="createNewShot()">Créer un nouveau plan</a>
         </div>
       </div>
     </div>
@@ -64,6 +44,9 @@
 
   .shotsTitle {
     margin: 0 24px;
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: space-between;
 
     h3 {
       font-size: 28px;
@@ -138,14 +121,14 @@ export default class Shots extends Vue {
   @Prop({ required: true })
   public projectId!: string;
 
-  public openCurrentShot() {
-    this.$emit('openCurrentShot');
+  public closeStack() {
+    this.$emit('closestack');
   }
 
-  public activateShot(shotId: string) {
-    const shotIndex = this.shots.findIndex((shot) => shot.id === shotId);
+  public activateShot(id: string) {
+    const shotIndex = this.shots.findIndex((shot) => shot.id === id);
     this.$store.dispatch('project/changeActiveShot', shotIndex);
-    this.$emit('openCurrentShot');
+    this.$emit('closestack');
   }
 
   public renameShot(shotId: string) {

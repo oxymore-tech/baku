@@ -1,8 +1,8 @@
 <template>
   <div class="boxContainer storyboard-preview-container">
-    <div>
+    <div class="storyboard-preview-header">
       <h4>Storyboard</h4>
-      <button @click="onDisplayShots()">Voir la liste des plans</button>
+      <i class="icon-grid baku-button" @click="onDisplayShots()" />
     </div>
     <img src="@/assets/storyboard.png" />
   </div>
@@ -13,9 +13,20 @@
   width: 290px;
   height: 256px;
 
-  h4 {
-    font-size: 28px;
-    font-weight: bold;
+  .storyboard-preview-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    h4 {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    i {
+      font-size: 28px;
+    }
   }
 }
 </style>
@@ -23,10 +34,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
 import { Shot } from '@/api/movie.service';
-import { namespace } from "vuex-class";
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 @Component
 export default class StoryboardPreviewComponent extends Vue {
   @Prop({ required: true })
@@ -46,7 +57,7 @@ export default class StoryboardPreviewComponent extends Vue {
       name: 'captureShots',
       params: {
         projectId: this.id,
-      }
+      },
     });
   }
 }
