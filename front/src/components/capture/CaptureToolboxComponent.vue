@@ -31,20 +31,12 @@
         >{{device.label}}</option>
       </b-select>
     </b-field>
-    <CaptureButtonComponent
-      v-if="selectedDevice"
-      :device="selectedDevice"
-      :projectId="projectId"
-      :activeShot="activeShot"
-      :activeIndex="activeIndex"
-      v-on:moveactiveframe="$emit('moveactiveframe', $event)"
-    />
   </b-collapse>
 </template>
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
@@ -68,14 +60,8 @@ export default class CaptureToolboxComponent extends Vue {
   @CaptureNS.State
   public activeCapture!: boolean;
 
-  @Prop()
-  public projectId!: string;
-
-  @Prop()
-  public activeShot!: string;
-
-  @Prop()
-  public activeIndex!: number;
+  @CaptureNS.Action('selectDevice')
+  protected selectDeviceAction!: (device: Device) => Promise<void>;
 
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -89,6 +75,7 @@ export default class CaptureToolboxComponent extends Vue {
 
   public onCaptureDeviceChange() {
     this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
+    this.selectDeviceAction(this.selectedDevice);
 
     if (
       this.selectedDevice
