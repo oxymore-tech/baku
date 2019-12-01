@@ -48,8 +48,8 @@ export default class Init extends Vue {
      ut labore et dolore magna aliqua. Ut enim ad minim veniam,
       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`;
 
-  @ProjectNS.Getter
-  public getActiveShotId!: string;
+  @ProjectNS.State
+  public activeShotId!: string;
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -79,7 +79,7 @@ export default class Init extends Vue {
       name: 'captureShot',
       params: {
         projectId,
-        shotId: this.getActiveShotId,
+        shotId: this.activeShotId,
       }
     });
   }
