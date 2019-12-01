@@ -64,6 +64,7 @@ public final class GenerateStackAndThumbnails {
 
 		for (File allProjectDir : list(new File("movie_data"))) {
 			String projectName = allProjectDir.getName();
+			System.out.println("GENERATING " + projectName);
 			File projectThumbnailDir = new File(thumbnailDir, projectName);
 			File projectImageDir = new File(imageDir, projectName);
 			File projectStackFile = new File(stackDir, projectName + ".stack");
@@ -72,6 +73,8 @@ public final class GenerateStackAndThumbnails {
 
 			int shotIndex = 0;
 			for (File shotDirectory : list(allProjectDir)) {
+				System.out.println("SHOT " + shotDirectory.getName());
+				
 				String shotId = "shot-" + format(shotIndex);
 				JsonObject shotEvent = new JsonObject();
 				shotEvent.add("action", new JsonPrimitive(4));
@@ -88,6 +91,8 @@ public final class GenerateStackAndThumbnails {
 						continue;
 					}
 					
+					System.out.println("IMAGE " + file.getName());
+
 					String imageName = "image-" + format(imageIndex) + ".jpg";
 					
 					File thumbnailFile = new File(new File(projectThumbnailDir, shotId), imageName + "-" + thumbnailWidth + "x" + thumbnailHeight);
