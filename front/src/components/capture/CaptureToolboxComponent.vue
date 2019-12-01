@@ -61,7 +61,7 @@ export default class CaptureToolboxComponent extends Vue {
   public activeCapture!: boolean;
 
   @CaptureNS.Action('selectDevice')
-  protected selectDeviceAction!: (device: Device) => Promise<void>;
+  protected selectDeviceAction!: (device: Device | null) => Promise<void>;
 
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
