@@ -109,6 +109,8 @@ public final class GenerateStackAndThumbnails {
 					if (!thumbnailFile.exists()) {
 						System.out.println("THUMBNAIL " + thumbnailFile.getAbsolutePath());
 						save(reduce(load(file), thumbnailWidth, thumbnailHeight), thumbnailFile);
+					} else {
+						System.out.println("EXISTS: THUMBNAIL " + thumbnailFile.getAbsolutePath());
 					}
 	
 					File imageFile = new File(projectImageDir, imageName);
@@ -116,6 +118,8 @@ public final class GenerateStackAndThumbnails {
 					if (!imageFile.exists()) {
 						System.out.println("IMAGE " + imageFile.getAbsolutePath());
 						Files.copy(file, imageFile);
+					} else {
+						System.out.println("EXISTS: IMAGE " + imageFile.getAbsolutePath());
 					}
 	
 					JsonObject imageEvent = new JsonObject();
