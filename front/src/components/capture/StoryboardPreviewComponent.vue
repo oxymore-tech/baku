@@ -5,13 +5,19 @@
       <i class="icon-grid baku-button" @click="onDisplayShots()" />
     </div>
     <img src="@/assets/storyboard.png" />
+    <img
+       v-if="getActiveShot.images[0]"
+       class="shotPreview"
+       :src="`/api/${id}/images/${getActiveShot.id}/${getActiveShot.images[0]}?width=292&height=193`"
+     />
+    <div class="shotPreview" v-else/>
   </div>
 </template>
 
 <style lang="scss">
 .storyboard-preview-container {
   width: 290px;
-  height: 256px;
+  height: 450px;
 
   .storyboard-preview-header {
     display: inline-flex;
@@ -28,6 +34,12 @@
       font-size: 28px;
     }
   }
+}
+
+.shotPreview {
+  width: 100%;
+  height: 193px;
+  background-color: #bce0fd;
 }
 </style>
 
@@ -51,6 +63,9 @@ export default class StoryboardPreviewComponent extends Vue {
 
   @ProjectNS.State
   public id!: string;
+
+  @ProjectNS.Getter
+  public getActiveShot!: Shot;
 
   public onDisplayShots() {
     this.$router.push({
