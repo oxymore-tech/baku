@@ -8,7 +8,7 @@
           :key="'left'+index"
           :alt="image"
           :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
-          @click="moveToImage(index - computedLeftCarrousel.length)"
+          @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
         />
       </template>
       <template v-else>
