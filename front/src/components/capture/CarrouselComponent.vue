@@ -94,8 +94,8 @@
 </style>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import {ImageRef} from '@/api/baku.service';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { ImageRef } from '@/api/baku.service';
 
   @Component
 export default class CarrouselComponent extends Vue {

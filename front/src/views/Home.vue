@@ -112,7 +112,7 @@ export default class Init extends Vue {
       params: {
         projectId,
         shotId,
-      }
+      },
     });
   }
 }

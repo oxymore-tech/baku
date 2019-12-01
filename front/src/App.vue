@@ -43,7 +43,7 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
 import { Movie } from './api/movie.service';

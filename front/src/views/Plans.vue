@@ -13,31 +13,31 @@
 </template>
 
 <script lang="ts">
-import store from "@/store";
-import { namespace } from "vuex-class";
+import { Component, Watch, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import store from '@/store';
 
-const CaptureNS = namespace("capture");
-const PlanNS = namespace("plan");
+const CaptureNS = namespace('capture');
+const PlanNS = namespace('plan');
 
 @Component({
-  components: {
-    CaptureToolboxComponent,
-    CarrouselComponent,
-    ProjectPreviewComponent,
-  },
   store,
 })
 export default class Capture extends Vue {
   @CaptureNS.State
   public activeCapture!: boolean;
+
   @PlanNS.State
   public activePlan!: string;
+
   @CaptureNS.State
   public stream!: MediaStream | null;
+
   @PlanNS.Getter
   public getActiveFrame!: string;
 
-  private isPlaying = false;
+  public isPlaying = false;
+
   private loop: any;
 
   public mounted() {
@@ -45,20 +45,19 @@ export default class Capture extends Vue {
 
   public playAnimation() {
     this.isPlaying = true;
-    console.log("this.isPlaying", this.isPlaying);
-    this.loop = setInterval(() => this.$store.dispatch("plan/goToNextFrameAction"), 1000 / 12);
+    this.loop = setInterval(() => this.$store.dispatch('plan/goToNextFrameAction'), 1000 / 12);
   }
 
   public pauseAnimation() {
     clearInterval(this.loop);
   }
 
-  @Watch("stream")
-  public onStreamChange(newValue: MediaStream, oldValue: MediaStream) {
-    console.log("onStreamChange");
+  @Watch('stream')
+  public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
+    console.log('onStreamChange');
     if (newValue) {
       (document.getElementById(
-        "videoCapture",
+        'videoCapture',
       ) as HTMLVideoElement).srcObject = newValue;
     }
   }
