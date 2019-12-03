@@ -20,4 +20,5 @@ export default new Vuex.Store({
     capture: captureStore,
     user: UserStore,
   },
+  strict: process.env.NODE_ENV !== 'production',
 });

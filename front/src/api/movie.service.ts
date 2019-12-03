@@ -24,7 +24,7 @@ export class MovieService {
     let fps = 12;
     const shots: Shot[] = [];
 
-    const updateShot = function (shotId: string, updateFn: (shot: Shot) => Shot) {
+    const updateShot = (shotId: string, updateFn: (shot: Shot) => Shot) => {
       const shotIndex = shots.findIndex((p) => p.id === shotId);
       const shot = shots.find((p) => p.id === shotId);
       if (!shot) {

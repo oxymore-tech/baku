@@ -1,31 +1,44 @@
 import { Movie, MovieService, Shot } from '@/api/movie.service';
-import { BakuEvent } from '@/api/baku.service';
+import { BakuEvent, ImageRef } from '@/api/baku.service';
 
 const movieService = new MovieService();
 
 interface ProjectState {
   id: string;
-  activeShotId: string;
+  activeShotId: string | null;
   history: BakuEvent[];
+  selectedImages: number[];
 }
 
-export const ProjectStore = {
+interface ProjectGetters {
+  getPictures: string[];
+  movie: Movie;
+  getActiveShot: Shot;
+}
+
+export const ProjectStore: Module<ProjectState, any> = {
   namespaced: true,
   state: {
-    id: null,
-    activeShotId: undefined,
+    pictures: [],
+    fullResPicturesCache: [],
+    id: '',
+    activeShotId: null,
     history: [],
+    selectedImages: [0, 2],
   },
   mutations: {
-    setMovie(state: ProjectState, payload: { projectId: string, movieHistory: BakuEvent[] }) {
+    setMovie(state, payload: { projectId: string, movieHistory: BakuEvent[] }) {
       state.id = payload.projectId;
       state.history = payload.movieHistory;
     },
-    addToLocalHistory(state: ProjectState, event: BakuEvent) {
+    addToLocalHistory(state, event: BakuEvent) {
       state.history.push(event);
     },
-    changeActiveShot(state: ProjectState, shotId: string) {
+    changeActiveShot(state, shotId: string) {
       state.activeShotId = shotId;
+    },
+    setSelectedImages(state, newImagesSelection: number[]) {
+      state.selectedImages = newImagesSelection;
     },
   },
   actions: {
@@ -44,7 +57,7 @@ export const ProjectStore = {
       );
       context.commit('addToLocalHistory', insertEvent);
     },
-    changeActiveShot(context: any, shotIndex: number) {
+    changeActiveShot(context, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },
 
@@ -72,7 +85,7 @@ export const ProjectStore = {
   },
   getters: {
     movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
-
+    getPictures: (state: ProjectState): string[] => state.pictures,
     getActiveShot: (state: ProjectState, getters: any): Shot => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
 
   },

@@ -42,6 +42,15 @@
           <span>Capture</span>
         </div>
       </div>
+      <ImagesSelectorComponent
+        v-if="getActiveShot"
+        :projectId="id"
+        :activeShot="getActiveShot.id"
+        :images="getActiveShot.images"
+        :activeImage="activeFrame"
+        :activeCapture="activeCapture"
+        v-on:moveactiveframe="moveActiveFrame($event)"
+      />
       <CarrouselComponent
         v-if="getActiveShot"
         :projectId="id"
@@ -60,6 +69,7 @@ import { Component, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
 import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import ImagesSelectorComponent from '@/components/capture/ImagesSelectorComponent.vue';
 import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import { Movie, Shot } from '@/api/movie.service';
@@ -73,6 +83,7 @@ const ProjectNS = namespace('project');
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
+    ImagesSelectorComponent,
     StoryboardPreviewComponent,
   },
   store,
