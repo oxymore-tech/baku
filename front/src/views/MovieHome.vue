@@ -6,7 +6,7 @@
          <img
         v-if="shot.images[0]"
         class="shotPreview"
-        :src="`/${projectId}/images/${shot.id}/${shot.images[0]}?width=292&height=193`"
+        :src="`/images/thumb/${projectId}/${shot.images[0]}`"
       /> -->
       <div class="moviePreview"></div>
       <div class="cardFooter">

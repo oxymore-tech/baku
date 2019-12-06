@@ -35,9 +35,8 @@ const routes = [
     component: Capture,
   },
   {
-    name: "image",
-    path: '/images/:projectId/:imageId',
-    // path: '/api/:projectId/images/:shotId/:imageId?width=1280&height=720',
+    name: "originalImage",
+    path: '/images/original/:projectId/:imageId',
   }
 ];
 

@@ -11,21 +11,22 @@ use std::{
     },
 };
 use tokio::{
-    fs::{create_dir_all, rename, File},
+    // fs::{create_dir_all, rename, File},
+    fs::{create_dir_all, File},
     prelude::*,
     sync::mpsc,
 };
 
-use tokio_executor::blocking;
+// use tokio_executor::blocking;
 use uuid::Uuid;
 use warp::{ws::Message, ws::WebSocket, Filter};
 use std::env;
 
-#[derive(Deserialize)]
-struct Size {
-    width: u32,
-    height: u32,
-}
+// #[derive(Deserialize)]
+// struct Size {
+//     width: u32,
+//     height: u32,
+// }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct WSMessage {
@@ -48,7 +49,7 @@ async fn handle_multipart(
     // plan_id: String,
     mut form: warp::multipart::FormData,
 ) -> Result<Vec<String>, warp::Rejection> {
-    let img_directory = Path::new("./data/images/");
+    let img_directory = Path::new("./data/images/original/");
 
     let mut filenames = Vec::new();
 
@@ -100,82 +101,82 @@ async fn handle_multipart(
 //     Ok(thumbnail_buffer)
 // }
 
-async fn handle_get_images(
-    project_id: String,
-    // plan_id: String,
-    filename: String,
-    r: Size,
-) -> Result<Vec<u8>, warp::Rejection> {
-    let thumbs_directory = Path::new("./data/thumbs/");
-    let thumb_filename = format!("{}-{}x{}", filename, r.width, r.height);
-    let thumbnail_path = Path::join(
-        &Path::join(thumbs_directory, Path::new(&project_id)),
-        Path::new(&thumb_filename),
-        // Path::join(Path::new(&plan_id), Path::new(&thumb_filename)),
-    );
-    println!("Getting from {}", &thumbnail_path.to_str().unwrap());
-
-    let mut thumbnail_buffer = Vec::new();
-
-    if thumbnail_path.exists() {
-        let mut f = File::open(&thumbnail_path)
-            .await
-            .map_err(warp::reject::custom)?;
-        f.read_to_end(&mut thumbnail_buffer)
-            .await
-            .map_err(warp::reject::custom)?;
-    } else {
-        let img_directory = Path::new("./data/files/");
-        let image_path = Path::join(
-            &Path::join(img_directory, Path::new(&project_id)),
-            Path::new(&filename),
-            // Path::join(Path::new(&plan_id), Path::new(&filename)),
-        );
-        let image = image::open(&image_path).map_err(warp::reject::custom)?;
-
-        println!("Resizing {}", filename);
-        let thumbnail = blocking::run(move || {
-            image.resize(r.width, r.height, image::imageops::FilterType::Lanczos3)
-        })
-        .await;
-        println!("Done {}", filename);
-
-        thumbnail
-            .write_to(&mut thumbnail_buffer, image::ImageOutputFormat::JPEG(200))
-            .map_err(warp::reject::custom)?;
-
-        let uuid = Uuid::new_v4();
-        let temp_filename = format!("{}.jpg", uuid.to_string());
-        let temp_path = Path::join(thumbs_directory, Path::new(&temp_filename));
-
-        println!("Writing to {}", temp_filename);
-        create_dir_all(temp_path.parent().unwrap())
-            .await
-            .map_err(warp::reject::custom)?;
-        let mut thumb_file = File::create(&temp_path)
-            .await
-            .map_err(warp::reject::custom)?;
-        thumb_file
-            .write_all(&thumbnail_buffer)
-            .await
-            .map_err(warp::reject::custom)?;
-        thumb_file.sync_data().await.map_err(warp::reject::custom)?;
-        println!("Renaming to {}", thumb_filename);
-        create_dir_all(thumbnail_path.parent().unwrap())
-            .await
-            .map_err(warp::reject::custom)?;
-        rename(temp_path, thumbnail_path).await.unwrap();
-        println!("Done {}", thumb_filename);
-
-        let mut thumbnail_buffer = Vec::new();
-
-        thumbnail
-            .write_to(&mut thumbnail_buffer, image::ImageOutputFormat::JPEG(200))
-            .map_err(warp::reject::custom)?;
-    }
-
-    Ok(thumbnail_buffer)
-}
+// async fn handle_get_images(
+//     project_id: String,
+//     // plan_id: String,
+//     filename: String,
+//     r: Size,
+// ) -> Result<Vec<u8>, warp::Rejection> {
+//     let thumbs_directory = Path::new("./data/thumbs/");
+//     let thumb_filename = format!("{}-{}x{}", filename, r.width, r.height);
+//     let thumbnail_path = Path::join(
+//         &Path::join(thumbs_directory, Path::new(&project_id)),
+//         Path::new(&thumb_filename),
+//         // Path::join(Path::new(&plan_id), Path::new(&thumb_filename)),
+//     );
+//     println!("Getting from {}", &thumbnail_path.to_str().unwrap());
+// 
+//     let mut thumbnail_buffer = Vec::new();
+// 
+//     if thumbnail_path.exists() {
+//         let mut f = File::open(&thumbnail_path)
+//             .await
+//             .map_err(warp::reject::custom)?;
+//         f.read_to_end(&mut thumbnail_buffer)
+//             .await
+//             .map_err(warp::reject::custom)?;
+//     } else {
+//         let img_directory = Path::new("./data/files/");
+//         let image_path = Path::join(
+//             &Path::join(img_directory, Path::new(&project_id)),
+//             Path::new(&filename),
+//             // Path::join(Path::new(&plan_id), Path::new(&filename)),
+//         );
+//         let image = image::open(&image_path).map_err(warp::reject::custom)?;
+// 
+//         println!("Resizing {}", filename);
+//         let thumbnail = blocking::run(move || {
+//             image.resize(r.width, r.height, image::imageops::FilterType::Lanczos3)
+//         })
+//         .await;
+//         println!("Done {}", filename);
+// 
+//         thumbnail
+//             .write_to(&mut thumbnail_buffer, image::ImageOutputFormat::JPEG(200))
+//             .map_err(warp::reject::custom)?;
+// 
+//         let uuid = Uuid::new_v4();
+//         let temp_filename = format!("{}.jpg", uuid.to_string());
+//         let temp_path = Path::join(thumbs_directory, Path::new(&temp_filename));
+// 
+//         println!("Writing to {}", temp_filename);
+//         create_dir_all(temp_path.parent().unwrap())
+//             .await
+//             .map_err(warp::reject::custom)?;
+//         let mut thumb_file = File::create(&temp_path)
+//             .await
+//             .map_err(warp::reject::custom)?;
+//         thumb_file
+//             .write_all(&thumbnail_buffer)
+//             .await
+//             .map_err(warp::reject::custom)?;
+//         thumb_file.sync_data().await.map_err(warp::reject::custom)?;
+//         println!("Renaming to {}", thumb_filename);
+//         create_dir_all(thumbnail_path.parent().unwrap())
+//             .await
+//             .map_err(warp::reject::custom)?;
+//         rename(temp_path, thumbnail_path).await.unwrap();
+//         println!("Done {}", thumb_filename);
+// 
+//         let mut thumbnail_buffer = Vec::new();
+// 
+//         thumbnail
+//             .write_to(&mut thumbnail_buffer, image::ImageOutputFormat::JPEG(200))
+//             .map_err(warp::reject::custom)?;
+//     }
+// 
+//     Ok(thumbnail_buffer)
+// }
 
 async fn handle_stack(
     global_lock: Arc<futures::lock::Mutex<usize>>,
@@ -422,41 +423,20 @@ async fn main() {
             })
         });
 
-    let get = warp::get2()
-        .and(warp::path("api"))
-        .and(warp::path::param())
-        .and(warp::path("images"))
-        // .and(warp::path::param())
-        .and(warp::path::param())
-        .and(warp::query())
-        .and_then(handle_get_images)
-        .map(|buffer| {
-            warp::http::Response::builder()
-                .header("Content-Type", "image/jpg")
-                // .header("Cache-Control", "max-age=604800")
-                // .header("Cache-Control", "public")
-                // .header("Last-Modified", "Tue, 06 Dec 2019 11:00:00 GMT")
-                // .header("Expires", "Fri, 13 Dec 2019 10:58:25 GMT")
-                // .header("Date", "Fri, 06 Dec 2019 10:58:25 GMT")
-
-                .header("Server", "nginx/1.17.4")
-                .header("Date", "Fri, 06 Dec 2019 11:10:19 GMT")
-                // .header("Content-Type", "image/jpeg")
-                .header("Content-Length", "324038")
-                .header("Last-Modified", "Tue, 03 Dec 2019 12:25:19 GMT")
-                .header("Connection", "keep-alive")
-                .header("ETag", "\"5de6542f-4f1c6\"")
-                .header("Expires", "Fri, 13 Dec 2019 11:10:19 GMT")
-                .header("Cache-Control", "max-age=604800")
-                .header("Cache-Control", "public")
-                .header("Accept-Ranges", "bytes")
-
-                .body(buffer)
-        });
-
-
-    // {"Response headers (261 B)":{"headers":[{"name":"Cache-Control","value":"max-age=604800"},{"name":"Cache-Control","value":"public"},{"name":"Connection","value":"keep-alive"},{"name":"Date","value":"Fri, 06 Dec 2019 10:58:25 GMT"},{"name":"ETag","value":"\"5de6542f-4f1c6\""},{"name":"Expires","value":"Fri, 13 Dec 2019 10:58:25 GMT"},{"name":"Last-Modified","value":"Tue, 03 Dec 2019 12:25:19 GMT"},{"name":"Server","value":"nginx/1.17.4"}]}
-    // ,"Request headers (449 B)":{"headers":[{"name":"Accept","value":"image/webp,*/*"},{"name":"Accept-Encoding","value":"gzip, deflate"},{"name":"Accept-Language","value":"en-GB,en;q=0.5"},{"name":"Cache-Control","value":"max-age=0"},{"name":"Connection","value":"keep-alive"},{"name":"Host","value":"lesqueren.com:8080"},{"name":"If-Modified-Since","value":"Tue, 03 Dec 2019 12:25:19 GMT"},{"name":"If-None-Match","value":"\"5de6542f-4f1c6\""},{"name":"Referer","value":"http://lesqueren.com:8080/"},{"name":"User-Agent","value":"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"}]}}
+    // let get = warp::get2()
+    //     .and(warp::path("api"))
+    //     .and(warp::path::param())
+    //     .and(warp::path("images"))
+    //     // .and(warp::path::param())
+    //     .and(warp::path::param())
+    //     .and(warp::query())
+    //     .and_then(handle_get_images)
+    //     .map(|buffer| {
+    //         warp::http::Response::builder()
+    //             .header("Content-Type", "image/jpg")
+    //             .header("Cache-Control", "max-age=604800")
+    //             .body(buffer)
+    //     });
 
     let global_lock = Arc::new(futures::lock::Mutex::new(0));
 
@@ -489,7 +469,7 @@ async fn main() {
     let routes = echo
         .or(stack)
         .or(history)
-        .or(get)
+        // .or(get)
         .or(multipart);
     //     .or(warp::fs::dir(resource_path))
     //     .or(index);

@@ -20,7 +20,7 @@
             <img
               v-if="getActiveShot && getActiveShot.images[activeFrame]"
               id="previewImg"
-              :src="`/images/${id}/${getActiveShot.images[activeFrame]}?width=1280&height=720`"
+              :src="`/images/original/${id}/${getActiveShot.images[activeFrame]}`"
             />
           </div>
           <template v-if="computedPremiewImages">
@@ -28,7 +28,7 @@
               style="display:none"
               v-for="(image, index) in computedPremiewImages"
               :key="index"
-              :src="`/images/${id}/${image}?width=1280&height=720`"
+              :src="`/images/original/${id}/${image}`"
             />
           </template>
         </div>
