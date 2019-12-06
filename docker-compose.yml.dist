@@ -1,9 +1,15 @@
 version: '3.6'
 
 services:
-  baku:
-    build: .
+  proxy:
+    build: ./front/
     ports:
-      - "3030:3030"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./data:/data/"
+
+  back:
+    build: ./back/
     volumes:
       - "./data:/app/data"
