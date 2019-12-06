@@ -1,5 +1,5 @@
 import * as uuid from 'uuid';
-import { BakuService } from '@/api/baku.service';
+import {BakuService, ImageRef} from '@/api/baku.service';
 
 export class Device {
   public readonly id: string;
@@ -17,7 +17,7 @@ export class Device {
     return this.id === 'smartphone';
   }
 
-  public async capture(videoElementTag: string, projectId: string, shotId: string): Promise<string> {
+  public async capture(videoElementTag: string, projectId: string, shotId: string): Promise<ImageRef> {
     const canvas = document.createElement('canvas');
     const video = document.getElementById(videoElementTag) as HTMLVideoElement;
     canvas.width = video.videoWidth;
@@ -25,11 +25,11 @@ export class Device {
     const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
     const base64 = canvas.toDataURL('image/jpeg');
-    const blob = this.imagetoblob(base64);
+    const blob = Device.imagetoblob(base64);
     return this.bakuService.upload(projectId, shotId, blob, `${uuid.v4()}.jpg`);
   }
 
-  private imagetoblob(base64String: string): Blob {
+  private static imagetoblob(base64String: string): Blob {
     // Split the base64 string in data and contentType
     const block = base64String.split(';');
     // Get the content type of the image
@@ -38,10 +38,10 @@ export class Device {
     const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
 
     // Convert it to a blob to upload
-    return this.b64toBlob(realData, contentType);
+    return Device.b64toBlob(realData, contentType);
   }
 
-  private b64toBlob(b64Data: string, contentType: string = '', sliceSize: number = 512): Blob {
+  private static b64toBlob(b64Data: string, contentType: string = '', sliceSize: number = 512): Blob {
     const byteCharacters = atob(b64Data);
     const byteArrays = [];
 
@@ -58,7 +58,6 @@ export class Device {
       byteArrays.push(byteArray);
     }
 
-    const blob = new Blob(byteArrays, { type: contentType });
-    return blob;
+    return new Blob(byteArrays, {type: contentType});
   }
 }

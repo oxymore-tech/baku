@@ -1,7 +1,5 @@
-import {
-  MovieService, Movie, Shot,
-} from '@/api/movie.service';
-import { BakuEvent, ImageRef } from '@/api/baku.service';
+import {Movie, MovieService, Shot,} from '@/api/movie.service';
+import {BakuEvent, ImageRef} from '@/api/baku.service';
 
 interface ProjectState {
   pictures: string[];
@@ -37,10 +35,10 @@ export const ProjectStore = {
       const movieService = new MovieService();
       // const movie = await movieService.get(projectId);
       const movieHistory = await movieService.getHistory(projectId);
-      await context.commit('setMovie', { projectId, movieHistory });
+      await context.commit('setMovie', {projectId, movieHistory});
     },
     async addImageToShot(context: any,
-      payload: { shotId: string, imageIndex: number, image: ImageRef }): Promise<void> {
+                         payload: { shotId: string, imageIndex: number, image: ImageRef }): Promise<void> {
       const insertEvent = await new MovieService().insertImage(
         context.state.id,
         payload.shotId,
@@ -78,7 +76,7 @@ export const ProjectStore = {
   },
   getters: {
     getPictures: (state: ProjectState) => state.pictures,
-    movie: (state: ProjectState): Movie => MovieService.merge(state.history),
+    movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
 
     getActiveShot: (state: ProjectState, getters: any): Shot =>
       getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId)

@@ -2,73 +2,64 @@
   <div class="carrouselContainer">
     <!-- LEFT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedLeftCarrousel">
-      <template v-if="image !== null">
-        <img
-          class="carrouselThumb"
-          :key="'left'+index"
-          :alt="image"
-          :src="`/images/thumb/${projectId}/${image}`"
-          @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
-        />
-      </template>
-      <template v-else>
-        <div
-          :key="image"
-          @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
-          class="carrouselThumb"
-        />
-      </template>
+      <img
+        v-if="image !== null"
+        class="carrouselThumb"
+        :key="`left_${index}`"
+        :alt="image.id"
+        :src="image.tinyUrl"
+        @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+      />
+      <div
+        v-else
+        :key="image"
+        @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+        class="carrouselThumb"
+      ></div>
     </template>
 
     <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
-    <template v-if="computedActiveImage !== null">
-      <img
-        v-if="computedActiveImage !== undefined"
-        class="carrouselThumb active"
-        :alt="computedActiveImage"
-        :src="`/images/thumb/${projectId}/${computedActiveImage}`"
+    <img
+      v-if="computedActiveImage !== null"
+      class="carrouselThumb active"
+      :alt="computedActiveImage"
+      :src="computedActiveImage.tinyUrl"
+    />
+    <div class="carrouselThumb active" v-else>
+      <CaptureButtonComponent
+        v-if="activeDevice"
+        :device="activeDevice"
+        :projectId="projectId"
+        :activeShot="activeShot"
+        :activeIndex="activeImage+1"
+        @moveactiveframe="$emit('moveactiveframe', $event)"
       />
-    </template>
-    <template v-else>
-      <div class="carrouselThumb active">
-        <CaptureButtonComponent
-          v-if="activeDevice"
-          :device="activeDevice"
-          :projectId="projectId"
-          :activeShot="activeShot"
-          :activeIndex="activeImage+1"
-          v-on:moveactiveframe="$emit('moveactiveframe', $event)"
-        />
-      </div>
-    </template>
+    </div>
 
     <!-- RIGHT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedRightCarrousel">
-      <template v-if="image !== null">
-        <img
-          class="carrouselThumb"
-          :key="'right-'+index"
-          :alt="image"
-          :src="`/images/thumb/${projectId}/${image}`"
-          @click="moveToImage(index + 1)"
-        />
-      </template>
-      <template v-else>
-        <div
-          :key="image"
-          @click="moveToImage(index + 1)"
-          class="carrouselThumb"
-        />
-      </template>
-    </template>
-    <template v-if="computedNextImages">
       <img
-        style="display:none"
-        v-for="image in computedNextImages"
-        :key="image"
-        :src="`/images/thumb/${projectId}/${image}`"
+        v-if="image !== null"
+        class="carrouselThumb"
+        :key="`right_${index}`"
+        :alt="image.id"
+        :src="image.tinyUrl"
+        @click="moveToImage(index + 1)"
       />
+      <div
+        v-else
+        :key="index"
+        @click="moveToImage(index + 1)"
+        class="carrouselThumb"
+      ></div>
     </template>
+    <img
+      v-if="computedNextImages"
+      style="display:none"
+      v-for="image in computedNextImages"
+      :alt="image.id"
+      :src="image.tinyUrl"
+    />
   </div>
 </template>
 
@@ -105,18 +96,18 @@
 
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
+  import {namespace} from 'vuex-class';
   import {ImageRef} from '@/api/baku.service';
   import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-  import { Device } from '@/api/device.class';
+  import {Device} from '@/api/device.class';
 
-const CaptureNS = namespace('capture');
+  const CaptureNS = namespace('capture');
 
-@Component({
-  components: {
-    CaptureButtonComponent,
-  },
-})
+  @Component({
+    components: {
+      CaptureButtonComponent,
+    },
+  })
   export default class CarrouselComponent extends Vue {
     @Prop()
     public images!: ImageRef[];

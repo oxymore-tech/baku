@@ -1,32 +1,48 @@
-use futures::{future, Future};
-use serde::{Deserialize, Serialize};
-use serde_json::from_str;
 use std::{
     collections::HashMap,
     path::Path,
     str,
     sync::{
-        atomic::{AtomicUsize, Ordering},
-        Arc, Mutex,
+        Arc,
+        atomic::{AtomicUsize, Ordering}, Mutex,
     },
 };
+use std::env;
+
+use futures::{future, Future};
+use serde::{Deserialize, Serialize};
+use serde_json::from_str;
 use tokio::{
     // fs::{create_dir_all, rename, File},
     fs::{create_dir_all, File},
     prelude::*,
     sync::mpsc,
 };
-
 // use tokio_executor::blocking;
 use uuid::Uuid;
-use warp::{ws::Message, ws::WebSocket, Filter};
-use std::env;
+use warp::{Filter, ws::Message, ws::WebSocket};
 
-// #[derive(Deserialize)]
-// struct Size {
-//     width: u32,
-//     height: u32,
-// }
+#[derive(Deserialize)]
+struct Size {
+    width: u32,
+    height: u32,
+}
+
+enum QualityPreset {
+    thumb,
+    lightweight,
+    original,
+}
+
+impl QualityPreset {
+    fn value(&self) -> Option<Size> {
+        match *self {
+            QualityPreset::thumb => Some(Size { width: 185, height: 104 }),
+            QualityPreset::lightweight => Some(Size { width: 185, height: 104 }),
+            QualityPreset::original => None
+        }
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct WSMessage {
@@ -49,7 +65,7 @@ async fn handle_multipart(
     // plan_id: String,
     mut form: warp::multipart::FormData,
 ) -> Result<Vec<String>, warp::Rejection> {
-    let img_directory = Path::new("./data/images/original/");
+    let img_directory = Path::new("./data/images/");
 
     let mut filenames = Vec::new();
 
@@ -59,11 +75,7 @@ async fn handle_multipart(
         //     if let Some(part_filename) => {
         if let Some(part_filename) = part.filename() {
             let filename = format!("{}-{}", Uuid::new_v4().to_string(), part_filename);
-            let image_path = Path::join(
-                &Path::join(img_directory, Path::new(&project_id)),
-                Path::new(&filename)
-                // Path::join(Path::new(&plan_id), Path::new(&filename)),
-            );
+            let image_path = img_directory.join(&project_id).join("original").join(&filename);
             println!("Posting to {}", &image_path.to_str().unwrap());
 
             let image_buffer = part.concat().await;
@@ -203,10 +215,10 @@ async fn handle_stack(
         match str::from_utf8(&buffer) {
             Ok(s) => {
                 json = from_str(s).map_err(warp::reject::custom)?;
-            },
+            }
             Err(e) => {
                 return Err(warp::reject::custom(e));
-            },
+            }
         }
 
         //println!("{}: Stacking {}", project_id, body);
@@ -260,7 +272,7 @@ fn user_connected(
     ws: WebSocket,
     users: Users,
     links: Links,
-) -> impl Future<Output = Result<(), ()>> {
+) -> impl Future<Output=Result<(), ()>> {
     // Use a counter to assign a new unique ID for this user.
     let my_id = NEXT_USER_ID.fetch_add(1, Ordering::Relaxed);
 
@@ -479,5 +491,4 @@ async fn main() {
         // .tls("./certificates/certificate.pem", "./certificates/key.pem")
         .run(([0, 0, 0, 0], listening_port))
         .await;
-
 }

@@ -82,7 +82,6 @@
     padding: 7px;
     display: flex;
     flex: 1;
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
@@ -124,7 +123,7 @@ export default class Shots extends Vue {
 
   get shots(): Shots {
     return this.$store.getters["project/movie"].shots.map((shot: any, index: any): Shot => {
-      let preview = ""
+      let preview = "";
       if (shot.images[0]) {
         preview = "/images/thumb/" + this.projectId + "/" + shot.images[0];
       } else {

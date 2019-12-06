@@ -1,13 +1,11 @@
 FROM node:13.1.0-stretch AS builder
 WORKDIR /app
 COPY package.json \
-     package-lock.json \
+     yarn.lock \
      ./
-RUN yarn install
+RUN yarn
 COPY . .
 RUN yarn build --release
-FROM nginx
-
 
 
 FROM nginx
