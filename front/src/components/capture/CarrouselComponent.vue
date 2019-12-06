@@ -7,7 +7,7 @@
           class="carrouselThumb"
           :key="'left'+index"
           :alt="image"
-          :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+          :src="`/images/${projectId}/${image}?width=185&height=104`"
           @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
         />
       </template>
@@ -26,7 +26,7 @@
         v-if="computedActiveImage !== undefined"
         class="carrouselThumb active"
         :alt="computedActiveImage"
-        :src="`/api/${projectId}/images/${activeShot}/${computedActiveImage}?width=185&height=104`"
+        :src="`/images/${projectId}/${computedActiveImage}?width=185&height=104`"
       />
     </template>
     <template v-else>
@@ -49,7 +49,7 @@
           class="carrouselThumb"
           :key="'right-'+index"
           :alt="image"
-          :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+          :src="`/images/${projectId}/${image}?width=185&height=104`"
           @click="moveToImage(index + 1)"
         />
       </template>
@@ -66,7 +66,7 @@
         style="display:none"
         v-for="image in computedNextImages"
         :key="image"
-        :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+        :src="`/images/${projectId}/${image}?width=185&height=104`"
       />
     </template>
   </div>

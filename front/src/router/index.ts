@@ -36,7 +36,8 @@ const routes = [
   },
   {
     name: "image",
-    path: '/api/:projectId/images/:shotId/:imageId?width=1280&height=720',
+    path: '/images/:projectId/:imageId',
+    // path: '/api/:projectId/images/:shotId/:imageId?width=1280&height=720',
   }
 ];
 
