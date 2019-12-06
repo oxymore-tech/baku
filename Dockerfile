@@ -25,8 +25,10 @@ RUN cargo build --release
 FROM debian:stable
 EXPOSE 3030
 VOLUME /app/data/ /app/certificates/
+RUN apt-get update && \
+    apt-get install -y moreutils
 WORKDIR /app
 COPY ./certificates ./certificates
 COPY --from=front-builder /app/dist ./front_files
 COPY --from=back-builder /app/target/release/bakuanimation .
-CMD ./bakuanimation
+CMD ./bakuanimation | ts '[%Y-%m-%d %H:%M:%S]'

@@ -8,7 +8,6 @@ export enum BakuAction {
   MOVIE_UPDATE_POSTER,
   MOVIE_INSERT_IMAGE,
   SHOT_ADD,
-  SHOT_RENAME,
   CHANGE_FPS
 }
 

@@ -34,6 +34,10 @@ const routes = [
     path: '/movies/:projectId/capture/shots/:shotId',
     component: Capture,
   },
+  {
+    name: "image",
+    path: '/api/:projectId/images/:shotId/:imageId?width=1280&height=720',
+  }
 ];
 
 const router = new VueRouter({

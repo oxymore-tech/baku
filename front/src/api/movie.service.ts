@@ -13,7 +13,6 @@ export interface Movie {
 
 export interface Shot {
   readonly id: string;
-  readonly name: string;
   readonly images: ImageRef[];
 }
 
@@ -56,18 +55,9 @@ export class MovieService {
           break;
         }
         case BakuAction.SHOT_ADD: {
-          const { shotId, name } = event.value as { shotId: string, name: string };
-          shots.push({ id: shotId, name, images: [] });
-          break;
-        }
-        case BakuAction.SHOT_RENAME: {
-          const { shotId, name } = event.value as { shotId: string, name: string };
-          updateShot(shotId, (shot: Shot) => {
-            return {
-              id: shot.id,
-              name,
-              images: shot.images,
-            }
+          shots.push({
+            id: event.value.shotId,
+            images: []
           });
           break;
         }
@@ -111,18 +101,8 @@ export class MovieService {
     await this.bakuService.stack(projectId, { action: BakuAction.MOVIE_UPDATE_SYNOPSIS, value: poster,user: username  });
   }
 
-  public async addShot(projectId: string, name: string, username: string): Promise<BakuEvent> {
-    const event: BakuEvent = { action: BakuAction.SHOT_ADD, value: { shotId: uuid.v4(), name }, user: username };
-    await this.bakuService.stack(projectId, event);
-    return event;
-  }
-
-  public async renameShot(projectId: string, shotId: string, name: string, username: string): Promise<BakuEvent> {
-    const event = {
-      action: BakuAction.SHOT_RENAME,
-      value: { shotId, name },
-      user: username,
-    };
+  public async addShot(projectId: string, username: string): Promise<BakuEvent> {
+    const event: BakuEvent = { action: BakuAction.SHOT_ADD, value: { shotId: uuid.v4() }, user: username };
     await this.bakuService.stack(projectId, event);
     return event;
   }

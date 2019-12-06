@@ -11,17 +11,15 @@
         class="shotCard"
         v-bind:class="{ active: shot.id === activeShotId}"
       >
-        <img
-          v-if="shot.images[0]"
-          class="shotPreview"
-          :src="`/api/${projectId}/images/${shot.id}/${shot.images[0]}?width=292&height=193`"
-        />
-        <div class="shotPreview" v-else>Hello, No preview Here!</div>
-        <div class="cardFooter">
-          <input v-model="shot.name" type="text" class="shotName" />
-          <i class="icon-edit baku-button" @click="renameShot(shot.id)" />
-          <a class="activateShot" @click="activateShot(shot.id)">Ouvrir le plan</a>
-        </div>
+        <a class="activateShot" @click="activateShot(shot.id)">
+          <img
+            class="shotPreview"
+            :src="shot.preview"
+          />
+          <div class="cardFooter">
+            <p> {{ shot.name }} </p>
+          </div>
+        </a>
       </div>
       <div class="shotCard">
         <div class="shotPreview"></div>
@@ -59,9 +57,6 @@
   width: 100%;
   flex: 1;
   display: flex;
-  flex-wrap: wrap;
-  overflow: scroll;
-  justify-content: center;
 }
 
 .shotPreview {
@@ -72,7 +67,7 @@
 
 .shotCard {
   width: 292px;
-  height: 300px;
+  height: 241px;
   background: #ffffff 0% 0% no-repeat padding-box;
   border-radius: 16px;
   opacity: 1;
@@ -93,13 +88,13 @@
   }
 
   .shotName {
-    text-align: left;
+    text-align: center;
     color: #455054;
   }
 
   .activateShot {
     color: #e66359;
-    text-align: right;
+    text-align: center;
   }
 }
 
@@ -111,21 +106,41 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Shot } from '../api/movie.service';
+
+type Shot = {
+  id: string;
+  name: string;
+  preview: string;
+}
 
 @Component
 export default class Shots extends Vue {
-  @Prop({ required: true })
-  public shots!: Shot[];
-
-  @Prop({ required: true })
-  public activeShotId!: string;
 
   @Prop({ required: true })
   public projectId!: string;
 
-  public close() {
-    this.$emit('close');
+  @Prop({ required: true })
+  public activeShotId!: string;
+
+  get shots(): Shots {
+    return this.$store.getters["project/movie"].shots.map((shot: any, index: any): Shot => {
+      let preview = ""
+      if (shot.images[0]) {
+        preview = "/api/" + this.projectId + "/images/" + shot.id + "/" + shot.images[0] + "?width=1280&height=720";
+      } else {
+        preview = "https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png";
+      }
+
+      return {
+        id: shot.id,
+        name: "Plan " + (index + 1),
+        preview,
+      }}
+    )
+  }
+
+  public createNewShot() {
+    this.$store.dispatch('project/createShot');
   }
 
   public activateShot(shotId: string) {
@@ -133,15 +148,8 @@ export default class Shots extends Vue {
     this.$emit('close');
   }
 
-  public renameShot(shotId: string) {
-    const selectedShot = this.shots.find((shot) => shot.id === shotId);
-    if (selectedShot) {
-      this.$store.dispatch('project/renameShot', { shotId, name: selectedShot.name });
-    }
-  }
-
-  public createNewShot() {
-    this.$store.dispatch('project/createShot', 'Nouveau Plan');
+  public close() {
+    this.$emit('close');
   }
 }
 </script>
