@@ -2,7 +2,7 @@
   <div class="shots">
     <div class="shotsTitle">
       <h3>Choisir un plan</h3>
-      <i class="icon-close baku-button" @click="close()"></i>
+      <button v-if="activeShotId" class="createButton" @click="close()">Retour au plan précédent</button>
     </div>
     <div class="shotCardsContainer">
       <div
@@ -33,6 +33,20 @@
 </template>
 
 <style lang="scss">
+
+.createButton {
+  margin: 24px 0 0 auto;
+  width: 292px;
+  height: 48px;
+  background: #e66359 0% 0% no-repeat padding-box;
+  box-shadow: 0px 0px 20px #00000029;
+  border-radius: 44px;
+  color: white;
+  border: 0;
+  cursor: pointer;
+  font-size: 16px;
+}
+
 .shots {
   width: 100%;
   height: 100%;

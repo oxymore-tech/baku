@@ -4,6 +4,7 @@ import Home from '../views/Home.vue';
 import Shots from '../views/Shots.vue';
 import Capture from '../views/Capture.vue';
 import MovieHome from '../views/MovieHome.vue';
+import Todo from '../views/Todo.vue';
 
 Vue.use(VueRouter);
 
@@ -25,6 +26,16 @@ const routes = [
     component: MovieHome,
   },
   {
+    name: 'scenario',
+    path: '/movies/:projectId/scenario',
+    component: Todo,
+  },
+  {
+    name: 'storyboard',
+    path: '/movies/:projectId/storyboard',
+    component: Todo,
+  },
+  {
     name: 'captureShots',
     path: '/movies/:projectId/capture/shots',
     component: Shots,
@@ -35,9 +46,15 @@ const routes = [
     component: Capture,
   },
   {
-    name: "originalImage",
-    path: '/images/original/:projectId/:imageId',
-  }
+    name: 'movieEditing',
+    path: '/movies/:projectId/movieEditing',
+    component: Todo,
+  },
+  {
+    name: 'collaboration',
+    path: '/movies/:projectId/collaboration',
+    component: Todo,
+  },
 ];
 
 const router = new VueRouter({

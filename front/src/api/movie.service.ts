@@ -19,8 +19,8 @@ export interface Shot {
 export class MovieService {
 
   public static merge(events: BakuEvent[]): Movie {
-    let title = 'Unnamed';
-    let synopsis = 'Please fill a synopsis';
+    let title = 'Projet sans nom';
+    let synopsis = 'Synopsis vide';
     let poster;
     let fps = 12;
     const shots: Shot[] = [];

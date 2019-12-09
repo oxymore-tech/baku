@@ -4,17 +4,18 @@
 
     <nav>
       <div class="left-nav">
-        <img src="@/assets/baku_logo.svg" class="bakulogo" alt="bakuanimation" />
+        <a style="height:auto" href="/">
+          <img src="@/assets/baku_logo.svg" class="bakulogo" alt="bakuanimation" />
+        </a>
         <span class="movie-title" v-if="id && movie !==undefined">{{movie.title}}</span>
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
       <template v-if="id">
-        <router-link to="/">Scenario</router-link>
-        <router-link to="/">Storyboard</router-link>
-        <router-link v-if="activeShotId" :to="`/movies/${id}/capture/shots/${activeShotId}`">Capture</router-link>
-        <router-link v-else :to="`/movies/${id}/capture/shots/`">Capture</router-link>
-        <router-link to="/">Montage</router-link>
-        <router-link to="/">Collaboratif</router-link>
+        <router-link :to="`/movies/${id}/scenario`">Scenario</router-link>
+        <router-link :to="`/movies/${id}/storyboard`">Storyboard</router-link>
+        <router-link :to="`/movies/${id}/capture/shots/`">Capture</router-link>
+        <router-link :to="`/movies/${id}/movieEditing`">Montage</router-link>
+        <router-link :to="`/movies/${id}/collaboration`">Collaboratif</router-link>
       </template>
       <div class="right-nav">
         {{ username }}
