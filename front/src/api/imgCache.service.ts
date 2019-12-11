@@ -27,7 +27,7 @@ export class ImgCacheService {
       const imgId = this.imgList[index];
       if (!this.lowResImgs[imgId]) {
         try {
-          const res = await axios.get(`/images/original/${this.projectId}/${imgId}`, { responseType: 'arraybuffer' });
+          const res = await axios.get(`/images/lightweight/${this.projectId}/${imgId}`, { responseType: 'arraybuffer' });
           let imgB64 = btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
           this.lowResImgs = { ...this.lowResImgs, [imgId]: imgB64 };
         } catch(e){
