@@ -18,7 +18,7 @@ use tokio::{
     prelude::*,
     sync::mpsc,
 };
-// use tokio_executor::blocking;
+use tokio_executor::blocking;
 use uuid::Uuid;
 use warp::{Filter, ws::Message, ws::WebSocket};
 
@@ -28,18 +28,20 @@ struct Size {
     height: u32,
 }
 
-enum QualityPreset {
-    thumb,
-    lightweight,
-    original,
+struct Quality {
+    size: Size,
+    jpg_quality: u8,
+    folder: String,
 }
-
-impl QualityPreset {
-    fn value(&self) -> Option<Size> {
-        match *self {
-            QualityPreset::thumb => Some(Size { width: 185, height: 104 }),
-            QualityPreset::lightweight => Some(Size { width: 185, height: 104 }),
-            QualityPreset::original => None
+impl Quality {
+    fn from(width: u32, height: u32, jpg_quality: u8, folder: &str) -> Quality {
+        Quality {
+            size: Size {
+                width: width,
+                height: height,
+            },
+            jpg_quality: jpg_quality,
+            folder: String::from(folder),
         }
     }
 }
@@ -60,37 +62,69 @@ static NEXT_USER_ID: AtomicUsize = AtomicUsize::new(1);
 type Users = Arc<Mutex<HashMap<usize, mpsc::UnboundedSender<Result<Message, warp::Error>>>>>;
 type Links = Arc<Mutex<HashMap<usize, usize>>>;
 
+async fn save_resized_image(
+    source_image: image::DynamicImage, quality: &Quality, project_directory: &Path, filename: &String,
+) -> Result<(), std::io::Error> {
+    let image_path = project_directory.join(&quality.folder).join(&filename);
+    println!("Saving image to {}", &image_path.to_str().unwrap());
+
+    let width = quality.size.width;
+    let height = quality.size.height;
+    let resized_image = blocking::run(move || {
+        source_image.resize(width, height, image::imageops::FilterType::Lanczos3)
+    }).await;
+
+    let mut image_buffer = Vec::new();
+
+    match resized_image
+        .write_to(&mut image_buffer, image::ImageOutputFormat::JPEG(quality.jpg_quality)) {
+            Ok(()) => {
+            }
+            Err(e) => {
+                return Err(std::io::Error::new(std::io::ErrorKind::Other, e));
+            }
+        }
+
+    create_dir_all(image_path.parent().unwrap())
+        .await?;
+    let mut image_file = File::create(image_path)
+        .await?;
+    image_file
+        .write_all(&image_buffer)
+        .await?;
+    image_file.sync_data()
+        .await?;
+
+    Ok(())
+}
+
 async fn handle_multipart(
     project_id: String,
-    // plan_id: String,
     mut form: warp::multipart::FormData,
 ) -> Result<Vec<String>, warp::Rejection> {
-    let img_directory = Path::new("./data/images/");
+    let images_directory = Path::new("data/images/");
 
     let mut filenames = Vec::new();
 
     while let Some(part) = form.next().await {
         let part = part.map_err(warp::reject::custom)?;
-        // match part.filename() {
-        //     if let Some(part_filename) => {
-        if let Some(part_filename) = part.filename() {
-            let filename = format!("{}-{}", Uuid::new_v4().to_string(), part_filename);
-            let image_path = img_directory.join(&project_id).join("original").join(&filename);
-            println!("Posting to {}", &image_path.to_str().unwrap());
+
+        if let Some(_part_filename) = part.filename() {
+            // let filename = format!("{}-{}.jpg", Uuid::new_v4().to_string(), part_filename);
+            let filename = format!("{}.jpg", Uuid::new_v4().to_string());
 
             let image_buffer = part.concat().await;
+            let source_image = image::load_from_memory(&image_buffer).map_err(warp::reject::custom)?;
 
-            create_dir_all(image_path.parent().unwrap())
-                .await
-                .map_err(warp::reject::custom)?;
-            let mut image_file = File::create(image_path)
-                .await
-                .map_err(warp::reject::custom)?;
-            image_file
-                .write_all(&image_buffer)
-                .await
-                .map_err(warp::reject::custom)?;
-            image_file.sync_data().await.map_err(warp::reject::custom)?;
+            let project_directory = images_directory.join(&project_id);
+
+            for quality in &vec![
+                Quality::from(2000, 2000, 250, "original"   ),
+                Quality::from(1000, 1000, 120, "lightweight"),
+                Quality::from( 200,  200,  60, "thumbnail"  ),
+            ] {
+                save_resized_image(source_image.clone(), &quality, &project_directory, &filename).await.map_err(warp::reject::custom)?;
+            }
 
             filenames.push(filename);
         }
