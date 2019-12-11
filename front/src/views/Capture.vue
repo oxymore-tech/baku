@@ -17,17 +17,9 @@
             <img
               v-if="getActiveShot && getActiveShot.images[activeFrame]"
               id="previewImg"
-              :src="`/images/original/${id}/${getActiveShot.images[activeFrame]}`"
+              :src="`data:image/jpeg;base64,${imgCacheService.getImage(getActiveShot.images[activeFrame])}`"
             />
           </div>
-          <template v-if="computedPremiewImages">
-            <img
-              style="display:none"
-              v-for="(image, index) in computedPremiewImages"
-              :key="index"
-              :src="`/images/original/${id}/${image}`"
-            />
-          </template>
         </div>
         <CaptureToolboxComponent
           v-if="getActiveShot"
@@ -64,6 +56,7 @@ import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewCo
 import { Movie, Shot } from '@/api/movie.service';
 import Project from './Project.vue';
 import { ImageRef } from '@/api/baku.service';
+import { ImgCacheService } from '@/api/imgCache.service';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -102,6 +95,8 @@ export default class Capture extends Project {
   public animationLastUpdate!: number;
 
   public isPlaying = false;
+
+  public imgCacheService = new ImgCacheService();
 
   public mounted() {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
@@ -149,6 +144,18 @@ export default class Capture extends Project {
       (document.getElementById(
         'videoCapture',
       ) as HTMLVideoElement).srcObject = newValue;
+    }
+  }
+
+  @Watch('getActiveShot')
+  public async onActiveShotChange(newValue: string) {
+    if (newValue) {
+      this.imgCacheService.updateInfos(
+        this.getActiveShot.images,
+        this.id,
+        0,
+      );
+      this.imgCacheService.startPreloading();
     }
   }
 
