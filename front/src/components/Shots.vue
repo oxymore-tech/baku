@@ -129,7 +129,6 @@ type Shot = {
 
 @Component
 export default class Shots extends Vue {
-
   @Prop({ required: true })
   public projectId!: string;
 
@@ -137,20 +136,20 @@ export default class Shots extends Vue {
   public activeShotId!: string;
 
   get shots(): Shots {
-    return this.$store.getters["project/movie"].shots.map((shot: any, index: any): Shot => {
-      let preview = ""
+    return this.$store.getters['project/movie'].shots.map((shot: any, index: any): Shot => {
+      let preview = '';
       if (shot.images[0]) {
-        preview = "/images/thumb/" + this.projectId + "/" + shot.images[0];
+        preview = `/images/thumb/${this.projectId}/${shot.images[0]}`;
       } else {
-        preview = "https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png";
+        preview = 'https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png';
       }
 
       return {
         id: shot.id,
-        name: "Plan " + (index + 1),
+        name: `Plan ${index + 1}`,
         preview,
-      }}
-    )
+      };
+    });
   }
 
   public createNewShot() {
