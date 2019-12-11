@@ -2,10 +2,7 @@
   <div class="mainFrame">
     <template>
       <div class="previewBloc">
-        <StoryboardPreviewComponent
-          :shots="movie.shots"
-          :activeShotId="activeShotId"
-        />
+        <StoryboardPreviewComponent :shots="movie.shots" :activeShotId="activeShotId" />
         <video
           v-if="activeCapture"
           id="videoCapture"
@@ -58,7 +55,6 @@
 </template>
 
 <script lang="ts">
-
 import { Component, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
@@ -101,35 +97,49 @@ export default class Capture extends Project {
   @CaptureNS.State
   public stream!: MediaStream | null;
 
-  public isPlaying = false;
+  public animationFrame!: number;
 
-  private loop: any;
+  public animationLastUpdate!: number;
+
+  public isPlaying = false;
 
   public mounted() {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
   }
 
   public async created() {
-    this.activeFrame = (this.getActiveShot && this.getActiveShot.images.length == 0) ? -1 : 0;
+    this.activeFrame = this.getActiveShot && this.getActiveShot.images.length === 0 ? -1 : 0;
   }
 
   public playAnimation() {
     if (!this.isPlaying) {
       this.isPlaying = true;
-      this.loop = setInterval(() => this.animate(), 1000 / this.movie.fps);
+      this.animationFrame = requestAnimationFrame(this.animate);
+      // this.loop = setInterval(() => this.animate(), 1000 / this.movie.fps);
     }
   }
 
-  public animate() {
-    if (this.activeFrame === this.getActiveShot.images.length - 1) {
-      this.activeFrame = 0;
-    } else {
-      this.activeFrame++;
+  public animate(timestamp: number) {
+    if (!this.animationLastUpdate) {
+      this.animationLastUpdate = timestamp;
     }
+
+    const timeFromLastUpdate = timestamp - this.animationLastUpdate;
+    if (timeFromLastUpdate > 1000 / this.movie.fps) {
+      this.animationLastUpdate = timestamp;
+      if (this.activeFrame === this.getActiveShot.images.length - 1) {
+        this.activeFrame = 0;
+      } else {
+        this.activeFrame++;
+      }
+    }
+
+    this.animationFrame = requestAnimationFrame(this.animate);
   }
 
   public pauseAnimation() {
-    clearInterval(this.loop);
+    cancelAnimationFrame(this.animationFrame);
+    // clearInterval(this.loop);
     this.isPlaying = false;
   }
 
@@ -146,13 +156,19 @@ export default class Capture extends Project {
     if (!this.getActiveShot) {
       return [];
     }
-    return this.getActiveShot.images.slice(this.activeFrame, this.activeFrame + 25);
+    return this.getActiveShot.images.slice(
+      this.activeFrame,
+      this.activeFrame + 25,
+    );
   }
 
   public moveActiveFrame(event: number) {
-    let tmp = this.activeFrame + event;
-    let minFrame = this.activeCapture ? -1 : 0;
-    this.activeFrame = Math.max(minFrame,Math.min(this.getActiveShot.images.length-1, tmp));
+    const tmp = this.activeFrame + event;
+    const minFrame = this.activeCapture ? -1 : 0;
+    this.activeFrame = Math.max(
+      minFrame,
+      Math.min(this.getActiveShot.images.length - 1, tmp),
+    );
   }
 }
 </script>

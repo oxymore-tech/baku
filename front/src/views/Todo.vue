@@ -40,7 +40,7 @@
 </style>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
+import { Component } from 'vue-property-decorator';
 import Project from './Project.vue';
 
 @Component

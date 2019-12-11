@@ -104,11 +104,11 @@
 </style>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import {ImageRef} from '@/api/baku.service';
-  import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-  import { Device } from '@/api/device.class';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { ImageRef } from '@/api/baku.service';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+import { Device } from '@/api/device.class';
 
 const CaptureNS = namespace('capture');
 
@@ -117,7 +117,7 @@ const CaptureNS = namespace('capture');
     CaptureButtonComponent,
   },
 })
-  export default class CarrouselComponent extends Vue {
+export default class CarrouselComponent extends Vue {
     @Prop()
     public images!: ImageRef[];
 
@@ -183,5 +183,5 @@ const CaptureNS = namespace('capture');
         this.$emit('moveactiveframe', indexToMove);
       });
     }
-  }
+}
 </script>
