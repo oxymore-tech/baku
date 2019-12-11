@@ -153,7 +153,7 @@ export default class Capture extends Project {
       this.imgCacheService.updateInfos(
         this.getActiveShot.images,
         this.id,
-        0,
+        this.activeFrame,
       );
       this.imgCacheService.startPreloading();
     }
