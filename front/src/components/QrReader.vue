@@ -169,11 +169,11 @@ export default class QrReader extends Vue {
     channel.onmessage = async (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'cmd') {
-        const pictureId = await this.device.capture('localVideo', data.projectId, data.shot);
+        const imageRef = await this.device.capture('localVideo', data.projectId, data.shot);
         channel.send(
           JSON.stringify({
             type: 'upload',
-            message: pictureId,
+            message: imageRef.id,
           }),
         );
       }

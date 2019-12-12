@@ -11,21 +11,22 @@
           autoplay
           muted
           playsinline
-        />
+        ></video>
         <div v-else>
           <div class="previewContainer">
             <img
               v-if="getActiveShot && getActiveShot.images[activeFrame]"
+              alt="previewImg"
               id="previewImg"
-              :src="`/images/original/${id}/${getActiveShot.images[activeFrame]}`"
+              :src="getActiveShot.images[activeFrame].originalUrl"
             />
           </div>
           <template v-if="computedPremiewImages">
             <img
               style="display:none"
-              v-for="(image, index) in computedPremiewImages"
-              :key="index"
-              :src="`/images/original/${id}/${image}`"
+              v-for="image in computedPremiewImages"
+              :alt="image.id"
+              :src="image.originalUrl"
             />
           </template>
         </div>
@@ -34,12 +35,12 @@
           :projectId="id"
           :activeShot="getActiveShot.id"
           :activeIndex="activeFrame + 1"
-          v-on:moveactiveframe="moveActiveFrame($event)"
+          @moveactiveframe="moveActiveFrame"
         />
       </div>
       <div>
-        <i class="icon-play baku-button" style="color:#FBB10D;" @click="playAnimation()" />
-        <i class="icon-pause baku-button" @click="pauseAnimation()" />
+        <i class="icon-play baku-button" style="color:#FBB10D;" @click="playAnimation()"></i>
+        <i class="icon-pause baku-button" @click="pauseAnimation()"></i>
       </div>
       <CarrouselComponent
         v-if="getActiveShot"
@@ -48,165 +49,167 @@
         :images="getActiveShot.images"
         :activeImage="activeFrame"
         :activeCapture="activeCapture"
-        v-on:moveactiveframe="moveActiveFrame($event)"
+        @moveactiveframe="moveActiveFrame"
       />
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Watch } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-import store from '@/store';
-import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-import { Movie, Shot } from '@/api/movie.service';
-import Project from './Project.vue';
-import { ImageRef } from '@/api/baku.service';
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+  import {Component, Watch} from 'vue-property-decorator';
+  import {namespace} from 'vuex-class';
+  import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+  import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+  import store from '@/store';
+  import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
+  import {Movie, Shot} from '@/api/movie.service';
+  import Project from './Project.vue';
+  import {ImageRef} from '@/api/baku.service';
 
-@Component({
-  components: {
-    CaptureToolboxComponent,
-    CarrouselComponent,
-    StoryboardPreviewComponent,
-  },
-  store,
-})
-export default class Capture extends Project {
-  @ProjectNS.State
-  public id!: string;
+  const CaptureNS = namespace('capture');
+  const ProjectNS = namespace('project');
 
-  @ProjectNS.State
-  public activeShotId!: string;
+  @Component({
+    components: {
+      CaptureToolboxComponent,
+      CarrouselComponent,
+      StoryboardPreviewComponent,
+    },
+    store,
+  })
+  export default class Capture extends Project {
 
-  @ProjectNS.Getter
-  public movie!: Movie;
+    @ProjectNS.State
+    public id!: string;
 
-  @ProjectNS.Getter
-  public getActiveShot!: Shot;
+    @ProjectNS.State
+    public activeShotId!: string;
 
-  public activeFrame: number = 0;
+    @ProjectNS.Getter
+    public movie!: Movie;
 
-  @CaptureNS.State
-  public activeCapture!: boolean;
+    @ProjectNS.Getter
+    public getActiveShot!: Shot;
 
-  @CaptureNS.State
-  public stream!: MediaStream | null;
+    public activeFrame: number = 0;
 
-  public animationFrame!: number;
+    @CaptureNS.State
+    public activeCapture!: boolean;
 
-  public animationLastUpdate!: number;
+    @CaptureNS.State
+    public stream!: MediaStream | null;
 
-  public isPlaying = false;
+    public animationFrame!: number;
 
-  public mounted() {
-    this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
-  }
+    public animationLastUpdate!: number;
 
-  public async created() {
-    this.activeFrame = this.getActiveShot && this.getActiveShot.images.length === 0 ? -1 : 0;
-  }
+    public isPlaying = false;
 
-  public playAnimation() {
-    if (!this.isPlaying) {
-      this.isPlaying = true;
-      this.animationFrame = requestAnimationFrame(this.animate);
-      // this.loop = setInterval(() => this.animate(), 1000 / this.movie.fps);
-    }
-  }
-
-  public animate(timestamp: number) {
-    if (!this.animationLastUpdate) {
-      this.animationLastUpdate = timestamp;
+    public mounted() {
+      this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
     }
 
-    const timeFromLastUpdate = timestamp - this.animationLastUpdate;
-    if (timeFromLastUpdate > 1000 / this.movie.fps) {
-      this.animationLastUpdate = timestamp;
-      if (this.activeFrame === this.getActiveShot.images.length - 1) {
-        this.activeFrame = 0;
-      } else {
-        this.activeFrame++;
+    public async created() {
+      this.activeFrame = this.getActiveShot && this.getActiveShot.images.length === 0 ? -1 : 0;
+    }
+
+    public playAnimation() {
+      if (!this.isPlaying) {
+        this.isPlaying = true;
+        this.animationFrame = requestAnimationFrame(this.animate);
+        // this.loop = setInterval(() => this.animate(), 1000 / this.movie.fps);
       }
     }
 
-    this.animationFrame = requestAnimationFrame(this.animate);
-  }
+    public animate(timestamp: number) {
+      if (!this.animationLastUpdate) {
+        this.animationLastUpdate = timestamp;
+      }
 
-  public pauseAnimation() {
-    cancelAnimationFrame(this.animationFrame);
-    // clearInterval(this.loop);
-    this.isPlaying = false;
-  }
+      const timeFromLastUpdate = timestamp - this.animationLastUpdate;
+      if (timeFromLastUpdate > 1000 / this.movie.fps) {
+        this.animationLastUpdate = timestamp;
+        if (this.activeFrame === this.getActiveShot.images.length - 1) {
+          this.activeFrame = 0;
+        } else {
+          this.activeFrame++;
+        }
+      }
 
-  @Watch('stream')
-  public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
-    if (newValue) {
-      (document.getElementById(
-        'videoCapture',
-      ) as HTMLVideoElement).srcObject = newValue;
+      this.animationFrame = requestAnimationFrame(this.animate);
+    }
+
+    public pauseAnimation() {
+      cancelAnimationFrame(this.animationFrame);
+      // clearInterval(this.loop);
+      this.isPlaying = false;
+    }
+
+    @Watch('stream')
+    public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
+      if (newValue) {
+        (document.getElementById(
+          'videoCapture',
+        ) as HTMLVideoElement).srcObject = newValue;
+      }
+    }
+
+    get computedPremiewImages(): ImageRef[] {
+      if (!this.getActiveShot) {
+        return [];
+      }
+      return this.getActiveShot.images.slice(
+        this.activeFrame,
+        this.activeFrame + 25,
+      );
+    }
+
+    public moveActiveFrame(event: number) {
+      const tmp = this.activeFrame + event;
+      const minFrame = this.activeCapture ? -1 : 0;
+      this.activeFrame = Math.max(
+        minFrame,
+        Math.min(this.getActiveShot.images.length - 1, tmp),
+      );
     }
   }
-
-  get computedPremiewImages(): ImageRef[] {
-    if (!this.getActiveShot) {
-      return [];
-    }
-    return this.getActiveShot.images.slice(
-      this.activeFrame,
-      this.activeFrame + 25,
-    );
-  }
-
-  public moveActiveFrame(event: number) {
-    const tmp = this.activeFrame + event;
-    const minFrame = this.activeCapture ? -1 : 0;
-    this.activeFrame = Math.max(
-      minFrame,
-      Math.min(this.getActiveShot.images.length - 1, tmp),
-    );
-  }
-}
 </script>
 
 <style lang="scss" scoped>
-.mainFrame {
-  height: calc(100% - 48px);
-  display: flex;
-  flex-direction: column;
-}
+  .mainFrame {
+    height: calc(100% - 48px);
+    display: flex;
+    flex-direction: column;
+  }
 
-.previewBloc {
-  display: flex;
-  width: 100%;
-  flex: 1;
-  justify-content: space-around;
-  padding: 10px 0;
-}
+  .previewBloc {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    justify-content: space-around;
+    padding: 10px 0;
+  }
 
-#previewImg {
-  min-width: 640px;
-  min-height: 480px;
-  max-height: 720px;
-  height: 100%;
-  max-width: 100%;
-  background: white;
-}
+  #previewImg {
+    min-width: 640px;
+    min-height: 480px;
+    max-height: 720px;
+    height: 100%;
+    max-width: 100%;
+    background: white;
+  }
 
-.previewContainer {
-  width: 1100px;
-  height: 619px;
-  background: #ffffff 0% 0% no-repeat padding-box;
-  border: 4px solid #455054;
-  border-radius: 4px;
-  box-sizing: content-box;
-}
+  .previewContainer {
+    width: 1100px;
+    height: 619px;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    border: 4px solid #455054;
+    border-radius: 4px;
+    box-sizing: content-box;
+  }
 
-#videoCapture {
-  max-height: 720px;
-}
+  #videoCapture {
+    max-height: 720px;
+  }
 </style>

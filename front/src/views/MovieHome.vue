@@ -1,14 +1,12 @@
 <template>
   <div class="movie-home-main">
     <div class="movieCard">
-      <!--
-        TODO: use image poster
-         <img
-        v-if="shot.images[0]"
-        class="shotPreview"
-        :src="`/images/thumb/${projectId}/${shot.images[0]}`"
-      /> -->
-      <div class="moviePreview"></div>
+      <!-- TODO: use image poster -->
+      <img
+        v-if="movie.shots[0].images[0]"
+        class="moviePreview"
+        :src="movie.shots[0].images[0].originalUrl"
+        />
       <div class="cardFooter">
         <p class="movieTitle">{{ movie.title }}</p>
         <p>{{ movie.synopsis }}</p>
@@ -56,6 +54,7 @@
   }
 
   .moviePreview {
+    max-height: 320px;
     width: 100%;
     flex: 3;
     background-color: #bce0fd;
