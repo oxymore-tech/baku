@@ -110,7 +110,6 @@ async fn handle_multipart(
         let part = part.map_err(warp::reject::custom)?;
 
         if let Some(_part_filename) = part.filename() {
-            // let filename = format!("{}-{}.jpg", Uuid::new_v4().to_string(), part_filename);
             let filename = format!("{}.jpg", Uuid::new_v4().to_string());
 
             let image_buffer = part.concat().await;
@@ -132,97 +131,6 @@ async fn handle_multipart(
 
     Ok(filenames)
 }
-
-// async fn handle_index(
-//     path: String,
-// ) -> Result<Vec<u8>, warp::Rejection> {
-//     let thumbnail_path = Path::new(&path);
-//     let mut thumbnail_buffer = Vec::new();
-//     let mut f = File::open(&thumbnail_path)
-//         .await
-//         .map_err(warp::reject::custom)?;
-//     f.read_to_end(&mut thumbnail_buffer)
-//         .await
-//         .map_err(warp::reject::custom)?;
-//     Ok(thumbnail_buffer)
-// }
-
-// async fn handle_get_images(
-//     project_id: String,
-//     // plan_id: String,
-//     filename: String,
-//     r: Size,
-// ) -> Result<Vec<u8>, warp::Rejection> {
-//     let thumbs_directory = Path::new("./data/thumbs/");
-//     let thumb_filename = format!("{}-{}x{}", filename, r.width, r.height);
-//     let thumbnail_path = Path::join(
-//         &Path::join(thumbs_directory, Path::new(&project_id)),
-//         Path::new(&thumb_filename),
-//         // Path::join(Path::new(&plan_id), Path::new(&thumb_filename)),
-//     );
-//     println!("Getting from {}", &thumbnail_path.to_str().unwrap());
-// 
-//     let mut thumbnail_buffer = Vec::new();
-// 
-//     if thumbnail_path.exists() {
-//         let mut f = File::open(&thumbnail_path)
-//             .await
-//             .map_err(warp::reject::custom)?;
-//         f.read_to_end(&mut thumbnail_buffer)
-//             .await
-//             .map_err(warp::reject::custom)?;
-//     } else {
-//         let img_directory = Path::new("./data/files/");
-//         let image_path = Path::join(
-//             &Path::join(img_directory, Path::new(&project_id)),
-//             Path::new(&filename),
-//             // Path::join(Path::new(&plan_id), Path::new(&filename)),
-//         );
-//         let image = image::open(&image_path).map_err(warp::reject::custom)?;
-// 
-//         println!("Resizing {}", filename);
-//         let thumbnail = blocking::run(move || {
-//             image.resize(r.width, r.height, image::imageops::FilterType::Lanczos3)
-//         })
-//         .await;
-//         println!("Done {}", filename);
-// 
-//         thumbnail
-//             .write_to(&mut thumbnail_buffer, image::ImageOutputFormat::JPEG(200))
-//             .map_err(warp::reject::custom)?;
-// 
-//         let uuid = Uuid::new_v4();
-//         let temp_filename = format!("{}.jpg", uuid.to_string());
-//         let temp_path = Path::join(thumbs_directory, Path::new(&temp_filename));
-// 
-//         println!("Writing to {}", temp_filename);
-//         create_dir_all(temp_path.parent().unwrap())
-//             .await
-//             .map_err(warp::reject::custom)?;
-//         let mut thumb_file = File::create(&temp_path)
-//             .await
-//             .map_err(warp::reject::custom)?;
-//         thumb_file
-//             .write_all(&thumbnail_buffer)
-//             .await
-//             .map_err(warp::reject::custom)?;
-//         thumb_file.sync_data().await.map_err(warp::reject::custom)?;
-//         println!("Renaming to {}", thumb_filename);
-//         create_dir_all(thumbnail_path.parent().unwrap())
-//             .await
-//             .map_err(warp::reject::custom)?;
-//         rename(temp_path, thumbnail_path).await.unwrap();
-//         println!("Done {}", thumb_filename);
-// 
-//         let mut thumbnail_buffer = Vec::new();
-// 
-//         thumbnail
-//             .write_to(&mut thumbnail_buffer, image::ImageOutputFormat::JPEG(200))
-//             .map_err(warp::reject::custom)?;
-//     }
-// 
-//     Ok(thumbnail_buffer)
-// }
 
 async fn handle_stack(
     global_lock: Arc<futures::lock::Mutex<usize>>,
@@ -449,13 +357,11 @@ async fn main() {
         .and(warp::path("api"))
         .and(warp::path::param())
         .and(warp::path("upload"))
-        // .and(warp::path::param())
         .and(warp::multipart::form())
         .and_then(handle_multipart)
         .map(|filenames| warp::reply::json(&filenames));
 
     let echo = warp::path("echo")
-        //.and(warp::path("api"))
         // The `ws2()` filter will prepare the Websocket handshake.
         .and(warp::ws2())
         .and(users)
@@ -468,21 +374,6 @@ async fn main() {
                 user_connected(socket, users, links).map(|result| result.unwrap())
             })
         });
-
-    // let get = warp::get2()
-    //     .and(warp::path("api"))
-    //     .and(warp::path::param())
-    //     .and(warp::path("images"))
-    //     // .and(warp::path::param())
-    //     .and(warp::path::param())
-    //     .and(warp::query())
-    //     .and_then(handle_get_images)
-    //     .map(|buffer| {
-    //         warp::http::Response::builder()
-    //             .header("Content-Type", "image/jpg")
-    //             .header("Cache-Control", "max-age=604800")
-    //             .body(buffer)
-    //     });
 
     let global_lock = Arc::new(futures::lock::Mutex::new(0));
 
@@ -500,29 +391,13 @@ async fn main() {
         .and_then(handle_history)
         .map(|history| warp::reply::json(&history));
 
-    // let resource_path = "front_files";
-    // let index_path = format!("{}/index.html", resource_path);
-    // let index_path_filter = warp::any().map(move || index_path.clone());
-    // let index = warp::get2()
-    //     .and(index_path_filter)
-    //     .and_then(handle_index)
-    //     .map(|buffer| {
-    //         warp::http::Response::builder()
-    //             .header("Content-Type", "text/html; Charset='UTF-8'")
-    //             .body(buffer)
-    //     });
-
     let routes = echo
         .or(stack)
         .or(history)
-        // .or(get)
         .or(multipart);
-    //     .or(warp::fs::dir(resource_path))
-    //     .or(index);
 
     println!("Listening to port 0.0.0.0:{}", listening_port);
     warp::serve(routes)
-        // .tls("./certificates/certificate.pem", "./certificates/key.pem")
         .run(([0, 0, 0, 0], listening_port))
         .await;
 }
