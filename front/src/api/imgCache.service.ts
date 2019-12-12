@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 interface imgDict {
   [id: string]: string;
 }

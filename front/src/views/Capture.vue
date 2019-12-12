@@ -58,7 +58,6 @@ import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import { Movie, Shot } from '@/api/movie.service';
 import Project from './Project.vue';
-import { ImageRef } from '@/api/baku.service';
 import { ImgCacheService } from '@/api/imgCache.service';
 
 const CaptureNS = namespace('capture');
@@ -73,7 +72,7 @@ const ProjectNS = namespace('project');
   store,
 })
 export default class Capture extends Project {
- 
+
  @ProjectNS.State
   public id!: string;
 
@@ -155,7 +154,8 @@ export default class Capture extends Project {
   public async onActiveShotChange(newValue: string) {
     if (newValue) {
       this.imgCacheService.updateInfos(
-        this.getActiveShot.images,
+        // TODO: Remove ImageRef type, it's useless (string alias), but breaks every native function that awaits string
+        this.getActiveShot.images  as unknown as string[],
         this.id,
         this.activeFrame,
       );
