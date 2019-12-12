@@ -24,10 +24,6 @@
         </div>
         <CaptureToolboxComponent
           v-if="getActiveShot"
-          :projectId="id"
-          :activeShot="getActiveShot.id"
-          :activeIndex="activeFrame + 1"
-          @moveactiveframe="moveActiveFrame"
         />
       </div>
       <div>
@@ -108,14 +104,6 @@ export default class Capture extends Project {
     this.activeFrame = this.getActiveShot && this.getActiveShot.images.length === 0 ? -1 : 0;
   }
 
-  public playAnimation() {
-    if (!this.isPlaying) {
-      this.isPlaying = true;
-      this.animationFrame = requestAnimationFrame(this.animate);
-      // this.loop = setInterval(() => this.animate(), 1000 / this.movie.fps);
-    }
-  }
-
   public animate(timestamp: number) {
     if (!this.animationLastUpdate) {
       this.animationLastUpdate = timestamp;
@@ -134,10 +122,18 @@ export default class Capture extends Project {
     this.animationFrame = requestAnimationFrame(this.animate);
   }
 
+  public playAnimation() {
+    if (!this.isPlaying) {
+      this.isPlaying = true;
+      this.animationFrame = requestAnimationFrame(this.animate);
+    }
+  }
+
   public pauseAnimation() {
-    cancelAnimationFrame(this.animationFrame);
-    // clearInterval(this.loop);
-    this.isPlaying = false;
+    if (this.isPlaying) {
+      this.isPlaying = false;
+      cancelAnimationFrame(this.animationFrame);
+    }
   }
 
   @Watch('stream')
