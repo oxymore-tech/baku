@@ -14,7 +14,7 @@
         <a class="activateShot" @click="activateShot(shot.id)">
           <img
             class="shotPreview"
-            :src="shot.preview"
+            :src="shot.preview.thumbUrl"
           />
           <div class="cardFooter">
             <p> {{ shot.name }} </p>

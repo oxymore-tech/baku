@@ -7,7 +7,7 @@
     <img
        v-if="getActiveShot && getActiveShot.images[0]"
        class="shotPreview"
-       :src="`/images/${id}/thumbnail/${getActiveShot.images[0]}`"
+       :src="`${getActiveShot.images[0].thumbUrl}`"
      />
     <div class="shotPreview" v-else/>
   </div>

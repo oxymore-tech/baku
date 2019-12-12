@@ -18,7 +18,7 @@
               v-if="getActiveShot && getActiveShot.images[activeFrame]"
               alt="previewImg"
               id="previewImg"
-              :src="`data:image/jpeg;base64,${imgCacheService.getImage(getActiveShot.images[activeFrame])}`"
+              :src="`data:image/jpeg;base64,${imgCacheService.getImage(getActiveShot.images[activeFrame].id)}`"
             />
           </div>
         </div>
@@ -72,7 +72,6 @@ const ProjectNS = namespace('project');
   store,
 })
 export default class Capture extends Project {
-
  @ProjectNS.State
   public id!: string;
 
@@ -154,9 +153,7 @@ export default class Capture extends Project {
   public async onActiveShotChange(newValue: string) {
     if (newValue) {
       this.imgCacheService.updateInfos(
-        // TODO: Remove ImageRef type, it's useless (string alias), but breaks every native function that awaits string
-        this.getActiveShot.images  as unknown as string[],
-        this.id,
+        this.getActiveShot.images,
         this.activeFrame,
       );
       this.imgCacheService.startPreloading();

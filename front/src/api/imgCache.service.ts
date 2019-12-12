@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ImageRef } from './baku.service';
 interface imgDict {
   [id: string]: string;
 }
@@ -7,9 +8,8 @@ export class ImgCacheService {
   private fullResImgs: imgDict = {};
   private lowResImgs: imgDict = {};
   private thumbImgs: imgDict = {};
-  private imgList: string[] = [];
+  private imgList: ImageRef[] = [];
   private activeIndex: number = 0;
-  private projectId: string = '';
 
   public constructor() {
   }
@@ -20,45 +20,44 @@ export class ImgCacheService {
    * @param projectId
    * @param activeImgIndex
    */
-  public updateInfos(imgIds: string[], projectId: string, activeImgIndex: number) {
+  public updateInfos(imgIds: ImageRef[], activeImgIndex: number) {
     this.imgList = imgIds;
     this.activeIndex = activeImgIndex;
-    this.projectId = projectId;
     this.imgList = this.imgList.slice(this.activeIndex).concat(this.imgList.slice(0, this.activeIndex));
   }
 
   public async startPreloading() {
     for (let index = 0; index < this.imgList.length; index++) {
-      const imgId = this.imgList[index];
-      if (!this.thumbImgs.hasOwnProperty(imgId)) {
+      const img = this.imgList[index];
+      if (!this.thumbImgs.hasOwnProperty(img.id)) {
         try {
-          const res = await axios.get(`/images/${this.projectId}/thumbnail/${imgId}`, { responseType: 'arraybuffer' });
+          const res = await axios.get(img.thumbUrl, { responseType: 'arraybuffer' });
           let imgB64 = btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
-          this.thumbImgs = { ...this.thumbImgs, [imgId]: imgB64 };
+          this.thumbImgs = { ...this.thumbImgs, [img.id]: imgB64 };
         } catch (e) {
           // TODO: Do something
         }
       }
     }
     for (let index = 0; index < this.imgList.length; index++) {
-      const imgId = this.imgList[index];
-      if (!this.lowResImgs.hasOwnProperty(imgId)) {
+      const img = this.imgList[index];
+      if (!this.lowResImgs.hasOwnProperty(img.id)) {
         try {
-          const res = await axios.get(`/images/${this.projectId}/lightweight/${imgId}`, { responseType: 'arraybuffer' });
+          const res = await axios.get(img.lightweightUrl, { responseType: 'arraybuffer' });
           let imgB64 = btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
-          this.lowResImgs = { ...this.lowResImgs, [imgId]: imgB64 };
+          this.lowResImgs = { ...this.lowResImgs, [img.id]: imgB64 };
         } catch (e) {
           // TODO: Do something
         }
       }
     }
     for (let index = 0; index < this.imgList.length; index++) {
-      const imgId = this.imgList[index];
-      if (!this.fullResImgs.hasOwnProperty(imgId)) {
+      const img = this.imgList[index];
+      if (!this.fullResImgs.hasOwnProperty(img.id)) {
         try {
-          const res = await axios.get(`/images/${this.projectId}/original/${imgId}`, { responseType: 'arraybuffer' });
+          const res = await axios.get(img.originalUrl, { responseType: 'arraybuffer' });
           let imgB64 = btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
-          this.fullResImgs = { ...this.fullResImgs, [imgId]: imgB64 };
+          this.fullResImgs = { ...this.fullResImgs, [img.id]: imgB64 };
         } catch (e) {
           // TODO: Do something
         }
@@ -85,7 +84,7 @@ export class ImgCacheService {
    *
    * @param imgId
    */
-  public getThumb(imgId: string) {
+  public getThumb(imgId: any) {
     if (this.thumbImgs.hasOwnProperty(imgId)) {
       return this.thumbImgs[imgId];
     }
