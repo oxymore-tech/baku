@@ -14,6 +14,8 @@
 
 <style lang="scss">
   .captureButton {
+    width: 144px;
+    height: 82px;
     font-size: 30px;
     cursor: pointer;
     color: #e66359;
@@ -34,6 +36,7 @@
   }
 
   .captureIcon {
+    margin-top: 18px;
     width: 48px;
     height: 43px;
   }

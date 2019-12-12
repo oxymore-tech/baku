@@ -14,7 +14,7 @@
         <a class="activateShot" @click="activateShot(shot.id)">
           <img
             class="shotPreview"
-            :src="shot.preview.thumbUrl"
+            :src="shot.previewUrl"
           />
           <div class="cardFooter">
             <p> {{ shot.name }} </p>
@@ -124,7 +124,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 type Shot = {
   id: string;
   name: string;
-  preview: string;
+  previewUrl: string;
 }
 
 @Component
@@ -137,17 +137,17 @@ export default class Shots extends Vue {
 
   get shots(): Shots {
     return this.$store.getters['project/movie'].shots.map((shot: any, index: any): Shot => {
-      let preview = '';
+      let previewUrl = '';
       if (shot.images[0]) {
-        preview = `/images/${this.projectId}/thumbnail/${shot.images[0]}`;
+        previewUrl = shot.images[0].thumbUrl
       } else {
-        preview = 'https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png';
+        previewUrl = 'https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png';
       }
 
       return {
         id: shot.id,
         name: `Plan ${index + 1}`,
-        preview,
+        previewUrl,
       };
     });
   }
