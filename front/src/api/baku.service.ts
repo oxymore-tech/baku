@@ -31,7 +31,7 @@ export class UploadedImage implements ImageRef {
   }
 
   get thumbUrl(): string {
-    return `/images/${this.projectId}/thumb/${this.id}`;
+    return `/images/${this.projectId}/thumbnail/${this.id}`;
   }
 
   get lightweightUrl(): string {

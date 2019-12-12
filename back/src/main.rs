@@ -119,9 +119,9 @@ async fn handle_multipart(
             let project_directory = images_directory.join(&project_id);
 
             for quality in &vec![
-                Quality::from(2000, 2000, 250, "original"   ),
-                Quality::from(1000, 1000, 120, "lightweight"),
-                Quality::from( 200,  200,  60, "thumbnail"  ),
+                Quality::from(1280, 720, 100, "original"   ), // 720p
+                Quality::from(1280, 720,  30, "lightweight"),
+                Quality::from( 355, 200,  60, "thumbnail"  ),
             ] {
                 save_resized_image(source_image.clone(), &quality, &project_directory, &filename).await.map_err(warp::reject::custom)?;
             }

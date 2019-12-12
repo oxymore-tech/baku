@@ -20,7 +20,7 @@
 
     <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
     <img
-      v-if="computedActiveImage !== null"
+      v-if="computedActiveImage"
       class="carrouselThumb active"
       :alt="computedActiveImage"
       :src="computedActiveImage.thumbUrl"
