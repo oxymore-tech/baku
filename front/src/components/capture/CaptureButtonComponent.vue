@@ -40,12 +40,14 @@
 </style>
 
 <script lang="ts">
-  import {Component, Prop, Vue, Watch,} from 'vue-property-decorator';
-  import {State} from 'vuex-class';
-  import {Device} from '@/api/device.class';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import { State } from 'vuex-class';
+import { Device } from '@/api/device.class';
 
   @Component
-  export default class CaptureButtonComponent extends Vue {
+export default class CaptureButtonComponent extends Vue {
     @Prop(Device)
     public readonly device!: Device;
 
@@ -150,7 +152,7 @@
     }
 
     private setupSmarphone() {
-      const {stream} = this.$store.state;
+      const { stream } = this.$store.state;
       this.$store.commit('capture/attachMediaStream', stream);
     }
 
@@ -158,9 +160,9 @@
       this.peerConnected = true;
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: {min: 640, ideal: 1280},
-          height: {min: 480, ideal: 720},
-          deviceId: {exact: this.device.id},
+          width: { min: 640, ideal: 1280 },
+          height: { min: 480, ideal: 720 },
+          deviceId: { exact: this.device.id },
         },
       });
       this.$store.commit('capture/attachMediaStream', stream);
@@ -190,5 +192,5 @@
       });
       this.isCapturing = false;
     }
-  }
+}
 </script>

@@ -14,7 +14,7 @@
         <a class="activateShot" @click="activateShot(shot.id)">
           <img
             class="shotPreview"
-            :src="shot.preview"
+            :src="shot.preview.thumbUrl"
           />
           <div class="cardFooter">
             <p> {{ shot.name }} </p>
@@ -96,6 +96,7 @@
     padding: 7px;
     display: flex;
     flex: 1;
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
@@ -138,7 +139,7 @@ export default class Shots extends Vue {
     return this.$store.getters['project/movie'].shots.map((shot: any, index: any): Shot => {
       let preview = '';
       if (shot.images[0]) {
-        preview = shot.images[0].thumbUrl;
+        preview = `/images/${this.projectId}/thumbnail/${shot.images[0]}`;
       } else {
         preview = 'https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png';
       }
