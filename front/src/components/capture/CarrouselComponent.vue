@@ -7,7 +7,7 @@
           class="carrouselThumb"
           :key="'left'+index"
           :alt="image"
-          :src="`/images/thumb/${projectId}/${image}`"
+          :src="`data:image/jpeg;base64,${imgCacheService.getThumb(image)}`"
           @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
         />
       </template>
@@ -26,7 +26,7 @@
         v-if="computedActiveImage !== undefined"
         class="carrouselThumb active"
         :alt="computedActiveImage"
-        :src="`/images/thumb/${projectId}/${computedActiveImage}`"
+        :src="`data:image/jpeg;base64,${imgCacheService.getThumb(computedActiveImage)}`"
       />
     </template>
     <template v-else>
@@ -49,7 +49,7 @@
           class="carrouselThumb"
           :key="'right-'+index"
           :alt="image"
-          :src="`/images/thumb/${projectId}/${image}`"
+          :src="`data:image/jpeg;base64,${imgCacheService.getThumb(image)}`"
           @click="moveToImage(index + 1)"
         />
       </template>
@@ -66,7 +66,7 @@
         style="display:none"
         v-for="image in computedNextImages"
         :key="image"
-        :src="`/images/thumb/${projectId}/${image}`"
+        :src="`data:image/jpeg;base64,${imgCacheService.getThumb(image)}`"
       />
     </template>
   </div>
@@ -109,6 +109,7 @@ import { namespace } from 'vuex-class';
 import { ImageRef } from '@/api/baku.service';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { Device } from '@/api/device.class';
+import { ImgCacheService } from '../../api/imgCache.service';
 
 const CaptureNS = namespace('capture');
 
@@ -132,6 +133,9 @@ export default class CarrouselComponent extends Vue {
 
     @Prop()
     public activeCapture!: boolean;
+
+    @Prop()
+    public imgCacheService!: ImgCacheService;
 
     @CaptureNS.State
     public activeDevice!: Device;

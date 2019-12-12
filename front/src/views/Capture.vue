@@ -40,6 +40,7 @@
         :images="getActiveShot.images"
         :activeImage="activeFrame"
         :activeCapture="activeCapture"
+        :imgCacheService="imgCacheService"
         v-on:moveactiveframe="moveActiveFrame($event)"
       />
     </template>
