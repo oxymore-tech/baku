@@ -11,7 +11,7 @@
           autoplay
           muted
           playsinline
-        ></video>
+        />
         <div v-else>
           <div class="previewContainer">
             <img
@@ -41,6 +41,7 @@
         :images="getActiveShot.images"
         :activeImage="activeFrame"
         :activeCapture="activeCapture"
+        :imgCacheService="imgCacheService"
         @moveactiveframe="moveActiveFrame"
       />
     </template>

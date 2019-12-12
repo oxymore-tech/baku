@@ -7,7 +7,7 @@
         class="carrouselThumb"
         :key="`left_${index}`"
         :alt="image.id"
-        :src="image.thumbUrl"
+        :src="`data:image/jpeg;base64,${imgCacheService.getThumb(image)}`"
         @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
       />
       <div
@@ -23,7 +23,7 @@
       v-if="computedActiveImage !== null"
       class="carrouselThumb active"
       :alt="computedActiveImage"
-      :src="computedActiveImage.thumbUrl"
+      :src="`data:image/jpeg;base64,${imgCacheService.getThumb(computedActiveImage)}`"
     />
     <div class="carrouselThumb active" v-else>
       <CaptureButtonComponent
@@ -38,28 +38,28 @@
 
     <!-- RIGHT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedRightCarrousel">
-      <img
-        v-if="image !== null"
-        class="carrouselThumb"
-        :key="`right_${index}`"
-        :alt="image.id"
-        :src="image.thumbUrl"
-        @click="moveToImage(index + 1)"
-      />
-      <div
-        v-else
-        :key="index"
-        @click="moveToImage(index + 1)"
-        class="carrouselThumb"
-      ></div>
+        <img
+ 	  v-if="image !== null"
+          class="carrouselThumb"
+          :key="'right-'+index"
+          :alt="image"
+          :src="`data:image/jpeg;base64,${imgCacheService.getThumb(image)}`"
+          @click="moveToImage(index + 1)"
+        />
+        <div 
+	  v-else
+          :key="image"
+          @click="moveToImage(index + 1)"
+          class="carrouselThumb"
+        />
     </template>
-    <img
-      v-if="computedNextImages"
-      style="display:none"
-      v-for="image in computedNextImages"
-      :alt="image.id"
-      :src="image.thumbUrl"
-    />
+      <img
+ 	v-if="computedNextImages"
+        style="display:none"
+        v-for="image in computedNextImages"
+        :key="image"
+        :src="`data:image/jpeg;base64,${imgCacheService.getThumb(image)}`"
+      />
   </div>
 </template>
 
@@ -95,20 +95,21 @@
 </style>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import {namespace} from 'vuex-class';
-  import {ImageRef} from '@/api/baku.service';
-  import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-  import {Device} from '@/api/device.class';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { ImageRef } from '@/api/baku.service';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+import { Device } from '@/api/device.class';
+import { ImgCacheService } from '../../api/imgCache.service';
 
-  const CaptureNS = namespace('capture');
+const CaptureNS = namespace('capture');
 
-  @Component({
-    components: {
-      CaptureButtonComponent,
-    },
-  })
-  export default class CarrouselComponent extends Vue {
+@Component({
+  components: {
+    CaptureButtonComponent,
+  },
+})
+export default class CarrouselComponent extends Vue {
     @Prop()
     public images!: ImageRef[];
 
@@ -123,6 +124,9 @@
 
     @Prop()
     public activeCapture!: boolean;
+
+    @Prop()
+    public imgCacheService!: ImgCacheService;
 
     @CaptureNS.State
     public activeDevice!: Device;
