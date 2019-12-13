@@ -5,7 +5,7 @@ use std::{
     sync::{
         Arc,
         atomic::{AtomicUsize, Ordering}, Mutex,
-    },
+    }
 };
 use std::env;
 
@@ -19,7 +19,6 @@ use tokio::{
     sync::mpsc,
 };
 use tokio_executor::blocking;
-use uuid::Uuid;
 use warp::{Filter, ws::Message, ws::WebSocket};
 
 #[derive(Deserialize)]
@@ -109,9 +108,9 @@ async fn handle_multipart(
     while let Some(part) = form.next().await {
         let part = part.map_err(warp::reject::custom)?;
 
-        if let Some(_part_filename) = part.filename() {
-            let filename = format!("{}.jpg", Uuid::new_v4().to_string());
-
+        if let Some(part_filename) = part.filename() {
+            let filename = part_filename.to_string();
+        
             let image_buffer = part.concat().await;
             let source_image = image::load_from_memory(&image_buffer).map_err(warp::reject::custom)?;
 

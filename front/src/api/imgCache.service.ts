@@ -30,10 +30,10 @@ export class ImgCacheService {
       const img = this.imgList[index];
       if (!this.thumbImgs.hasOwnProperty(img.id)) {
         try {
-          const res = await axios.get(img.thumbUrl, {responseType: 'arraybuffer'});
+          const res = await axios.get(img.thumbUrl, {responseType: 'blob'});
           this.thumbImgs = {...this.thumbImgs, [img.id]: URL.createObjectURL(res.data)};
         } catch (e) {
-          // TODO: Do something
+          console.log("Error while loading thumb", e);
         }
       }
     }
@@ -41,10 +41,10 @@ export class ImgCacheService {
       const img = this.imgList[index];
       if (!this.lowResImgs.hasOwnProperty(img.id)) {
         try {
-          const res = await axios.get(img.lightweightUrl, {responseType: 'arraybuffer'});
+          const res = await axios.get(img.lightweightUrl, {responseType: 'blob'});
           this.lowResImgs = {...this.lowResImgs, [img.id]: URL.createObjectURL(res.data)};
         } catch (e) {
-          // TODO: Do something
+          console.log("Error while loading lightweight", e);
         }
       }
     }
@@ -52,10 +52,10 @@ export class ImgCacheService {
       const img = this.imgList[index];
       if (!this.fullResImgs.hasOwnProperty(img.id)) {
         try {
-          const res = await axios.get(img.originalUrl, {responseType: 'arraybuffer'});
+          const res = await axios.get(img.originalUrl, {responseType: 'blob'});
           this.fullResImgs = {...this.fullResImgs, [img.id]: URL.createObjectURL(res.data)};
         } catch (e) {
-          // TODO: Do something
+          console.log("Error while loading original", e);
         }
       }
     }

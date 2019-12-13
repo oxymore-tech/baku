@@ -1,5 +1,5 @@
-import * as uuid from 'uuid';
-import {BakuService, ImageRef} from '@/api/baku.service';
+import * as uuid from "uuid";
+import {BakuService} from "@/api/baku.service";
 
 export class Device {
   public readonly id: string;
@@ -17,16 +17,29 @@ export class Device {
     return this.id === 'smartphone';
   }
 
-  public async capture(videoElementTag: string, projectId: string, shotId: string): Promise<ImageRef> {
+  public capture(videoElementTag: string, projectId: string, onCaptured: (id: string, thumb: Blob) => void, onUploaded: (id: string) => void, onError: (e: any) => void, onFinally?: () => {}) {
+    try {
+      const video = document.getElementById(videoElementTag) as HTMLVideoElement;
+      const blob = Device.captureOriginal(video);
+      const id = `${uuid.v4()}.jpg`;
+      onCaptured(id, blob);
+      this.bakuService.upload(projectId, blob, id)
+        .then(() => onUploaded(id))
+        .catch(onError)
+        .finally(onFinally);
+    } catch (e) {
+      onError(e);
+    }
+  }
+
+  private static captureOriginal(video: HTMLVideoElement) {
     const canvas = document.createElement('canvas');
-    const video = document.getElementById(videoElementTag) as HTMLVideoElement;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
     const base64 = canvas.toDataURL('image/jpeg');
-    const blob = Device.imagetoblob(base64);
-    return this.bakuService.upload(projectId, shotId, blob, `${uuid.v4()}.jpg`);
+    return Device.imagetoblob(base64);
   }
 
   private static imagetoblob(base64String: string): Blob {

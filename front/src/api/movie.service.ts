@@ -124,10 +124,10 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
     return event;
   }
 
-  public async insertImage(projectId: string, shotId: string, imgIndex: number, image: ImageRef, username: string): Promise<BakuEvent> {
+  public async insertImage(projectId: string, shotId: string, imgIndex: number, image: string, username: string): Promise<BakuEvent> {
     const event: BakuEvent = {
       action: BakuAction.MOVIE_INSERT_IMAGE,
-      value: {shotId, imageIndex: imgIndex, image: image.id},
+      value: {shotId, imageIndex: imgIndex, image},
       user: username,
     };
     await this.bakuService.stack(projectId, event);

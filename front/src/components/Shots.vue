@@ -38,8 +38,8 @@
   margin: 24px 0 0 auto;
   width: 292px;
   height: 48px;
-  background: #e66359 0% 0% no-repeat padding-box;
-  box-shadow: 0px 0px 20px #00000029;
+  background: #e66359 0 0 no-repeat padding-box;
+  box-shadow: 0 0 20px #00000029;
   border-radius: 44px;
   color: white;
   border: 0;
@@ -82,7 +82,7 @@
 .shotCard {
   width: 292px;
   height: 241px;
-  background: #ffffff 0% 0% no-repeat padding-box;
+  background: #ffffff 0 0 no-repeat padding-box;
   border-radius: 16px;
   opacity: 1;
   margin: 24px;
@@ -96,7 +96,6 @@
     padding: 7px;
     display: flex;
     flex: 1;
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
@@ -113,7 +112,7 @@
 }
 
 .active {
-  box-shadow: 0px 0px 20px #00000029;
+  box-shadow: 0 0 20px #00000029;
 }
 </style>
 
