@@ -18,7 +18,7 @@
               v-if="getActiveShot && getActiveShot.images[activeFrame]"
               alt="previewImg"
               id="previewImg"
-              :src="`data:image/jpeg;base64,${imgCacheService.getImage(getActiveShot.images[activeFrame].id)}`"
+              :src="imgCacheService.getImage(getActiveShot.images[activeFrame].id)"
             />
           </div>
         </div>
@@ -27,8 +27,8 @@
         />
       </div>
       <div>
-        <i class="icon-play baku-button" style="color:#FBB10D;" @click="playAnimation()"></i>
-        <i class="icon-pause baku-button" @click="pauseAnimation()"></i>
+        <i class="icon-play baku-button" style="color:#FBB10D;" @click="playAnimation()"/>
+        <i class="icon-pause baku-button" @click="pauseAnimation()"/>
       </div>
       <CarrouselComponent
         v-if="getActiveShot"
