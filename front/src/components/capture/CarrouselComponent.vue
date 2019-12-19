@@ -88,21 +88,21 @@
 </style>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import {namespace} from 'vuex-class';
-  import {ImageRef} from '@/api/baku.service';
-  import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-  import {Device} from '@/api/device.class';
-  import {ImgCacheService} from '@/api/imgCache.service';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { ImageRef } from '@/api/baku.service';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+import { Device } from '@/api/device.class';
+import { ImgCacheService } from '@/api/imgCache.service';
 
-  const CaptureNS = namespace('capture');
+const CaptureNS = namespace('capture');
 
   @Component({
     components: {
       CaptureButtonComponent,
     },
   })
-  export default class CarrouselComponent extends Vue {
+export default class CarrouselComponent extends Vue {
     @Prop()
     public images!: ImageRef[];
 
@@ -166,5 +166,5 @@
         this.$emit('moveactiveframe', indexToMove);
       });
     }
-  }
+}
 </script>

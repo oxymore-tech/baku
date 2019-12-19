@@ -110,7 +110,7 @@
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 type Shot = {
   id: string;
@@ -127,38 +127,37 @@ export default class Shots extends Vue {
   public activeShotId!: string;
 
   get shots(): Shots {
-    return this.$store.getters["project/movie"].shots.map(
+    return this.$store.getters['project/movie'].shots.map(
       (shot: any, index: any): Shot => {
-        let previewUrl = "";
+        let previewUrl = '';
         if (shot.images[0]) {
           previewUrl = shot.images[0].thumbUrl;
         } else {
-          previewUrl =
-            "https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png";
+          previewUrl = 'https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png';
         }
 
         return {
           id: shot.id,
           name: `Plan ${index + 1}`,
-          previewUrl
+          previewUrl,
         };
-      }
+      },
     );
   }
 
   public async createNewShot() {
-    const shotId = await this.$store.dispatch("project/createShot");
-    this.$store.dispatch("project/changeActiveShot", shotId);
-    this.$emit("close");
+    const shotId = await this.$store.dispatch('project/createShot');
+    this.$store.dispatch('project/changeActiveShot', shotId);
+    this.$emit('close');
   }
 
   public activateShot(shotId: string) {
-    this.$store.dispatch("project/changeActiveShot", shotId);
-    this.$emit("close");
+    this.$store.dispatch('project/changeActiveShot', shotId);
+    this.$emit('close');
   }
 
   public close() {
-    this.$emit("close");
+    this.$emit('close');
   }
 }
 </script>

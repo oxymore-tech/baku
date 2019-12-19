@@ -1,15 +1,15 @@
 <template>
   <div class="boxContainer storyboard-preview-container">
     <div class="storyboard-preview-header">
-      <h4>Storyboard</h4>
       <i class="icon-grid baku-button" @click="onDisplayShots()" />
+      <h4>Plans</h4>
     </div>
     <img
-       v-if="getActiveShot && getActiveShot.images[0]"
-       class="shotPreview"
-       :src="`${getActiveShot.images[0].thumbUrl}`"
-     />
-    <div class="shotPreview" v-else/>
+      v-if="getActiveShot && getActiveShot.images[0]"
+      class="shotPreview"
+      :src="`${getActiveShot.images[0].thumbUrl}`"
+    />
+    <div class="shotPreview" v-else />
   </div>
 </template>
 
@@ -21,16 +21,16 @@
   .storyboard-preview-header {
     display: inline-flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
 
     h4 {
       font-size: 28px;
-      font-weight: bold;
+      font-weight: lighter;
     }
 
     i {
       font-size: 28px;
+      padding-right: 10px
     }
   }
 }

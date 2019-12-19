@@ -27,15 +27,15 @@
 
 
 <script lang='ts'>
-  import {QrcodeStream} from 'vue-qrcode-reader';
-  import {Component, Vue} from 'vue-property-decorator';
-  import {WSSocket} from './socket.class';
-  import {Device} from '@/api/device.class';
+import { QrcodeStream } from 'vue-qrcode-reader';
+import { Component, Vue } from 'vue-property-decorator';
+import { WSSocket } from './socket.class';
+import { Device } from '@/api/device.class';
 
   @Component({
-    components: {QrcodeStream},
+    components: { QrcodeStream },
   })
-  export default class QrReader extends Vue {
+export default class QrReader extends Vue {
     public socketId: string | undefined = '';
 
     public socket = new WSSocket();
@@ -103,7 +103,7 @@
       if (!this.socketId) {
         this.activeqrreader = false;
         this.socketId = JSON.parse(result);
-        this.socket.sendWSMessage({action: 'link', value: this.socketId});
+        this.socket.sendWSMessage({ action: 'link', value: this.socketId });
       }
     }
 
@@ -131,8 +131,8 @@
       this.localVideo = document.getElementById('localVideo');
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: {min: 1280, ideal: 1920},
-          height: {min: 720, ideal: 1080},
+          width: { min: 1280, ideal: 1920 },
+          height: { min: 720, ideal: 1080 },
           facingMode: {
             exact: 'environment',
           },
@@ -159,7 +159,7 @@
       try {
         const answer = await this.peerConnection.createAnswer();
         await this.peerConnection.setLocalDescription(answer);
-        this.socket.sendWSMessage({action: 'rtcAnswer', value: answer});
+        this.socket.sendWSMessage({ action: 'rtcAnswer', value: answer });
       } catch (e) {
         console.error('Failed sending answer', e);
       }
@@ -174,7 +174,7 @@
             (id, thumb) => channel.send(
               JSON.stringify({
                 type: 'capture',
-                message: {id, thumb},
+                message: { id, thumb },
               }),
             ),
             (id) => channel.send(
@@ -183,8 +183,7 @@
                 message: id,
               }),
             ),
-            e => console.error('Unable to capture', e)
-          );
+            (e) => console.error('Unable to capture', e));
         }
       };
       // eslint-disable-next-line no-param-reassign
@@ -214,7 +213,7 @@
         value: event.candidate,
       });
     }
-  }
+}
 </script>
 
 <style scoped>
