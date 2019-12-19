@@ -1,44 +1,28 @@
 <template>
   <div class="shots">
-    <div class="shotsTitle">
-      <h3>Choisir un plan</h3>
-      <button v-if="activeShotId" class="createButton" @click="close()">Retour au plan précédent</button>
-    </div>
     <div class="shotCardsContainer">
-      <div
-        v-for="shot in shots"
-        :key="shot.id"
-        class="shotCard"
-        v-bind:class="{ active: shot.id === activeShotId}"
-      >
+      <div v-for="shot in shots" :key="shot.id" class="shotCard">
         <a class="activateShot" @click="activateShot(shot.id)">
-          <img
-            class="shotPreview"
-            :src="shot.previewUrl"
-          />
+          <img class="shotPreview" :src="shot.previewUrl" alt="shotPreview" />
           <div class="cardFooter">
-            <p> {{ shot.name }} </p>
+            <p>{{ shot.name }}</p>
           </div>
         </a>
       </div>
-      <div class="shotCard">
-        <div class="shotPreview"></div>
-        <div class="cardFooter">
-          <span class="shotName">Nouveau Plan</span>
-          <a class="activateShot" @click="createNewShot()">Créer un nouveau plan</a>
-        </div>
+      <div class="shotCard createShot"  @click="createNewShot()">
+        <img src="@/assets/plus.svg" alt="plus" width="48px" height="48px" />
+        <a class="activateShot">Créer un plan</a>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss">
-
 .createButton {
   margin: 24px 0 0 auto;
   width: 292px;
   height: 48px;
-  background: #e66359 0 0 no-repeat padding-box;
+  background: #fe676f 0 0 no-repeat padding-box;
   box-shadow: 0 0 20px #00000029;
   border-radius: 44px;
   color: white;
@@ -106,12 +90,20 @@
   }
 
   .activateShot {
-    color: #e66359;
+    color: #fe676f;
     text-align: center;
   }
 }
 
-.active {
+.createShot {
+  justify-content: center;
+  align-items: center;
+  img {
+    cursor: pointer;
+  }
+}
+
+.shotCard:hover {
   box-shadow: 0 0 20px #00000029;
 }
 </style>
@@ -124,7 +116,7 @@ type Shot = {
   id: string;
   name: string;
   previewUrl: string;
-}
+};
 
 @Component
 export default class Shots extends Vue {
@@ -135,24 +127,28 @@ export default class Shots extends Vue {
   public activeShotId!: string;
 
   get shots(): Shots {
-    return this.$store.getters['project/movie'].shots.map((shot: any, index: any): Shot => {
-      let previewUrl = '';
-      if (shot.images[0]) {
-        previewUrl = shot.images[0].thumbUrl
-      } else {
-        previewUrl = 'https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png';
-      }
+    return this.$store.getters['project/movie'].shots.map(
+      (shot: any, index: any): Shot => {
+        let previewUrl = '';
+        if (shot.images[0]) {
+          previewUrl = shot.images[0].thumbUrl;
+        } else {
+          previewUrl = 'https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png';
+        }
 
-      return {
-        id: shot.id,
-        name: `Plan ${index + 1}`,
-        previewUrl,
-      };
-    });
+        return {
+          id: shot.id,
+          name: `Plan ${index + 1}`,
+          previewUrl,
+        };
+      },
+    );
   }
 
-  public createNewShot() {
-    this.$store.dispatch('project/createShot');
+  public async createNewShot() {
+    const shotId = await this.$store.dispatch('project/createShot');
+    this.$store.dispatch('project/changeActiveShot', shotId);
+    this.$emit('close');
   }
 
   public activateShot(shotId: string) {
