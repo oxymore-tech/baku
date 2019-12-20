@@ -3,7 +3,8 @@
     <div class="movieCard">
       <!-- TODO: use image poster -->
       <img
-        v-if="movie.shots[0].images[0]"
+        v-if="movie && movie.shots && movie.shots.length > 0"
+        alt="poster"
         class="moviePreview"
         :src="movie.shots[0].images[0].originalUrl"
       />
@@ -64,8 +65,8 @@
     margin: 0 auto;
     width: 292px;
     height: 48px;
-    background: #e66359 0% 0% no-repeat padding-box;
-    box-shadow: 0px 0px 20px #00000029;
+    background: #e66359 0 0 no-repeat padding-box;
+    box-shadow: 0 0 20px #00000029;
     border-radius: 44px;
     color: white;
     border: 0;
@@ -75,15 +76,15 @@
 </style>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { Movie } from '@/api/movie.service';
-import Project from './Project.vue';
+  import {Component} from 'vue-property-decorator';
+  import {namespace} from 'vuex-class';
+  import {Movie} from '@/api/movie.service';
+  import Project from './Project.vue';
 
-const ProjectNS = namespace('project');
+  const ProjectNS = namespace('project');
 
   @Component
-export default class Init extends Project {
+  export default class Init extends Project {
     @ProjectNS.State
     public id!: string;
 
@@ -98,5 +99,5 @@ export default class Init extends Project {
         },
       });
     }
-}
+  }
 </script>
