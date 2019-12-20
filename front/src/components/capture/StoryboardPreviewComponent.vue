@@ -41,16 +41,16 @@
 
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import { Shot } from '@/api/movie.service';
-  import { Quality } from '@/api/baku.service';
-  import { Spinner } from '@/api/spinner.class';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Shot } from '@/api/movie.service';
+import { Quality } from '@/api/baku.service';
+import { Spinner } from '@/api/spinner.class';
 
-  const ProjectNS = namespace('project');
+const ProjectNS = namespace('project');
   @Component
-  export default class StoryboardPreviewComponent extends Vue {
-    @Prop({required: true})
+export default class StoryboardPreviewComponent extends Vue {
+    @Prop({ required: true })
     public shots!: Shot[];
 
     @Prop()
@@ -80,5 +80,5 @@
       }
       return Spinner;
     }
-  }
+}
 </script>

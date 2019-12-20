@@ -77,17 +77,17 @@ import {Quality} from "@/api/baku.service";
 </style>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import { Movie } from '@/api/movie.service';
-  import Project from './Project.vue';
-  import { Quality } from '@/api/baku.service';
-  import { Spinner } from '@/api/spinner.class';
+import { Component } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Movie } from '@/api/movie.service';
+import Project from './Project.vue';
+import { Quality } from '@/api/baku.service';
+import { Spinner } from '@/api/spinner.class';
 
-  const ProjectNS = namespace('project');
+const ProjectNS = namespace('project');
 
   @Component
-  export default class Init extends Project {
+export default class Init extends Project {
     @ProjectNS.State
     public id!: string;
 
@@ -109,5 +109,5 @@ import {Quality} from "@/api/baku.service";
       }
       return Spinner;
     }
-  }
+}
 </script>

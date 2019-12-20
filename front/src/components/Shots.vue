@@ -113,9 +113,9 @@
 
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { Quality } from '@/api/baku.service';
-  import { Spinner } from '@/api/spinner.class';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Quality } from '@/api/baku.service';
+import { Spinner } from '@/api/spinner.class';
 
   type Shot = {
     id: string;
@@ -124,11 +124,11 @@
   };
 
   @Component
-  export default class Shots extends Vue {
-    @Prop({required: true})
+export default class Shots extends Vue {
+    @Prop({ required: true })
     public projectId!: string;
 
-    @Prop({required: true})
+    @Prop({ required: true })
     public activeShotId!: string;
 
     get shots(): Shots {
@@ -159,5 +159,5 @@
     public close() {
       this.$emit('close');
     }
-  }
+}
 </script>

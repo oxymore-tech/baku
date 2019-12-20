@@ -31,10 +31,10 @@ export const ProjectStore = {
   actions: {
     async loadProject(context: any, projectId: string): Promise<void> {
       const movieHistory = await movieService.getHistory(projectId);
-      await context.commit('setMovie', {projectId, movieHistory});
+      await context.commit('setMovie', { projectId, movieHistory });
     },
     async addImageToShot(context: any,
-                         payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
+      payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
       const insertEvent = await new MovieService().insertImage(
         context.state.id,
         payload.shotId,
