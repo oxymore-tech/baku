@@ -18,6 +18,6 @@ export default new Vuex.Store({
     webrtc: WebrtcStore,
     project: ProjectStore,
     capture: captureStore,
-    user: UserStore
+    user: UserStore,
   },
 });

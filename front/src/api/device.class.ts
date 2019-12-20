@@ -1,5 +1,5 @@
-import * as uuid from "uuid";
-import {BakuService} from "@/api/baku.service";
+import * as uuid from 'uuid';
+import { BakuService } from '@/api/baku.service';
 
 export class Device {
   public readonly id: string;
@@ -71,6 +71,6 @@ export class Device {
       byteArrays.push(byteArray);
     }
 
-    return new Blob(byteArrays, {type: contentType});
+    return new Blob(byteArrays, { type: contentType });
   }
 }

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 export enum Quality {
-  Thumbnail = "thumbnail",
-  Lightweight = "lightweight",
-  Original = "original"
+  Thumbnail = 'thumbnail',
+  Lightweight = 'lightweight',
+  Original = 'original'
 }
 
 export interface ImageRef {
@@ -14,6 +14,7 @@ export interface ImageRef {
 
 export class UploadedImage implements ImageRef {
   readonly projectId: string;
+
   readonly id: string;
 
   constructor(projectId: string, id: string) {
@@ -24,7 +25,6 @@ export class UploadedImage implements ImageRef {
   public getUrl(q: Quality): string {
     return `/images/${this.projectId}/${q}/${this.id}`;
   }
-
 }
 
 export enum BakuAction {

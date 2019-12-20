@@ -1,4 +1,3 @@
-import {Quality} from "@/api/baku.service";
 <template>
   <div class="shots">
     <div class="shotCardsContainer">
@@ -114,9 +113,9 @@ import {Quality} from "@/api/baku.service";
 
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import {Quality} from "@/api/baku.service";
-  import {Spinner} from "@/api/spinner.class";
+  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import { Quality } from '@/api/baku.service';
+  import { Spinner } from '@/api/spinner.class';
 
   type Shot = {
     id: string;
@@ -135,12 +134,7 @@ import {Quality} from "@/api/baku.service";
     get shots(): Shots {
       return this.$store.getters['project/movie'].shots.map(
         (shot: any, index: any): Shot => {
-          let previewUrl = '';
-          if (shot.images[0]) {
-            previewUrl = shot.images[0].getUrl(Quality.Original);
-          } else {
-            previewUrl = Spinner;
-          }
+          const previewUrl = shot.images[0] ? shot.images[0].getUrl(Quality.Original) : Spinner;
 
           return {
             id: shot.id,

@@ -27,10 +27,10 @@
 
 
 <script lang='ts'>
-  import {QrcodeStream} from 'vue-qrcode-reader';
-  import {Component, Vue} from 'vue-property-decorator';
-  import {WSSocket} from './socket.class';
-  import {Device} from '@/api/device.class';
+  import { QrcodeStream } from 'vue-qrcode-reader';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { WSSocket } from './socket.class';
+  import { Device } from '@/api/device.class';
 
   @Component({
     components: {QrcodeStream},
@@ -174,14 +174,14 @@
             (id) => channel.send(
               JSON.stringify({
                 type: 'capture',
-                message: {id}
-              })
+                message: {id},
+              }),
             ),
             (id) => channel.send(
               JSON.stringify({
                 type: 'upload',
-                message: id
-              })
+                message: id,
+              }),
             ),
             (e) => console.error('Unable to capture', e));
         }

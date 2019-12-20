@@ -42,9 +42,9 @@
 </style>
 
 <script lang="ts">
-  import {Component, Prop, Vue, Watch,} from 'vue-property-decorator';
-  import {State} from 'vuex-class';
-  import {Device} from '@/api/device.class';
+  import { Component, Prop, Vue, Watch, } from 'vue-property-decorator';
+  import { State } from 'vuex-class';
+  import { Device } from '@/api/device.class';
 
   @Component
   export default class CaptureButtonComponent extends Vue {
@@ -183,11 +183,11 @@
     }
 
     private onUploaded(id: string) {
-      this.$emit("uploaded", id)
+      this.$emit('uploaded', id);
     }
 
     private async onCaptured(id: string, thumb: Blob) {
-      this.$emit("captured", id, thumb);
+      this.$emit('captured', id, thumb);
       this.isCapturing = false;
     }
   }

@@ -1,5 +1,5 @@
-import {Movie, MovieService, Shot,} from '@/api/movie.service';
-import {BakuEvent} from '@/api/baku.service';
+import { Movie, MovieService, Shot } from '@/api/movie.service';
+import { BakuEvent } from '@/api/baku.service';
 
 const movieService = new MovieService();
 
@@ -40,7 +40,7 @@ export const ProjectStore = {
         payload.shotId,
         payload.imageIndex,
         payload.image,
-        context.rootState.user.username
+        context.rootState.user.username,
       );
       context.commit('addToLocalHistory', insertEvent);
     },
@@ -73,8 +73,7 @@ export const ProjectStore = {
   getters: {
     movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
 
-    getActiveShot: (state: ProjectState, getters: any): Shot =>
-      getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId)
+    getActiveShot: (state: ProjectState, getters: any): Shot => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
 
   },
   modules: {},

@@ -1,5 +1,7 @@
 import * as uuid from 'uuid';
-import {BakuAction, BakuEvent, BakuService, ImageRef, UploadedImage,} from '@/api/baku.service';
+import {
+  BakuAction, BakuEvent, BakuService, ImageRef, UploadedImage,
+} from '@/api/baku.service';
 
 export interface Movie {
   readonly title: string;
@@ -15,8 +17,7 @@ export interface Shot {
 }
 
 export class MovieService {
-
-public static merge(projectId: string, events: BakuEvent[]): Movie {
+  public static merge(projectId: string, events: BakuEvent[]): Movie {
     let title = 'Projet sans nom';
     let synopsis = 'Synopsis vide';
     let poster;
@@ -24,7 +25,7 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
     const shots: Shot[] = [];
 
     const updateShot = function (shotId: string, updateFn: (shot: Shot) => Shot) {
-      const shotIndex = shots.findIndex(p => p.id === shotId);
+      const shotIndex = shots.findIndex((p) => p.id === shotId);
       const shot = shots.find((p) => p.id === shotId);
       if (!shot) {
         throw new Error(`shot ${shotId} should exist for project ${title}`);
@@ -44,7 +45,7 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
           poster = event.value;
           break;
         case BakuAction.MOVIE_INSERT_IMAGE: {
-          const {shotId, imageIndex, image} = event.value as { shotId: string, imageIndex: number, image: string };
+          const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: string };
           updateShot(shotId, (shot: Shot) => {
             shot.images.splice(imageIndex, 0, new UploadedImage(projectId, image));
             return shot;
@@ -55,7 +56,7 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
         case BakuAction.SHOT_ADD: {
           shots.push({
             id: event.value.shotId,
-            images: []
+            images: [],
           });
           break;
         }
@@ -68,7 +69,7 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
       }
     });
     return {
-      title, synopsis, poster, shots, fps
+      title, synopsis, poster, shots, fps,
     };
   }
 
@@ -76,7 +77,7 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
 
   public async get(id: string): Promise<Movie> {
     const events = await this.bakuService.getHistory(id);
-    console.log("events", events);
+    console.log('events', events);
     return MovieService.merge(id, events);
   }
 
@@ -85,7 +86,7 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
   }
 
   public async updateTitle(projectId: string, title: string, username: string): Promise<BakuEvent> {
-    const event: BakuEvent = {action: BakuAction.MOVIE_UPDATE_TITLE, value: title, user: username};
+    const event: BakuEvent = { action: BakuAction.MOVIE_UPDATE_TITLE, value: title, user: username };
     await this.bakuService.stack(projectId, event);
     return event;
   }
@@ -94,7 +95,7 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
     const event: BakuEvent = {
       action: BakuAction.MOVIE_UPDATE_SYNOPSIS,
       value: synopsis,
-      user: username
+      user: username,
     };
     await this.bakuService.stack(projectId, event);
     return event;
@@ -104,22 +105,22 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
     await this.bakuService.stack(projectId, {
       action: BakuAction.MOVIE_UPDATE_SYNOPSIS,
       value: poster,
-      user: username
+      user: username,
     });
   }
 
   public async addShot(projectId: string, username: string): Promise<BakuEvent> {
     const event: BakuEvent = {
       action: BakuAction.SHOT_ADD,
-      value: {shotId: uuid.v4()},
-      user: username
+      value: { shotId: uuid.v4() },
+      user: username,
     };
     await this.bakuService.stack(projectId, event);
     return event;
   }
 
   public async changeFps(projectId: string, fps: number, username: string): Promise<BakuEvent> {
-    const event = {action: BakuAction.CHANGE_FPS, value: fps, user: username};
+    const event = { action: BakuAction.CHANGE_FPS, value: fps, user: username };
     await this.bakuService.stack(projectId, event);
     return event;
   }
@@ -127,7 +128,7 @@ public static merge(projectId: string, events: BakuEvent[]): Movie {
   public async insertImage(projectId: string, shotId: string, imgIndex: number, image: string, username: string): Promise<BakuEvent> {
     const event: BakuEvent = {
       action: BakuAction.MOVIE_INSERT_IMAGE,
-      value: {shotId, imageIndex: imgIndex, image},
+      value: { shotId, imageIndex: imgIndex, image },
       user: username,
     };
     await this.bakuService.stack(projectId, event);

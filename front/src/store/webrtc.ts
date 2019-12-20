@@ -39,7 +39,7 @@ export const WebrtcStore = {
       state.socketStatus = status;
     },
   },
-  actions: {  },
-  getters: {  },
+  actions: { },
+  getters: { },
   modules: {},
 };

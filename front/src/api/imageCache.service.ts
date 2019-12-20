@@ -1,5 +1,5 @@
-import {ImageRef, Quality} from './baku.service';
-import {Spinner} from "@/api/spinner.class";
+import { ImageRef, Quality } from './baku.service';
+import { Spinner } from '@/api/spinner.class';
 
 type ImgDict = { [id: string]: string };
 
@@ -7,7 +7,7 @@ class ImageCacheServiceImpl {
   private cachedImages: { [q: string]: ImgDict } = {
     [Quality.Thumbnail]: {},
     [Quality.Lightweight]: {},
-    [Quality.Original]: {}
+    [Quality.Original]: {},
   };
 
   public startPreloading(imageRefs: ImageRef[], activeIndex: number) {
@@ -26,7 +26,7 @@ class ImageCacheServiceImpl {
   private putImageInCacheInternal(imageRef: ImageRef, quality: Quality) {
     this.cachedImages[quality] = {
       ...this.cachedImages[quality],
-      [imageRef.id]: imageRef.getUrl(quality)
+      [imageRef.id]: imageRef.getUrl(quality),
     };
   }
 
@@ -66,7 +66,6 @@ class ImageCacheServiceImpl {
   public isCached(imageId: string, q: Quality): boolean {
     return this.cachedImages[q].hasOwnProperty(imageId);
   }
-
 }
 
 export const ImageCacheService = new ImageCacheServiceImpl();

@@ -87,12 +87,12 @@
 </style>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import {namespace} from 'vuex-class';
-  import {ImageRef, UploadedImage} from '@/api/baku.service';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
+  import { ImageRef, UploadedImage } from '@/api/baku.service';
   import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-  import {Device} from '@/api/device.class';
-  import {ImageCacheService} from "@/api/imageCache.service";
+  import { Device } from '@/api/device.class';
+  import { ImageCacheService } from '@/api/imageCache.service';
 
   const CaptureNS = namespace('capture');
   const ProjectNS = namespace('project');

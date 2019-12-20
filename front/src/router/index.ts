@@ -41,7 +41,7 @@ const routes = [
     component: Shots,
   },
   {
-    name: "captureShot",
+    name: 'captureShot',
     path: '/movies/:projectId/capture/shots/:shotId',
     component: Capture,
   },

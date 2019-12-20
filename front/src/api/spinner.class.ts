@@ -1,1 +1,1 @@
-export const Spinner = require("@/assets/loading.svg");
+export const Spinner = require('@/assets/loading.svg');

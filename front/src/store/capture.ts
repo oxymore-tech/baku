@@ -30,7 +30,7 @@ export const captureStore = {
     },
     setDevice(state: CaptureState, device: Device | null) {
       state.activeDevice = device;
-    }
+    },
   },
   actions: {
     selectDevice(context: { commit: any, state: CaptureState }, device: Device | null) {
@@ -42,7 +42,7 @@ export const captureStore = {
       if (!activeCapture) {
         context.commit('detachMediaStream');
       }
-    }
+    },
   },
   getters: {
   },

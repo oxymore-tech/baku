@@ -42,15 +42,15 @@
 </template>
 
 <script lang="ts">
-  import {Component, Watch} from 'vue-property-decorator';
-  import {namespace} from 'vuex-class';
+  import { Component, Watch } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
   import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
   import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
   import store from '@/store';
   import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-  import {Movie, Shot} from '@/api/movie.service';
+  import { Movie, Shot } from '@/api/movie.service';
   import Project from './Project.vue';
-  import {ImageCacheService} from "@/api/imageCache.service";
+  import { ImageCacheService } from '@/api/imageCache.service';
 
   const CaptureNS = namespace('capture');
   const ProjectNS = namespace('project');
