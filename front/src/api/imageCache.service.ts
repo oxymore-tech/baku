@@ -10,10 +10,16 @@ class ImageCacheServiceImpl {
     [Quality.Original]: {},
   };
 
-  public startPreloading(imageRefs: ImageRef[], activeIndex: number) {
+  public async startPreloading(imageRefs: ImageRef[], activeIndex: number) {
     const imageRefsSliced = imageRefs.slice(activeIndex).concat(imageRefs.slice(0, activeIndex));
     for (const image of imageRefsSliced) {
-      this.startPreloadingImage(image);
+      await this.preloadImage(image, Quality.Thumbnail);
+    }
+    for (const image of imageRefsSliced) {
+      await this.preloadImage(image, Quality.Lightweight);
+    }
+    for (const image of imageRefsSliced) {
+      await this.preloadImage(image, Quality.Original);
     }
   }
 
@@ -32,15 +38,24 @@ class ImageCacheServiceImpl {
 
   public startPreloadingImage(image: ImageRef, onLoad?: (image: ImageRef, quality: Quality) => void) {
     for (const quality of Object.values(Quality)) {
+      this.preloadImage(image, quality)
+        .then(() => {
+          if (onLoad) {
+            onLoad(image, quality);
+          }
+        });
+    }
+  }
+
+  private preloadImage(image: ImageRef, quality: Quality): Promise<void> {
+    return new Promise<void>(resolve => {
       const tempImage = new Image();
       tempImage.onload = () => {
         this.putImageInCacheInternal(image, quality);
-        if (onLoad) {
-          onLoad(image, quality);
-        }
+        resolve();
       };
       tempImage.src = image.getUrl(quality);
-    }
+    });
   }
 
   public getImage(imageId: string): string {
