@@ -14,6 +14,7 @@
 
 <style lang="scss">
   .storyboard-preview-container {
+    max-width: 292px;
 
     .storyboard-preview-header {
       display: inline-flex;
