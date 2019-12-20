@@ -17,7 +17,7 @@ export class Device {
     return this.id === 'smartphone';
   }
 
-  public capture(videoElementTag: string, projectId: string, onCaptured: (id: string, thumb: Blob) => void, onUploaded: (id: string) => void, onError: (e: any) => void, onFinally?: () => {}) {
+  public capture(videoElementTag: string, projectId: string, onCaptured: (id: string, thumb: Blob) => void, onUploaded: (id: string) => void, onError: (e: any) => void, onFinally?: () => {}): void {
     try {
       const video = document.getElementById(videoElementTag) as HTMLVideoElement;
       const blob = Device.captureOriginal(video);

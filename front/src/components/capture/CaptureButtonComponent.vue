@@ -1,75 +1,61 @@
-<!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-    <div class="webcamCapture">
-        <div
-                id="captureButton"
-                class="captureButton"
-                @click="capture()"
-                :class="{ capturing: isCapturing, hidden: !peerConnected }"
-        >
-            <img class="captureIcon" src="@/assets/camera-solid-orange.svg"/>
-        </div>
+  <div class="webcamCapture">
+    <div
+      id="captureButton"
+      class="captureButton"
+      @click="capture()"
+      :class="{ capturing: isCapturing, hidden: !peerConnected }"
+    >
+      <img alt="camera" class="captureIcon" src="@/assets/camera-solid-orange.svg"/>
     </div>
+  </div>
 </template>
 
 <style lang="scss">
-    .captureButton {
-        width: 144px;
-        height: 82px;
-        font-size: 30px;
-        cursor: pointer;
-        color: #e66359;
-        text-align: center;
-    }
+  .captureButton {
+    width: 144px;
+    height: 82px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #e66359;
+    text-align: center;
+  }
 
-    #remoteVideo {
-        height: 157px;
-    }
+  #remoteVideo {
+    height: 157px;
+  }
 
-    .hidden {
-        display: none;
-    }
+  .hidden {
+    display: none;
+  }
 
-    .capturing {
-        color: grey;
-        cursor: progress;
-    }
+  .capturing {
+    color: grey;
+    cursor: progress;
+  }
 
-    .captureIcon {
-        margin-top: 18px;
-        width: 48px;
-        height: 43px;
-    }
+  .captureIcon {
+    margin-top: 18px;
+    width: 48px;
+    height: 43px;
+  }
 </style>
 
 <script lang="ts">
-import {
-  Component, Prop, Vue, Watch,
-} from 'vue-property-decorator';
-import { namespace, State } from 'vuex-class';
-import { Device } from '@/api/device.class';
-
-const ProjectNS = namespace('project');
+  import {Component, Prop, Vue, Watch,} from 'vue-property-decorator';
+  import {State} from 'vuex-class';
+  import {Device} from '@/api/device.class';
 
   @Component
-export default class CaptureButtonComponent extends Vue {
+  export default class CaptureButtonComponent extends Vue {
     @Prop(Device)
     public readonly device!: Device;
 
     @Prop()
     public projectId!: string;
 
-    @Prop()
-    public activeShot!: string;
-
-    @Prop()
-    public activeIndex!: number;
-
     @State
     public dataChannel!: RTCDataChannel;
-
-    @ProjectNS.Action('addImageToShot')
-    protected addImageToShot!: ({}) => Promise<void>;
 
     public isCapturing = false;
 
@@ -92,12 +78,12 @@ export default class CaptureButtonComponent extends Vue {
       }
     }
 
-    public async capture() {
+    public capture() {
       this.isCapturing = true;
       if (this.device.isSmartphone()) {
-        await this.captureSmartphone();
+        this.captureSmartphone();
       } else {
-        await this.captureWebcam();
+        this.captureWebcam();
       }
       this.$emit('moveactiveframe', 1);
     }
@@ -159,21 +145,21 @@ export default class CaptureButtonComponent extends Vue {
       };
     }
 
-    private setupSmarphone() {
-      const { stream } = this.$store.state;
-      this.$store.commit('capture/attachMediaStream', stream);
+    private async setupSmarphone() {
+      const {stream} = this.$store.state;
+      await this.$store.commit('capture/attachMediaStream', stream);
     }
 
     private async setupWebCam() {
       this.peerConnected = true;
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: { min: 640, ideal: 1280 },
-          height: { min: 480, ideal: 720 },
-          deviceId: { exact: this.device.id },
+          width: {min: 640, ideal: 1280},
+          height: {min: 480, ideal: 720},
+          deviceId: {exact: this.device.id},
         },
       });
-      this.$store.commit('capture/attachMediaStream', stream);
+      await this.$store.commit('capture/attachMediaStream', stream);
     }
 
     private captureSmartphone() {
@@ -181,7 +167,6 @@ export default class CaptureButtonComponent extends Vue {
         JSON.stringify({
           message: 'capture',
           projectId: this.projectId,
-          shot: this.activeShot,
           type: 'cmd',
         }),
       );
@@ -198,17 +183,12 @@ export default class CaptureButtonComponent extends Vue {
     }
 
     private onUploaded(id: string) {
-      console.log('Image uploaded', id);
+      this.$emit("uploaded", id)
     }
 
     private async onCaptured(id: string, thumb: Blob) {
-      await this.addImageToShot({
-        shotId: this.activeShot,
-        imageIndex: this.activeIndex,
-        image: id,
-        thumb,
-      });
+      this.$emit("captured", id, thumb);
       this.isCapturing = false;
     }
-}
+  }
 </script>

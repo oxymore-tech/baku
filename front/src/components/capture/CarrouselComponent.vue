@@ -30,9 +30,8 @@
         v-if="activeDevice"
         :device="activeDevice"
         :projectId="projectId"
-        :activeShot="activeShot"
-        :activeIndex="activeImage+1"
-        @moveactiveframe="$emit('moveactiveframe', $event)"
+        @captured="onCaptured"
+        @uploaded="onUploaded"
       />
     </div>
 
@@ -88,21 +87,22 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { ImageRef } from '@/api/baku.service';
-import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import { Device } from '@/api/device.class';
-import { ImgCacheService } from '@/api/imgCache.service';
+  import {Component, Prop, Vue} from 'vue-property-decorator';
+  import {namespace} from 'vuex-class';
+  import {ImageRef} from '@/api/baku.service';
+  import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+  import {Device} from '@/api/device.class';
+  import {ImgCacheService} from '@/api/imgCache.service';
 
-const CaptureNS = namespace('capture');
+  const CaptureNS = namespace('capture');
+  const ProjectNS = namespace('project');
 
   @Component({
     components: {
       CaptureButtonComponent,
     },
   })
-export default class CarrouselComponent extends Vue {
+  export default class CarrouselComponent extends Vue {
     @Prop()
     public images!: ImageRef[];
 
@@ -123,6 +123,26 @@ export default class CarrouselComponent extends Vue {
 
     @CaptureNS.State
     public activeDevice!: Device;
+
+    @ProjectNS.Action('addImageToShot')
+    protected addImageToShot!: ({}) => Promise<void>;
+
+    mounted() {
+      window.addEventListener('keydown', (e: KeyboardEvent) => {
+        let indexToMove = 0;
+        switch (e.keyCode) {
+          case 37:
+            indexToMove = -1;
+            break;
+          case 39:
+            indexToMove = 1;
+            break;
+          default:
+            indexToMove = 0;
+        }
+        this.$emit('moveactiveframe', indexToMove);
+      });
+    }
 
     get computedLeftCarrousel(): ImageRef[] {
       const sliceIndex = this.activeCapture
@@ -150,21 +170,18 @@ export default class CarrouselComponent extends Vue {
       this.$emit('moveactiveframe', indexToMove);
     }
 
-    mounted() {
-      window.addEventListener('keydown', (e: KeyboardEvent) => {
-        let indexToMove = 0;
-        switch (e.keyCode) {
-          case 37:
-            indexToMove = -1;
-            break;
-          case 39:
-            indexToMove = 1;
-            break;
-          default:
-            indexToMove = 0;
-        }
-        this.$emit('moveactiveframe', indexToMove);
-      });
+    public onUploaded(id: string) {
+      console.log('Image uploaded', id);
     }
-}
+
+    public async onCaptured(id: string, thumb: Blob) {
+      await this.addImageToShot({
+        shotId: this.activeShot,
+        imageIndex: this.activeImage + 1,
+        image: id,
+        thumb,
+      });
+      this.$emit('moveactiveframe', 1);
+    }
+  }
 </script>
