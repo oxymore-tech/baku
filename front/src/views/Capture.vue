@@ -22,7 +22,7 @@
             />
           </template>
           <img
-            v-if="getActiveShot && getActiveShot.images[activeFrame - 1]"
+            v-if="getActiveShot && getActiveShot.images[activeFrame - 1] && activeCapture"
             alt="ghostImg"
             id="ghostImg"
             :src="ImageCacheService.getImage(getActiveShot.images[activeFrame -1].id)"
