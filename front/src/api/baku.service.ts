@@ -1,24 +1,15 @@
 import axios from 'axios';
 
-export interface ImageRef {
-  readonly id: string;
-  readonly thumbUrl: string;
-  readonly lightweightUrl: string;
-  readonly originalUrl: string;
+export enum Quality {
+  Thumbnail = "thumbnail",
+  Lightweight = "lightweight",
+  Original = "original"
 }
 
-export class InMemoryImage implements ImageRef {
+export interface ImageRef {
   readonly id: string;
-  readonly thumbUrl: string;
-  readonly lightweightUrl: string;
-  readonly originalUrl: string;
 
-  constructor(id: string, tinyBlob: Blob, lightweightBlob: Blob, originalBlob: Blob) {
-    this.id = id;
-    this.thumbUrl = URL.createObjectURL(tinyBlob);
-    this.lightweightUrl = URL.createObjectURL(lightweightBlob);
-    this.originalUrl = URL.createObjectURL(originalBlob);
-  }
+  getUrl(q: Quality): string;
 }
 
 export class UploadedImage implements ImageRef {
@@ -30,17 +21,10 @@ export class UploadedImage implements ImageRef {
     this.id = id;
   }
 
-  get thumbUrl(): string {
-    return `/images/${this.projectId}/thumbnail/${this.id}`;
+  public getUrl(q: Quality): string {
+    return `/images/${this.projectId}/${q}/${this.id}`;
   }
 
-  get lightweightUrl(): string {
-    return `/images/${this.projectId}/lightweight/${this.id}`;
-  }
-
-  get originalUrl(): string {
-    return `/images/${this.projectId}/original/${this.id}`;
-  }
 }
 
 export enum BakuAction {

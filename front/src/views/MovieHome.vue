@@ -1,12 +1,12 @@
+import {Quality} from "@/api/baku.service";
 <template>
   <div class="movie-home-main">
     <div class="movieCard">
-      <!-- TODO: use image poster -->
       <img
-        v-if="movie && movie.shots && movie.shots.length > 0"
+        v-if="poster"
         alt="poster"
         class="moviePreview"
-        :src="movie.shots[0].images[0].originalUrl"
+        :src="poster"
       />
       <div class="cardFooter">
         <p class="movieTitle">{{ movie.title }}</p>
@@ -30,7 +30,8 @@
 
   .movieCard {
     margin: 0 auto;
-    width: 608px;
+    width: 569px;
+    height: 320px;
     max-height: 620px;
     min-height: 400px;
     background: #ffffff 0 0 no-repeat padding-box;
@@ -80,6 +81,8 @@
   import {namespace} from 'vuex-class';
   import {Movie} from '@/api/movie.service';
   import Project from './Project.vue';
+  import {Quality} from "@/api/baku.service";
+  import {Spinner} from "@/api/spinner.class";
 
   const ProjectNS = namespace('project');
 
@@ -98,6 +101,13 @@
           projectId: this.id,
         },
       });
+    }
+
+    public get poster() {
+      if (this.movie && this.movie.shots && this.movie.shots.length > 0) {
+        return this.movie.shots[0].images[0].getUrl(Quality.Original);
+      }
+      return Spinner;
     }
   }
 </script>

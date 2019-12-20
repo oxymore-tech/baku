@@ -6,7 +6,7 @@
         <img
           :key="`left_${index}`"
           :alt="image.id"
-          :src="imgCacheService.getThumb(image.id)"
+          :src="ImageCacheService.getThumbnail(image.id)"
           @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
         />
       </div>
@@ -22,7 +22,7 @@
     <div class="carrouselThumb active" v-if="computedActiveImage">
       <img
         :alt="computedActiveImage.id"
-        :src="imgCacheService.getThumb(computedActiveImage.id)"
+        :src="ImageCacheService.getThumbnail(computedActiveImage.id)"
       />
     </div>
     <div class="carrouselThumb active" v-else>
@@ -41,7 +41,7 @@
         <img
           :key="'right-'+index"
           :alt="image.id"
-          :src="imgCacheService.getThumb(image.id)"
+          :src="ImageCacheService.getThumbnail(image.id)"
           @click="moveToImage(index + 1)"
         />
       </div>
@@ -89,10 +89,10 @@
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import {namespace} from 'vuex-class';
-  import {ImageRef} from '@/api/baku.service';
+  import {ImageRef, UploadedImage} from '@/api/baku.service';
   import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
   import {Device} from '@/api/device.class';
-  import {ImgCacheService} from '@/api/imgCache.service';
+  import {ImageCacheService} from "@/api/imageCache.service";
 
   const CaptureNS = namespace('capture');
   const ProjectNS = namespace('project');
@@ -117,9 +117,6 @@
 
     @Prop()
     public activeCapture!: boolean;
-
-    @Prop()
-    public imgCacheService!: ImgCacheService;
 
     @CaptureNS.State
     public activeDevice!: Device;
@@ -171,7 +168,7 @@
     }
 
     public onUploaded(id: string) {
-      console.log('Image uploaded', id);
+      ImageCacheService.startPreloadingImage(new UploadedImage(this.projectId, id), () => this.$forceUpdate());
     }
 
     public async onCaptured(id: string, thumb: Blob) {

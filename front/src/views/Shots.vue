@@ -76,7 +76,7 @@ export default class Capture extends Project {
 .previewContainer {
   width: 1100px;
   height: 619px;
-  background: #ffffff 0% 0% no-repeat padding-box;
+  background: #ffffff 0 0 no-repeat padding-box;
   border: 4px solid #455054;
   border-radius: 4px;
   box-sizing: content-box;

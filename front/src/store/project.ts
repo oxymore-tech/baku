@@ -30,7 +30,6 @@ export const ProjectStore = {
   },
   actions: {
     async loadProject(context: any, projectId: string): Promise<void> {
-      // const movie = await movieService.get(projectId);
       const movieHistory = await movieService.getHistory(projectId);
       await context.commit('setMovie', {projectId, movieHistory});
     },

@@ -1,16 +1,17 @@
+import {Quality} from "@/api/baku.service";
 <template>
   <div class="shots">
     <div class="shotCardsContainer">
       <div v-for="shot in shots" :key="shot.id" class="shotCard">
         <a class="activateShot" @click="activateShot(shot.id)">
-          <img class="shotPreview" :src="shot.previewUrl" alt="shotPreview" />
+          <img class="shotPreview" :src="shot.previewUrl" alt="shotPreview"/>
           <div class="cardFooter">
             <p>{{ shot.name }}</p>
           </div>
         </a>
       </div>
-      <div class="shotCard createShot"  @click="createNewShot()">
-        <img src="@/assets/plus.svg" alt="plus" width="48px" height="48px" />
+      <div class="shotCard createShot" @click="createNewShot()">
+        <img src="@/assets/plus.svg" alt="plus" width="48px" height="48px"/>
         <a class="activateShot">Créer un plan</a>
       </div>
     </div>
@@ -18,146 +19,151 @@
 </template>
 
 <style lang="scss">
-.createButton {
-  margin: 24px 0 0 auto;
-  width: 292px;
-  height: 48px;
-  background: #fe676f 0 0 no-repeat padding-box;
-  box-shadow: 0 0 20px #00000029;
-  border-radius: 44px;
-  color: white;
-  border: 0;
-  cursor: pointer;
-  font-size: 16px;
-}
+  .createButton {
+    margin: 24px 0 0 auto;
+    width: 292px;
+    height: 48px;
+    background: #fe676f 0 0 no-repeat padding-box;
+    box-shadow: 0 0 20px #00000029;
+    border-radius: 44px;
+    color: white;
+    border: 0;
+    cursor: pointer;
+    font-size: 16px;
+  }
 
-.shots {
-  width: 100%;
-  height: 100%;
-  background: #f2f2f2;
-  display: flex;
-  flex-direction: column;
+  .shots {
+    width: 100%;
+    height: 100%;
+    background: #f2f2f2;
+    display: flex;
+    flex-direction: column;
 
-  .shotsTitle {
-    margin: 0 24px;
-    display: inline-flex;
-    align-items: baseline;
-    justify-content: space-between;
+    .shotsTitle {
+      margin: 0 24px;
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: space-between;
 
-    h3 {
-      font-size: 28px;
-      font-weight: bold;
+      h3 {
+        font-size: 28px;
+        font-weight: bold;
+      }
     }
   }
-}
 
-.shotCardsContainer {
-  width: 100%;
-  flex: 1;
-  display: flex;
-}
-
-.shotPreview {
-  width: 100%;
-  height: 193px;
-  background-color: #bce0fd;
-}
-
-.shotCard {
-  width: 292px;
-  height: 241px;
-  background: #ffffff 0 0 no-repeat padding-box;
-  border-radius: 16px;
-  opacity: 1;
-  margin: 24px;
-  font-size: 16px/6px;
-  letter-spacing: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  .cardFooter {
-    padding: 7px;
-    display: flex;
+  .shotCardsContainer {
+    width: 100%;
     flex: 1;
+    display: flex;
+  }
+
+  .shotPreview {
+    width: 100%;
+    height: 164px;
+    background-color: #bce0fd;
+    max-width: unset;
+  }
+
+  .shotCard {
+    width: 292px;
+    height: 241px;
+    background: #ffffff 0 0 no-repeat padding-box;
+    border-radius: 16px;
+    opacity: 1;
+    margin: 24px;
+    font-size: 16px/6px;
+    letter-spacing: 0;
+    display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    overflow: hidden;
+    align-items: center;
+
+    .cardFooter {
+      padding: 7px;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .shotName {
+      text-align: center;
+      color: #455054;
+    }
+
+    .activateShot {
+      color: #fe676f;
+      text-align: center;
+    }
   }
 
-  .shotName {
-    text-align: center;
-    color: #455054;
+  .createShot {
+    justify-content: center;
+    align-items: center;
+
+    img {
+      cursor: pointer;
+    }
   }
 
-  .activateShot {
-    color: #fe676f;
-    text-align: center;
+  .shotCard:hover {
+    box-shadow: 0 0 20px #00000029;
   }
-}
-
-.createShot {
-  justify-content: center;
-  align-items: center;
-  img {
-    cursor: pointer;
-  }
-}
-
-.shotCard:hover {
-  box-shadow: 0 0 20px #00000029;
-}
 </style>
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+  import {Component, Prop, Vue} from 'vue-property-decorator';
+  import {Quality} from "@/api/baku.service";
+  import {Spinner} from "@/api/spinner.class";
 
-type Shot = {
-  id: string;
-  name: string;
-  previewUrl: string;
-};
+  type Shot = {
+    id: string;
+    name: string;
+    previewUrl: string;
+  };
 
-@Component
-export default class Shots extends Vue {
-  @Prop({ required: true })
-  public projectId!: string;
+  @Component
+  export default class Shots extends Vue {
+    @Prop({required: true})
+    public projectId!: string;
 
-  @Prop({ required: true })
-  public activeShotId!: string;
+    @Prop({required: true})
+    public activeShotId!: string;
 
-  get shots(): Shots {
-    return this.$store.getters['project/movie'].shots.map(
-      (shot: any, index: any): Shot => {
-        let previewUrl = '';
-        if (shot.images[0]) {
-          previewUrl = shot.images[0].thumbUrl;
-        } else {
-          previewUrl = 'https://cdn.pixabay.com/photo/2016/09/11/18/26/frame-1662287_960_720.png';
-        }
+    get shots(): Shots {
+      return this.$store.getters['project/movie'].shots.map(
+        (shot: any, index: any): Shot => {
+          let previewUrl = '';
+          if (shot.images[0]) {
+            previewUrl = shot.images[0].getUrl(Quality.Original);
+          } else {
+            previewUrl = Spinner;
+          }
 
-        return {
-          id: shot.id,
-          name: `Plan ${index + 1}`,
-          previewUrl,
-        };
-      },
-    );
+          return {
+            id: shot.id,
+            name: `Plan ${index + 1}`,
+            previewUrl,
+          };
+        },
+      );
+    }
+
+    public async createNewShot() {
+      const shotId = await this.$store.dispatch('project/createShot');
+      await this.$store.dispatch('project/changeActiveShot', shotId);
+      this.$emit('close');
+    }
+
+    public async activateShot(shotId: string) {
+      await this.$store.dispatch('project/changeActiveShot', shotId);
+      this.$emit('close');
+    }
+
+    public close() {
+      this.$emit('close');
+    }
   }
-
-  public async createNewShot() {
-    const shotId = await this.$store.dispatch('project/createShot');
-    this.$store.dispatch('project/changeActiveShot', shotId);
-    this.$emit('close');
-  }
-
-  public activateShot(shotId: string) {
-    this.$store.dispatch('project/changeActiveShot', shotId);
-    this.$emit('close');
-  }
-
-  public close() {
-    this.$emit('close');
-  }
-}
 </script>
