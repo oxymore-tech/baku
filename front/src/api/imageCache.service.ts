@@ -50,11 +50,11 @@ class ImageCacheServiceImpl {
   private preloadImage(image: ImageRef, quality: Quality): Promise<void> {
     return new Promise<void>(resolve => {
       const tempImage = new Image();
+      tempImage.src = image.getUrl(quality);
       tempImage.onload = () => {
         this.putImageInCacheInternal(image, quality);
         resolve();
       };
-      tempImage.src = image.getUrl(quality);
     });
   }
 
