@@ -47,3 +47,17 @@ cd back
 cargo build
 cargo run <port>
 ```
+
+### Front development with Docker-compose
+Add the following line in your docker-compose.yml -> services -> proxy -> volumes
+```
+- "./front/dist:/front_files/"
+```
+And, instead of using
+```
+yarn build --watch
+```
+Use
+```
+yarn build --watch --no-clean
+```
