@@ -12,7 +12,7 @@ docker-compose up -d
 ```
 
 ### Computer connection
-- visit `https://localhost:3030`
+- visit `https://localhost`
 - ignore certifiacte warnings
 
 ### Smartphone connection
@@ -33,31 +33,25 @@ chromium -ignore-certificate-errors&
 # Contribution
 --------------
 
-### build front
-```
-cd front
-yarn
-yarn build
-```
-Builded files are in front/dist
-
-### build back
-```
-cd back
-cargo build
-cargo run <port>
-```
-
-### Front development with Docker-compose
+### Front development
 Add the following line in your docker-compose.yml -> services -> proxy -> volumes
 ```
 - "./front/dist:/front_files/"
 ```
-And, instead of using
+Build:
 ```
-yarn build --watch
-```
-Use
-```
+cd front
+yarn
 yarn build --watch --no-clean
+```
+
+### Back development
+Add the following line in your docker-compose.yml -> services -> proxy -> environment
+```
+- "- BACK_URI=https://localhost:3000"
+```
+Run back on port 3000:
+```
+cd back
+cargo run 3000
 ```
