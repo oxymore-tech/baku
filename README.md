@@ -1,5 +1,4 @@
 # Start local instance
------------------------
 
 ### Prerequisites
   - docker
@@ -22,7 +21,6 @@ docker-compose up -d
   * visit `https://<computer_ip>:3030`
 
 # Troubleshooting
------------------
 
 ### Erreur ERR_INVALID_CERTIFICATE
 Run chrome/chromium with the parameter `ignore-certificate-errors`
@@ -31,7 +29,6 @@ chromium -ignore-certificate-errors&
 ```
 
 # Contribution
---------------
 
 ### Front development
 Add the following line in your docker-compose.yml -> services -> proxy -> volumes
@@ -48,7 +45,7 @@ yarn build --watch --no-clean
 ### Back development
 Add the following line in your docker-compose.yml -> services -> proxy -> environment
 ```
-- "- BACK_URI=https://localhost:3000"
+- BACK_URI=https://localhost:3000
 ```
 Run back on port 3000:
 ```
