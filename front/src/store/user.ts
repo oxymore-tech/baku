@@ -1,32 +1,25 @@
-interface UserState {
-  username: string;
-}
-const gfynonce = require('gfynonce');
+const yokaiList = ["Akuma", "Asobibi", "Bakebi", "Bakeneko", "Baku", "Daki", "Enkō", "Fūbo", "Genbu", "Hakuba", "Hinode", "Ikuchi", "Jashin", "Kappa", "Kirin", "Kitsune", "Kodama", "Kowai", "Mononoke", "Ninko", "Ōgama", "Ōkami", "Oni", "Raijū", "Reiki", "Ryū", "Saburō", "Sankai", "Sankibō", "Sarugami", "Satori", "Shiryō", "Shisa", "Sōgenbi", "Sōjōbō", "Son Gokū", "Taiba", "Tanuki", "Tatsu", "Tengubi", "Tenji", "Tenko", "Tōtetsu", "Uba Ga Hi", "Ubume", "Uryû", "Uwan", "Waira", "Yōko", "Yōsei", "Yosuzume", "Yukinko", "Yurei", "Zan", "Zorigami", "Zuijin"];
 
-const getUsername = () => {
-  const res = localStorage.getItem('username');
-  if (res === null) {
-    const res = gfynonce({ adjectives: 1, separator: ' ' });
-    localStorage.setItem('username', res);
+const initializeUsername = () => {
+  // retrieve last username if exists
+  const username = localStorage.getItem('username');
+  if (username) {
+    return username;
   }
-  return res;
+
+  // generate username
+  const randIdx = Math.floor(Math.random() * yokaiList.length)
+  const generatedUsername = yokaiList[randIdx];
+  localStorage.setItem('username', generatedUsername);
+  return generatedUsername;
 };
 
 export const UserStore = {
   namespaced: true,
   state: {
-    username: getUsername(),
+    username: initializeUsername(),
   },
-  mutations: {
-    changeUsername(state: UserState, name: string) {
-      state.username = name;
-    },
-  },
-  actions: {
-    changeUsername(context: { commit: any, state: UserState }, name: string) {
-      context.commit('changeUsername', name);
-    },
-  },
-  getters: {
-  },
+  mutations: {},
+  actions: {},
+  getters: {},
 };

@@ -6615,13 +6615,6 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
-gfynonce@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/gfynonce/-/gfynonce-1.0.1.tgz#32fcc1647b32dea896a71626d600eb3caa048909"
-  integrity sha512-kk/VzlXqZPJE4en2dH3YRQHgco67ISlTZ6Ygbm2j3wIrMa1ln88pET7LysbX493PVMKS/Vknr1fBaKhsO6HRSw==
-  dependencies:
-    minimist "^1.2.0"
-
 git-clone@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/git-clone/-/git-clone-0.1.0.tgz#0d76163778093aef7f1c30238f2a9ef3f07a2eb9"

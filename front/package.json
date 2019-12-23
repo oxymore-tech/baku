@@ -14,7 +14,6 @@
     "buefy": "^0.8.6",
     "caman": "^4.1.2",
     "core-js": "^3.3.2",
-    "gfynonce": "^1.0.1",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
     "uuid": "^3.3.3",
