@@ -85,6 +85,7 @@ export default class App extends Vue {
       parent: this,
       component: ProjectSettingsPopup,
       hasModalCard: true,
+      canCancel: ['escape', 'outside'],
     });
   }
 }

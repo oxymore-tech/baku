@@ -5,6 +5,7 @@
   >
     <header class="modal-card-head">
       <p class="modal-card-title">Réglages du film</p>
+      <i @click="$emit('close')" class="icon-close baku-button"></i>
     </header>
     <section class="modal-card-body">
       <span>Votre film est automatiquement installé à l'adresse suivante :</span><br>
