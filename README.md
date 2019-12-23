@@ -1,8 +1,8 @@
 # Start local instance
 
 ### Prerequisites
-  - docker
-  - docker-compose
+  - [docker](https://docs.docker.com/install/)
+  - [docker-compose](https://docs.docker.com/compose/install/)
 
 ### Start baku
 ```
@@ -11,7 +11,7 @@ docker-compose up -d
 ```
 
 ### Computer connection
-- visit `https://localhost`
+- visit <https://localhost>
 - ignore certifiacte warnings
 
 ### Smartphone connection
