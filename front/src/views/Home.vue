@@ -1,20 +1,60 @@
 <template>
   <div class="main">
-    <div class="leftPanel panel">
-      <div class="welcomediv">
+    
+    <div class="topPanel panel">
+      <div>
         <img src="@/assets/baku_logo_solo.png" />
-        <h3>Bienvenue sur Baku</h3>
       </div>
-      <span>{{ description }}</span>
-      <button class="createButton" @click="onCreateProject">Créer un film</button>
+      <div class="welcomediv">
+        <h3>Bienvenue sur Baku</h3>
+        <div class="description">
+          <div>
+            <span> {{ description1 }} </span>
+          </div>
+          <div>
+            <span> {{ description2 }} </span>
+          </div>
+        </div>
+        <div>
+          <button class="createButton" @click="onCreateProject">Créer un film</button>
+        </div>
+      </div>
     </div>
-    <div class="rightPanel panel">
-      <div class="premierCard">
-        <img src="@/assets/PremFois.jpg" />
-        <div class="cardFooter">
-          <p class="movieTitle">Mes premières fois</p>
-          <p style="font-size:14px;">{{ premierSynopsis }}</p>
-          <p class="openPremier" @click="openPremier">Ouvrir le film</p>
+
+    <div class="bottomPanel panel">
+      <div class="title">
+        <span> Quelques films de démonstration </span>
+      </div>
+      <div class="movieGallery">
+        <div class="movieCard" @click="openPremier">
+          <img src="@/assets/PremFois.jpg" />
+          <div class="cardFooter">
+            <p>Mes premières fois</p>
+          </div>
+        </div>
+        <div class="movieCard" @click="openPremier">
+          <img src="@/assets/PremFois.jpg" />
+          <div class="cardFooter">
+            <p>Mes premières fois</p>
+          </div>
+        </div>
+        <div class="movieCard" @click="openPremier">
+          <img src="@/assets/PremFois.jpg" />
+          <div class="cardFooter">
+            <p>Mes premières fois</p>
+          </div>
+        </div>
+        <div class="movieCard" @click="openPremier">
+          <img src="@/assets/PremFois.jpg" />
+          <div class="cardFooter">
+            <p>Mes premières fois</p>
+          </div>
+        </div>
+        <div class="movieCard" @click="openPremier">
+          <img src="@/assets/PremFois.jpg" />
+          <div class="cardFooter">
+            <p>Mes premières fois</p>
+          </div>
         </div>
       </div>
     </div>
@@ -27,16 +67,22 @@
   width: 100%;
   height: calc(100% - 48px);
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
+  overflow: auto;
 }
 
-.leftPanel {
-  flex: 1;
+.topPanel {
+  flex-direction: row;
+  margin-top: 4.5%;
 
   .welcomediv {
+    margin-top: 50px;
     display: inline-flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    text-align: center;
   }
 
   h3 {
@@ -44,8 +90,13 @@
     font-weight: bold;
   }
 
+  span {
+    font-size: 24px;
+  }
+
   img {
     width: 364px;
+    display: inline-flex;
   }
 
   .createButton {
@@ -62,26 +113,42 @@
   }
 }
 
-.rightPanel {
-  width: 600px;
+.bottomPanel {
+  width: 100%;
+  flex-direction: column;
+  margin-top: 4.5% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 
-  .premierCard {
-    width: 519px;
-    height: 509px;
+  .title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: normal;
+  }
+  .movieGallery {
+    background-color: #fe676f;
+    box-shadow: 0 0 20px #00000055;
+    display: flex;
+  }
+  .movieCard {
+    cursor: pointer;
+    width: 200px;
+    height: 150px;
     background: #ffffff 0% 0% no-repeat padding-box;
-    box-shadow: 0px 10px 20px #0000001a;
     border-radius: 16px;
     opacity: 1;
-    margin: 24px;
-    font-size: 16px/6px;
+    margin: 24px 0px 24px 24px;
     letter-spacing: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 
+    text-align: center;
+    font-size: 14px;
+
     img {
-      height: 339px;
-      width: 519px;
+      width: 200px;
+      height: 119px;
     }
 
     .cardFooter {
@@ -89,21 +156,6 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-
-      .movieTitle {
-        font-size: 32px;
-      }
-
-      .openPremier {
-        color: #e66359;
-        text-align: right;
-        cursor: pointer;
-      }
-    }
-
-    .shotName {
-      text-align: left;
-      color: #455054;
     }
   }
 }
@@ -111,7 +163,6 @@
 .panel {
   padding: 24px;
   display: flex;
-  flex-direction: column;
 }
 </style>
 
@@ -131,8 +182,8 @@ export default class Init extends Vue {
   @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
-  public description = `Baku est une rencontre entre instituteurs, artistes et développeurs.
-  C’est une plateforme de création de films d’animation collaborative destinée aux enfants.`;
+  public description1 = `Baku est une rencontre entre instituteurs, artistes et développeurs.`;
+  public description2 = `C’est une plateforme de création de films d’animation collaborative destinée aux enfants.`;
 
   public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
