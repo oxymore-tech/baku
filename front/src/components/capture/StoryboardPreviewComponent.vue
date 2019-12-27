@@ -45,8 +45,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Shot } from '@/api/movie.service';
-import { Quality } from '@/api/baku.service';
 import { Spinner } from '@/api/spinner.class';
+import { Quality } from '@/api/uploadedImage.class';
 
 const ProjectNS = namespace('project');
   @Component
@@ -76,7 +76,8 @@ export default class StoryboardPreviewComponent extends Vue {
     }
 
     public get preview() {
-      if (this.shots && this.shots.length > 0) {
+      if (this.shots && this.shots.length > 0 && this.shots[0].images && this.shots[0].images.length > 0) {
+        console.log('preview', this.shots[0].images);
         return this.shots[0].images[0].getUrl(Quality.Original);
       }
       return Spinner;

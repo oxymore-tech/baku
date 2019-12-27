@@ -114,8 +114,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Quality } from '@/api/baku.service';
 import { Spinner } from '@/api/spinner.class';
+import { Quality } from '@/api/uploadedImage.class';
 
   type Shot = {
     id: string;

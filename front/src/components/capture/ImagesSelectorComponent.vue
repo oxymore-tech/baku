@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ImageRef } from '@/api/baku.service';
+import { ImageRef } from '@/api/uploadedImage.class';
 
 @Component
 export default class ImagesSelectorComponent extends Vue {

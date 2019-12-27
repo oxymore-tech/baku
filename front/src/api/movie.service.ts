@@ -1,7 +1,8 @@
 import * as uuid from 'uuid';
 import {
-  BakuAction, BakuEvent, BakuService, ImageRef, UploadedImage,
+  BakuAction, BakuEvent, BakuService,
 } from '@/api/baku.service';
+import { ImageRef, UploadedImage } from './uploadedImage.class';
 
 export interface Movie {
   readonly title: string;

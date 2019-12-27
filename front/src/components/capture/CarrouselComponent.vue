@@ -35,7 +35,7 @@
           v-if="computedActiveImage !== undefined"
           class="carrouselThumb active"
           :alt="computedActiveImage"
-          :src="`/api/${projectId}/images/${activeShot}/${computedActiveImage}?width=185&height=104`"
+          :src="ImageCacheService.getThumbnail(computedActiveImage.id)"
         />
       </div>
     </template>
@@ -47,6 +47,8 @@
           :projectId="projectId"
           :activeShot="activeShot"
           :activeIndex="activeImage+1"
+          @captured="onCaptured"
+          @uploaded="onUploaded"
           v-on:moveactiveframe="$emit('moveactiveframe', $event)"
         />
       </div>
@@ -63,7 +65,7 @@
           <img
             class="carrouselThumb"
             :alt="image"
-            :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+            :src="ImageCacheService.getThumbnail(image.id)"
             @click="moveToImage(index + 1)"
           />
         </div>
@@ -126,10 +128,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { ImageRef, UploadedImage } from '@/api/baku.service';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { Device } from '@/api/device.class';
 import { ImageCacheService } from '@/api/imageCache.service';
+import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
