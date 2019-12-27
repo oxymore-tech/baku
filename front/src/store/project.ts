@@ -1,5 +1,6 @@
+import { Module } from 'vuex';
 import { Movie, MovieService, Shot } from '@/api/movie.service';
-import { BakuEvent, ImageRef } from '@/api/baku.service';
+import { BakuEvent } from '@/api/baku.service';
 
 const movieService = new MovieService();
 
@@ -11,7 +12,6 @@ interface ProjectState {
 }
 
 interface ProjectGetters {
-  getPictures: string[];
   movie: Movie;
   getActiveShot: Shot;
 }
@@ -19,8 +19,6 @@ interface ProjectGetters {
 export const ProjectStore: Module<ProjectState, any> = {
   namespaced: true,
   state: {
-    pictures: [],
-    fullResPicturesCache: [],
     id: '',
     activeShotId: null,
     history: [],
@@ -71,7 +69,7 @@ export const ProjectStore: Module<ProjectState, any> = {
       context.commit('addToLocalHistory', event);
     },
 
-    async createShot(context: any, name = 'Default shot'): Promise<string> {
+    async createShot(context: any, _name = 'Default shot'): Promise<string> {
       const createEvent = await movieService.addShot(context.state.id, context.rootState.user.username);
       context.commit('addToLocalHistory', createEvent);
       return createEvent.value.shotId;
@@ -85,9 +83,7 @@ export const ProjectStore: Module<ProjectState, any> = {
   },
   getters: {
     movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
-    getPictures: (state: ProjectState): string[] => state.pictures,
-    getActiveShot: (state: ProjectState, getters: any): Shot => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
-
+    getActiveShot: (state: ProjectState, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
   },
   modules: {},
 };
