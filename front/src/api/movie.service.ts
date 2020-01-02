@@ -86,7 +86,7 @@ export class MovieService {
   }
 
   public async updateTitle(projectId: string, title: string, username: string): Promise<BakuEvent> {
-    const event: BakuEvent = { action: BakuAction.MOVIE_UPDATE_TITLE, value: title, user: username };
+    const event: BakuEvent = { action: BakuAction.MOVIE_UPDATE_TITLE, value: title, user: username, timestamp: new Date() };
     await this.bakuService.stack(projectId, event);
     return event;
   }
@@ -96,6 +96,7 @@ export class MovieService {
       action: BakuAction.MOVIE_UPDATE_SYNOPSIS,
       value: synopsis,
       user: username,
+      timestamp: new Date(),
     };
     await this.bakuService.stack(projectId, event);
     return event;
@@ -106,6 +107,7 @@ export class MovieService {
       action: BakuAction.MOVIE_UPDATE_SYNOPSIS,
       value: poster,
       user: username,
+      timestamp: new Date(),
     });
   }
 
@@ -114,13 +116,14 @@ export class MovieService {
       action: BakuAction.SHOT_ADD,
       value: { shotId: uuid.v4() },
       user: username,
+      timestamp: new Date(),
     };
     await this.bakuService.stack(projectId, event);
     return event;
   }
 
   public async changeFps(projectId: string, fps: number, username: string): Promise<BakuEvent> {
-    const event = { action: BakuAction.CHANGE_FPS, value: fps, user: username };
+    const event = { action: BakuAction.CHANGE_FPS, value: fps, user: username, timestamp: new Date() };
     await this.bakuService.stack(projectId, event);
     return event;
   }
@@ -130,6 +133,7 @@ export class MovieService {
       action: BakuAction.MOVIE_INSERT_IMAGE,
       value: { shotId, imageIndex: imgIndex, image },
       user: username,
+      timestamp: new Date(),
     };
     await this.bakuService.stack(projectId, event);
     return event;

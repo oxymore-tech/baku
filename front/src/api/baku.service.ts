@@ -40,6 +40,8 @@ export interface BakuEvent {
   readonly action: BakuAction;
   readonly value: any;
   readonly user: string;
+  readonly timestamp: Date;
+
 }
 
 export class BakuService {

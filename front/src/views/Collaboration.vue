@@ -47,6 +47,7 @@ export default class History extends Vue {
           break;
       }
       line += action;
+      line += ` ${bakuEvent.timestamp}`;
       actions = actions.concat(line);
     }
     return actions;
