@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
-import Shots from '../views/Shots.vue';
+import Collaboration from '../views/Collaboration.vue';
 import Capture from '../views/Capture.vue';
 import MovieHome from '../views/MovieHome.vue';
+import Shots from '../views/Shots.vue';
 import Todo from '../views/Todo.vue';
 
 Vue.use(VueRouter);
@@ -53,7 +54,7 @@ const routes = [
   {
     name: 'collaboration',
     path: '/movies/:projectId/collaboration',
-    component: Todo,
+    component: Collaboration,
   },
 ];
 

@@ -71,6 +71,8 @@ export const ProjectStore = {
 
   },
   getters: {
+    history: (state: ProjectState): BakuEvent[] => state.history,
+
     movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
 
     getActiveShot: (state: ProjectState, getters: any): Shot => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
