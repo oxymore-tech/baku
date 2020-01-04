@@ -2,7 +2,7 @@
   <div class="mainFrame">
     <div class="history">
       <span class="title"> Historique des actions : </span><br />
-      <span v-for="action in actions" class="action">{{ action }}<br /></span>
+      <span v-for="(action, index) in actions" :key="`action_${index}`" class="action">{{ action }}<br /></span>
     </div>
   </div>
 </template>
@@ -47,7 +47,9 @@ export default class History extends Vue {
           break;
       }
       line += action;
-      line += ` ${bakuEvent.timestamp}`;
+      if (bakuEvent.timestamp) {
+        line += ` ${bakuEvent.timestamp}`;
+      }
       actions = actions.concat(line);
     }
     return actions;
