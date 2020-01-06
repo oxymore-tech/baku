@@ -21,7 +21,7 @@ export default class History extends Vue {
 
   get actions(): String[] {
     let actions: String[] = [];
-    for (const bakuEvent of this.history) {
+    this.history.forEach((bakuEvent) => {
       let line = `${bakuEvent.user} `;
       let action;
       switch (bakuEvent.action) {
@@ -48,10 +48,10 @@ export default class History extends Vue {
       }
       line += action;
       if (bakuEvent.timestamp) {
-        line += ` ${bakuEvent.timestamp}`;
+        line += ` ${bakuEvent.timestamp.toString()}`;
       }
       actions = actions.concat(line);
-    }
+    });
     return actions;
   }
 }
