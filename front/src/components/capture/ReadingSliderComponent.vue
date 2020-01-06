@@ -13,6 +13,7 @@
         :style="barStyle"
       />
       <template>
+        <!--  -->
         <ReadingSliderTickComponent
           v-for="(val, key) in tickValues"
           :key="key"
@@ -36,6 +37,7 @@
         @dragstart="onDragStart"
         @dragend="onDragEnd"
       />
+
       <ReadingSliderThumbComponent
         v-model="valueRight"
         :type="tooltipType"
@@ -52,9 +54,34 @@
         @dragstart="onDragStart"
         @dragend="onDragEnd"
       />
+
+      <ReadingSliderThumbComponent
+        v-model="valueSelected"
+        class="active-thumb"
+        :type="tooltipType"
+        :tooltip="tooltip"
+        :custom-formatter="customFormatter"
+        ref="button3"
+        role="slider"
+        :aria-valuenow="valueSelected"
+        :aria-valuemin="min"
+        :aria-valuemax="max"
+        aria-orientation="horizontal"
+        :aria-label="Array.isArray(ariaLabel) ? ariaLabel[0] : ariaLabel"
+        :aria-disabled="disabled"
+        @dragstart="onDragStart"
+        @dragend="onDragEnd"
+      />
     </div>
   </div>
 </template>
+
+<style lang="scss">
+div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
+  background-color: #fbb10d;
+  width: 8px;
+}
+</style>
 
 <script lang="ts">
 import {
@@ -117,7 +144,7 @@ export default class ReadingSliderComponent extends Vue {
 
   public valueLeft = 0;
   public valueRight = 0;
-  public valueSelected!: number;
+  public valueSelected = 0;
 
   created() {
     this.isThumbReversed = false;
@@ -154,8 +181,14 @@ export default class ReadingSliderComponent extends Vue {
     };
   }
 
+  get sliderSize() {
+    return (<any>this.$refs.slider).clientWidth;
+  }
+
   setValues(newValue: ReadingSliderValue) {
-    console.log('setValues', newValue);
+
+    console.log('setValues', newValue, this.min, this.max);
+
     if (this.min > this.max) {
       return;
     }
@@ -171,6 +204,7 @@ export default class ReadingSliderComponent extends Vue {
     this.valueSelected = Number.isNaN(newValue.selected)
       ? this.min
       : Math.min(this.max, Math.max(this.min, newValue.selected));
+    console.log('this.valueSelected', this.valueSelected);
   }
 
   onInternalValueUpdate() {
@@ -189,15 +223,21 @@ export default class ReadingSliderComponent extends Vue {
     console.log('ONSLIDERCLICJ FUCK')
     if (this.disabled || this.isTrackClickDisabled) return;
     const sliderOffsetLeft = (<any>this.$refs.slider).getBoundingClientRect().left;
-    const sliderSize = (<any>this.$refs.slider).clientWidth;
-    const percent = ((event.clientX - sliderOffsetLeft) / sliderSize) * 100;
+    const percent = ((event.clientX - sliderOffsetLeft) / this.sliderSize) * 100;
     const targetValue = this.min + (percent * (this.max - this.min)) / 100;
     const diffFirst = Math.abs(targetValue - this.valueLeft);
+    console.log('sliderOffsetLeft', sliderOffsetLeft);
+    console.log('sliderSize', this.sliderSize);
+    console.log('percent', percent);
+    console.log('targetValue', targetValue);
+    console.log('diffFirst', diffFirst);
+    console.log('this.step', this.step);
     // if (!this.isRange) {
     //   if (diffFirst < this.step / 2) return;
     //   (<any>this.$refs.button1).setPosition(percent);
     // } else {
     const diffSecond = Math.abs(targetValue - this.valueRight);
+    console.log('diffSecond', diffSecond);
     if (diffFirst <= diffSecond) {
       if (diffFirst < this.step / 2) return;
       (<any>this.$refs.button1).setPosition(percent);
@@ -228,11 +268,7 @@ export default class ReadingSliderComponent extends Vue {
   }
 
   emitValue(type: string) {
-    console.log('emitValue', type, this.value, this.valueLeft, this.valueRight);
-    this.value.left = this.valueLeft;
-    this.value.right = this.valueRight;
-    this.value.selected = this.valueSelected;
-    this.$emit(type, this.value);
+    this.$emit(type, { left: this.valueLeft, right: this.valueRight, selected: this.valueSelected });
   }
 
   @Watch('value')
@@ -248,7 +284,11 @@ export default class ReadingSliderComponent extends Vue {
 
   @Watch('valueRight')
   onChangeValueRight() {
-    console.log('onChangeValueRight', this.valueRight);
+    this.onInternalValueUpdate();
+  }
+
+  @Watch('valueSelected')
+  onChangeValueSelected() {
     this.onInternalValueUpdate();
   }
 

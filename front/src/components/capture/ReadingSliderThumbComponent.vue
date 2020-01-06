@@ -112,14 +112,14 @@ export default {
     onLeftKeyDown () {
       if (this.disabled || this.value === this.min) return
       this.newPosition = parseFloat(this.currentPosition) -
-        this.step / (this.max - this.min) * 100
+        this.step / (this.max - this.min) * 100;
       this.setPosition(this.newPosition)
       this.$parent.emitValue('change')
     },
     onRightKeyDown () {
       if (this.disabled || this.value === this.max) return
       this.newPosition = parseFloat(this.currentPosition) +
-        this.step / (this.max - this.min) * 100
+        this.step / (this.max - this.min) * 100;
       this.setPosition(this.newPosition)
       this.$parent.emitValue('change')
     },
@@ -171,7 +171,6 @@ export default {
       }
     },
     setPosition (percent) {
-      console.log('thumb setPosition', percent, this.value);
       if (percent === null || isNaN(percent)) return
       if (percent < 0) {
         percent = 0
@@ -182,7 +181,6 @@ export default {
       const steps = Math.round(percent / stepLength)
       let value = steps * stepLength / 100 * (this.max - this.min) + this.min
       value = parseFloat(value.toFixed(this.precision))
-      console.log('input', value);
       this.$emit('input', value)
       if (!this.dragging && value !== this.oldValue) {
         this.oldValue = value

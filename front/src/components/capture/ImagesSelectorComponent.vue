@@ -18,25 +18,23 @@
         :min="0"
         :max="max"
         :step="1"
+        class="reading-slider-component"
       >
-        <ReadingSliderTickComponent :value="activeImage">I</ReadingSliderTickComponent>
+        <!-- <ReadingSliderTickComponent :value="activeImage">I</ReadingSliderTickComponent> -->
       </ReadingSliderComponent>
     </b-field>
   </div>
 </template>
 
 <style lang="scss">
-span.b-slider-tick-label {
-  background-color: #fbb10d;
-  color: #fbb10d;
-  width: 8px;
-  border-radius: 2px;
-  top: calc(-0.5rem / 2 - 2px) !important;
+.reading-slider-component {
+  margin-left: 16px;
+  margin-right: 16px;
 }
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ImageRef } from '@/api/uploadedImage.class';
 import ReadingSliderComponent from '@/components/capture/ReadingSliderComponent.vue';
 import ReadingSliderTickComponent from '@/components/capture/ReadingSliderTickComponent.vue';
@@ -73,7 +71,8 @@ export default class ImagesSelectorComponent extends Vue {
   }
 
   set selectedImages(value: ReadingSliderValue) {
-    console.log('SET selectedImages', value);
+    console.log('SET selectedImages', this.activeImage, value);
+    this.$emit('moveactiveframe', value.selected - this.activeImage);
     this.$store.commit('project/setSelectedImagesBoundaries', { left: value.left, right: value.right });
   }
 

@@ -49,7 +49,7 @@
         :images="getActiveShot.images"
         :activeImage="activeFrame"
         :activeCapture="activeCapture"
-        v-on:moveactiveframe="moveActiveFrame($event)"
+        @moveactiveframe="moveActiveFrame"
       />
       <CarrouselComponent
         v-if="getActiveShot"
