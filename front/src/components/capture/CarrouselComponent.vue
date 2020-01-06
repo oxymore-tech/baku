@@ -18,7 +18,7 @@
       </template>
       <template v-else>
         <div
-          :key="image"
+          :key="'left'+index"
           @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
           class="carrouselThumb"
         />
@@ -72,7 +72,7 @@
       </template>
       <template v-else>
         <div
-          :key="image"
+          :key="'right'+index"
           @click="moveToImage(index + 1)"
         />
       </template>
@@ -82,7 +82,7 @@
       <img
         style="display:none"
         v-for="image in computedNextImages"
-        :key="image"
+        :key="image.id"
         :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
       />
     </template>
@@ -98,29 +98,29 @@
   padding: 12px 21px;
   align-items: center;
 
-  .carrouselThumb {
-    height: 78px;
-    min-width: 140px;
-    margin: 0 7px;
-    border: 1px solid #f2f2f2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   .imageContainer {
-    border: 2px solid transparent;
-    padding: 1px;
-  }
+    border: 4px solid transparent;
+    filter: grayscale(100%);
 
-  .inSelection {
-    border: 2px solid #27a2bb;
-  }
+    .carrouselThumb {
+      height: 78px;
+      min-width: 140px;
+      margin: 0px;
+      border: 4px solid #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-  .active {
-    border: 2px solid #455054;
-    box-sizing: content-box;
-    border-radius: 3px;
+      &.active {
+        border: 4px solid #ff0000;
+        box-sizing: content-box;
+      }
+    }
+
+    &.inSelection {
+      border: 4px solid #167df0;
+      filter: grayscale(0%);
+    }
   }
 }
 </style>
@@ -132,6 +132,7 @@ import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.
 import { Device } from '@/api/device.class';
 import { ImageCacheService } from '@/api/imageCache.service';
 import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
+import { ReadingSliderBoundaries } from '../../api/movie.service';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -164,7 +165,7 @@ export default class CarrouselComponent extends Vue {
   protected addImageToShot!: ({ }) => Promise<void>;
 
   @ProjectNS.State
-  public selectedImages!: number[];
+  public selectedImagesBoundaries!: ReadingSliderBoundaries;
 
   mounted() {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -233,7 +234,7 @@ export default class CarrouselComponent extends Vue {
       const leftSelectionSize = 5;
       cindex = this.activeImage - (leftSelectionSize - index);
     }
-    return cindex >= this.selectedImages[0] && cindex <= this.selectedImages[1];
+    return cindex >= this.selectedImagesBoundaries.left && cindex <= this.selectedImagesBoundaries.right;
   }
 
   public moveToImage(indexToMove: number) {

@@ -17,6 +17,17 @@ export interface Shot {
   readonly images: ImageRef[];
 }
 
+export interface ReadingSliderBoundaries {
+  left: number;
+  right: number;
+}
+
+export interface ReadingSliderValue {
+  left: number;
+  right: number;
+  selected: number;
+}
+
 export class MovieService {
   public static merge(projectId: string, events: BakuEvent[]): Movie {
     let title = 'Projet sans nom';

@@ -1,5 +1,5 @@
 import { Module } from 'vuex';
-import { Movie, MovieService, Shot } from '@/api/movie.service';
+import { Movie, MovieService, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
 import { BakuEvent } from '@/api/baku.service';
 
 const movieService = new MovieService();
@@ -8,7 +8,7 @@ interface ProjectState {
   id: string;
   activeShotId: string | null;
   history: BakuEvent[];
-  selectedImages: number[];
+  selectedImagesBoundaries: ReadingSliderBoundaries;
 }
 
 interface ProjectGetters {
@@ -22,7 +22,7 @@ export const ProjectStore: Module<ProjectState, any> = {
     id: '',
     activeShotId: null,
     history: [],
-    selectedImages: [0, 2],
+    selectedImagesBoundaries: { left: 1, right: 3 },
   },
   mutations: {
     setMovie(state, payload: { projectId: string, movieHistory: BakuEvent[] }) {
@@ -35,8 +35,8 @@ export const ProjectStore: Module<ProjectState, any> = {
     changeActiveShot(state, shotId: string) {
       state.activeShotId = shotId;
     },
-    setSelectedImages(state, newImagesSelection: number[]) {
-      state.selectedImages = newImagesSelection;
+    setSelectedImagesBoundaries(state, newImagesSelection: ReadingSliderBoundaries) {
+      state.selectedImagesBoundaries = newImagesSelection;
     },
   },
   actions: {
