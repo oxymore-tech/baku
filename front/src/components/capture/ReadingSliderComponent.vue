@@ -70,16 +70,25 @@
         :aria-label="Array.isArray(ariaLabel) ? ariaLabel[0] : ariaLabel"
         :aria-disabled="disabled"
         @dragstart="onDragStart"
-        @dragend="onDragEnd"
+        @dragend="onDragEndSelectedButton"
       />
     </div>
   </div>
 </template>
 
 <style lang="scss">
+.b-slider .b-slider-tick,
+.b-slider .b-slider-track {
+  height: 1rem;
+}
+
+.b-slider .b-slider-thumb {
+  height: 1.5rem;
+}
+
 div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
   background-color: #fbb10d;
-  width: 8px;
+  width: 0.7rem;
 }
 </style>
 
@@ -191,10 +200,10 @@ export default class ReadingSliderComponent extends Vue {
 
     const smallValue = typeof newValue.left !== 'number' || Number.isNaN(newValue.left)
       ? this.min
-      : Math.min(Math.max(this.min, newValue.left), this.max);
+      : Math.min(Math.max(this.min, newValue.left), newValue.selected, this.max);
     const largeValue = typeof newValue.right !== 'number' || Number.isNaN(newValue.right)
       ? this.max
-      : Math.max(Math.min(this.max, newValue.right), this.min);
+      : Math.max(Math.min(this.max, newValue.right), newValue.selected, this.min);
     this.valueLeft = this.isThumbReversed ? largeValue : smallValue;
     this.valueRight = this.isThumbReversed ? smallValue : largeValue;
     this.valueSelected = Number.isNaN(newValue.selected)
@@ -204,58 +213,61 @@ export default class ReadingSliderComponent extends Vue {
 
   onInternalValueUpdate() {
     this.isThumbReversed = this.valueLeft > this.valueRight;
-
-    if (!this.lazy || !this.dragging) {
+    if (!this.lazy && !this.dragging) {
       this.emitValue('input');
     }
     if (this.dragging) {
-      this.emitValue('dragging');
+      this.$emit('dragging');
     }
   }
 
   onSliderClick(event: any) {
-    console.log('ONSLIDERCLICJ FUCK')
     if (this.disabled || this.isTrackClickDisabled) return;
     const sliderOffsetLeft = (<any>this.$refs.slider).getBoundingClientRect().left;
     const percent = ((event.clientX - sliderOffsetLeft) / this.sliderSize) * 100;
-    const targetValue = this.min + (percent * (this.max - this.min)) / 100;
+    const targetValue = Math.round(this.min + (percent * (this.max - this.min)) / 100);
     const diffFirst = Math.abs(targetValue - this.valueSelected);
-    console.log('sliderOffsetLeft', sliderOffsetLeft);
-    console.log('sliderSize', this.sliderSize);
-    console.log('percent', percent);
-    console.log('targetValue', targetValue);
-    console.log('diffFirst', diffFirst);
-    console.log('this.step', this.step);
-    console.log('this.valueLeft', this.valueLeft);
-    console.log('this.valueRight', this.valueRight);
-    console.log('this.valueSelected', this.valueSelected);
-    // if (!this.isRange) {
     if (diffFirst < this.step / 2) return;
 
     if (targetValue > this.valueRight) {
-      (<any>this.$refs.buttonRight).setPosition(percent);
+      // (<any>this.$refs.buttonRight).setPosition(percent);
+      this.valueRight = targetValue;
     }
     if (targetValue < this.valueLeft) {
-      (<any>this.$refs.buttonLeft).setPosition(percent);
+      // (<any>this.$refs.buttonLeft).setPosition(percent);
+      this.valueLeft = targetValue;
     }
-    (<any>this.$refs.buttonSelected).setPosition(percent);
-    // } else {
-    // const diffSecond = Math.abs(targetValue - this.valueRight);
-    // console.log('diffSecond', diffSecond);
-    // if (diffFirst <= diffSecond) {
-    //   if (diffFirst < this.step / 2) return;
-    //   (<any>this.$refs.button1).setPosition(percent);
-    // } else {
-    //   if (diffSecond < this.step / 2) return;
-    //   (<any>this.$refs.button2).setPosition(percent);
-    // }
-    // }
+    // (<any>this.$refs.buttonSelected).setPosition(percent);
+    this.valueSelected = targetValue;
     this.emitValue('change');
   }
 
   onDragStart() {
     this.dragging = true;
     this.$emit('dragstart');
+  }
+
+  onDragEndSelectedButton() {
+    this.isTrackClickDisabled = true;
+    setTimeout(() => {
+      // avoid triggering onSliderClick after dragend
+      this.isTrackClickDisabled = false;
+    }, 0);
+    this.dragging = false;
+
+    console.log('this.valueLeft', this.valueLeft);
+    console.log('this.valueRight', this.valueRight);
+    console.log('this.valueSelected', this.valueSelected);
+    if (this.valueSelected < this.valueLeft) {
+      this.valueLeft = this.valueSelected;
+    }
+    if (this.valueSelected > this.valueRight) {
+      console.log('CAS 2')
+      this.valueRight = this.valueSelected;
+    }
+
+    this.$emit('dragend');
+    this.emitValue('input');
   }
 
   onDragEnd() {
@@ -269,10 +281,10 @@ export default class ReadingSliderComponent extends Vue {
     console.log('this.valueLeft', this.valueLeft);
     console.log('this.valueRight', this.valueRight);
     console.log('this.valueSelected', this.valueSelected);
-    if (this.valueSelected  < this.valueLeft) {
+    if (this.valueSelected < this.valueLeft) {
       this.valueSelected = this.valueLeft;
     }
-    if (this.valueSelected  > this.valueRight) {
+    if (this.valueSelected > this.valueRight) {
       console.log('CAS 1')
       this.valueSelected = this.valueRight;
     }
@@ -280,9 +292,9 @@ export default class ReadingSliderComponent extends Vue {
     //   this.valueSelected = this.valueRight;
     // }
     this.$emit('dragend');
-    if (this.lazy) {
-      this.emitValue('input');
-    }
+    // if (this.lazy) {
+    this.emitValue('input');
+    // }
   }
 
   emitValue(type: string) {
