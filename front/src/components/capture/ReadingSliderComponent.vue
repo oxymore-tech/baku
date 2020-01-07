@@ -26,7 +26,7 @@
         :type="tooltipType"
         :tooltip="tooltip"
         :custom-formatter="customFormatter"
-        ref="button1"
+        ref="buttonLeft"
         role="slider"
         :aria-valuenow="valueLeft"
         :aria-valuemin="min"
@@ -43,7 +43,7 @@
         :type="tooltipType"
         :tooltip="tooltip"
         :custom-formatter="customFormatter"
-        ref="button2"
+        ref="buttonRight"
         role="slider"
         :aria-valuenow="valueRight"
         :aria-valuemin="min"
@@ -61,7 +61,7 @@
         :type="tooltipType"
         :tooltip="tooltip"
         :custom-formatter="customFormatter"
-        ref="button3"
+        ref="buttonSelected"
         role="slider"
         :aria-valuenow="valueSelected"
         :aria-valuemin="min"
@@ -149,7 +149,6 @@ export default class ReadingSliderComponent extends Vue {
   created() {
     this.isThumbReversed = false;
     this.isTrackClickDisabled = false;
-    console.log('created: setValues', this.value);
     this.setValues(this.value);
   }
 
@@ -169,7 +168,6 @@ export default class ReadingSliderComponent extends Vue {
       width: `${(100 * (maxValue - minValue)) / (this.max - this.min)}%`,
       left: `${(100 * (minValue - this.min)) / (this.max - this.min)}%`,
     };
-    console.log('barStyle', res);
     return res;
   }
 
@@ -187,8 +185,6 @@ export default class ReadingSliderComponent extends Vue {
 
   setValues(newValue: ReadingSliderValue) {
 
-    console.log('setValues', newValue, this.min, this.max);
-
     if (this.min > this.max) {
       return;
     }
@@ -204,11 +200,9 @@ export default class ReadingSliderComponent extends Vue {
     this.valueSelected = Number.isNaN(newValue.selected)
       ? this.min
       : Math.min(this.max, Math.max(this.min, newValue.selected));
-    console.log('this.valueSelected', this.valueSelected);
   }
 
   onInternalValueUpdate() {
-    console.log('onInternalValueUpdate', this.value);
     this.isThumbReversed = this.valueLeft > this.valueRight;
 
     if (!this.lazy || !this.dragging) {
@@ -225,26 +219,36 @@ export default class ReadingSliderComponent extends Vue {
     const sliderOffsetLeft = (<any>this.$refs.slider).getBoundingClientRect().left;
     const percent = ((event.clientX - sliderOffsetLeft) / this.sliderSize) * 100;
     const targetValue = this.min + (percent * (this.max - this.min)) / 100;
-    const diffFirst = Math.abs(targetValue - this.valueLeft);
+    const diffFirst = Math.abs(targetValue - this.valueSelected);
     console.log('sliderOffsetLeft', sliderOffsetLeft);
     console.log('sliderSize', this.sliderSize);
     console.log('percent', percent);
     console.log('targetValue', targetValue);
     console.log('diffFirst', diffFirst);
     console.log('this.step', this.step);
+    console.log('this.valueLeft', this.valueLeft);
+    console.log('this.valueRight', this.valueRight);
+    console.log('this.valueSelected', this.valueSelected);
     // if (!this.isRange) {
+    if (diffFirst < this.step / 2) return;
+
+    if (targetValue > this.valueRight) {
+      (<any>this.$refs.buttonRight).setPosition(percent);
+    }
+    if (targetValue < this.valueLeft) {
+      (<any>this.$refs.buttonLeft).setPosition(percent);
+    }
+    (<any>this.$refs.buttonSelected).setPosition(percent);
+    // } else {
+    // const diffSecond = Math.abs(targetValue - this.valueRight);
+    // console.log('diffSecond', diffSecond);
+    // if (diffFirst <= diffSecond) {
     //   if (diffFirst < this.step / 2) return;
     //   (<any>this.$refs.button1).setPosition(percent);
     // } else {
-    const diffSecond = Math.abs(targetValue - this.valueRight);
-    console.log('diffSecond', diffSecond);
-    if (diffFirst <= diffSecond) {
-      if (diffFirst < this.step / 2) return;
-      (<any>this.$refs.button1).setPosition(percent);
-    } else {
-      if (diffSecond < this.step / 2) return;
-      (<any>this.$refs.button2).setPosition(percent);
-    }
+    //   if (diffSecond < this.step / 2) return;
+    //   (<any>this.$refs.button2).setPosition(percent);
+    // }
     // }
     this.emitValue('change');
   }
@@ -261,6 +265,20 @@ export default class ReadingSliderComponent extends Vue {
       this.isTrackClickDisabled = false;
     }, 0);
     this.dragging = false;
+
+    console.log('this.valueLeft', this.valueLeft);
+    console.log('this.valueRight', this.valueRight);
+    console.log('this.valueSelected', this.valueSelected);
+    if (this.valueSelected  < this.valueLeft) {
+      this.valueSelected = this.valueLeft;
+    }
+    if (this.valueSelected  > this.valueRight) {
+      console.log('CAS 1')
+      this.valueSelected = this.valueRight;
+    }
+    // if (this.valueSelected  < this.value) {
+    //   this.valueSelected = this.valueRight;
+    // }
     this.$emit('dragend');
     if (this.lazy) {
       this.emitValue('input');
@@ -273,7 +291,6 @@ export default class ReadingSliderComponent extends Vue {
 
   @Watch('value')
   onChangeValue(value: ReadingSliderValue) {
-    console.log('onChangeValue', value);
     this.setValues(value);
   }
 

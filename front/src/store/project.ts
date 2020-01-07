@@ -22,7 +22,7 @@ export const ProjectStore: Module<ProjectState, any> = {
     id: '',
     activeShotId: null,
     history: [],
-    selectedImagesBoundaries: { left: 1, right: 3 },
+    selectedImagesBoundaries: { left: 0, right: 3 },
   },
   mutations: {
     setMovie(state, payload: { projectId: string, movieHistory: BakuEvent[] }) {

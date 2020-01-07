@@ -65,13 +65,13 @@ export default class ImagesSelectorComponent extends Vue {
   public max = 6;
 
   get selectedImages() {
-    console.log('GET selectedImages', this.$store.state.project.selectedImagesBoundaries);
+    // console.log('GET selectedImages', this.$store.state.project.selectedImagesBoundaries);
     // return this.$store.state.project.selectedImagesBoundaries;
     return { ...this.$store.state.project.selectedImagesBoundaries, selected: this.activeImage };
   }
 
   set selectedImages(value: ReadingSliderValue) {
-    console.log('SET selectedImages', this.activeImage, value);
+    // console.log('SET selectedImages', this.activeImage, value);
     this.$emit('moveactiveframe', value.selected - this.activeImage);
     this.$store.commit('project/setSelectedImagesBoundaries', { left: value.left, right: value.right });
   }
