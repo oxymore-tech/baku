@@ -22,10 +22,10 @@
             />
           </template>
           <img
-            v-if="getActiveShot && getActiveShot.images[activeFrame - 1] && activeCapture"
+            v-if="getActiveShot && getActiveShot.images[activeFrame] && activeCapture"
             alt="ghostImg"
             id="ghostImg"
-            :src="ImageCacheService.getImage(getActiveShot.images[activeFrame -1].id)"
+            :src="ImageCacheService.getImage(getActiveShot.images[activeFrame].id)"
           />
         </div>
         <CaptureToolboxComponent v-if="getActiveShot" />
