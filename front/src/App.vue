@@ -17,7 +17,7 @@
         <router-link :to="`/movies/${id}/movieEditing`">Montage</router-link>
         <router-link :to="`/movies/${id}/collaboration`">Collaboratif</router-link>
       </template>
-      <div 
+      <div
         v-if="this.$route.path != '/'"
         class="right-nav">
         {{ username }}

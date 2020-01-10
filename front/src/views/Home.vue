@@ -1,6 +1,5 @@
 <template>
   <div class="main">
-    
     <div class="topPanel panel">
       <div>
         <img src="@/assets/baku_logo_solo.png" />
@@ -9,10 +8,10 @@
         <h3>Bienvenue sur Baku</h3>
         <div class="description">
           <div>
-            <span> {{ description1 }} </span>
+            <span>{{ description1 }}</span>
           </div>
           <div>
-            <span> {{ description2 }} </span>
+            <span>{{ description2 }}</span>
           </div>
         </div>
         <div>
@@ -23,7 +22,7 @@
 
     <div class="bottomPanel panel">
       <div class="title">
-        <span> Quelques films de démonstration </span>
+        <span>Quelques films de démonstration</span>
       </div>
       <div class="movieGallery">
         <div class="movieCard" @click="openPremier">
@@ -182,8 +181,9 @@ export default class Init extends Vue {
   @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
-  public description1 = `Baku est une rencontre entre instituteurs, artistes et développeurs.`;
-  public description2 = `C’est une plateforme de création de films d’animation collaborative destinée aux enfants.`;
+  public description1 = 'Baku est une rencontre entre instituteurs, artistes et développeurs.';
+
+  public description2 = 'C’est une plateforme de création de films d’animation collaborative destinée aux enfants.';
 
   public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous

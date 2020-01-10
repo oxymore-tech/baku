@@ -1,22 +1,13 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <b-collapse
-    aria-id="contentIdForA11y2"
-    class="panel"
-    :open="activeCapture"
-    @open="setActiveCapture(true)"
-    @close="setActiveCapture(false)"
-  >
-    <div
-      slot="trigger"
-      class="panel-heading"
-      role="button"
-      aria-controls="contentIdForA11y2"
-    >
-      <strong>mode capture</strong>
+  <div class="boxContainer">
+    <div class="settings-header">
+      <i class="icon-cog baku-button" />
+      <h4>Réglages</h4>
     </div>
 
     <b-field>
+      <i class="icon-webcam" />
       <b-select
         @input="onCaptureDeviceChange()"
         placeholder="Select a Camera"
@@ -24,14 +15,10 @@
         v-model="selectedDeviceId"
         size="is-small"
       >
-        <option
-          v-for="device in devices"
-          :key="device.id"
-          :value="device.id"
-        >{{device.label}}</option>
+        <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
       </b-select>
     </b-field>
-  </b-collapse>
+  </div>
 </template>
 
 
@@ -65,11 +52,15 @@ export default class CaptureToolboxComponent extends Vue {
 
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
-      .map((input: MediaDeviceInfo) => (new Device(input.deviceId, input.label || 'Caméra non reconnue')));
+    const videoDevices = devices
+      .filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
+      .map(
+        (input: MediaDeviceInfo) => new Device(input.deviceId, input.label || 'Caméra non reconnue'),
+      );
     const deviceIds = [...new Set(videoDevices.map((d) => d.id))];
-    this.devices = deviceIds
-      .map((id) => videoDevices.find((d) => d.id === id) as Device);
+    this.devices = deviceIds.map(
+      (id) => videoDevices.find((d) => d.id === id) as Device,
+    );
     this.devices.push(new Device('smartphone', 'Smartphone'));
   }
 
@@ -89,10 +80,6 @@ export default class CaptureToolboxComponent extends Vue {
       });
     }
   }
-
-  public setActiveCapture(isActiveCapture: boolean) {
-    this.$store.dispatch('capture/setActiveCapture', isActiveCapture);
-  }
 }
 </script>
 
@@ -100,5 +87,29 @@ export default class CaptureToolboxComponent extends Vue {
 .collapse-content {
   background-color: white;
   padding: 6px;
+}
+
+.settings-header {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+
+  h4 {
+    font-size: 28px;
+    font-weight: lighter;
+  }
+
+  i {
+    font-size: 28px;
+    padding-right: 10px;
+  }
+}
+
+.field {
+  i {
+    font-size: 20px;
+    color: #707070;
+    margin: 3px 5px;
+  }
 }
 </style>

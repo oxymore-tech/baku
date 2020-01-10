@@ -2,7 +2,7 @@
   <div class="carrouselContainer">
     <!-- LEFT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedLeftCarrousel">
-      <div class="carrouselThumb" v-if="image !== null">
+      <div :key="image.id" class="carrouselThumb" v-if="image !== null">
         <img
           :key="`left_${index}`"
           :alt="image.id"
@@ -37,7 +37,7 @@
 
     <!-- RIGHT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedRightCarrousel">
-      <div class="carrouselThumb" v-if="image !== null">
+      <div :key="image.id" class="carrouselThumb" v-if="image !== null">
         <img
           :key="'right-'+index"
           :alt="image.id"
