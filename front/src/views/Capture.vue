@@ -2,46 +2,88 @@
   <div class="mainFrame">
     <template>
       <div class="previewBloc">
-        <StoryboardPreviewComponent :shots="movie.shots" :activeShotId="activeShotId" />
-          <div class="previewContainer">
-            <video
-          v-if="activeCapture"
-          id="videoCapture"
-          width="640"
-          height="480"
-          autoplay
-          muted
-          playsinline
+        <StoryboardPreviewComponent
+          :shots="movie.shots"
+          :activeShotId="activeShotId"
         />
-          <template v-else>
-            <img
-              v-if="getActiveShot && getActiveShot.images[activeFrame]"
-              alt="previewImg"
-              id="previewImg"
-              :src="ImageCacheService.getImage(getActiveShot.images[activeFrame].id)"
+        <div class="previewContainer">
+          <div class="previewContent">
+            <video
+              v-if="activeCapture"
+              id="videoCapture"
+              width="640"
+              height="480"
+              autoplay
+              muted
+              playsinline
             />
-          </template>
-          <img
-            v-if="getActiveShot && getActiveShot.images[activeFrame - 1] && activeCapture"
-            alt="ghostImg"
-            id="ghostImg"
-            :src="ImageCacheService.getImage(getActiveShot.images[activeFrame -1].id)"
+            <template v-else>
+              <img
+                v-if="getActiveShot && getActiveShot.images[activeFrame]"
+                alt="previewImg"
+                id="previewImg"
+                :src="ImageCacheService.getImage(getActiveShot.images[activeFrame].id)"
+              />
+            </template>
+            <img
+              v-if="getActiveShot && getActiveShot.images[activeFrame - 1] && activeCapture"
+              alt="ghostImg"
+              id="ghostImg"
+              :src="ImageCacheService.getImage(getActiveShot.images[activeFrame -1].id)"
+            />
+          </div>
+          <ImagesSelectorComponent
+            class="image-selector"
+            v-if="getActiveShot"
+            :projectId="id"
+            :activeShot="getActiveShot.id"
+            :images="getActiveShot.images"
+            :activeImage="activeFrame"
+            :activeCapture="activeCapture"
+            @moveactiveframe="moveActiveFrame"
           />
         </div>
         <CaptureToolboxComponent v-if="getActiveShot" />
       </div>
+
       <div class="toolbar">
         <div class="toolbar-button">
-          <i class="icon-play baku-button" style="color:#FBB10D;" @click="playAnimation()" />
+          <i
+            class="icon-play baku-button"
+            style="color:#FBB10D;"
+            @click="playAnimation()"
+          />
         </div>
         <div class="toolbar-button">
-          <i class="icon-pause baku-button" @click="pauseAnimation()" />
+          <i
+            class="icon-reapeat baku-button"
+            style="color:#FBB10D;"
+            @click="playSelection()"
+          />
         </div>
-        <div class="toolbar-button" @click="setActiveCapture()">
+        <div class="toolbar-button">
+          <i
+            class="icon-pause baku-button"
+            @click="pauseAnimation()"
+          />
+        </div>
+        <div
+          class="toolbar-button"
+          @click="setActiveCapture()"
+        >
           <i class="icon-camera baku-button" />
           <span>Capture</span>
         </div>
       </div>
+      <!-- <ImagesSelectorComponent
+        v-if="getActiveShot"
+        :projectId="id"
+        :activeShot="getActiveShot.id"
+        :images="getActiveShot.images"
+        :activeImage="activeFrame"
+        :activeCapture="activeCapture"
+        @moveactiveframe="moveActiveFrame"
+      /> -->
       <CarrouselComponent
         v-if="getActiveShot"
         :projectId="id"
@@ -60,9 +102,10 @@ import { Component, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
 import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
 import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-import { Movie, Shot } from '@/api/movie.service';
+import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
 import Project from './Project.vue';
 import { ImageCacheService } from '@/api/imageCache.service';
 
@@ -73,6 +116,7 @@ const ProjectNS = namespace('project');
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
+    ImagesSelectorComponent,
     StoryboardPreviewComponent,
   },
   store,
@@ -83,6 +127,9 @@ export default class Capture extends Project {
 
   @ProjectNS.State
   public activeShotId!: string;
+
+  @ProjectNS.State
+  public selectedImagesBoundaries!: ReadingSliderBoundaries;
 
   @ProjectNS.Getter
   public movie!: Movie;
@@ -126,14 +173,41 @@ export default class Capture extends Project {
         this.activeFrame++;
       }
     }
-
     this.animationFrame = requestAnimationFrame(this.animate);
+  }
+
+  public animateSelection(timestamp: number) {
+    if (!this.animationLastUpdate) {
+      this.animationLastUpdate = timestamp;
+    }
+
+    const timeFromLastUpdate = timestamp - this.animationLastUpdate;
+    if (timeFromLastUpdate > 1000 / this.movie.fps) {
+      this.animationLastUpdate = timestamp;
+      if (this.activeFrame === this.selectedImagesBoundaries.right) {
+        this.activeFrame = this.selectedImagesBoundaries.left;
+      } else {
+        this.activeFrame++;
+      }
+    }
+
+    this.animationFrame = requestAnimationFrame(this.animateSelection);
   }
 
   public playAnimation() {
     if (!this.isPlaying) {
       this.isPlaying = true;
       this.animationFrame = requestAnimationFrame(this.animate);
+    }
+  }
+
+  public playSelection() {
+    if (!this.isPlaying) {
+      if (this.activeFrame < this.selectedImagesBoundaries.left || this.activeFrame > this.selectedImagesBoundaries.right) {
+        this.activeFrame = this.selectedImagesBoundaries.left;
+      }
+      this.isPlaying = true;
+      this.animationFrame = requestAnimationFrame(this.animateSelection);
     }
   }
 
@@ -194,6 +268,9 @@ export default class Capture extends Project {
   padding: 10px 0;
 }
 
+.image-selector {
+}
+
 #previewImg {
   min-width: 640px;
   min-height: 360px;
@@ -215,8 +292,16 @@ export default class Capture extends Project {
 }
 
 .previewContainer {
-  width: 1280px;
-  height: 720px;
+  width: 1024px;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.previewContent {
+  width: 1024px;
+  height: 576px;
   background: #ffffff 0 0 no-repeat padding-box;
   border: 4px solid #ffffff;
   box-shadow: 0 6px 10px #00000066;

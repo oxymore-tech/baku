@@ -1,31 +1,44 @@
-import { Movie, MovieService, Shot } from '@/api/movie.service';
+import { Module } from 'vuex';
+import {
+  Movie, MovieService, Shot, ReadingSliderBoundaries,
+} from '@/api/movie.service';
 import { BakuEvent } from '@/api/baku.service';
 
 const movieService = new MovieService();
 
 interface ProjectState {
   id: string;
-  activeShotId: string;
+  activeShotId: string | null;
   history: BakuEvent[];
+  selectedImagesBoundaries: ReadingSliderBoundaries;
 }
 
-export const ProjectStore = {
+interface ProjectGetters {
+  movie: Movie;
+  getActiveShot: Shot;
+}
+
+export const ProjectStore: Module<ProjectState, any> = {
   namespaced: true,
   state: {
-    id: null,
-    activeShotId: undefined,
+    id: '',
+    activeShotId: null,
     history: [],
+    selectedImagesBoundaries: { left: 0, right: 3 },
   },
   mutations: {
-    setMovie(state: ProjectState, payload: { projectId: string, movieHistory: BakuEvent[] }) {
+    setMovie(state, payload: { projectId: string, movieHistory: BakuEvent[] }) {
       state.id = payload.projectId;
       state.history = payload.movieHistory;
     },
-    addToLocalHistory(state: ProjectState, event: BakuEvent) {
+    addToLocalHistory(state, event: BakuEvent) {
       state.history.push(event);
     },
-    changeActiveShot(state: ProjectState, shotId: string) {
+    changeActiveShot(state, shotId: string) {
       state.activeShotId = shotId;
+    },
+    setSelectedImagesBoundaries(state, newImagesSelection: ReadingSliderBoundaries) {
+      state.selectedImagesBoundaries = newImagesSelection;
     },
   },
   actions: {
@@ -44,7 +57,7 @@ export const ProjectStore = {
       );
       context.commit('addToLocalHistory', insertEvent);
     },
-    changeActiveShot(context: any, shotIndex: number) {
+    changeActiveShot(context, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },
 
@@ -58,7 +71,7 @@ export const ProjectStore = {
       context.commit('addToLocalHistory', event);
     },
 
-    async createShot(context: any, name = 'Default shot'): Promise<string> {
+    async createShot(context: any, _name = 'Default shot'): Promise<string> {
       const createEvent = await movieService.addShot(context.state.id, context.rootState.user.username);
       context.commit('addToLocalHistory', createEvent);
       return createEvent.value.shotId;
@@ -74,9 +87,7 @@ export const ProjectStore = {
     history: (state: ProjectState): BakuEvent[] => state.history,
 
     movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
-
-    getActiveShot: (state: ProjectState, getters: any): Shot => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
-
+    getActiveShot: (state: ProjectState, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
   },
   modules: {},
 };

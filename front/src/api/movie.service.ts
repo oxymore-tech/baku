@@ -1,7 +1,8 @@
 import * as uuid from 'uuid';
 import {
-  BakuAction, BakuEvent, BakuService, ImageRef, UploadedImage,
+  BakuAction, BakuEvent, BakuService,
 } from '@/api/baku.service';
+import { ImageRef, UploadedImage } from './uploadedImage.class';
 
 export interface Movie {
   readonly title: string;
@@ -16,6 +17,17 @@ export interface Shot {
   readonly images: ImageRef[];
 }
 
+export interface ReadingSliderBoundaries {
+  left: number;
+  right: number;
+}
+
+export interface ReadingSliderValue {
+  left: number;
+  right: number;
+  selected: number;
+}
+
 export class MovieService {
   public static merge(projectId: string, events: BakuEvent[]): Movie {
     let title = 'Projet sans nom';
@@ -24,7 +36,7 @@ export class MovieService {
     let fps = 12;
     const shots: Shot[] = [];
 
-    const updateShot = function (shotId: string, updateFn: (shot: Shot) => Shot) {
+    const updateShot = (shotId: string, updateFn: (shot: Shot) => Shot) => {
       const shotIndex = shots.findIndex((p) => p.id === shotId);
       const shot = shots.find((p) => p.id === shotId);
       if (!shot) {

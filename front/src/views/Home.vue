@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    
+
     <div class="topPanel panel">
       <div>
         <img src="@/assets/baku_logo_solo.png" />
@@ -182,8 +182,9 @@ export default class Init extends Vue {
   @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
-  public description1 = `Baku est une rencontre entre instituteurs, artistes et développeurs.`;
-  public description2 = `C’est une plateforme de création de films d’animation collaborative destinée aux enfants.`;
+  public description1 = 'Baku est une rencontre entre instituteurs, artistes et développeurs.';
+
+  public description2 = 'C’est une plateforme de création de films d’animation collaborative destinée aux enfants.';
 
   public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
