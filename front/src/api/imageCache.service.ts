@@ -1,5 +1,5 @@
-import { ImageRef, Quality } from './baku.service';
 import { Spinner } from '@/api/spinner.class';
+import { ImageRef, Quality } from './uploadedImage.class';
 
 type ImgDict = { [id: string]: string };
 
@@ -12,21 +12,21 @@ class ImageCacheServiceImpl {
 
   public async startPreloading(imageRefs: ImageRef[], activeIndex: number) {
     const imageRefsSliced = imageRefs.slice(activeIndex).concat(imageRefs.slice(0, activeIndex));
-    for (const image of imageRefsSliced) {
+    imageRefsSliced.forEach(async (image) => {
       await this.preloadImage(image, Quality.Thumbnail);
-    }
-    for (const image of imageRefsSliced) {
+    });
+    imageRefsSliced.forEach(async (image) => {
       await this.preloadImage(image, Quality.Lightweight);
-    }
-    for (const image of imageRefsSliced) {
+    });
+    imageRefsSliced.forEach(async (image) => {
       await this.preloadImage(image, Quality.Original);
-    }
+    });
   }
 
   public putImageInCache(imageRef: ImageRef) {
-    for (const quality of Object.values(Quality)) {
+    Object.values(Quality).forEach((quality) => {
       this.putImageInCacheInternal(imageRef, quality);
-    }
+    });
   }
 
   private putImageInCacheInternal(imageRef: ImageRef, quality: Quality) {
@@ -37,18 +37,16 @@ class ImageCacheServiceImpl {
   }
 
   public startPreloadingImage(image: ImageRef, onLoad?: (image: ImageRef, quality: Quality) => void) {
-    for (const quality of Object.values(Quality)) {
-      this.preloadImage(image, quality)
-        .then(() => {
-          if (onLoad) {
-            onLoad(image, quality);
-          }
-        });
-    }
+    Object.values(Quality).forEach(async (quality) => {
+      await this.preloadImage(image, quality);
+      if (onLoad) {
+        onLoad(image, quality);
+      }
+    });
   }
 
   private preloadImage(image: ImageRef, quality: Quality): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       const tempImage = new Image();
       tempImage.src = image.getUrl(quality);
       tempImage.onload = () => {

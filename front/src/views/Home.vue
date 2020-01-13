@@ -1,5 +1,6 @@
 <template>
   <div class="main">
+    
     <div class="topPanel panel">
       <div>
         <img src="@/assets/baku_logo_solo.png" />
@@ -8,10 +9,10 @@
         <h3>Bienvenue sur Baku</h3>
         <div class="description">
           <div>
-            <span>{{ description1 }}</span>
+            <span> {{ description1 }} </span>
           </div>
           <div>
-            <span>{{ description2 }}</span>
+            <span> {{ description2 }} </span>
           </div>
         </div>
         <div>
@@ -22,7 +23,7 @@
 
     <div class="bottomPanel panel">
       <div class="title">
-        <span>Quelques films de démonstration</span>
+        <span> Quelques films de démonstration </span>
       </div>
       <div class="movieGallery">
         <div class="movieCard" @click="openPremier">
