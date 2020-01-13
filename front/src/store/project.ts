@@ -1,5 +1,7 @@
 import { Module } from 'vuex';
-import { Movie, MovieService, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
+import {
+  Movie, MovieService, Shot, ReadingSliderBoundaries,
+} from '@/api/movie.service';
 import { BakuEvent } from '@/api/baku.service';
 
 const movieService = new MovieService();

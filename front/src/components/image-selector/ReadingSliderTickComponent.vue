@@ -19,29 +19,29 @@ export default {
   props: {
     value: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   computed: {
-    position () {
-      const pos = (this.value - this.$parent.min) /
-        (this.$parent.max - this.$parent.min) * 100
-      return (pos >= 0 && pos <= 100) ? pos : 0
+    position() {
+      const pos = (this.value - this.$parent.min)
+        / (this.$parent.max - this.$parent.min) * 100;
+      return (pos >= 0 && pos <= 100) ? pos : 0;
     },
-    hidden () {
-      return this.value === this.$parent.min || this.value === this.$parent.max
-    }
+    hidden() {
+      return this.value === this.$parent.min || this.value === this.$parent.max;
+    },
   },
   methods: {
-    getTickStyle (position) {
-      return { 'left': position + '%' }
+    getTickStyle(position) {
+      return { left: `${position}%` };
+    },
+  },
+  created() {
+    if (!this.$parent.$data._isSlider) {
+      this.$destroy();
+      throw new Error('You should wrap bSliderTick on a bSlider');
     }
   },
-  created () {
-    if (!this.$parent.$data._isSlider) {
-      this.$destroy()
-      throw new Error('You should wrap bSliderTick on a bSlider')
-    }
-  }
-}
+};
 </script>

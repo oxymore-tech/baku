@@ -14,7 +14,11 @@ class ImageCacheServiceImpl {
     const imageRefsSliced = imageRefs.slice(activeIndex).concat(imageRefs.slice(0, activeIndex));
     imageRefsSliced.forEach(async (image) => {
       await this.preloadImage(image, Quality.Thumbnail);
+    });
+    imageRefsSliced.forEach(async (image) => {
       await this.preloadImage(image, Quality.Lightweight);
+    });
+    imageRefsSliced.forEach(async (image) => {
       await this.preloadImage(image, Quality.Original);
     });
   }
