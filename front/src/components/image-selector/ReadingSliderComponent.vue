@@ -70,7 +70,7 @@
         :aria-label="Array.isArray(ariaLabel) ? ariaLabel[0] : ariaLabel"
         :aria-disabled="disabled"
         @dragstart="onDragStart"
-        @dragend="onDragEndSelectedButton"
+        @dragend="onDragEnd"
       />
     </div>
   </div>
@@ -96,8 +96,8 @@ div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
 import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
-import ReadingSliderTickComponent from '@/components/capture/ReadingSliderTickComponent.vue';
-import ReadingSliderThumbComponent from '@/components/capture/ReadingSliderThumbComponent.vue';
+import ReadingSliderTickComponent from '@/components/image-selector/ReadingSliderTickComponent.vue';
+import ReadingSliderThumbComponent from '@/components/image-selector/ReadingSliderThumbComponent.vue';
 import { ReadingSliderValue } from '@/api/movie.service';
 
 @Component({
@@ -193,17 +193,16 @@ export default class ReadingSliderComponent extends Vue {
   }
 
   setValues(newValue: ReadingSliderValue) {
-
     if (this.min > this.max) {
       return;
     }
 
     const smallValue = typeof newValue.left !== 'number' || Number.isNaN(newValue.left)
       ? this.min
-      : Math.min(Math.max(this.min, newValue.left), newValue.selected, this.max);
+      : Math.min(Math.max(this.min, newValue.left), this.max);
     const largeValue = typeof newValue.right !== 'number' || Number.isNaN(newValue.right)
       ? this.max
-      : Math.max(Math.min(this.max, newValue.right), newValue.selected, this.min);
+      : Math.max(Math.min(this.max, newValue.right), this.min);
     this.valueLeft = this.isThumbReversed ? largeValue : smallValue;
     this.valueRight = this.isThumbReversed ? smallValue : largeValue;
     this.valueSelected = Number.isNaN(newValue.selected)
@@ -229,15 +228,6 @@ export default class ReadingSliderComponent extends Vue {
     const diffFirst = Math.abs(targetValue - this.valueSelected);
     if (diffFirst < this.step / 2) return;
 
-    if (targetValue > this.valueRight) {
-      // (<any>this.$refs.buttonRight).setPosition(percent);
-      this.valueRight = targetValue;
-    }
-    if (targetValue < this.valueLeft) {
-      // (<any>this.$refs.buttonLeft).setPosition(percent);
-      this.valueLeft = targetValue;
-    }
-    // (<any>this.$refs.buttonSelected).setPosition(percent);
     this.valueSelected = targetValue;
     this.emitValue('change');
   }
@@ -247,29 +237,6 @@ export default class ReadingSliderComponent extends Vue {
     this.$emit('dragstart');
   }
 
-  onDragEndSelectedButton() {
-    this.isTrackClickDisabled = true;
-    setTimeout(() => {
-      // avoid triggering onSliderClick after dragend
-      this.isTrackClickDisabled = false;
-    }, 0);
-    this.dragging = false;
-
-    console.log('this.valueLeft', this.valueLeft);
-    console.log('this.valueRight', this.valueRight);
-    console.log('this.valueSelected', this.valueSelected);
-    if (this.valueSelected < this.valueLeft) {
-      this.valueLeft = this.valueSelected;
-    }
-    if (this.valueSelected > this.valueRight) {
-      console.log('CAS 2')
-      this.valueRight = this.valueSelected;
-    }
-
-    this.$emit('dragend');
-    this.emitValue('input');
-  }
-
   onDragEnd() {
     this.isTrackClickDisabled = true;
     setTimeout(() => {
@@ -277,24 +244,8 @@ export default class ReadingSliderComponent extends Vue {
       this.isTrackClickDisabled = false;
     }, 0);
     this.dragging = false;
-
-    console.log('this.valueLeft', this.valueLeft);
-    console.log('this.valueRight', this.valueRight);
-    console.log('this.valueSelected', this.valueSelected);
-    if (this.valueSelected < this.valueLeft) {
-      this.valueSelected = this.valueLeft;
-    }
-    if (this.valueSelected > this.valueRight) {
-      console.log('CAS 1')
-      this.valueSelected = this.valueRight;
-    }
-    // if (this.valueSelected  < this.value) {
-    //   this.valueSelected = this.valueRight;
-    // }
     this.$emit('dragend');
-    // if (this.lazy) {
     this.emitValue('input');
-    // }
   }
 
   emitValue(type: string) {

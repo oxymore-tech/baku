@@ -99,27 +99,27 @@
   align-items: center;
 
   .imageContainer {
-    border: 4px solid transparent;
-    filter: grayscale(100%);
+    border: 2px solid transparent;
+    // filter: grayscale(100%);
 
     .carrouselThumb {
       height: 78px;
       min-width: 140px;
       margin: 0px;
-      border: 4px solid #f2f2f2;
+      border: 2px solid #f2f2f2;
       display: flex;
       justify-content: center;
       align-items: center;
 
       &.active {
-        border: 4px solid #ff0000;
+        border: 2px solid #ff0000;
         box-sizing: content-box;
       }
     }
 
     &.inSelection {
-      border: 4px solid #167df0;
-      filter: grayscale(0%);
+      border: 2px solid #167df0;
+      // filter: grayscale(0%);
     }
   }
 }
