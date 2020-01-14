@@ -35,13 +35,13 @@ export default class History extends Vue {
           action = 'change le poster du film';
           break;
         case BakuAction.MOVIE_INSERT_IMAGE:
-          action = `ajoute la photo ${bakuEvent.value.image}`;
+          action = 'ajoute une photo';
           break;
         case BakuAction.SHOT_ADD:
-          action = `ajoute le plan ${bakuEvent.value.shotId}`;
+          action = 'ajoute un plan';
           break;
         case BakuAction.CHANGE_FPS:
-          action = `change les fps du film${bakuEvent.value}`;
+          action = `change les fps du film ${bakuEvent.value}`;
           break;
         default:
           break;
