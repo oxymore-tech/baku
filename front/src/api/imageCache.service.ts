@@ -129,4 +129,4 @@ async function asyncForEach(array: any[], callback: Function) {
   }
 }
 
-const delay = ms => new Promise(res => setTimeout(res, ms));
+const delay = (ms : number) => new Promise(res => setTimeout(res, ms));

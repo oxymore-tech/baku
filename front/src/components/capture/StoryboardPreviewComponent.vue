@@ -46,7 +46,6 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Shot } from '@/api/movie.service';
 import { Spinner } from '@/api/spinner.class';
-import { Quality } from '@/api/uploadedImage.class';
 import { ImageCacheService } from '@/api/imageCache.service';
 
 const ProjectNS = namespace('project');
