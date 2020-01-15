@@ -30,23 +30,25 @@ nav {
   height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 0px 24px;
+  justify-content: space-between;
   background: #FEFEFE 0% 0% no-repeat padding-box;
   filter: drop-shadow(0px 0px 7px #0000004D);
   backdrop-filter: blur(30px);
 }
 
-nav a {
+.routerlinks a {
   width: 135px;
   height: 35px;
   font-weight: lighter;
   font-size: 18px;
   text-align: center;
-  padding-top: 4px;
+  padding: 4px 8px;
+  margin: 0 34px;
   color: #455054;
 }
 
-nav a.router-link-active {
+.routerlinks a.router-link-active {
   color: white;
   background: #fbb10d;
   border-radius: 17px;

@@ -10,13 +10,13 @@
         <span class="movie-title" v-if="id && movie !==undefined">{{movie.title}}</span>
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
-      <template v-if="id">
+      <div class="routerlinks" v-if="id">
         <router-link :to="`/movies/${id}/scenario`">Scenario</router-link>
         <router-link :to="`/movies/${id}/storyboard`">Storyboard</router-link>
         <router-link :to="`/movies/${id}/capture/shots/`">Capture</router-link>
         <router-link :to="`/movies/${id}/movieEditing`">Montage</router-link>
         <router-link :to="`/movies/${id}/collaboration`">Collaboratif</router-link>
-      </template>
+      </div>
       <div
         v-if="this.$route.path != '/'"
         class="right-nav">
@@ -32,15 +32,8 @@
 @import "styles/font.css";
 
 .left-nav {
-  position: absolute;
-  left: 24px;
   display: flex;
   align-items: center;
-}
-
-.right-nav {
-  position: absolute;
-  right: 24px;
 }
 
 .movie-title {

@@ -264,8 +264,8 @@ export default class Capture extends Project {
   display: flex;
   width: 100%;
   flex: 1;
-  justify-content: space-around;
-  padding: 10px 0;
+  justify-content: space-between;
+  padding: 10px 24px;
 }
 
 .image-selector {
