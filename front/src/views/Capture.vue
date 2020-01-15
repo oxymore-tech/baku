@@ -26,10 +26,10 @@
               />
             </template>
             <img
-              v-if="getActiveShot && getActiveShot.images[activeFrame - 1] && activeCapture"
+              v-if="getActiveShot && getActiveShot.images[activeFrame] && activeCapture"
               alt="ghostImg"
               id="ghostImg"
-              :src="ImageCacheService.getImage(getActiveShot.images[activeFrame -1].id)"
+              :src="ImageCacheService.getImage(getActiveShot.images[activeFrame].id)"
             />
           </div>
           <ImagesSelectorComponent
@@ -320,15 +320,20 @@ export default class Capture extends Project {
   max-width: 100%;
 }
 
-@media screen and (max-width: 1700px) {
+@media screen and (max-width: 1699px) {
   #videoCapture {
     width: 640px;
     height: 360px;
   }
   .previewContainer {
     width: 640px;
+  }
+
+  .previewContent {
+    width: 640px;
     height: 360px;
   }
+
   #previewImg {
     width: 640px;
     height: 360px;
@@ -337,8 +342,7 @@ export default class Capture extends Project {
 
 @media screen and (min-width: 1700px) {
   #videoCapture {
-    width: 1280px;
-    height: 720px;
+    width: 1024px;
   }
 }
 

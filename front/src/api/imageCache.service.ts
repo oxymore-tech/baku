@@ -68,7 +68,10 @@ class ImageCacheServiceImpl {
       ...this.ongoingQueries[quality],
       [image.id]: 'true'
     }
-    const res = await Axios.get(image.getUrl(quality), { responseType: 'arraybuffer' });
+    const res = await Axios.get(image.getUrl(quality), { responseType: 'arraybuffer' }).catch(async (error) => {
+      await delay(2000);
+      return await Axios.get(image.getUrl(quality), { responseType: 'arraybuffer' });
+    });
     let imgB64 = 'data:image/jpeg;base64,' + btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ''));
     this.putImageB64InCacheInternal(image, quality, imgB64);
     delete this.ongoingQueries[quality][image.id];
@@ -125,3 +128,5 @@ async function asyncForEach(array: any[], callback: Function) {
     await callback(array[index], index, array);
   }
 }
+
+const delay = ms => new Promise(res => setTimeout(res, ms));

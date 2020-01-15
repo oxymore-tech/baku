@@ -47,6 +47,7 @@ import { namespace } from 'vuex-class';
 import { Shot } from '@/api/movie.service';
 import { Spinner } from '@/api/spinner.class';
 import { Quality } from '@/api/uploadedImage.class';
+import { ImageCacheService } from '@/api/imageCache.service';
 
 const ProjectNS = namespace('project');
   @Component
@@ -77,7 +78,7 @@ export default class StoryboardPreviewComponent extends Vue {
 
     public get preview() {
       if (this.shots && this.shots.length > 0 && this.shots[0].images && this.shots[0].images.length > 0) {
-        return this.shots[0].images[0].getUrl(Quality.Original);
+        return ImageCacheService.getImage(this.getActiveShot.images[0].id);
       }
       return Spinner;
     }
