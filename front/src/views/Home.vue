@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    
+
     <div class="topPanel panel">
       <div>
         <img src="@/assets/baku_logo_solo.png" />
