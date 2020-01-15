@@ -3,25 +3,23 @@
     <!-- LEFT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedLeftCarrousel">
       <template v-if="image !== null">
-        <div
-          :key="'left'+index"
-          class="imageContainer"
-          v-bind:class="{'inSelection': isInSelection(index, 'left')}"
-        >
+        <div :key="'left'+index" class="imageContainer">
           <img
             class="carrouselThumb"
             :alt="image"
             :src="ImageCacheService.getThumbnail(image.id)"
+            v-bind:class="{'inSelection': isInSelection(index, 'left')}"
             @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
           />
         </div>
       </template>
       <template v-else>
-        <div
-          :key="'left'+index"
-          @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
-          class="carrouselThumb"
-        />
+        <div :key="'left'+index" class="imageContainer">
+          <div
+            @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+            class="carrouselThumb"
+          />
+        </div>
       </template>
     </template>
 
@@ -57,24 +55,18 @@
     <!-- RIGHT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedRightCarrousel">
       <template v-if="image !== null">
-        <div
-          :key="'right'+index"
-          class="imageContainer"
-          v-bind:class="{'inSelection': isInSelection(index, 'right')}"
-        >
+        <div :key="'right'+index" class="imageContainer">
           <img
             class="carrouselThumb"
             :alt="image"
             :src="ImageCacheService.getThumbnail(image.id)"
+            v-bind:class="{'inSelection': isInSelection(index, 'right')}"
             @click="moveToImage(index + 1)"
           />
         </div>
       </template>
       <template v-else>
-        <div
-          :key="'right'+index"
-          @click="moveToImage(index + 1)"
-        />
+        <div :key="'right'+index" @click="moveToImage(index + 1)" />
       </template>
     </template>
 
@@ -105,42 +97,44 @@
     .carrouselThumb {
       height: 78px;
       min-width: 140px;
-      margin: 0px;
+      margin: 0px 15px;
       border: 2px solid #f2f2f2;
       display: flex;
       justify-content: center;
       align-items: center;
 
+      &.inSelection {
+        border: 1px solid #167df0;
+        padding: 1px;
+        // filter: grayscale(0%);
+      }
       &.active {
-        border: 2px solid #ff0000;
+        border: 2px solid #455054;
+        border-radius: 4px;
+        padding: 2px;
         box-sizing: content-box;
       }
-    }
-
-    &.inSelection {
-      border: 2px solid #167df0;
-      // filter: grayscale(0%);
     }
   }
 }
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import { Device } from '@/api/device.class';
-import { ImageCacheService } from '@/api/imageCache.service';
-import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
-import { ReadingSliderBoundaries } from '../../api/movie.service';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
+import { Device } from "@/api/device.class";
+import { ImageCacheService } from "@/api/imageCache.service";
+import { ImageRef, UploadedImage } from "@/api/uploadedImage.class";
+import { ReadingSliderBoundaries } from "../../api/movie.service";
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+const CaptureNS = namespace("capture");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
-    CaptureButtonComponent,
-  },
+    CaptureButtonComponent
+  }
 })
 export default class CarrouselComponent extends Vue {
   @Prop()
@@ -161,14 +155,14 @@ export default class CarrouselComponent extends Vue {
   @CaptureNS.State
   public activeDevice!: Device;
 
-  @ProjectNS.Action('addImageToShot')
-  protected addImageToShot!: ({ }) => Promise<void>;
+  @ProjectNS.Action("addImageToShot")
+  protected addImageToShot!: ({}) => Promise<void>;
 
   @ProjectNS.State
   public selectedImagesBoundaries!: ReadingSliderBoundaries;
 
   mounted() {
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
+    window.addEventListener("keydown", (e: KeyboardEvent) => {
       let indexToMove = 0;
       switch (e.keyCode) {
         case 37:
@@ -180,7 +174,7 @@ export default class CarrouselComponent extends Vue {
         default:
           indexToMove = 0;
       }
-      this.$emit('moveactiveframe', indexToMove);
+      this.$emit("moveactiveframe", indexToMove);
     });
   }
 
@@ -199,7 +193,10 @@ export default class CarrouselComponent extends Vue {
   }
 
   public onUploaded(id: string) {
-    ImageCacheService.startPreloadingImage(new UploadedImage(this.projectId, id), () => this.$forceUpdate());
+    ImageCacheService.startPreloadingImage(
+      new UploadedImage(this.projectId, id),
+      () => this.$forceUpdate()
+    );
   }
 
   public async onCaptured(id: string, thumb: Blob) {
@@ -207,16 +204,16 @@ export default class CarrouselComponent extends Vue {
       shotId: this.activeShot,
       imageIndex: this.activeImage + 1,
       image: id,
-      thumb,
+      thumb
     });
-    this.$emit('moveactiveframe', 1);
+    this.$emit("moveactiveframe", 1);
   }
 
   get computedRightCarrousel(): ImageRef[] {
     const sliceIndex = this.activeImage + 1;
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
     return rightImagesAvaible.concat(
-      Array(6 - rightImagesAvaible.length).fill(null),
+      Array(6 - rightImagesAvaible.length).fill(null)
     );
   }
 
@@ -227,19 +224,21 @@ export default class CarrouselComponent extends Vue {
 
   public isInSelection(index: number, position: string) {
     let cindex = index;
-    if (position === 'right') {
+    if (position === "right") {
       cindex = this.activeImage + index + 1;
     }
-    if (position === 'left') {
+    if (position === "left") {
       const leftSelectionSize = 5;
       cindex = this.activeImage - (leftSelectionSize - index);
     }
-    return cindex >= this.selectedImagesBoundaries.left && cindex <= this.selectedImagesBoundaries.right;
+    return (
+      cindex >= this.selectedImagesBoundaries.left &&
+      cindex <= this.selectedImagesBoundaries.right
+    );
   }
 
   public moveToImage(indexToMove: number) {
-    this.$emit('moveactiveframe', indexToMove);
+    this.$emit("moveactiveframe", indexToMove);
   }
 }
-
 </script>
