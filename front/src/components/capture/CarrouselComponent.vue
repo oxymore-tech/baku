@@ -83,7 +83,7 @@
         style="display:none"
         v-for="image in computedNextImages"
         :key="image.id"
-        :src="`/api/${projectId}/images/${activeShot}/${image}?width=185&height=104`"
+        :src="ImageCacheService.getThumbnail(image.id)"
       />
     </template>
   </div>
