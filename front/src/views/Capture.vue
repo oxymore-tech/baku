@@ -55,17 +55,17 @@
             <div class="toolbar-button">
               <i class="icon-step-backward baku-button" style="color:#455054;" />
             </div>
-            <div class="toolbar-button toolbar-button-big">
+            <div class="toolbar-button toolbar-button-big" v-if="!isPlaying">
               <i class="icon-play baku-button" style="color:#FFBD72;" @click="playAnimation()" />
             </div>
-            <div class="toolbar-button toolbar-button-big">
+            <div class="toolbar-button toolbar-button-big" v-if="!isPlaying">
               <i
                 class="icon-play_loop baku-button"
                 style="color:#FFBD72;"
                 @click="playSelection()"
               />
             </div>
-            <div class="toolbar-button toolbar-button-big">
+            <div class="toolbar-button toolbar-button-big" v-if="isPlaying">
               <i class="icon-pause baku-button" @click="pauseAnimation()" />
             </div>
             <div class="toolbar-button">
