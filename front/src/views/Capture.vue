@@ -292,7 +292,7 @@ export default class Capture extends Project {
   }
 
   get frameNb(): string {
-    return (`${this.activeFrame + 1}`).padStart(2, '0');
+    return (`${(this.activeFrame + 1) % this.movie.fps}` ).padStart(2, '0');
   }
 }
 </script>
@@ -415,6 +415,7 @@ export default class Capture extends Project {
     border-radius: 8px;
     color:white;
     padding: 1px 5px;
+    width: 160px;
     font-size: 26px;
     margin-bottom: 5px;
 
