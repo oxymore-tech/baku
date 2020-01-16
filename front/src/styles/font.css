@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'baku';
-  src:  url('../assets/fonts/baku.eot?gwnpk9');
-  src:  url('../assets/fonts/baku.eot?gwnpk9#iefix') format('embedded-opentype'),
-    url('../assets/fonts/baku.ttf?gwnpk9') format('truetype'),
-    url('../assets/fonts/baku.woff?gwnpk9') format('woff'),
-    url('../assets/fonts/baku.svg?gwnpk9#baku') format('svg');
+  src:  url('../assets/fonts/baku.eot?1btck6');
+  src:  url('../assets/fonts/baku.eot?1btck6#iefix') format('embedded-opentype'),
+    url('../assets/fonts/baku.ttf?1btck6') format('truetype'),
+    url('../assets/fonts/baku.woff?1btck6') format('woff'),
+    url('../assets/fonts/baku.svg?1btck6#baku') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -73,30 +73,98 @@
 .icon-play:before {
   content: "\e90f";
 }
-.icon-reapeat:before {
+.icon-play_loop:before {
   content: "\e910";
 }
-.icon-signal:before {
+.icon-plus:before {
   content: "\e911";
 }
-.icon-step-backward:before {
+.icon-reapeat:before {
   content: "\e912";
 }
-.icon-step-forward:before {
+.icon-set_begin:before {
   content: "\e913";
 }
-.icon-stop:before {
+.icon-set_end:before {
   content: "\e914";
 }
-.icon-sync-alt:before {
+.icon-signal:before {
   content: "\e915";
 }
-.icon-trash-alt:before {
+.icon-step-backward:before {
   content: "\e916";
 }
-.icon-user-circle:before {
+.icon-step-forward:before {
   content: "\e917";
 }
-.icon-webcam:before {
+.icon-stop:before {
   content: "\e918";
+}
+.icon-sync-alt:before {
+  content: "\e919";
+}
+.icon-trash-alt:before {
+  content: "\e91a";
+}
+.icon-user-bird .path1:before {
+  content: "\e91b";
+  color: rgb(0, 0, 0);
+}
+.icon-user-bird .path2:before {
+  content: "\e91c";
+  margin-left: -1em;
+  color: rgb(243, 243, 243);
+}
+.icon-user-bird .path3:before {
+  content: "\e91d";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-user-circle:before {
+  content: "\e91e";
+}
+.icon-user-dragon .path1:before {
+  content: "\e91f";
+  color: rgb(0, 0, 0);
+}
+.icon-user-dragon .path2:before {
+  content: "\e920";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.icon-user-dragon .path3:before {
+  content: "\e921";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-user-horse .path1:before {
+  content: "\e922";
+  color: rgb(0, 0, 0);
+}
+.icon-user-horse .path2:before {
+  content: "\e923";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.icon-user-horse .path3:before {
+  content: "\e924";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-user-kiwi .path1:before {
+  content: "\e925";
+  color: rgb(0, 0, 0);
+}
+.icon-user-kiwi .path2:before {
+  content: "\e926";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.icon-user-kiwi .path3:before {
+  content: "\e927";
+  margin-left: -1em;
+  color: rgb(0, 0, 0);
+}
+.icon-webcam:before {
+  content: "\e928";
 }

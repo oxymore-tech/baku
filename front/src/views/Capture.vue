@@ -2,10 +2,7 @@
   <div class="mainFrame">
     <template>
       <div class="previewBloc">
-        <StoryboardPreviewComponent
-          :shots="movie.shots"
-          :activeShotId="activeShotId"
-        />
+        <StoryboardPreviewComponent :shots="movie.shots" :activeShotId="activeShotId" />
         <div class="previewContainer">
           <div class="previewContent">
             <video
@@ -42,35 +39,54 @@
             :activeCapture="activeCapture"
             @moveactiveframe="moveActiveFrame"
           />
+          <div class="mediaControls">
+            <div class="clock">
+              <span>{{ nbHours }}</span>
+              <span class="clock-small">:</span>
+              <span>{{ nbMins }}</span>
+              <span class="clock-small">:</span>
+              <span>{{ nbSecs}}</span>
+              <span class="clock-small">:</span>
+              <span class="clock-small">{{ frameNb }}</span>
+            </div>
+            <div class="toolbar-button">
+              <i class="icon-backward baku-button" style="color:#455054;" />
+            </div>
+            <div class="toolbar-button">
+              <i class="icon-step-backward baku-button" style="color:#455054;" />
+            </div>
+            <div class="toolbar-button toolbar-button-big">
+              <i class="icon-play baku-button" style="color:#FFBD72;" @click="playAnimation()" />
+            </div>
+            <div class="toolbar-button toolbar-button-big">
+              <i
+                class="icon-play_loop baku-button"
+                style="color:#FFBD72;"
+                @click="playSelection()"
+              />
+            </div>
+            <div class="toolbar-button toolbar-button-big">
+              <i class="icon-pause baku-button" @click="pauseAnimation()" />
+            </div>
+            <div class="toolbar-button">
+              <i class="icon-step-forward baku-button" style="color:#455054;" />
+            </div>
+            <div class="toolbar-button">
+              <i class="icon-forward baku-button" style="color:#455054;" />
+            </div>
+            <div class="toolbar-button">
+              <i class="icon-set_begin baku-button" style="color:#455054;" />
+            </div>
+            <div class="toolbar-button">
+              <i class="icon-set_end baku-button" style="color:#455054;" />
+            </div>
+          </div>
         </div>
         <CaptureToolboxComponent v-if="getActiveShot" />
       </div>
 
       <div class="toolbar">
-        <div class="toolbar-button">
-          <i
-            class="icon-play baku-button"
-            style="color:#FBB10D;"
-            @click="playAnimation()"
-          />
-        </div>
-        <div class="toolbar-button">
-          <i
-            class="icon-reapeat baku-button"
-            style="color:#FBB10D;"
-            @click="playSelection()"
-          />
-        </div>
-        <div class="toolbar-button">
-          <i
-            class="icon-pause baku-button"
-            @click="pauseAnimation()"
-          />
-        </div>
-        <div
-          class="toolbar-button"
-          @click="setActiveCapture()"
-        >
+        <div class="toolbar-button" @click="setActiveCapture()">
           <i class="icon-camera baku-button" />
           <span>Capture</span>
         </div>
@@ -83,7 +99,7 @@
         :activeImage="activeFrame"
         :activeCapture="activeCapture"
         @moveactiveframe="moveActiveFrame"
-      /> -->
+      />-->
       <CarrouselComponent
         v-if="getActiveShot"
         :projectId="id"
@@ -203,7 +219,10 @@ export default class Capture extends Project {
 
   public playSelection() {
     if (!this.isPlaying) {
-      if (this.activeFrame < this.selectedImagesBoundaries.left || this.activeFrame > this.selectedImagesBoundaries.right) {
+      if (
+        this.activeFrame < this.selectedImagesBoundaries.left
+        || this.activeFrame > this.selectedImagesBoundaries.right
+      ) {
         this.activeFrame = this.selectedImagesBoundaries.left;
       }
       this.isPlaying = true;
@@ -249,6 +268,31 @@ export default class Capture extends Project {
   public setActiveCapture() {
     this.activeFrame = this.getActiveShot.images.length - 1;
     this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
+  }
+
+  get nbHours(): string {
+    return (
+      `${
+        Math.floor((this.activeFrame + 1) / this.movie.fps / 60 / 60) % 60}`
+    ).padStart(2, '0');
+  }
+
+  get nbMins(): string {
+    return (
+      `${
+        Math.floor((this.activeFrame + 1) / this.movie.fps / 60) % 60}`
+    ).padStart(2, '0');
+  }
+
+  get nbSecs(): string {
+    return (
+      `${
+        Math.floor((this.activeFrame + 1) / this.movie.fps) % 60}`
+    ).padStart(2, '0');
+  }
+
+  get frameNb(): string {
+    return (`${this.activeFrame + 1}`).padStart(2, '0');
   }
 }
 </script>
@@ -303,7 +347,7 @@ export default class Capture extends Project {
   width: 1024px;
   height: 576px;
   background: #ffffff 0 0 no-repeat padding-box;
-  border: 4px solid #ffffff;
+  border: 4px solid #FFBD72;
   box-shadow: 0 6px 10px #00000066;
   border-radius: 4px;
   box-sizing: content-box;
@@ -358,5 +402,29 @@ export default class Capture extends Project {
 
 .toolbar-button {
   margin: 0 5px;
+}
+
+.mediaControls {
+  width: 100%;
+  display: flex;
+  font-size: 18px;
+  align-items: center;
+
+  .clock {
+    background:#455054;
+    border-radius: 8px;
+    color:white;
+    padding: 1px 5px;
+    font-size: 26px;
+    margin-bottom: 5px;
+
+    .clock-small {
+      font-size: 18px
+    }
+  }
+
+  .toolbar-button-big {
+    font-size: 32px;
+  }
 }
 </style>
