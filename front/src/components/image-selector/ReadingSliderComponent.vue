@@ -87,7 +87,7 @@
 }
 
 div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
-  background-color: #fbb10d;
+  background-color: #FFBD72;
   width: 0.7rem;
 }
 </style>
