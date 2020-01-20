@@ -26,34 +26,16 @@
         <span> Quelques films de démonstration </span>
       </div>
       <div class="movieGallery">
-        <div class="movieCard" @click="openPremier">
+        <div class="movieCard" @click="open('premier')">
           <img src="@/assets/PremFois.jpg" />
           <div class="cardFooter">
             <p>Mes premières fois</p>
           </div>
         </div>
-        <div class="movieCard" @click="openPremier">
+        <div class="movieCard" @click="open('premier_montage')">
           <img src="@/assets/PremFois.jpg" />
           <div class="cardFooter">
-            <p>Mes premières fois</p>
-          </div>
-        </div>
-        <div class="movieCard" @click="openPremier">
-          <img src="@/assets/PremFois.jpg" />
-          <div class="cardFooter">
-            <p>Mes premières fois</p>
-          </div>
-        </div>
-        <div class="movieCard" @click="openPremier">
-          <img src="@/assets/PremFois.jpg" />
-          <div class="cardFooter">
-            <p>Mes premières fois</p>
-          </div>
-        </div>
-        <div class="movieCard" @click="openPremier">
-          <img src="@/assets/PremFois.jpg" />
-          <div class="cardFooter">
-            <p>Mes premières fois</p>
+            <p>Mes premières fois, monté</p>
           </div>
         </div>
       </div>
@@ -223,11 +205,11 @@ export default class Init extends Vue {
     });
   }
 
-  public async openPremier() {
+  public async open(movie: string) {
     await this.$router.push({
       name: 'movieHome',
       params: {
-        projectId: 'premier',
+        projectId: movie,
       },
     });
   }
