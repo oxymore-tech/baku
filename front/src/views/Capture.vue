@@ -50,10 +50,18 @@
               <span class="clock-small">{{ frameNb }}</span>
             </div>
             <div class="toolbar-button">
-              <i class="icon-backward baku-button" style="color:#455054;" />
+              <i
+                class="icon-backward baku-button"
+                style="color:#455054;"
+                @click="moveActiveFrame(0 - activeFrame)"
+              />
             </div>
             <div class="toolbar-button">
-              <i class="icon-step-backward baku-button" style="color:#455054;" />
+              <i
+                class="icon-step-backward baku-button"
+                style="color:#455054;"
+                @click="moveActiveFrame(-1)"
+              />
             </div>
             <div class="toolbar-button toolbar-button-big" v-if="!isPlaying">
               <i class="icon-play baku-button" style="color:#FFBD72;" @click="playAnimation()" />
@@ -69,16 +77,32 @@
               <i class="icon-pause baku-button" @click="pauseAnimation()" />
             </div>
             <div class="toolbar-button">
-              <i class="icon-step-forward baku-button" style="color:#455054;" />
+              <i
+                class="icon-step-forward baku-button"
+                style="color:#455054;"
+                @click="moveActiveFrame(1)"
+              />
             </div>
             <div class="toolbar-button">
-              <i class="icon-forward baku-button" style="color:#455054;" />
+              <i
+                class="icon-forward baku-button"
+                style="color:#455054;"
+                @click="moveActiveFrame(getActiveShot.images.length - 1 - activeFrame )"
+              />
             </div>
             <div class="toolbar-button">
-              <i class="icon-set_begin baku-button" style="color:#455054;" />
+              <i
+                class="icon-set_begin baku-button"
+                style="color:#455054;"
+                @click="moveLeftBoundary()"
+              />
             </div>
             <div class="toolbar-button">
-              <i class="icon-set_end baku-button" style="color:#455054;" />
+              <i
+                class="icon-set_end baku-button"
+                style="color:#455054;"
+                @click="moveRightBoundary()"
+              />
             </div>
           </div>
         </div>
@@ -270,29 +294,40 @@ export default class Capture extends Project {
     this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
   }
 
+  public moveLeftBoundary() {
+    this.$store.commit('project/setSelectedImagesBoundaries', {
+      left: Math.max(0, this.selectedImagesBoundaries.left - 1),
+      right: this.selectedImagesBoundaries.right,
+    });
+  }
+
+  public moveRightBoundary() {
+    this.$store.commit('project/setSelectedImagesBoundaries', {
+      left: this.selectedImagesBoundaries.left,
+      right: Math.min(
+        this.getActiveShot.images.length - 1,
+        this.selectedImagesBoundaries.right + 1,
+      ),
+    });
+  }
+
   get nbHours(): string {
-    return (
-      `${
-        Math.floor((this.activeFrame + 1) / this.movie.fps / 60 / 60) % 60}`
-    ).padStart(2, '0');
+    return `${Math.floor((this.activeFrame + 1) / this.movie.fps / 60 / 60)
+      % 60}`.padStart(2, '0');
   }
 
   get nbMins(): string {
-    return (
-      `${
-        Math.floor((this.activeFrame + 1) / this.movie.fps / 60) % 60}`
-    ).padStart(2, '0');
+    return `${Math.floor((this.activeFrame + 1) / this.movie.fps / 60)
+      % 60}`.padStart(2, '0');
   }
 
   get nbSecs(): string {
-    return (
-      `${
-        Math.floor((this.activeFrame + 1) / this.movie.fps) % 60}`
-    ).padStart(2, '0');
+    return `${Math.floor((this.activeFrame + 1) / this.movie.fps)
+      % 60}`.padStart(2, '0');
   }
 
   get frameNb(): string {
-    return (`${(this.activeFrame + 1) % this.movie.fps}` ).padStart(2, '0');
+    return `${(this.activeFrame + 1) % this.movie.fps}`.padStart(2, '0');
   }
 }
 </script>
@@ -347,7 +382,7 @@ export default class Capture extends Project {
   width: 1024px;
   height: 576px;
   background: #ffffff 0 0 no-repeat padding-box;
-  border: 4px solid #FFBD72;
+  border: 4px solid #ffbd72;
   box-shadow: 0 6px 10px #00000066;
   border-radius: 4px;
   box-sizing: content-box;
@@ -411,16 +446,16 @@ export default class Capture extends Project {
   align-items: center;
 
   .clock {
-    background:#455054;
+    background: #455054;
     border-radius: 8px;
-    color:white;
+    color: white;
     padding: 1px 5px;
     width: 160px;
     font-size: 26px;
     margin-bottom: 5px;
 
     .clock-small {
-      font-size: 18px
+      font-size: 18px;
     }
   }
 
