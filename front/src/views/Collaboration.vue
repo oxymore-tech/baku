@@ -2,7 +2,9 @@
   <div class="mainFrame">
     <div class="history">
       <span class="title"> Historique des actions : </span><br />
-      <span v-for="(action, index) in actions" :key="`action_${index}`" class="action">{{ action }}<br /></span>
+      <ul>
+        <li v-for="(event, index) in history" :key="`action_${index}`" class="action"><b>{{user(event)}}</b> {{action(event)}} {{date(event)}}</li>
+      </ul>
     </div>
   </div>
 </template>
@@ -19,40 +21,34 @@ export default class History extends Vue {
   @ProjectNS.Getter
   public history!: BakuEvent[];
 
-  get actions(): String[] {
-    let actions: String[] = [];
-    this.history.forEach((bakuEvent) => {
-      let line = `${bakuEvent.user} `;
-      let action;
-      switch (bakuEvent.action) {
-        case BakuAction.MOVIE_UPDATE_TITLE:
-          action = 'change le titre du film';
-          break;
-        case BakuAction.MOVIE_UPDATE_SYNOPSIS:
-          action = 'change le synopsis du film';
-          break;
-        case BakuAction.MOVIE_UPDATE_POSTER:
-          action = 'change le poster du film';
-          break;
-        case BakuAction.MOVIE_INSERT_IMAGE:
-          action = 'ajoute une photo';
-          break;
-        case BakuAction.SHOT_ADD:
-          action = 'ajoute un plan';
-          break;
-        case BakuAction.CHANGE_FPS:
-          action = `change les fps du film ${bakuEvent.value}`;
-          break;
-        default:
-          break;
-      }
-      line += action;
-      if (bakuEvent.timestamp) {
-        line += ` ${bakuEvent.timestamp.toString()}`;
-      }
-      actions = actions.concat(line);
-    });
-    return actions;
+  public user(event: BakuEvent): string {
+    return event.user;
+  }
+
+  public action(event: BakuEvent): string {
+    switch (event.action) {
+      case BakuAction.MOVIE_UPDATE_TITLE:
+        return 'change le titre du film';
+      case BakuAction.MOVIE_UPDATE_SYNOPSIS:
+        return 'change le synopsis du film';
+      case BakuAction.MOVIE_UPDATE_POSTER:
+        return 'change le poster du film';
+      case BakuAction.MOVIE_INSERT_IMAGE:
+        return 'ajoute une photo';
+      case BakuAction.SHOT_ADD:
+        return 'ajoute un plan';
+      case BakuAction.CHANGE_FPS:
+        return `change les fps du film ${event.value}`;
+      default:
+        return '';
+    }
+  }
+
+  public date(event: BakuEvent): string {
+    if (event.timestamp) {
+      return new Date(event.timestamp).toLocaleString();
+    }
+    return '';
   }
 }
 </script>
