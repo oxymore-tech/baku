@@ -77,6 +77,10 @@
 </template>
 
 <style lang="scss">
+.b-slider .b-slider-tick{
+  background: transparent;
+}
+
 .b-slider .b-slider-tick,
 .b-slider .b-slider-track {
   height: 1rem;
