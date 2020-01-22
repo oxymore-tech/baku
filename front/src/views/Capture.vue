@@ -223,7 +223,10 @@ export default class Capture extends Project {
 
     const timeFromLastUpdate = timestamp - this.animationLastUpdate;
     if (timeFromLastUpdate > 1000 / this.movie.fps) {
-      this.animationLastUpdate = timestamp;
+
+      /// Get ready for next frame by setting animationLastUpdate=now, but also adjust for your
+      // specified fpsInterval not being a multiple of RAF's interval
+      this.animationLastUpdate = timestamp - (timeFromLastUpdate % (1000 / this.movie.fps));
       if (this.activeFrame === this.selectedImagesBoundaries.right) {
         this.activeFrame = this.selectedImagesBoundaries.left;
       } else {
