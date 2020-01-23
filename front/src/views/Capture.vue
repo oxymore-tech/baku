@@ -187,7 +187,11 @@ export default class Capture extends Project {
 
   public animationFrame!: number;
 
-  public animationLastUpdate!: number;
+  public animationStart!: number;
+
+  public animationStartFrame!: number;
+
+  public animationBoundaries!: ReadingSliderBoundaries;
 
   public isPlaying = false;
 
@@ -200,46 +204,30 @@ export default class Capture extends Project {
   }
 
   public animate(timestamp: number) {
-    if (!this.animationLastUpdate) {
-      this.animationLastUpdate = timestamp;
+    if (!this.animationStart) {
+      this.animationStart = timestamp;
+    }
+    if (!this.animationStartFrame) {
+      this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
     }
 
-    const timeFromLastUpdate = timestamp - this.animationLastUpdate;
-    if (timeFromLastUpdate > 1000 / this.movie.fps) {
-      this.animationLastUpdate = timestamp;
-      if (this.activeFrame === this.getActiveShot.images.length - 1) {
-        this.activeFrame = 0;
-      } else {
-        this.activeFrame++;
-      }
+    const nextFrame = this.getNextFrame(timestamp);
+    if (nextFrame !== this.activeFrame) {
+      this.activeFrame = nextFrame;
     }
     this.animationFrame = requestAnimationFrame(this.animate);
   }
 
-  public animateSelection(timestamp: number) {
-    if (!this.animationLastUpdate) {
-      this.animationLastUpdate = timestamp;
-    }
-
-    const timeFromLastUpdate = timestamp - this.animationLastUpdate;
-    if (timeFromLastUpdate > 1000 / this.movie.fps) {
-
-      /// Get ready for next frame by setting animationLastUpdate=now, but also adjust for your
-      // specified fpsInterval not being a multiple of RAF's interval
-      this.animationLastUpdate = timestamp - (timeFromLastUpdate % (1000 / this.movie.fps));
-      if (this.activeFrame === this.selectedImagesBoundaries.right) {
-        this.activeFrame = this.selectedImagesBoundaries.left;
-      } else {
-        this.activeFrame++;
-      }
-    }
-
-    this.animationFrame = requestAnimationFrame(this.animateSelection);
+  private getNextFrame(timestamp: number) {
+    const imageFromStart = Math.floor((timestamp - this.animationStart) * (this.movie.fps / 1000));
+    const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
+    return this.animationBoundaries.left + ((this.animationStartFrame + imageFromStart) % animationLength);
   }
 
   public playAnimation() {
     if (!this.isPlaying) {
       this.isPlaying = true;
+      this.animationBoundaries = { left: 0, right: this.getActiveShot.images.length };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
   }
@@ -253,13 +241,16 @@ export default class Capture extends Project {
         this.activeFrame = this.selectedImagesBoundaries.left;
       }
       this.isPlaying = true;
-      this.animationFrame = requestAnimationFrame(this.animateSelection);
+      this.animationBoundaries = { left: this.selectedImagesBoundaries.left, right: this.selectedImagesBoundaries.right };
+      this.animationFrame = requestAnimationFrame(this.animate);
     }
   }
 
   public pauseAnimation() {
     if (this.isPlaying) {
       this.isPlaying = false;
+      delete this.animationStart;
+      delete this.animationStartFrame;
       cancelAnimationFrame(this.animationFrame);
     }
   }
