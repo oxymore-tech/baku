@@ -3,6 +3,7 @@
     <b-field v-if="selectedImages">
 
       <ReadingSliderComponent
+        ref="slider"
         v-model="selectedImages"
         :min="0"
         :max="max"
@@ -58,6 +59,10 @@ export default class ImagesSelectorComponent extends Vue {
   set selectedImages(value: ReadingSliderValue) {
     this.$emit('moveactiveframe', value.selected - this.activeImage);
     this.$store.commit('project/setSelectedImagesBoundaries', { left: value.left, right: value.right });
+  }
+
+  public setFrame(value: number) {
+    (this.$refs.slider as ReadingSliderComponent).setFrame(value);
   }
 
   mounted() {

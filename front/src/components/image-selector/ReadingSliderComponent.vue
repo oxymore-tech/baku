@@ -252,6 +252,10 @@ export default class ReadingSliderComponent extends Vue {
     this.emitValue('input');
   }
 
+  public setFrame(value: number) {
+    (this.$refs.buttonSelected as ReadingSliderComponent).setFrame(value);
+  }
+
   emitValue(type: string) {
     this.$emit(type, { left: this.valueLeft, right: this.valueRight, selected: this.valueSelected });
   }

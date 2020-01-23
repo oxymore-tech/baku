@@ -30,6 +30,7 @@
             />
           </div>
           <ImagesSelectorComponent
+            id="image-selector"
             class="image-selector"
             v-if="getActiveShot"
             :projectId="id"
@@ -37,17 +38,18 @@
             :images="getActiveShot.images"
             :activeImage="activeFrame"
             :activeCapture="activeCapture"
+            ref='imageSelector'
             @moveactiveframe="moveActiveFrame"
           />
           <div class="mediaControls">
             <div class="clock">
-              <span>{{ nbHours }}</span>
+              <span id='hours'>{{ nbHours(this.activeFrame) }}</span>
               <span class="clock-small">:</span>
-              <span>{{ nbMins }}</span>
+              <span id='minutes'>{{ nbMins(this.activeFrame) }}</span>
               <span class="clock-small">:</span>
-              <span>{{ nbSecs}}</span>
+              <span id='seconds'>{{ nbSecs(this.activeFrame) }}</span>
               <span class="clock-small">:</span>
-              <span class="clock-small">{{ frameNb }}</span>
+              <span id='frames' class="clock-small">{{ frameNb(this.activeFrame) }}</span>
             </div>
             <div class="toolbar-button">
               <i
@@ -115,15 +117,6 @@
           <span>Capture</span>
         </div>
       </div>
-      <!-- <ImagesSelectorComponent
-        v-if="getActiveShot"
-        :projectId="id"
-        :activeShot="getActiveShot.id"
-        :images="getActiveShot.images"
-        :activeImage="activeFrame"
-        :activeCapture="activeCapture"
-        @moveactiveframe="moveActiveFrame"
-      />-->
       <CarrouselComponent
         v-if="getActiveShot"
         :projectId="id"
@@ -179,6 +172,8 @@ export default class Capture extends Project {
 
   public activeFrame: number = 0;
 
+  public tmpActiveFrame: number = 0;
+
   @CaptureNS.State
   public activeCapture!: boolean;
 
@@ -194,6 +189,16 @@ export default class Capture extends Project {
   public animationBoundaries!: ReadingSliderBoundaries;
 
   public isPlaying = false;
+
+  private display: HTMLElement | null = null;
+
+  private hours: HTMLElement | null = null;
+
+  private minutes: HTMLElement | null = null;
+
+  private seconds: HTMLElement | null = null;
+
+  private frames: HTMLElement | null = null;
 
   public mounted() {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
@@ -212,10 +217,30 @@ export default class Capture extends Project {
     }
 
     const nextFrame = this.getNextFrame(timestamp);
-    if (nextFrame !== this.activeFrame) {
-      this.activeFrame = nextFrame;
+    if (nextFrame !== this.tmpActiveFrame) {
+      this.tmpActiveFrame = nextFrame;
+      this.setNextFrame(nextFrame);
     }
     this.animationFrame = requestAnimationFrame(this.animate);
+  }
+
+  private setNextFrame(nextFrame: number) {
+    if (this.display) {
+      this.display.setAttribute('src', ImageCacheService.getImage(this.getActiveShot.images[nextFrame].id));
+    }
+    if (this.hours) {
+      this.hours.textContent = this.nbHours(nextFrame);
+    }
+    if (this.minutes) {
+      this.minutes.textContent = this.nbMins(nextFrame);
+    }
+    if (this.seconds) {
+      this.seconds.textContent = this.nbSecs(nextFrame);
+    }
+    if (this.frames) {
+      this.frames.textContent = this.frameNb(nextFrame);
+    }
+    (this.$refs.imageSelector as ImagesSelectorComponent).setFrame(nextFrame);
   }
 
   private getNextFrame(timestamp: number) {
@@ -226,7 +251,7 @@ export default class Capture extends Project {
 
   public playAnimation() {
     if (!this.isPlaying) {
-      this.isPlaying = true;
+      this.initPlay();
       this.animationBoundaries = { left: 0, right: this.getActiveShot.images.length };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
@@ -240,10 +265,19 @@ export default class Capture extends Project {
       ) {
         this.activeFrame = this.selectedImagesBoundaries.left;
       }
-      this.isPlaying = true;
+      this.initPlay();
       this.animationBoundaries = { left: this.selectedImagesBoundaries.left, right: this.selectedImagesBoundaries.right };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
+  }
+
+  public initPlay() {
+    this.isPlaying = true;
+    this.display = document.getElementById('previewImg');
+    this.hours = document.getElementById('hours');
+    this.minutes = document.getElementById('minutes');
+    this.seconds = document.getElementById('seconds');
+    this.frames = document.getElementById('frames');
   }
 
   public pauseAnimation() {
@@ -251,6 +285,8 @@ export default class Capture extends Project {
       this.isPlaying = false;
       delete this.animationStart;
       delete this.animationStartFrame;
+      this.activeFrame = this.tmpActiveFrame;
+      this.tmpActiveFrame = 0;
       cancelAnimationFrame(this.animationFrame);
     }
   }
@@ -283,6 +319,7 @@ export default class Capture extends Project {
     );
   }
 
+
   public setActiveCapture() {
     this.activeFrame = this.getActiveShot.images.length - 1;
     this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
@@ -302,23 +339,23 @@ export default class Capture extends Project {
     });
   }
 
-  get nbHours(): string {
-    return `${Math.floor((this.activeFrame + 1) / this.movie.fps / 60 / 60)
+  public nbHours(frame: number): string {
+    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
       % 60}`.padStart(2, '0');
   }
 
-  get nbMins(): string {
-    return `${Math.floor((this.activeFrame + 1) / this.movie.fps / 60)
+  public nbMins(frame: number): string {
+    return `${Math.floor((frame + 1) / this.movie.fps / 60)
       % 60}`.padStart(2, '0');
   }
 
-  get nbSecs(): string {
-    return `${Math.floor((this.activeFrame + 1) / this.movie.fps)
+  public nbSecs(frame: number): string {
+    return `${Math.floor((frame + 1) / this.movie.fps)
       % 60}`.padStart(2, '0');
   }
 
-  get frameNb(): string {
-    return `${(this.activeFrame + 1) % this.movie.fps}`.padStart(2, '0');
+  public frameNb(frame: number): string {
+    return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
   }
 }
 </script>
