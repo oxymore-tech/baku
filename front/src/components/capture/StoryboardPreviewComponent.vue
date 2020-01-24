@@ -76,7 +76,7 @@ export default class StoryboardPreviewComponent extends Vue {
     }
 
     public get preview() {
-      if (this.shots && this.shots.length > 0 && this.shots[0].images && this.shots[0].images.length > 0) {
+      if (this.shots && this.shots.length > 0 && this.getActiveShot.images && this.getActiveShot.images.length > 0) {
         return ImageCacheService.getImage(this.getActiveShot.images[0].id);
       }
       return Spinner;
