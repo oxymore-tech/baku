@@ -406,8 +406,8 @@
     min-width: 640px;
     min-height: 360px;
     max-height: 720px;
-    height: 100%;
-    max-width: 100%;
+    height: 575px;
+    max-width: 1024px;
     background: white;
   }
 
