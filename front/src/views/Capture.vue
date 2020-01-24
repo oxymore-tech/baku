@@ -299,7 +299,7 @@ export default class Capture extends Project {
 
   public moveLeftBoundary() {
     this.$store.commit('project/setSelectedImagesBoundaries', {
-      left: Math.max(0, this.selectedImagesBoundaries.left - 1),
+      left: this.activeFrame,
       right: this.selectedImagesBoundaries.right,
     });
   }
@@ -307,10 +307,7 @@ export default class Capture extends Project {
   public moveRightBoundary() {
     this.$store.commit('project/setSelectedImagesBoundaries', {
       left: this.selectedImagesBoundaries.left,
-      right: Math.min(
-        this.getActiveShot.images.length - 1,
-        this.selectedImagesBoundaries.right + 1,
-      ),
+      right: this.activeFrame,
     });
   }
 
