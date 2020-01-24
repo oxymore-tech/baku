@@ -1,20 +1,24 @@
 <template>
   <div class="mainFrame">
     <div class="history">
-      <span class="title"> Historique des actions : </span><br />
+      <h4 class="title">Historique des actions :</h4>
       <ul>
-        <li v-for="(event, index) in history" :key="`action_${index}`" class="action"><b>{{user(event)}}</b> {{action(event)}} {{date(event)}}</li>
+        <li v-for="(event, index) in history" :key="`action_${index}`" class="action">
+          {{user(event) +" "}}
+          <span class="action-highlight">{{action(event)}}</span>
+          <span class="action-date">{{" " + date(event)}}</span>
+        </li>
       </ul>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { BakuAction, BakuEvent } from '@/api/baku.service';
+import { Vue, Component } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import { BakuAction, BakuEvent } from "@/api/baku.service";
 
-const ProjectNS = namespace('project');
+const ProjectNS = namespace("project");
 
 @Component
 export default class History extends Vue {
@@ -28,19 +32,19 @@ export default class History extends Vue {
   public action(event: BakuEvent): string {
     switch (event.action) {
       case BakuAction.MOVIE_UPDATE_TITLE:
-        return 'change le titre du film';
+        return "change le titre du film";
       case BakuAction.MOVIE_UPDATE_SYNOPSIS:
-        return 'change le synopsis du film';
+        return "change le synopsis du film";
       case BakuAction.MOVIE_UPDATE_POSTER:
-        return 'change le poster du film';
+        return "change le poster du film";
       case BakuAction.MOVIE_INSERT_IMAGE:
-        return 'ajoute une photo';
+        return "ajoute une photo";
       case BakuAction.SHOT_ADD:
-        return 'ajoute un plan';
+        return "ajoute un plan";
       case BakuAction.CHANGE_FPS:
         return `change les fps du film ${event.value}`;
       default:
-        return '';
+        return "";
     }
   }
 
@@ -48,34 +52,50 @@ export default class History extends Vue {
     if (event.timestamp) {
       return new Date(event.timestamp).toLocaleString();
     }
-    return '';
+    return "";
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .mainFrame {
-    background: white;
-    width: 100%;
-    height: calc(100% - 48px);
-    display: inline-flex;
-    flex-direction: column;
-    overflow: auto;
-  }
+.mainFrame {
+  background: white;
+  width: 100%;
+  height: calc(100% - 48px);
+  display: inline-flex;
+  flex-direction: column;
+  overflow: auto;
+}
 
-  .history {
-    margin: 24px 24px;
-  }
+.history {
+  margin: 24px 24px;
+}
 
-  .title {
-    text-align: left;
-    font-size: 18px;
-    font-weight: normal;
-  }
+.title {
+  text-align: left;
+  font-size: 24px;
+  font-weight: lighter;
+  color: #455054;
+  margin: 5px 0;
+}
 
-  .action {
-    text-align: left;
-    font-size: 14px;
-    font-weight: normal;
-  }
+.action {
+  text-align: left;
+  font-size: 18px;
+  font-weight: lighter;
+  color: #455054;
+  border-bottom: 1px solid #F2F2F2;
+  margin: 5px;
+}
+
+.action-highlight {
+  color: #27A2BB;
+  font-weight: bold;
+}
+
+.action-date {
+  font-weight: lighter;
+  font-size: 14px;
+  color:#7F7F7F;
+}
 </style>
