@@ -121,7 +121,7 @@ import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.
 import { Device } from '@/api/device.class';
 import { ImageCacheService } from '@/api/imageCache.service';
 import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
-import { ReadingSliderBoundaries } from '../../api/movie.service';
+import { ReadingSliderBoundaries } from '@/api/movie.service';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -158,7 +158,7 @@ export default class CarrouselComponent extends Vue {
 
   mounted() {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
-      let indexToMove = 0;
+      let indexToMove: number;
       switch (e.keyCode) {
         case 37:
           indexToMove = -1;

@@ -5,8 +5,10 @@ type ImgDict = { [id: string]: string };
 
 let tasks: any = []
 const executorNb = 5;
-for (let i = 0; i<executorNb; i++) {
-  pickNextTask(new Promise((r) => { r(); }), i);
+for (let i = 0; i < executorNb; i++) {
+  pickNextTask(new Promise((r) => {
+    r();
+  }), i);
 }
 
 // function wait1sec() {
@@ -31,33 +33,35 @@ for (let i = 0; i<executorNb; i++) {
 
 
 function processNewTask(executor: any, executorNb: number) {
-    let task = tasks.shift();
-    if (task) {
-      // console.log("processNewTask [" + tasks.length + "]");
-        executor
-            .then(task)
-            .then(() => { pickNextTask(executor, executorNb) });
-        return true
-    }
-    return false
+  let task = tasks.shift();
+  if (task) {
+    // console.log("processNewTask [" + tasks.length + "]");
+    executor
+      .then(task)
+      .then(() => {
+        pickNextTask(executor, executorNb)
+      });
+    return true
+  }
+  return false
 }
 
 function pickNextTask(executor: any, executorNb: number) {
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    if (processNewTask(executor, executorNb)) {
+      resolve()
+    } else {
+      // console.log("start timer");
+      let timer = setInterval(() => {
         if (processNewTask(executor, executorNb)) {
-            resolve()
-        } else {
-            // console.log("start timer");
-            let timer = setInterval(() => {
-                if (processNewTask(executor, executorNb)) {
-                    if (timer) {
-                        clearInterval(timer);
-                    }
-                    resolve();
-                }
-            }, 50)
+          if (timer) {
+            clearInterval(timer);
+          }
+          resolve();
         }
-    })
+      }, 50)
+    }
+  })
 }
 
 
@@ -68,14 +72,16 @@ class ImageCacheServiceImpl {
     [Quality.Original]: {},
   };
 
-  public startPreloading(imageRefs: ImageRef[], activeIndex: number, imageReady: (imageIdx: number, imageId: string) => void ) {
+  public startPreloading(imageRefs: ImageRef[], activeIndex: number, imageReady: (imageIdx: number, imageId: string) => void) {
     const imageRefsSliced = imageRefs.slice(activeIndex).concat(imageRefs.slice(0, activeIndex));
 
     // tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Lightweight) } )
     // tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Original) } )
 
     imageRefsSliced.forEach((image: ImageRef) => {
-      tasks.push(async () => { await this.preloadImage(image, Quality.Thumbnail, imageReady) } )
+      tasks.push(async () => {
+        await this.preloadImage(image, Quality.Thumbnail, imageReady)
+      })
     })
 
   // private putImageB64InCacheInternal(imageRef: ImageRef, quality: Quality, b64: string) {
@@ -109,15 +115,15 @@ class ImageCacheServiceImpl {
     });
   }
 
-  // TODO: update
-  // public startPreloadingImage(image: ImageRef, onLoad?: (image: ImageRef, quality: Quality) => void) {
-  //   Object.values(Quality).forEach(async (quality) => {
-  //     await this.preloadImage(image, quality, );
-  //     if (onLoad) {
-  //       onLoad(image, quality);
-  //     }
-  //   });
-  // }
+  public startPreloadingImage(image: ImageRef, onLoad?: (image: ImageRef, quality: Quality) => void) {
+    Object.values(Quality).forEach(async (quality) => {
+      await this.preloadImage(image, quality, () => {
+        if (onLoad) {
+          onLoad(image, quality);
+        }
+      });
+    });
+  }
 
   public getImage(imageId: string): string {
     console.log("get image " + imageId);
@@ -142,11 +148,11 @@ class ImageCacheServiceImpl {
   }
 
   private async preloadImage(image: ImageRef, quality: Quality,
-    imageReady: (imageIdx: number, imageId: string) => void ) {
+                             imageReady: (imageIdx: number, imageId: string) => void) {
     return new Promise<void>((resolve) => {
       // const start = +new Date;
 
-      var oReq = new XMLHttpRequest();
+      const oReq = new XMLHttpRequest();
       oReq.onload = () => {
         this.putImageInCacheInternal(image, quality);
 
