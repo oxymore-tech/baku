@@ -2,8 +2,8 @@
   <div class="main">
 
     <div class="topPanel panel">
-      <div>
-        <img src="@/assets/baku_logo_solo.png" />
+      <div style="position:absolute; left: 0">
+        <img src="@/assets/baku_solo.svg" />
       </div>
       <div class="welcomediv">
         <h3>Bienvenue sur Baku</h3>
@@ -48,23 +48,34 @@
   background: white;
   width: 100%;
   height: calc(100% - 48px);
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   overflow: auto;
 }
 
 .topPanel {
   flex-direction: row;
-  margin-top: 4.5%;
+  width: 100%;
+  justify-content: center;
+  flex: 1;
+  align-items: center;
+  position: relative;
 
   .welcomediv {
-    margin-top: 50px;
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     text-align: center;
+    z-index: 1;
+    background: rgba(255,255,255,0.7);
+    border-radius: 4px;
+
+    .description {
+      margin: 0px 0px 15px;
+    }
   }
 
   h3 {
@@ -98,7 +109,6 @@
 .bottomPanel {
   width: 100%;
   flex-direction: column;
-  margin-top: 4.5% !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
 
