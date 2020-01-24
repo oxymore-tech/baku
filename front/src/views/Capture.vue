@@ -19,7 +19,7 @@
                 v-if="getActiveShot && getActiveShot.images[activeFrame]"
                 alt="previewImg"
                 id="previewImg"
-                :src="ImageCacheService.getImage(getActiveShot.images[activeFrame].id)"
+                :src="previewImageSrc"
               />
             </template>
             <img
@@ -182,6 +182,7 @@ export default class Capture extends Project {
   public getActiveShot!: Shot;
 
   public activeFrame: number = 0;
+  public previewImageSrc: string = "";
 
   public tmpActiveFrame: number = 0;
 
@@ -217,6 +218,7 @@ export default class Capture extends Project {
 
   public async created() {
     this.activeFrame = this.getActiveShot && this.getActiveShot.images.length === 0 ? -1 : 0;
+    this.previewImageSrc = ImageCacheService.getImage(this.activeShotId);
   }
 
   public animate(timestamp: number) {
@@ -317,6 +319,12 @@ export default class Capture extends Project {
       ImageCacheService.startPreloading(
         this.getActiveShot.images,
         this.activeFrame,
+        (imageIdx, imageId) => {
+          if (this.activeFrame == imageIdx) {
+            console.log("update lol");
+            this.previewImageSrc = ImageCacheService.getImage(imageId);
+          }
+        }
       );
     }
   }
