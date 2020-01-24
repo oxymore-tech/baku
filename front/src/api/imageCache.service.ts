@@ -3,7 +3,7 @@ import { ImageRef, Quality } from './uploadedImage.class';
 
 type ImgDict = { [id: string]: string };
 
-let tasks: any = []
+let tasks: any = [];
 const executorNb = 5;
 for (let i = 0; i < executorNb; i++) {
   pickNextTask(new Promise((r) => {
@@ -75,21 +75,15 @@ class ImageCacheServiceImpl {
   public startPreloading(imageRefs: ImageRef[], activeIndex: number, imageReady: (imageIdx: number, imageId: string) => void) {
     const imageRefsSliced = imageRefs.slice(activeIndex).concat(imageRefs.slice(0, activeIndex));
 
-    // tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Lightweight) } )
-    // tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Original) } )
-
+    tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Thumbnail, imageReady) } )
+    tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Lightweight, imageReady) } )
+    tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Original, imageReady) } )
     imageRefsSliced.forEach((image: ImageRef) => {
       tasks.push(async () => {
         await this.preloadImage(image, Quality.Thumbnail, imageReady)
       })
     })
-
-  // private putImageB64InCacheInternal(imageRef: ImageRef, quality: Quality, b64: string) {
-  //   this.cachedImages[quality] = {
-  //     ...this.cachedImages[quality],
-  //     [imageRef.id]: b64,
-  //   };
-  // }
+  }
 
   public putImageBlobInCache(imageId: string, image: string) {
     this.cachedImages[Quality.Original] = {
@@ -104,15 +98,6 @@ class ImageCacheServiceImpl {
       ...this.cachedImages[Quality.Thumbnail],
       [imageId]: image,
     };
-  }
-
-  public startPreloadingImage(image: ImageRef, onLoad?: (image: ImageRef, quality: Quality) => void) {
-    Object.values(Quality).forEach(async (quality) => {
-      await this.preloadImage(image, quality);
-      if (onLoad) {
-        onLoad(image, quality);
-      }
-    });
   }
 
   public startPreloadingImage(image: ImageRef, onLoad?: (image: ImageRef, quality: Quality) => void) {

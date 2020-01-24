@@ -296,6 +296,11 @@
       this.activeFrame = this.tmpActiveFrame;
       this.tmpActiveFrame = 0;
         cancelAnimationFrame(this.animationFrame);
+        ImageCacheService.startPreloading(
+          shot.images,
+          this.activeFrame,
+          this.onImageReady
+        )
       }
     }
 
@@ -406,8 +411,8 @@
     min-width: 640px;
     min-height: 360px;
     max-height: 720px;
-    height: 575px;
-    max-width: 1024px;
+    height: 100%;
+    max-width: 100%;
     background: white;
   }
 
