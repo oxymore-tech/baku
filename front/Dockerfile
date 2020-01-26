@@ -15,6 +15,8 @@ VOLUME /data/
 
 COPY --from=builder /app/dist /front_files
 
+COPY proxy/nginx-prod.conf /etc/nginx/nginx.conf
+
 CMD nginx -g "daemon off;"
 
 
