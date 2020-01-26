@@ -27,7 +27,6 @@ services:
       traefik.http.routers.front.middlewares: "redirect@file"
       traefik.http.routers.front-secure.rule: "Host(`app.bakuanimation.com`) && PathPrefix(`/`)"
       traefik.http.routers.front-secure.entrypoints: "web-secure"
-      traefik.http.routers.front-secure.middlewares: "compress@file"
       traefik.http.routers.front-secure.tls.certResolver: "baku"
       traefik.http.services.front.loadbalancer.server.port: "80"
 
