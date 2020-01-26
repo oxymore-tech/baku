@@ -7,6 +7,18 @@ RUN yarn
 COPY . .
 RUN yarn build --release
 
+
+
+FROM nginx AS production
+
+VOLUME /data/
+
+COPY --from=builder /app/dist /front_files
+
+CMD nginx -g "daemon off;"
+
+
+
 FROM nginx
 
 VOLUME /data/

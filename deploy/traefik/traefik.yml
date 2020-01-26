@@ -1,0 +1,32 @@
+log:
+  level: INFO
+
+# accessLog: {}
+
+# api:
+#   dashboard: true
+#   insecure: true
+
+entryPoints:
+  web:
+    address: ":80"
+
+  web-secure:
+    address: ":443"
+
+certificatesResolvers:
+  baku:
+    acme:
+      email: augustin.gjini@pm.me
+      storage: /etc/traefik/acme/baku.json
+      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  file:
+    filename: /etc/traefik/rules.yml
+
+  docker:
+    endpoint: unix:///var/run/docker.sock
+    exposedbydefault: false
