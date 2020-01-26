@@ -207,8 +207,7 @@
 
     public mounted() {
       this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
-      const canvas = this.$refs.previewImg as HTMLCanvasElement;
-      this.previewImg2dContext = canvas.getContext("2d");
+      this.previewImgCanvas = this.$refs.previewImg as HTMLCanvasElement;
     }
 
     public async created() {
@@ -316,16 +315,11 @@
     @Watch('getActiveShot')
     public async onActiveShotChange(shot: Shot) {
       if (shot) {
-        const canvas = this.$refs.previewImg as HTMLCanvasElement;
-        const ctx = canvas.getContext("2d");
-
-        if (ctx != null) {
-          ImageCacheService.startPreloading(
-            shot.images,
-            this.activeFrame,
-            this.onImageReady
-          )
-        }
+        ImageCacheService.startPreloading(
+          shot.images,
+          this.activeFrame,
+          this.onImageReady
+        )
       }
     }
 
