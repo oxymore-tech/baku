@@ -15,6 +15,6 @@ services:
     build: ./back/
     volumes:
       - "./data:/app/data"
-      - "/etc/letsencrypt/live/docker.synergee.com/server.cert:/ssl/server.cert"
-      - "/etc/letsencrypt/live/docker.synergee.com/server.key:/ssl/server.key"
+#      - "/etc/letsencrypt/live/docker.synergee.com/server.cert:/ssl/server.cert"
+#      - "/etc/letsencrypt/live/docker.synergee.com/server.key:/ssl/server.key"
     restart: unless-stoppe<d
