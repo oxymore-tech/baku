@@ -19,7 +19,7 @@ certificatesResolvers:
     acme:
       email: augustin.gjini@pm.me
       storage: /etc/traefik/acme/baku.json
-      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
 
