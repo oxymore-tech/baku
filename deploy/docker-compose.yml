@@ -28,7 +28,7 @@ services:
       traefik.http.routers.front-secure.rule: "PathPrefix(`/`)"
       traefik.http.routers.front-secure.entrypoints: "web-secure"
       traefik.http.routers.front-secure.middlewares: "compress@file"
-      traefik.http.routers.front-secure.tls.certResolver: "acme"
+      traefik.http.routers.front-secure.tls.certResolver: "baku"
       traefik.http.services.front.loadbalancer.server.port: "80"
 
   back:
@@ -44,5 +44,5 @@ services:
       traefik.http.routers.back-secure.rule: "PathPrefix(`/api`)"
       traefik.http.routers.back-secure.entrypoints: "web-secure"
       traefik.http.routers.back-secure.middlewares: "compress@file"
-      traefik.http.routers.back-secure.tls.certResolver: "acme"
+      traefik.http.routers.back-secure.tls.certResolver: "baku"
       traefik.http.services.back.loadbalancer.server.port: "3030"

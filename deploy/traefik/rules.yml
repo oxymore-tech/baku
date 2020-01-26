@@ -10,4 +10,8 @@ http:
       redirectScheme:
         scheme: https
     compress:
-      compress: {}
+      compress:
+        excludedContentTypes:
+          - image/jpeg
+          - image/jpg
+          - image/png
