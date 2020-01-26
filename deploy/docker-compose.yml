@@ -17,4 +17,4 @@ services:
       - "./data:/app/data"
 #      - "/etc/letsencrypt/live/docker.synergee.com/server.cert:/ssl/server.cert"
 #      - "/etc/letsencrypt/live/docker.synergee.com/server.key:/ssl/server.key"
-    restart: unless-stoppe<d
+    restart: unless-stopped
