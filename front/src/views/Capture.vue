@@ -187,11 +187,11 @@
 
     public animationFrame!: number;
 
-  public animationStart!: number;
+    public animationStart!: number;
 
-  public animationStartFrame!: number;
+    public animationStartFrame!: number;
 
-  public animationBoundaries!: ReadingSliderBoundaries;
+    public animationBoundaries!: ReadingSliderBoundaries;
 
     public isPlaying = false;
 
@@ -217,14 +217,14 @@
     }
 
     public animate(timestamp: number) {
-    if (!this.animationStart) {
-      this.animationStart = timestamp;
+      if (!this.animationStart) {
+        this.animationStart = timestamp;
       }
-    if (!this.animationStartFrame) {
-      this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
-        }
+      if (!this.animationStartFrame) {
+        this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
+      }
 
-    const nextFrame = this.getNextFrame(timestamp);
+      const nextFrame = this.getNextFrame(timestamp);
     if (nextFrame !== this.tmpActiveFrame) {
       this.tmpActiveFrame = nextFrame;
       this.setNextFrame(nextFrame);
@@ -251,16 +251,16 @@
     (this.$refs.imageSelector as ImagesSelectorComponent).setFrame(nextFrame);
   }
 
-  private getNextFrame(timestamp: number) {
-    const imageFromStart = Math.floor((timestamp - this.animationStart) * (this.movie.fps / 1000));
-    const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
-    return this.animationBoundaries.left + ((this.animationStartFrame + imageFromStart) % animationLength);
+    private getNextFrame(timestamp: number) {
+      const imageFromStart = Math.floor((timestamp - this.animationStart) * (this.movie.fps / 1000));
+      const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
+      return this.animationBoundaries.left + ((this.animationStartFrame + imageFromStart) % animationLength);
     }
 
     public playAnimation() {
       if (!this.isPlaying) {
       this.initPlay();
-      this.animationBoundaries = { left: 0, right: this.getActiveShot.images.length };
+        this.animationBoundaries = {left: 0, right: this.getActiveShot.images.length};
         this.animationFrame = requestAnimationFrame(this.animate);
       }
     }
@@ -275,7 +275,7 @@
         }
       this.initPlay();
       this.animationBoundaries = { left: this.selectedImagesBoundaries.left, right: this.selectedImagesBoundaries.right };
-      this.animationFrame = requestAnimationFrame(this.animate);
+        this.animationFrame = requestAnimationFrame(this.animate);
       }
     }
 
@@ -291,13 +291,13 @@
     public pauseAnimation() {
       if (this.isPlaying) {
         this.isPlaying = false;
-      delete this.animationStart;
-      delete this.animationStartFrame;
+        delete this.animationStart;
+        delete this.animationStartFrame;
       this.activeFrame = this.tmpActiveFrame;
       this.tmpActiveFrame = 0;
         cancelAnimationFrame(this.animationFrame);
         ImageCacheService.startPreloading(
-          shot.images,
+          this.getActiveShot.images,
           this.activeFrame,
           this.onImageReady
         )
@@ -356,7 +356,7 @@
 
     public moveLeftBoundary() {
       this.$store.commit('project/setSelectedImagesBoundaries', {
-      left: this.activeFrame,
+        left: this.activeFrame,
         right: this.selectedImagesBoundaries.right,
       });
     }
@@ -364,7 +364,7 @@
     public moveRightBoundary() {
       this.$store.commit('project/setSelectedImagesBoundaries', {
         left: this.selectedImagesBoundaries.left,
-      right: this.activeFrame,
+        right: this.activeFrame,
       });
     }
 
