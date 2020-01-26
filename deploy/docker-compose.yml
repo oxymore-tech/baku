@@ -22,10 +22,10 @@ services:
     restart: unless-stopped
     labels:
       traefik.enable: "true"
-      traefik.http.routers.front.rule: "PathPrefix(`/`)"
+      traefik.http.routers.front.rule: "Host(`app.bakuanimation.com`) && PathPrefix(`/`)"
       traefik.http.routers.front.entrypoints: "web"
       traefik.http.routers.front.middlewares: "redirect@file"
-      traefik.http.routers.front-secure.rule: "PathPrefix(`/`)"
+      traefik.http.routers.front-secure.rule: "Host(`app.bakuanimation.com`) && PathPrefix(`/`)"
       traefik.http.routers.front-secure.entrypoints: "web-secure"
       traefik.http.routers.front-secure.middlewares: "compress@file"
       traefik.http.routers.front-secure.tls.certResolver: "baku"
@@ -38,10 +38,10 @@ services:
     restart: unless-stopped
     labels:
       traefik.enable: "true"
-      traefik.http.routers.back.rule: "PathPrefix(`/api`)"
+      traefik.http.routers.back.rule: "Host(`app.bakuanimation.com`) && PathPrefix(`/api`)"
       traefik.http.routers.back.entrypoints: "web"
       traefik.http.routers.back.middlewares: "redirect@file"
-      traefik.http.routers.back-secure.rule: "PathPrefix(`/api`)"
+      traefik.http.routers.back-secure.rule: "Host(`app.bakuanimation.com`) && PathPrefix(`/api`)"
       traefik.http.routers.back-secure.entrypoints: "web-secure"
       traefik.http.routers.back-secure.middlewares: "compress@file"
       traefik.http.routers.back-secure.tls.certResolver: "baku"
