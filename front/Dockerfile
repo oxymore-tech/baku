@@ -8,6 +8,24 @@ COPY . .
 RUN yarn build --release
 
 
+
+
+
+FROM nginx:stable-alpine AS production
+
+VOLUME /data/
+
+COPY proxy/nginx-prod.conf /etc/nginx/nginx.conf
+
+COPY --from=builder /app/dist /front_files
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+
+
+
+
 FROM nginx
 
 VOLUME /data/

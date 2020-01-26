@@ -1,0 +1,13 @@
+
+tls:
+  stores:
+    default:
+    
+http:
+
+  middlewares:
+    redirect:
+      redirectScheme:
+        scheme: https
+    compress:
+      compress: {}

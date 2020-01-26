@@ -25,3 +25,5 @@ yarn-error.log*
 
 # Files created by the app
 /back/upload_*
+
+deploy/traefik/acme/

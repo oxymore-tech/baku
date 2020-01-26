@@ -4,3 +4,5 @@ Dockerfile
 ./back/.idea
 ./back/upload_*
 ./front/node_modules/
+
+./deploy
