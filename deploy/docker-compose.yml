@@ -10,8 +10,7 @@ services:
     volumes:
       - "./data:/data/"
       - "./deploy/certbot/www:/var/www/certbot"
-      - "/etc/letsencrypt/live/app.bakuanimation.com/fullchain.pem:/ssl/server.cert"
-      - "/etc/letsencrypt/live/app.bakuanimation.com/privkey.pem:/ssl/server.key"
+      - "/etc/letsencrypt/live/app.bakuanimation.com/:/ssl/"
     restart: unless-stopped
 
   back:
