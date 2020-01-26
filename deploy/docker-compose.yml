@@ -1,0 +1,48 @@
+version: '3.6'
+
+services:
+
+  traefik:
+    image: "traefik:v2.1.1"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./deploy/traefik/acme:/etc/traefik/acme"
+      - "./deploy/traefik:/etc/traefik"
+    restart: unless-stopped
+  
+  proxy:
+    build:
+      context: ./front/
+      target: production
+    volumes:
+      - "./data:/data/"
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.front.rule: "PathPrefix(`/`)"
+      traefik.http.routers.front.entrypoints: "web"
+      traefik.http.routers.front.middlewares: "redirect@file"
+      traefik.http.routers.front-secure.rule: "PathPrefix(`/`)"
+      traefik.http.routers.front-secure.entrypoints: "web-secure"
+      traefik.http.routers.front-secure.middlewares: "compress@file"
+      traefik.http.routers.front-secure.tls.certResolver: "acme"
+      traefik.http.services.front.loadbalancer.server.port: "80"
+
+  back:
+    build: ./back/
+    volumes:
+      - "./data:/app/data"
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.back.rule: "PathPrefix(`/api`)"
+      traefik.http.routers.back.entrypoints: "web"
+      traefik.http.routers.back.middlewares: "redirect@file"
+      traefik.http.routers.back-secure.rule: "PathPrefix(`/api`)"
+      traefik.http.routers.back-secure.entrypoints: "web-secure"
+      traefik.http.routers.back-secure.middlewares: "compress@file"
+      traefik.http.routers.back-secure.tls.certResolver: "acme"
+      traefik.http.services.back.loadbalancer.server.port: "3030"
