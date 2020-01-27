@@ -74,10 +74,16 @@ class ImageCacheServiceImpl {
 
   public startPreloading(imageRefs: ImageRef[], activeIndex: number, imageReady: (imageIdx: number, imageId: string) => void) {
     const imageRefsSliced = imageRefs.slice(activeIndex).concat(imageRefs.slice(0, activeIndex));
-
-    tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Thumbnail, imageReady) } )
-    tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Lightweight, imageReady) } )
-    tasks.push(async () => { await this.preloadImage(imageRefsSliced[0], Quality.Original, imageReady) } )
+    tasks = [];
+    tasks.push(async () => {
+      await this.preloadImage(imageRefsSliced[0], Quality.Thumbnail, imageReady)
+    });
+    tasks.push(async () => {
+      await this.preloadImage(imageRefsSliced[0], Quality.Lightweight, imageReady)
+    });
+    tasks.push(async () => {
+      await this.preloadImage(imageRefsSliced[0], Quality.Original, imageReady)
+    });
     imageRefsSliced.forEach((image: ImageRef) => {
       tasks.push(async () => {
         await this.preloadImage(image, Quality.Thumbnail, imageReady)

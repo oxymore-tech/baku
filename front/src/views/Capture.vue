@@ -14,7 +14,7 @@
               muted
               playsinline
             />
-            <canvas id="previewImg" ref="previewImg" v-else/>
+            <img id="previewImg" ref="previewImg" v-else/>
             <img
               v-if="getActiveShot && getActiveShot.images[activeFrame] && activeCapture"
               alt="ghostImg"
@@ -118,8 +118,18 @@
           <span>Capture</span>
         </div>
       </div>
+      <!-- <ImagesSelectorComponent
+        v-if="getActiveShot"
+        :projectId="id"
+        :activeShot="getActiveShot.id"
+        :images="getActiveShot.images"
+        :activeImage="activeFrame"
+        :activeCapture="activeCapture"
+        @moveactiveframe="moveActiveFrame"
+      />-->
       <CarrouselComponent
         v-if="getActiveShot"
+        ref="carrousel"
         :projectId="id"
         :activeShot="getActiveShot.id"
         :images="getActiveShot.images"
@@ -177,8 +187,6 @@
     public activeFrame: number = 0;
     public previewImageSrc: string = "";
 
-  public tmpActiveFrame: number = 0;
-
     @CaptureNS.State
     public activeCapture!: boolean;
 
@@ -195,6 +203,7 @@
 
     public isPlaying = false;
 
+    private previewImg: HTMLImageElement | null = null;
   private display: HTMLElement | null = null;
 
   private hours: HTMLElement | null = null;
@@ -207,7 +216,9 @@
 
     public mounted() {
       this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
-      this.previewImgCanvas = this.$refs.previewImg as HTMLCanvasElement;
+      this.previewImg = this.$refs.previewImg as HTMLImageElement;
+      const activeFrameId = this.getActiveShot.images[this.activeFrame].id;
+      this.previewImg!.src = ImageCacheService.getImage(activeFrameId);
     }
 
     public async created() {
@@ -306,9 +317,7 @@
     @Watch('stream')
     public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
       if (newValue) {
-        (document.getElementById(
-          'videoCapture',
-        ) as HTMLVideoElement).srcObject = newValue;
+        (this.$refs.videoCapture as HTMLVideoElement).srcObject = newValue;
       }
     }
 
@@ -328,6 +337,7 @@
       if (currentImageId == imageId) {
         this.drawImage(imageId);
       }
+      (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
     }
 
     private drawImage(imageId: string) {
