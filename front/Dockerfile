@@ -7,18 +7,15 @@ RUN yarn
 COPY . .
 RUN yarn build --release
 
+FROM builder AS watcher
+CMD npm run build --watch --no-clean
 
 
 FROM nginx AS production
-
 VOLUME /data/
-
 COPY --from=builder /app/dist /front_files
-
 COPY proxy/nginx-prod.conf /etc/nginx/nginx.conf
-
 CMD nginx -g "daemon off;"
-
 
 
 FROM nginx
