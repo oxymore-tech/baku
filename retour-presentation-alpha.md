@@ -14,14 +14,20 @@ Ce qu'il manque pour la beta :
 - possibilité de réimporter un travail de première dans baku (peut être juste faire un lien)
 - peut être faire un projet de démo non modifiable (qu'il soit forké), un tutoriel
 - Reprendre les fonctions de la timeline de kool capture (copier/coller, supprimer). Grille pas nécéssaire forcément
+- Outil pelure d'oignon
 - sécurité : éviter de pouvoir âbimer le film à la fin d'un atelier (peut être créer une version vérouillé)
 - peut être empêcher que 2 personnes fasse des captures en même temps sur un plan 
 - ajouter les raccourcis clavier : droite / gauche / espace / entrer
-- retour vidéo à la fin de la capture : pour faciliter l'aller/retour capture/play
+- pouvoir lire l'animation en mode capture
+- retour live-view à la fin de la lecture : pour faciliter l'aller/retour capture/play
 - fonctions : déplacer, inverser, supprimer...
 - A TESTER : besoin de bloquer les réglages de la cam avec un logiciel à côté (focus,...) (webcam-settings sur mac) tout en pouvant faire des captures dans baku en parallèle. Pb webcam settings ne marche plus avec les dernières version de mac
+- mode plein écran
+- racourci clavier : espace = lecture, entré = capture
+- un niveau supérieur au plan ( scène ? )
+- lecture bout en bout des animations
 
-Foncionalités à prioriser
+Fonctionnalités à prioriser
 - capturer
 - copier / coller / coller inversé
 - supprimer
@@ -31,5 +37,4 @@ Foncionalités à prioriser
 - possibilité d'exporter vers adobe première le film découpé par plan
 - possibilité de réordonner les plans (comme un début de montage)
 - possibilité de mettre un son dans un plan pour donner un rythme pour faire la capture (pour aider à ceux qui font la capture)
-
-- réflexion autour du nom : l'équipe de la ménagerie évoque la possibilité de proposer d'autres noms : slika, chamelon, numa
+- réflexion autour du nom : l'équipe de la ménagerie évoque la possibilité de proposer d'autres noms : slika, chamelon, mima
