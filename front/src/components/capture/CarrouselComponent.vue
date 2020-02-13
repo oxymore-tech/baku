@@ -194,7 +194,8 @@ export default class CarrouselComponent extends Vue {
     );
   }
 
-  public async onCaptured(id: string, thumb: Blob) {
+  public async onCaptured(id: string, thumb: Blob, b64: string) {
+    ImageCacheService.putImageBlobInCache(id, b64);
     await this.addImageToShot({
       shotId: this.activeShot,
       imageIndex: this.activeImage + 1,

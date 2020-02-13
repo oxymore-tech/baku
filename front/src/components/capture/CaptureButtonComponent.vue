@@ -124,7 +124,7 @@ export default class CaptureButtonComponent extends Vue {
         const data = JSON.parse(JSON.parse(event.data));
         switch (data.type) {
           case 'capture':
-            this.onCaptured(data.id, data.thumb);
+            // this.onCaptured(data.id, data.thumb); //TODO when captured by smartphone, do we have b64 to add ?
             break;
           case 'upload':
             this.onUploaded(data.id);
@@ -187,8 +187,8 @@ export default class CaptureButtonComponent extends Vue {
       this.$emit('uploaded', id);
     }
 
-    private async onCaptured(id: string, thumb: Blob) {
-      this.$emit('captured', id, thumb);
+    private async onCaptured(id: string, thumb: Blob, b64: string) {
+      this.$emit('captured', id, thumb, b64);
       this.isCapturing = false;
     }
 }

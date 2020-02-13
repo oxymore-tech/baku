@@ -43,11 +43,25 @@ class ImageCacheServiceImpl {
     };
   }
 
-
   private putImageB64InCacheInternal(imageRef: ImageRef, quality: Quality, b64: string) {
     this.cachedImages[quality] = {
       ...this.cachedImages[quality],
       [imageRef.id]: b64,
+    };
+  }
+
+  public putImageBlobInCache(imageId: string, image: string) {
+    this.cachedImages[Quality.Original] = {
+      ...this.cachedImages[Quality.Original],
+      [imageId]: image,
+    };
+    this.cachedImages[Quality.Lightweight] = {
+      ...this.cachedImages[Quality.Lightweight],
+      [imageId]: image,
+    };
+    this.cachedImages[Quality.Thumbnail] = {
+      ...this.cachedImages[Quality.Thumbnail],
+      [imageId]: image,
     };
   }
 
@@ -67,7 +81,7 @@ class ImageCacheServiceImpl {
     this.ongoingQueries[quality] = {
       ...this.ongoingQueries[quality],
       [image.id]: 'true'
-    }
+    };
     const res = await Axios.get(image.getUrl(quality), { responseType: 'arraybuffer' }).catch(async (error) => {
       await delay(2000);
       return await Axios.get(image.getUrl(quality), { responseType: 'arraybuffer' });

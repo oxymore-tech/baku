@@ -17,12 +17,12 @@ export class Device {
     return this.id === 'smartphone';
   }
 
-  public capture(videoElementTag: string, projectId: string, onCaptured: (id: string, thumb: Blob) => void, onUploaded: (id: string) => void, onError: (e: any) => void, onFinally?: () => {}): void {
+  public capture(videoElementTag: string, projectId: string, onCaptured: (id: string, original: Blob, b64: string) => void, onUploaded: (id: string) => void, onError: (e: any) => void, onFinally?: () => {}): void {
     try {
       const video = document.getElementById(videoElementTag) as HTMLVideoElement;
-      const blob = Device.captureOriginal(video);
+      const [blob, b64] = Device.captureOriginal(video);
       const id = `${uuid.v4()}.jpg`;
-      onCaptured(id, blob);
+      onCaptured(id, blob, b64);
       this.bakuService.upload(projectId, blob, id)
         .then(() => onUploaded(id))
         .catch(onError)
@@ -32,14 +32,14 @@ export class Device {
     }
   }
 
-  private static captureOriginal(video: HTMLVideoElement) {
+  private static captureOriginal(video: HTMLVideoElement): [Blob, string] {
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
     context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
     const base64 = canvas.toDataURL('image/jpeg');
-    return Device.imagetoblob(base64);
+    return [Device.imagetoblob(base64), base64];
   }
 
   private static imagetoblob(base64String: string): Blob {
