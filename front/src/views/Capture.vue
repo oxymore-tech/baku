@@ -127,6 +127,8 @@
         :activeImage="activeFrame"
         @activeImageChange="onActiveFrameChange"
         @moveFrame="moveFrame"
+        @moveHome="moveHome"
+        @moveEnd="moveEnd"
         @stopMovingFrame="syncActiveFrame"
         @togglePlay="togglePlay"
         :activeCapture="activeCapture"
@@ -337,17 +339,37 @@
       }
     }
 
-    private onImagePreloaded(imageIdx: number, imageId: string): void {
-      if (this.activeFrame == imageIdx) {
-        this.displayFrame(this.activeFrame);
+    private onImagePreloaded(imageId: string): void {
+      if (this.getActiveShot.images[this.tmpActiveFrame].id == imageId) {
+        this.displayFrame(this.tmpActiveFrame);
       }
       (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(imageId);
       (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
     }
 
     public moveFrame(moveOffset: number) {
+      let computedFrame = this.tmpActiveFrame + moveOffset;
+      this.moveFrameAbsolute(computedFrame);
+    }
+
+    public moveHome() {
+      this.moveFrameAbsolute(0);
+      this.syncActiveFrame();
+    }
+
+    public moveEnd() {
+      this.moveFrameAbsolute(this.getActiveShot.images.length - 1);
+      this.syncActiveFrame();
+    }
+
+    private moveFrameAbsolute(frame: number) {
       if (!this.isPlaying) {
-        this.tmpActiveFrame = this.tmpActiveFrame + moveOffset;
+        if (frame < 0) {
+          frame = 0;
+        } else if (frame > (this.getActiveShot.images.length - 1)) {
+          frame = this.getActiveShot.images.length - 1;
+        }
+        this.tmpActiveFrame = frame;
         this.displayFrame(this.tmpActiveFrame);
       }
     }

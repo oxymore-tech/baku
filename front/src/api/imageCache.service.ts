@@ -3,65 +3,6 @@ import { ImageRef, Quality } from './uploadedImage.class';
 
 type ImgDict = { [id: string]: string };
 
-let tasks: any = [];
-const executorNb = 5;
-for (let i = 0; i < executorNb; i++) {
-  pickNextTask(new Promise((r) => {
-    r();
-  }), i);
-}
-
-// function wait1sec() {
-//   return new Promise(resolve => {
-//     setTimeout(() => {
-//       resolve('resolved');
-//     }, 1000);
-//   });
-// }
-//
-// async function pickNextTask(executor: any, executorNb: number) {
-//   let task = tasks.shift();
-//   if (task) {
-//     console.log("[" + executorNb + "] processNewTask [" + tasks.length + "]");
-//     await task();
-//   } else {
-//     // console.log("[" + executorNb + "] wait 1 sec")
-//     await wait1sec();
-//   }
-//   executor.then(() => { pickNextTask(executor, executorNb) });
-// }
-
-
-function processNewTask(executor: any, executorNb: number) {
-  let task = tasks.shift();
-  if (task) {
-    // console.log("processNewTask [" + tasks.length + "]");
-    executor
-      .then(task)
-      .then(() => {
-        pickNextTask(executor, executorNb)
-      });
-    return true
-  }
-  return false
-}
-
-function pickNextTask(executor: any, executorNb: number) {
-  return new Promise((resolve, reject) => {
-    if (processNewTask(executor, executorNb)) {
-      resolve()
-    } else {
-      let timer = setInterval(() => {
-        if (processNewTask(executor, executorNb)) {
-          if (timer) {
-            clearInterval(timer);
-          }
-          resolve();
-        }
-      }, 50)
-    }
-  })
-}
 
 class ImageCacheServiceImpl {
   private cachedImages: { [quality: string]: ImgDict } = {
@@ -70,28 +11,70 @@ class ImageCacheServiceImpl {
     [Quality.Original]: {},
   };
 
-  public startPreloading(imageRefs: ImageRef[], activeIndex: number, imageReady: (imageIdx: number, imageId: string) => void) {
-    console.log("startPreloading");
-    const imageRefsSliced = imageRefs.slice(activeIndex).concat(imageRefs.slice(0, activeIndex));
-    tasks = [];
-    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Thumbnail, imageReady);
-    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Lightweight, imageReady);
-    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Original, imageReady);
+  private readonly tasks: any = [];
+  private readonly executorNb = 5;
+
+  constructor() {
+    for (let i = 0; i < this.executorNb; i++) {
+      this.pickNextTask(new Promise((r) => {
+        r();
+      }), i);
+    }
+  }
+
+
+  private processNewTask(executor: any, executorNb: number) {
+    let task = this.tasks.shift();
+    if (task) {
+      // console.log("processNewTask [" + tasks.length + "]");
+      executor
+        .then(task)
+        .then(() => {
+          this.pickNextTask(executor, executorNb)
+        });
+      return true
+    }
+    return false
+  }
+
+  private pickNextTask(executor: any, executorNb: number) {
+    return new Promise((resolve, reject) => {
+      if (this.processNewTask(executor, executorNb)) {
+        resolve()
+      } else {
+        let timer = setInterval(() => {
+          if (this.processNewTask(executor, executorNb)) {
+            if (timer) {
+              clearInterval(timer);
+            }
+            resolve();
+          }
+        }, 50)
+      }
+    })
+  }
+
+  public startPreloading(imageRefs: ImageRef[], activeIndex: number, onImagePreloaded: (imageId: string) => void) {
+    const imageRefsSliced = imageRefs.slice(activeIndex, imageRefs.length).concat(imageRefs.slice(0, activeIndex));
+    this.tasks.splice(0, this.tasks.length);
+    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Thumbnail, onImagePreloaded);
+    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Lightweight, onImagePreloaded);
+    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Original, onImagePreloaded);
     imageRefsSliced.forEach((image: ImageRef) => {
-      this.createTaskIfNeeded(image, Quality.Thumbnail, imageReady);
+      this.createTaskIfNeeded(image, Quality.Thumbnail, onImagePreloaded);
     });
     imageRefsSliced.forEach((image: ImageRef) => {
-      this.createTaskIfNeeded(image, Quality.Lightweight, imageReady);
+      this.createTaskIfNeeded(image, Quality.Lightweight, onImagePreloaded);
     });
     imageRefsSliced.forEach((image: ImageRef) => {
-      this.createTaskIfNeeded(image, Quality.Original, imageReady);
+      this.createTaskIfNeeded(image, Quality.Original, onImagePreloaded);
     });
   }
 
-  private createTaskIfNeeded(image: ImageRef, quality: Quality, imageReady: (imageIdx: number, imageId: string) => void) {
+  private createTaskIfNeeded(image: ImageRef, quality: Quality, onImagePreloaded: (imageId: string) => void) {
     if (!this.isCached(image.id, quality)) {
-      tasks.push(async () => {
-        await this.preloadImage(image, quality, imageReady)
+      this.tasks.push(async () => {
+        await this.preloadImage(image, quality, onImagePreloaded)
       });
     }
   }
@@ -143,12 +126,12 @@ class ImageCacheServiceImpl {
   }
 
   private async preloadImage(image: ImageRef, quality: Quality,
-                             imageReady: (imageIdx: number, imageId: string) => void) {
+                             onImagePreloaded: (imageId: string) => void) {
     return new Promise<void>((resolve) => {
       const oReq = new XMLHttpRequest();
       oReq.onload = () => {
         this.putImageInCacheInternal(image, quality);
-        imageReady(0, image.id);
+        onImagePreloaded(image.id);
         resolve();
       };
       oReq.open("get", image.getUrl(quality), true);

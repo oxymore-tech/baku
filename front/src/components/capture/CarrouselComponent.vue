@@ -120,7 +120,7 @@
   import { Device } from '@/api/device.class';
   import { ImageCacheService } from '@/api/imageCache.service';
   import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
-  import { ReadingSliderBoundaries } from '@/api/movie.service';
+  import { KeyCodes, ReadingSliderBoundaries } from '@/api/movie.service';
 
   const CaptureNS = namespace('capture');
   const ProjectNS = namespace('project');
@@ -158,21 +158,27 @@
     mounted() {
       window.addEventListener('keydown', (e: KeyboardEvent) => {
         switch (e.keyCode) {
-          case 37:
+          case KeyCodes.HOME:
+            this.$emit('moveHome', e);
+            break;
+          case KeyCodes.END:
+            this.$emit('moveEnd', e);
+            break;
+          case KeyCodes.LEFT_ARROW:
             this.$emit('moveFrame', -1);
             break;
-          case 39:
+          case KeyCodes.RIGHT_ARROW:
             this.$emit('moveFrame', 1);
             break;
-          case 32:
+          case KeyCodes.SPACE:
             this.$emit('togglePlay', e);
             break;
         }
       });
       window.addEventListener('keyup', (e: KeyboardEvent) => {
         switch (e.keyCode) {
-          case 37:
-          case 39:
+          case KeyCodes.LEFT_ARROW:
+          case KeyCodes.RIGHT_ARROW:
             this.$emit('stopMovingFrame', e);
             break;
         }
