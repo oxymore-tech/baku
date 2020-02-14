@@ -36,13 +36,13 @@
           />
           <div class="mediaControls">
             <div class="clock">
-              <span id='hours'>{{ nbHours(this.activeFrame) }}</span>
+              <span ref='hours'>{{ nbHours(this.activeFrame) }}</span>
               <span class="clock-small">:</span>
-              <span id='minutes'>{{ nbMins(this.activeFrame) }}</span>
+              <span ref='minutes'>{{ nbMins(this.activeFrame) }}</span>
               <span class="clock-small">:</span>
-              <span id='seconds'>{{ nbSecs(this.activeFrame) }}</span>
+              <span ref='seconds'>{{ nbSecs(this.activeFrame) }}</span>
               <span class="clock-small">:</span>
-              <span id='frames' class="clock-small">{{ frameNb(this.activeFrame) }}</span>
+              <span ref='frames' class="clock-small">{{ frameNb(this.activeFrame) }}</span>
             </div>
             <div class="toolbar-button">
               <i
@@ -118,15 +118,6 @@
           <span>Capture</span>
         </div>
       </div>
-      <!-- <ImagesSelectorComponent
-        v-if="getActiveShot"
-        :projectId="id"
-        :activeShot="getActiveShot.id"
-        :images="getActiveShot.images"
-        :activeImage="activeFrame"
-        :activeCapture="activeCapture"
-        @moveactiveframe="moveActiveFrame"
-      />-->
       <CarrouselComponent
         v-if="getActiveShot"
         ref="carrousel"
@@ -149,7 +140,7 @@
   import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
   import store from '@/store';
   import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-  import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
+import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
   import Project from './Project.vue';
   import { ImageCacheService } from '@/api/imageCache.service';
 
@@ -185,7 +176,8 @@
     public getActiveShot!: Shot;
 
     public activeFrame: number = 0;
-    public previewImageSrc: string = "";
+
+    public tmpActiveFrame: number = 0;
 
     @CaptureNS.State
     public activeCapture!: boolean;
@@ -203,27 +195,30 @@
 
     public isPlaying = false;
 
-    private previewImg: HTMLImageElement | null = null;
-  private display: HTMLElement | null = null;
+    private previewImg!: HTMLImageElement;
 
-  private hours: HTMLElement | null = null;
+    private hours!: HTMLElement;
 
-  private minutes: HTMLElement | null = null;
+    private minutes!: HTMLElement;
 
-  private seconds: HTMLElement | null = null;
+    private seconds!: HTMLElement;
 
-  private frames: HTMLElement | null = null;
+    private frames!: HTMLElement;
 
     public mounted() {
       this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
       this.previewImg = this.$refs.previewImg as HTMLImageElement;
+      this.hours = this.$refs.hours as HTMLElement;
+      this.minutes = this.$refs.minutes as HTMLElement;
+      this.seconds = this.$refs.seconds as HTMLElement;
+      this.frames = this.$refs.frames as HTMLElement;
+
       const activeFrameId = this.getActiveShot.images[this.activeFrame].id;
-      this.previewImg!.src = ImageCacheService.getImage(activeFrameId);
+      this.drawImage(activeFrameId);
     }
 
     public async created() {
       this.activeFrame = this.getActiveShot && this.getActiveShot.images.length === 0 ? -1 : 0;
-      this.previewImageSrc = ImageCacheService.getImage(this.activeShotId);
     }
 
     public animate(timestamp: number) {
@@ -235,31 +230,30 @@
       }
 
       const nextFrame = this.getNextFrame(timestamp);
-    if (nextFrame !== this.tmpActiveFrame) {
-      this.tmpActiveFrame = nextFrame;
-      this.setNextFrame(nextFrame);
+      if (nextFrame !== this.tmpActiveFrame) {
+        this.tmpActiveFrame = nextFrame;
+        this.setNextFrame(nextFrame);
       }
       this.animationFrame = requestAnimationFrame(this.animate);
     }
 
-  private setNextFrame(nextFrame: number) {
-    if (this.display) {
-      this.display.setAttribute('src', ImageCacheService.getImage(this.getActiveShot.images[nextFrame].id));
+    private setNextFrame(nextFrame: number) {
+      const imageId = this.getActiveShot.images[nextFrame].id;
+      this.drawImage(imageId);
+      if (this.hours) {
+        this.hours.textContent = this.nbHours(nextFrame);
+      }
+      if (this.minutes) {
+        this.minutes.textContent = this.nbMins(nextFrame);
+      }
+      if (this.seconds) {
+        this.seconds.textContent = this.nbSecs(nextFrame);
+      }
+      if (this.frames) {
+        this.frames.textContent = this.frameNb(nextFrame);
+      }
+      (this.$refs.imageSelector as ImagesSelectorComponent).setFrame(nextFrame);
     }
-    if (this.hours) {
-      this.hours.textContent = this.nbHours(nextFrame);
-    }
-    if (this.minutes) {
-      this.minutes.textContent = this.nbMins(nextFrame);
-    }
-    if (this.seconds) {
-      this.seconds.textContent = this.nbSecs(nextFrame);
-    }
-    if (this.frames) {
-      this.frames.textContent = this.frameNb(nextFrame);
-    }
-    (this.$refs.imageSelector as ImagesSelectorComponent).setFrame(nextFrame);
-  }
 
     private getNextFrame(timestamp: number) {
       const imageFromStart = Math.floor((timestamp - this.animationStart) * (this.movie.fps / 1000));
@@ -269,7 +263,7 @@
 
     public playAnimation() {
       if (!this.isPlaying) {
-      this.initPlay();
+        this.initPlay();
         this.animationBoundaries = {left: 0, right: this.getActiveShot.images.length};
         this.animationFrame = requestAnimationFrame(this.animate);
       }
@@ -283,28 +277,26 @@
         ) {
           this.activeFrame = this.selectedImagesBoundaries.left;
         }
-      this.initPlay();
-      this.animationBoundaries = { left: this.selectedImagesBoundaries.left, right: this.selectedImagesBoundaries.right };
+        this.initPlay();
+        this.animationBoundaries = {
+          left: this.selectedImagesBoundaries.left,
+          right: this.selectedImagesBoundaries.right
+        };
         this.animationFrame = requestAnimationFrame(this.animate);
       }
     }
 
-  public initPlay() {
-    this.isPlaying = true;
-    this.display = document.getElementById('previewImg');
-    this.hours = document.getElementById('hours');
-    this.minutes = document.getElementById('minutes');
-    this.seconds = document.getElementById('seconds');
-    this.frames = document.getElementById('frames');
-  }
+    public initPlay() {
+      this.isPlaying = true;
+    }
 
     public pauseAnimation() {
       if (this.isPlaying) {
         this.isPlaying = false;
         delete this.animationStart;
         delete this.animationStartFrame;
-      this.activeFrame = this.tmpActiveFrame;
-      this.tmpActiveFrame = 0;
+        this.activeFrame = this.tmpActiveFrame;
+        this.tmpActiveFrame = 0;
         cancelAnimationFrame(this.animationFrame);
         ImageCacheService.startPreloading(
           this.getActiveShot.images,
@@ -341,7 +333,7 @@
     }
 
     private drawImage(imageId: string) {
-      this.previewImageSrc = ImageCacheService.getImage(imageId);
+      this.previewImg!.src = ImageCacheService.getImage(imageId);
     }
 
     public moveActiveFrame(event: number) {
@@ -372,23 +364,23 @@
       });
     }
 
-  public nbHours(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
+    public nbHours(frame: number): string {
+      return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
       % 60}`.padStart(2, '0');
     }
 
-  public nbMins(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60)
+    public nbMins(frame: number): string {
+      return `${Math.floor((frame + 1) / this.movie.fps / 60)
       % 60}`.padStart(2, '0');
     }
 
-  public nbSecs(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps)
+    public nbSecs(frame: number): string {
+      return `${Math.floor((frame + 1) / this.movie.fps)
       % 60}`.padStart(2, '0');
     }
 
-  public frameNb(frame: number): string {
-    return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
+    public frameNb(frame: number): string {
+      return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
     }
   }
 </script>
