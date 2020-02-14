@@ -159,9 +159,11 @@
       window.addEventListener('keydown', (e: KeyboardEvent) => {
         switch (e.keyCode) {
           case KeyCodes.HOME:
+          case KeyCodes.PAGE_UP:
             this.$emit('moveHome', e);
             break;
           case KeyCodes.END:
+          case KeyCodes.PAGE_DOWN:
             this.$emit('moveEnd', e);
             break;
           case KeyCodes.LEFT_ARROW:
