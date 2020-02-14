@@ -219,10 +219,6 @@
       this.frames = this.$refs.frames as HTMLElement;
     }
 
-    public async created() {
-      this.activeFrame = this.getActiveShot && this.getActiveShot.images.length === 0 ? -1 : 0;
-    }
-
     public animate(timestamp: number) {
       if (!this.animationStart) {
         this.animationStart = timestamp;
