@@ -20,9 +20,7 @@ export interface ReadingSliderBoundaries {
   right: number;
 }
 
-export interface ReadingSliderValue {
-  left: number;
-  right: number;
+export interface ReadingSliderValue extends ReadingSliderBoundaries {
   selected: number;
 }
 

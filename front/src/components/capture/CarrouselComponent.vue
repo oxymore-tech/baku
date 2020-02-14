@@ -147,14 +147,14 @@
     @Prop()
     public activeCapture!: boolean;
 
+    @Prop()
+    public selectedImages!: ReadingSliderBoundaries;
+
     @CaptureNS.State
     public activeDevice!: Device;
 
     @ProjectNS.Action('addImageToShot')
     protected addImageToShot!: ({}) => Promise<void>;
-
-    @ProjectNS.State
-    public selectedImagesBoundaries!: ReadingSliderBoundaries;
 
     mounted() {
       window.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -169,7 +169,7 @@
           default:
             indexToMove = 0;
         }
-        this.$emit('moveactiveframe', indexToMove);
+        this.$emit('activeImageChange', this.activeImage + indexToMove);
       });
     }
 
@@ -198,19 +198,20 @@
         new UploadedImage(this.projectId, id),
         () => this.$forceUpdate(),
       );
-    this.$store.commit('project/incAction', -1);
+      this.$store.commit('project/incAction', -1);
     }
 
-  public async onCaptured(id: string, thumb: Blob, b64: string) {
-    ImageCacheService.putImageBlobInCache(id, b64);
+    public async onCaptured(id: string, thumb: Blob) {
+      ImageCacheService.putImageBlobInCache(id, b64);
+      const newActiveFrame = this.activeImage + 1;
       await this.addImageToShot({
         shotId: this.activeShot,
-        imageIndex: this.activeImage + 1,
+        imageIndex: newActiveFrame,
         image: id,
         thumb,
       });
-    this.$store.commit('project/incAction', 1);
-      this.$emit('moveactiveframe', 1);
+      this.$store.commit('project/incAction', 1);
+      this.$emit('activeImageChange', newActiveFrame);
     }
 
     get computedRightCarrousel(): ImageRef[] {
@@ -236,13 +237,13 @@
         cindex = this.activeImage - (leftSelectionSize - index);
       }
       return (
-        cindex >= this.selectedImagesBoundaries.left
-        && cindex <= this.selectedImagesBoundaries.right
+        cindex >= this.selectedImages.left
+        && cindex <= this.selectedImages.right
       );
     }
 
     public moveToImage(indexToMove: number) {
-      this.$emit('moveactiveframe', indexToMove);
+      this.$emit('activeImageChange', this.activeImage + indexToMove);
     }
   }
 </script>

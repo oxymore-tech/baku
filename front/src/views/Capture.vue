@@ -7,9 +7,7 @@
           <div class="previewContent">
             <video
               v-if="activeCapture"
-              id="videoCapture"
-              width="640"
-              height="480"
+              ref="videoCapture"
               autoplay
               muted
               playsinline
@@ -23,16 +21,17 @@
             />
           </div>
           <ImagesSelectorComponent
-            id="image-selector"
-            class="image-selector"
+            ref="imageSelector"
             v-if="getActiveShot"
             :projectId="id"
             :activeShot="getActiveShot.id"
             :images="getActiveShot.images"
+
             :activeImage="activeFrame"
+            @activeImageChange="onActiveFrameChange"
             :activeCapture="activeCapture"
-            ref='imageSelector'
-            @moveactiveframe="moveActiveFrame"
+
+            v-model="selectedImages"
           />
           <div class="mediaControls">
             <div class="clock">
@@ -46,16 +45,16 @@
             </div>
             <div class="toolbar-button">
               <i
-                class="icon-backward baku-button"
+                class="icon-step-backward baku-button"
                 style="color:#455054;"
-                @click="moveActiveFrame(0 - activeFrame)"
+                @click="onActiveFrameChange(0)"
               />
             </div>
             <div class="toolbar-button">
               <i
-                class="icon-step-backward baku-button"
+                class="icon-backward baku-button"
                 style="color:#455054;"
-                @click="moveActiveFrame(-1)"
+                @click="onActiveFrameChange(activeFrame - 1)"
               />
             </div>
             <div class="toolbar-button toolbar-button-big" v-if="!isPlaying">
@@ -73,16 +72,16 @@
             </div>
             <div class="toolbar-button">
               <i
-                class="icon-step-forward baku-button"
+                class="icon-forward baku-button"
                 style="color:#455054;"
-                @click="moveActiveFrame(1)"
+                @click="onActiveFrameChange(activeFrame + 1)"
               />
             </div>
             <div class="toolbar-button">
               <i
-                class="icon-forward baku-button"
+                class="icon-step-forward baku-button"
                 style="color:#455054;"
-                @click="moveActiveFrame(getActiveShot.images.length - 1 - activeFrame )"
+                @click="onActiveFrameChange(getActiveShot.images.length - 1)"
               />
             </div>
             <div class="toolbar-button">
@@ -125,8 +124,9 @@
         :activeShot="getActiveShot.id"
         :images="getActiveShot.images"
         :activeImage="activeFrame"
+        @activeImageChange="onActiveFrameChange"
         :activeCapture="activeCapture"
-        @moveactiveframe="moveActiveFrame"
+        :selectedImages="selectedImages"
       />
     </template>
   </div>
@@ -140,7 +140,7 @@
   import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
   import store from '@/store';
   import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
+  import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
   import Project from './Project.vue';
   import { ImageCacheService } from '@/api/imageCache.service';
 
@@ -163,9 +163,6 @@ import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
     @ProjectNS.State
     public activeShotId!: string;
 
-    @ProjectNS.State
-    public selectedImagesBoundaries!: ReadingSliderBoundaries;
-
     @ProjectNS.Getter
     public movie!: Movie;
 
@@ -184,6 +181,8 @@ import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
 
     @CaptureNS.State
     public stream!: MediaStream | null;
+
+    public selectedImages: ReadingSliderBoundaries = {left: 0, right: 3};
 
     public animationFrame!: number;
 
@@ -272,15 +271,15 @@ import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
     public playSelection() {
       if (!this.isPlaying) {
         if (
-          this.activeFrame < this.selectedImagesBoundaries.left
-          || this.activeFrame > this.selectedImagesBoundaries.right
+          this.activeFrame < this.selectedImages.left
+          || this.activeFrame > this.selectedImages.right
         ) {
-          this.activeFrame = this.selectedImagesBoundaries.left;
+          this.activeFrame = this.selectedImages.left;
         }
         this.initPlay();
         this.animationBoundaries = {
-          left: this.selectedImagesBoundaries.left,
-          right: this.selectedImagesBoundaries.right
+          left: this.selectedImages.left,
+          right: this.selectedImages.right
         };
         this.animationFrame = requestAnimationFrame(this.animate);
       }
@@ -336,12 +335,18 @@ import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
       this.previewImg!.src = ImageCacheService.getImage(imageId);
     }
 
-    public moveActiveFrame(event: number) {
-      const tmp = this.activeFrame + event;
+    public onActiveFrameChange(newActiveFrame: number) {
       const minFrame = this.activeCapture ? -1 : 0;
       this.activeFrame = Math.max(
         minFrame,
-        Math.min(this.getActiveShot.images.length - 1, tmp),
+        Math.min(this.getActiveShot.images.length - 1, newActiveFrame),
+      );
+      const currentImageId = this.getActiveShot.images[this.activeFrame].id;
+      this.drawImage(currentImageId);
+      ImageCacheService.startPreloading(
+        this.getActiveShot.images,
+        this.activeFrame,
+        this.onImageReady
       );
     }
 
@@ -353,13 +358,13 @@ import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
     public moveLeftBoundary() {
       this.$store.commit('project/setSelectedImagesBoundaries', {
         left: this.activeFrame,
-        right: this.selectedImagesBoundaries.right,
+        right: this.selectedImages.right,
       });
     }
 
     public moveRightBoundary() {
       this.$store.commit('project/setSelectedImagesBoundaries', {
-        left: this.selectedImagesBoundaries.left,
+        left: this.selectedImages.left,
         right: this.activeFrame,
       });
     }
@@ -398,9 +403,6 @@ import { Movie, Shot, ReadingSliderBoundaries } from '@/api/movie.service';
     flex: 1;
     justify-content: space-between;
     padding: 10px 24px;
-  }
-
-  .image-selector {
   }
 
   #previewImg {

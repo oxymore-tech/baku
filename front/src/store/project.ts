@@ -1,7 +1,5 @@
 import { Module } from 'vuex';
-import {
-  Movie, MovieService, Shot, ReadingSliderBoundaries,
-} from '@/api/movie.service';
+import { Movie, MovieService, Shot, } from '@/api/movie.service';
 import { BakuEvent } from '@/api/baku.service';
 
 const movieService = new MovieService();
@@ -10,7 +8,6 @@ interface ProjectState {
   id: string;
   activeShotId: string | null;
   history: BakuEvent[];
-  selectedImagesBoundaries: ReadingSliderBoundaries;
   pendingActions: number;
 }
 
@@ -25,8 +22,7 @@ export const ProjectStore: Module<ProjectState, any> = {
     id: '',
     activeShotId: null,
     history: [],
-    selectedImagesBoundaries: { left: 0, right: 3 },
-    pendingActions: 0,
+    pendingActions: 0
   },
   mutations: {
     setMovie(state, payload: { projectId: string, movieHistory: BakuEvent[] }) {
@@ -43,20 +39,17 @@ export const ProjectStore: Module<ProjectState, any> = {
     changeActiveShot(state, shotId: string) {
       state.activeShotId = shotId;
     },
-    setSelectedImagesBoundaries(state, newImagesSelection: ReadingSliderBoundaries) {
-      state.selectedImagesBoundaries = newImagesSelection;
-    },
     incAction(state, count: number) {
       state.pendingActions += count;
-    },
+    }
   },
   actions: {
     async loadProject(context: any, projectId: string): Promise<void> {
       const movieHistory = await movieService.getHistory(projectId);
-      await context.commit('setMovie', { projectId, movieHistory });
+      await context.commit('setMovie', {projectId, movieHistory});
     },
     async addImageToShot(context: any,
-      payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
+                         payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
       const [event, promise] = movieService.insertImage(
         context.state.id,
         payload.shotId,

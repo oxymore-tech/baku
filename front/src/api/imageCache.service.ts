@@ -88,7 +88,17 @@ class ImageCacheServiceImpl {
       tasks.push(async () => {
         await this.preloadImage(image, Quality.Thumbnail, imageReady)
       })
-    })
+    });
+    imageRefsSliced.forEach((image: ImageRef) => {
+      tasks.push(async () => {
+        await this.preloadImage(image, Quality.Lightweight, imageReady)
+      })
+    });
+    imageRefsSliced.forEach((image: ImageRef) => {
+      tasks.push(async () => {
+        await this.preloadImage(image, Quality.Original, imageReady)
+      })
+    });
   }
 
   public putImageBlobInCache(imageId: string, image: string) {
@@ -117,7 +127,6 @@ class ImageCacheServiceImpl {
   }
 
   public getImage(imageId: string): string {
-    console.log("get image " + imageId);
     if (this.isCached(imageId, Quality.Original)) {
       return this.cachedImages[Quality.Original][imageId];
     }
