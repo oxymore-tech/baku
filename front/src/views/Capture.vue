@@ -308,12 +308,14 @@
 
     private syncActiveFrame() {
       if (!this.isPlaying) {
-        this.activeFrame = this.tmpActiveFrame;
-        ImageCacheService.startPreloading(
-          this.getActiveShot.images,
-          this.activeFrame,
-          this.onImagePreloaded
-        )
+        if (this.activeFrame != this.tmpActiveFrame) {
+          this.activeFrame = this.tmpActiveFrame;
+          ImageCacheService.startPreloading(
+            this.getActiveShot.images,
+            this.activeFrame,
+            this.onImagePreloaded
+          )
+        }
       }
     }
 
@@ -358,49 +360,28 @@
       this.syncActiveFrame();
     }
 
-    private moveFrameAbsolute(frame: number) {
+    private moveFrameAbsolute(frame: number): number {
       if (!this.isPlaying) {
-        if (frame < 0) {
-          frame = 0;
+        const minFrame = this.activeCapture ? -1 : 0;
+        if (frame < minFrame) {
+          frame = minFrame;
         } else if (frame > (this.getActiveShot.images.length - 1)) {
           frame = this.getActiveShot.images.length - 1;
         }
         this.tmpActiveFrame = frame;
         this.displayFrame(this.tmpActiveFrame);
       }
+      return this.tmpActiveFrame;
     }
 
     public onActiveFrameChange(newActiveFrame: number) {
-      const minFrame = this.activeCapture ? -1 : 0;
-      this.activeFrame = Math.max(
-        minFrame,
-        Math.min(this.getActiveShot.images.length - 1, newActiveFrame),
-      );
-      this.displayFrame(this.activeFrame);
-      ImageCacheService.startPreloading(
-        this.getActiveShot.images,
-        this.activeFrame,
-        this.onImagePreloaded
-      );
+      this.moveFrameAbsolute(newActiveFrame);
+      this.syncActiveFrame();
     }
 
     public setActiveCapture() {
       this.activeFrame = this.getActiveShot.images.length - 1;
       this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
-    }
-
-    public moveLeftBoundary() {
-      this.$store.commit('project/setSelectedImagesBoundaries', {
-        left: this.activeFrame,
-        right: this.selectedImages.right,
-      });
-    }
-
-    public moveRightBoundary() {
-      this.$store.commit('project/setSelectedImagesBoundaries', {
-        left: this.selectedImages.left,
-        right: this.activeFrame,
-      });
     }
 
     public nbHours(frame: number): string {
