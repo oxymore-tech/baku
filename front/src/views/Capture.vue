@@ -126,6 +126,9 @@
         :images="getActiveShot.images"
         :activeImage="activeFrame"
         @activeImageChange="onActiveFrameChange"
+        @moveFrame="moveFrame"
+        @stopMovingFrame="syncActiveFrame"
+        @togglePlay="togglePlay"
         :activeCapture="activeCapture"
         :selectedImages="selectedImages"
       />
@@ -229,33 +232,41 @@
       const nextFrame = this.getNextFrame(timestamp);
       if (nextFrame !== this.tmpActiveFrame) {
         this.tmpActiveFrame = nextFrame;
-        this.setNextFrame(nextFrame);
+        this.displayFrame(nextFrame);
       }
       this.animationFrame = requestAnimationFrame(this.animate);
     }
 
-    private setNextFrame(nextFrame: number) {
-      const imageId = this.getActiveShot.images[nextFrame].id;
-      this.drawImage(imageId);
+    private displayFrame(frame: number) {
+      const imageId = this.getActiveShot.images[frame].id;
+      this.previewImg!.src = ImageCacheService.getImage(imageId);
       if (this.hours) {
-        this.hours.textContent = this.nbHours(nextFrame);
+        this.hours.textContent = this.nbHours(frame);
       }
       if (this.minutes) {
-        this.minutes.textContent = this.nbMins(nextFrame);
+        this.minutes.textContent = this.nbMins(frame);
       }
       if (this.seconds) {
-        this.seconds.textContent = this.nbSecs(nextFrame);
+        this.seconds.textContent = this.nbSecs(frame);
       }
       if (this.frames) {
-        this.frames.textContent = this.frameNb(nextFrame);
+        this.frames.textContent = this.frameNb(frame);
       }
-      (this.$refs.imageSelector as ImagesSelectorComponent).setFrame(nextFrame);
+      (this.$refs.imageSelector as ImagesSelectorComponent).setFrame(frame);
     }
 
     private getNextFrame(timestamp: number) {
       const imageFromStart = Math.floor((timestamp - this.animationStart) * (this.movie.fps / 1000));
       const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
       return this.animationBoundaries.left + ((this.animationStartFrame + imageFromStart) % animationLength);
+    }
+
+    public togglePlay() {
+      if (this.isPlaying) {
+        this.pauseAnimation();
+      } else {
+        this.playAnimation();
+      }
     }
 
     public playAnimation() {
@@ -292,13 +303,18 @@
         this.isPlaying = false;
         delete this.animationStart;
         delete this.animationStartFrame;
-        this.activeFrame = this.tmpActiveFrame;
-        this.tmpActiveFrame = 0;
         cancelAnimationFrame(this.animationFrame);
+        this.syncActiveFrame();
+      }
+    }
+
+    private syncActiveFrame() {
+      if (!this.isPlaying) {
+        this.activeFrame = this.tmpActiveFrame;
         ImageCacheService.startPreloading(
           this.getActiveShot.images,
           this.activeFrame,
-          this.onImageReady
+          this.onImagePreloaded
         )
       }
     }
@@ -316,22 +332,24 @@
         ImageCacheService.startPreloading(
           shot.images,
           this.activeFrame,
-          this.onImageReady
+          this.onImagePreloaded
         )
       }
     }
 
-    private onImageReady(imageIdx: number, imageId: string): void {
-      const currentImageId = this.getActiveShot.images[this.activeFrame].id;
-      if (currentImageId == imageId) {
-        this.drawImage(imageId);
+    private onImagePreloaded(imageIdx: number, imageId: string): void {
+      if (this.activeFrame == imageIdx) {
+        this.displayFrame(this.activeFrame);
       }
       (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(imageId);
       (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
     }
 
-    private drawImage(imageId: string) {
-      this.previewImg!.src = ImageCacheService.getImage(imageId);
+    public moveFrame(moveOffset: number) {
+      if (!this.isPlaying) {
+        this.tmpActiveFrame = this.tmpActiveFrame + moveOffset;
+        this.displayFrame(this.tmpActiveFrame);
+      }
     }
 
     public onActiveFrameChange(newActiveFrame: number) {
@@ -340,12 +358,11 @@
         minFrame,
         Math.min(this.getActiveShot.images.length - 1, newActiveFrame),
       );
-      const currentImageId = this.getActiveShot.images[this.activeFrame].id;
-      this.drawImage(currentImageId);
+      this.displayFrame(this.activeFrame);
       ImageCacheService.startPreloading(
         this.getActiveShot.images,
         this.activeFrame,
-        this.onImageReady
+        this.onImagePreloaded
       );
     }
 

@@ -51,7 +51,6 @@ function pickNextTask(executor: any, executorNb: number) {
     if (processNewTask(executor, executorNb)) {
       resolve()
     } else {
-      // console.log("start timer");
       let timer = setInterval(() => {
         if (processNewTask(executor, executorNb)) {
           if (timer) {
@@ -64,7 +63,6 @@ function pickNextTask(executor: any, executorNb: number) {
   })
 }
 
-
 class ImageCacheServiceImpl {
   private cachedImages: { [quality: string]: ImgDict } = {
     [Quality.Thumbnail]: {},
@@ -73,32 +71,29 @@ class ImageCacheServiceImpl {
   };
 
   public startPreloading(imageRefs: ImageRef[], activeIndex: number, imageReady: (imageIdx: number, imageId: string) => void) {
+    console.log("startPreloading");
     const imageRefsSliced = imageRefs.slice(activeIndex).concat(imageRefs.slice(0, activeIndex));
     tasks = [];
-    tasks.push(async () => {
-      await this.preloadImage(imageRefsSliced[0], Quality.Thumbnail, imageReady)
-    });
-    tasks.push(async () => {
-      await this.preloadImage(imageRefsSliced[0], Quality.Lightweight, imageReady)
-    });
-    tasks.push(async () => {
-      await this.preloadImage(imageRefsSliced[0], Quality.Original, imageReady)
+    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Thumbnail, imageReady);
+    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Lightweight, imageReady);
+    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Original, imageReady);
+    imageRefsSliced.forEach((image: ImageRef) => {
+      this.createTaskIfNeeded(image, Quality.Thumbnail, imageReady);
     });
     imageRefsSliced.forEach((image: ImageRef) => {
-      tasks.push(async () => {
-        await this.preloadImage(image, Quality.Thumbnail, imageReady)
-      })
+      this.createTaskIfNeeded(image, Quality.Lightweight, imageReady);
     });
     imageRefsSliced.forEach((image: ImageRef) => {
-      tasks.push(async () => {
-        await this.preloadImage(image, Quality.Lightweight, imageReady)
-      })
+      this.createTaskIfNeeded(image, Quality.Original, imageReady);
     });
-    imageRefsSliced.forEach((image: ImageRef) => {
+  }
+
+  private createTaskIfNeeded(image: ImageRef, quality: Quality, imageReady: (imageIdx: number, imageId: string) => void) {
+    if (!this.isCached(image.id, quality)) {
       tasks.push(async () => {
-        await this.preloadImage(image, Quality.Original, imageReady)
-      })
-    });
+        await this.preloadImage(image, quality, imageReady)
+      });
+    }
   }
 
   public putImageBlobInCache(imageId: string, image: string) {
@@ -150,13 +145,9 @@ class ImageCacheServiceImpl {
   private async preloadImage(image: ImageRef, quality: Quality,
                              imageReady: (imageIdx: number, imageId: string) => void) {
     return new Promise<void>((resolve) => {
-      // const start = +new Date;
-
       const oReq = new XMLHttpRequest();
       oReq.onload = () => {
         this.putImageInCacheInternal(image, quality);
-
-        // console.log(+new Date - start);
         imageReady(0, image.id);
         resolve();
       };

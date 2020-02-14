@@ -157,18 +157,25 @@
 
     mounted() {
       window.addEventListener('keydown', (e: KeyboardEvent) => {
-        let indexToMove: number;
         switch (e.keyCode) {
           case 37:
-            indexToMove = -1;
+            this.$emit('moveFrame', -1);
             break;
           case 39:
-            indexToMove = 1;
+            this.$emit('moveFrame', 1);
             break;
-          default:
-            indexToMove = 0;
+          case 32:
+            this.$emit('togglePlay', e);
+            break;
         }
-        this.$emit('activeImageChange', this.activeImage + indexToMove);
+      });
+      window.addEventListener('keyup', (e: KeyboardEvent) => {
+        switch (e.keyCode) {
+          case 37:
+          case 39:
+            this.$emit('stopMovingFrame', e);
+            break;
+        }
       });
     }
 
