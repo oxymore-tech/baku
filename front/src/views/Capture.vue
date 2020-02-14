@@ -2,7 +2,8 @@
   <div class="mainFrame">
     <template>
       <div class="previewBloc">
-        <StoryboardPreviewComponent :shots="movie.shots" :activeShotId="activeShotId"/>
+        <StoryboardPreviewComponent ref="previewComponent" :shots="movie.shots"
+                                    :activeShot="getActiveShot"/>
         <div class="previewContainer">
           <div class="previewContent">
             <video
@@ -211,9 +212,6 @@
       this.minutes = this.$refs.minutes as HTMLElement;
       this.seconds = this.$refs.seconds as HTMLElement;
       this.frames = this.$refs.frames as HTMLElement;
-
-      const activeFrameId = this.getActiveShot.images[this.activeFrame].id;
-      this.drawImage(activeFrameId);
     }
 
     public async created() {
@@ -328,6 +326,7 @@
       if (currentImageId == imageId) {
         this.drawImage(imageId);
       }
+      (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(imageId);
       (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
     }
 

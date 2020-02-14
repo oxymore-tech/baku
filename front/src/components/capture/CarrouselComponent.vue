@@ -1,117 +1,116 @@
 <template>
-    <div class="carrouselContainer">
-        <!-- LEFT PART OF THE CARROUSEL -->
-        <template v-for="(image, index) in computedLeftCarrousel">
-            <template v-if="image !== null">
-                <div :key="'left'+index" class="imageContainer">
-                    <img
-                            class="carrouselThumb"
-                            :alt="image"
-                            :src="ImageCacheService.getThumbnail(image.id)"
-                            v-bind:class="{'inSelection': isInSelection(index, 'left')}"
-                            @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
-                    />
-                </div>
-            </template>
-            <template v-else>
-                <div :key="'left'+index" class="imageContainer">
-                    <div
-                            @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
-                            class="carrouselThumb"
-                    />
-                </div>
-            </template>
-        </template>
+  <div class="carrouselContainer">
+    <!-- LEFT PART OF THE CARROUSEL -->
+    <template v-for="(image, index) in computedLeftCarrousel">
+      <template v-if="image !== null">
+        <div :key="'left'+index" class="imageContainer">
+          <img
+            class="carrouselThumb"
+            :alt="image"
+            :src="ImageCacheService.getThumbnail(image.id)"
+            v-bind:class="{'inSelection': isInSelection(index, 'left')}"
+            @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+          />
+        </div>
+      </template>
+      <template v-else>
+        <div :key="'left'+index" class="imageContainer">
+          <div
+            @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+            class="carrouselThumb"
+          />
+        </div>
+      </template>
+    </template>
 
-        <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
-        <template v-if="computedActiveImage !== null">
-            <div
-                    class="imageContainer"
-                    v-bind:class="{'inSelection': isInSelection(activeImage, 'active')}"
-            >
-                <img
-                        v-if="computedActiveImage !== undefined"
-                        class="carrouselThumb active"
-                        :alt="computedActiveImage"
-                        :src="ImageCacheService.getThumbnail(computedActiveImage.id)"
-                />
-            </div>
-        </template>
-        <template v-else>
-            <div class="carrouselThumb active">
-                <CaptureButtonComponent
-                        v-if="activeDevice"
-                        :device="activeDevice"
-                        :projectId="projectId"
-                        :activeShot="activeShot"
-                        :activeIndex="activeImage+1"
-                        @captured="onCaptured"
-                        @uploaded="onUploaded"
-                        v-on:moveactiveframe="$emit('moveactiveframe', $event)"
-                />
-            </div>
-        </template>
+    <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
+    <template v-if="computedActiveImage !== null">
+      <div
+        class="imageContainer"
+        v-bind:class="{'inSelection': isInSelection(activeImage, 'active')}"
+      >
+        <img
+          v-if="computedActiveImage !== undefined"
+          class="carrouselThumb active"
+          :alt="computedActiveImage"
+          :src="ImageCacheService.getThumbnail(computedActiveImage.id)"
+        />
+      </div>
+    </template>
+    <template v-else>
+      <div class="carrouselThumb active">
+        <CaptureButtonComponent
+          v-if="activeDevice"
+          :device="activeDevice"
+          :projectId="projectId"
+          :activeShot="activeShot"
+          :activeIndex="activeImage+1"
+          @captured="onCaptured"
+          @uploaded="onUploaded"
+        />
+      </div>
+    </template>
 
-        <!-- RIGHT PART OF THE CARROUSEL -->
-        <template v-for="(image, index) in computedRightCarrousel">
-            <template v-if="image !== null">
-                <div :key="'right'+index" class="imageContainer">
-                    <img
-                            class="carrouselThumb"
-                            :alt="image"
-                            :src="ImageCacheService.getThumbnail(image.id)"
-                            v-bind:class="{'inSelection': isInSelection(index, 'right')}"
-                            @click="moveToImage(index + 1)"
-                    />
-                </div>
-            </template>
-            <template v-else>
-                <div :key="'right'+index" @click="moveToImage(index + 1)"/>
-            </template>
-        </template>
+    <!-- RIGHT PART OF THE CARROUSEL -->
+    <template v-for="(image, index) in computedRightCarrousel">
+      <template v-if="image !== null">
+        <div :key="'right'+index" class="imageContainer">
+          <img
+            class="carrouselThumb"
+            :alt="image"
+            :src="ImageCacheService.getThumbnail(image.id)"
+            v-bind:class="{'inSelection': isInSelection(index, 'right')}"
+            @click="moveToImage(index + 1)"
+          />
+        </div>
+      </template>
+      <template v-else>
+        <div :key="'right'+index" @click="moveToImage(index + 1)"/>
+      </template>
+    </template>
 
-        <template v-if="computedNextImages">
-            <img
-                    style="display:none"
-                    v-for="image in computedNextImages"
-                    :key="image.id"
-                    :src="ImageCacheService.getThumbnail(image.id)"
-            />
-        </template>
-    </div>
+    <template v-if="computedNextImages">
+      <img
+        style="display:none"
+        v-for="image in computedNextImages"
+        :key="image.id"
+        :src="ImageCacheService.getThumbnail(image.id)"
+      />
+    </template>
+  </div>
 </template>
 
 <style lang="scss">
-    .carrouselContainer {
-        background: white;
-        width: 100%;
-        height: 104px;
-        display: inline-flex;
-        padding: 12px 21px;
+  .carrouselContainer {
+    background: white;
+    width: 100%;
+    height: 104px;
+    display: inline-flex;
+    padding: 12px 21px;
+    align-items: center;
+
+    .imageContainer {
+      border: 2px solid transparent;
+      // filter: grayscale(100%);
+
+      .carrouselThumb {
+        height: 78px;
+        min-width: 140px;
+        margin: 0px 15px;
+        border: 2px solid #f2f2f2;
+        display: flex;
+        justify-content: center;
         align-items: center;
 
-        .imageContainer {
-            border: 2px solid transparent;
-            // filter: grayscale(100%);
-
-            .carrouselThumb {
-                height: 78px;
-                min-width: 140px;
-                margin: 0px 15px;
-                border: 2px solid #f2f2f2;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-
-                &.active {
-                    border: 3px solid #FFBD72;
-                    border-radius: 4px;
-                    padding: 1px;
-                    box-sizing: content-box;
-                }
-            }
+        &.active {
+          border: 3px solid #FFBD72;
+          border-radius: 4px;
+          padding: 1px;
+          box-sizing: content-box;
         }
+      }
     }
+  }
 </style>
 
 <script lang="ts">

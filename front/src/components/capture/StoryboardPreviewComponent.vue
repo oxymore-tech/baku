@@ -7,7 +7,7 @@
     <img
       class="shotPreview"
       alt="preview"
-      :src="preview"
+      ref="preview"
     />
   </div>
 </template>
@@ -42,29 +42,27 @@
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { Shot } from '@/api/movie.service';
-import { Spinner } from '@/api/spinner.class';
-import { ImageCacheService } from '@/api/imageCache.service';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
+  import { Shot } from '@/api/movie.service';
+  import { Spinner } from '@/api/spinner.class';
+  import { ImageCacheService } from '@/api/imageCache.service';
 
-const ProjectNS = namespace('project');
+  const ProjectNS = namespace('project');
+
   @Component
-export default class StoryboardPreviewComponent extends Vue {
-    @Prop({ required: true })
+  export default class StoryboardPreviewComponent extends Vue {
+    @Prop({required: true})
     public shots!: Shot[];
 
     @Prop()
-    public activeShotId!: string;
+    public activeShot!: Shot;
 
     @Prop()
     public displayShots!: boolean;
 
     @ProjectNS.State
     public id!: string;
-
-    @ProjectNS.Getter
-    public getActiveShot!: Shot;
 
     public onDisplayShots() {
       this.$router.push({
@@ -75,11 +73,24 @@ export default class StoryboardPreviewComponent extends Vue {
       });
     }
 
-    public get preview() {
-      if (this.shots && this.shots.length > 0 && this.getActiveShot.images && this.getActiveShot.images.length > 0) {
-        return ImageCacheService.getImage(this.getActiveShot.images[0].id);
+    mounted() {
+      (this.$refs.preview as HTMLImageElement).src = this.getPreview();
+    }
+
+    public imageReady(imageId: string) {
+      if (this.activeShot && this.activeShot.images.length > 0) {
+        if (this.activeShot.images[0].id === imageId) {
+          (this.$refs.preview as HTMLImageElement).src = this.getPreview();
+        }
+      }
+    }
+
+    private getPreview() {
+      if (this.activeShot && this.activeShot.images.length > 0) {
+        const imageId = this.activeShot.images[0].id;
+        return ImageCacheService.getImage(imageId);
       }
       return Spinner;
     }
-}
+  }
 </script>
