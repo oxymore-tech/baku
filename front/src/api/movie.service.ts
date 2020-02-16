@@ -97,21 +97,24 @@ export class MovieService {
     return this.bakuService.getHistory(id);
   }
 
-  public async updateTitle(projectId: string, title: string, username: string): Promise<BakuEvent> {
-    const event: BakuEvent = { action: BakuAction.MOVIE_UPDATE_TITLE, value: title, user: username, timestamp: new Date() };
-    await this.bakuService.stack(projectId, event);
-    return event;
+  public updateTitle(projectId: string, title: string, username: string): [BakuEvent, Promise<void>] {
+    const event: BakuEvent = {
+      action: BakuAction.MOVIE_UPDATE_TITLE,
+      value: title,
+      user: username,
+      timestamp: new Date(),
+    };
+    return [event, this.bakuService.stack(projectId, event)];
   }
 
-  public async updateSynopsis(projectId: string, synopsis: string, username: string): Promise<BakuEvent> {
+  public updateSynopsis(projectId: string, synopsis: string, username: string): [BakuEvent, Promise<void>] {
     const event: BakuEvent = {
       action: BakuAction.MOVIE_UPDATE_SYNOPSIS,
       value: synopsis,
       user: username,
       timestamp: new Date(),
     };
-    await this.bakuService.stack(projectId, event);
-    return event;
+    return [event, this.bakuService.stack(projectId, event)];
   }
 
   public async updatePoster(projectId: string, poster: ImageRef, username: string): Promise<void> {
@@ -123,31 +126,33 @@ export class MovieService {
     });
   }
 
-  public async addShot(projectId: string, username: string): Promise<BakuEvent> {
+  public addShot(projectId: string, username: string): [BakuEvent, Promise<void>] {
     const event: BakuEvent = {
       action: BakuAction.SHOT_ADD,
       value: { shotId: uuid.v4() },
       user: username,
       timestamp: new Date(),
     };
-    await this.bakuService.stack(projectId, event);
-    return event;
+    return [event, this.bakuService.stack(projectId, event)];
   }
 
-  public async changeFps(projectId: string, fps: number, username: string): Promise<BakuEvent> {
-    const event = { action: BakuAction.CHANGE_FPS, value: fps, user: username, timestamp: new Date() };
-    await this.bakuService.stack(projectId, event);
-    return event;
+  public changeFps(projectId: string, fps: number, username: string): [BakuEvent, Promise<void>] {
+    const event = {
+      action: BakuAction.CHANGE_FPS,
+      value: fps,
+      user: username,
+      timestamp: new Date(),
+    };
+    return [event, this.bakuService.stack(projectId, event)];
   }
 
-  public async insertImage(projectId: string, shotId: string, imgIndex: number, image: string, username: string): Promise<BakuEvent> {
-    const event: BakuEvent = {
+  public insertImage(projectId: string, shotId: string, imgIndex: number, image: string, username: string): [BakuEvent, Promise<void>] {
+    const event = {
       action: BakuAction.MOVIE_INSERT_IMAGE,
       value: { shotId, imageIndex: imgIndex, image },
       user: username,
       timestamp: new Date(),
     };
-    await this.bakuService.stack(projectId, event);
-    return event;
+    return [event, this.bakuService.stack(projectId, event)];
   }
 }

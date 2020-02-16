@@ -18,6 +18,12 @@ interface ProjectGetters {
   getActiveShot: Shot;
 }
 
+async function addLocalEvent(context: any, event: BakuEvent, prm: Promise<void>) {
+  context.commit('addToLocalHistory', event);
+  await prm
+    .catch(() => context.commit('removeFromLocalHistory', event));
+}
+
 export const ProjectStore: Module<ProjectState, any> = {
   namespaced: true,
   state: {
@@ -34,6 +40,15 @@ export const ProjectStore: Module<ProjectState, any> = {
     addToLocalHistory(state, event: BakuEvent) {
       state.history.push(event);
     },
+    removeFromLocalHistory(state, event: BakuEvent) {
+      // TODO how to remove event nicely
+      for (let i = 0; i < state.history.length; i++) {
+        if (state.history[i] === event) {
+          state.history.splice(i, 1);
+          break;
+        }
+      }
+    },
     changeActiveShot(state, shotId: string) {
       state.activeShotId = shotId;
     },
@@ -48,38 +63,38 @@ export const ProjectStore: Module<ProjectState, any> = {
     },
     async addImageToShot(context: any,
       payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
-      const insertEvent = await new MovieService().insertImage(
+      const [event, promise] = movieService.insertImage(
         context.state.id,
         payload.shotId,
         payload.imageIndex,
         payload.image,
         context.rootState.user.username,
       );
-      context.commit('addToLocalHistory', insertEvent);
+      await addLocalEvent(context, event, promise);
     },
     changeActiveShot(context, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },
 
     async updateTitle(context: any, title: string) {
-      const event = await movieService.updateTitle(context.state.id, title, context.rootState.user.username);
-      context.commit('addToLocalHistory', event);
+      const [event, promise] = await movieService.updateTitle(context.state.id, title, context.rootState.user.username);
+      await addLocalEvent(context, event, promise);
     },
 
     async updateSynopsis(context: any, synopsis: string) {
-      const event = await movieService.updateSynopsis(context.state.id, synopsis, context.rootState.user.username);
-      context.commit('addToLocalHistory', event);
+      const [event, promise] = await movieService.updateSynopsis(context.state.id, synopsis, context.rootState.user.username);
+      await addLocalEvent(context, event, promise);
     },
 
     async createShot(context: any, _name = 'Default shot'): Promise<string> {
-      const createEvent = await movieService.addShot(context.state.id, context.rootState.user.username);
-      context.commit('addToLocalHistory', createEvent);
-      return createEvent.value.shotId;
+      const [event, promise] = await movieService.addShot(context.state.id, context.rootState.user.username);
+      await addLocalEvent(context, event, promise);
+      return event.value.shotId;
     },
 
     async changeFps(context: any, fps: number): Promise<void> {
-      const event = await movieService.changeFps(context.state.id, fps, context.rootState.user.username);
-      context.commit('addToLocalHistory', event);
+      const [event, promise] = await movieService.changeFps(context.state.id, fps, context.rootState.user.username);
+      await addLocalEvent(context, event, promise);
     },
 
   },
