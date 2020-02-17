@@ -11,17 +11,12 @@ interface ProjectState {
   activeShotId: string | null;
   history: BakuEvent[];
   selectedImagesBoundaries: ReadingSliderBoundaries;
+  pendingActions: number;
 }
 
 interface ProjectGetters {
   movie: Movie;
   getActiveShot: Shot;
-}
-
-async function addLocalEvent(context: any, event: BakuEvent, prm: Promise<void>) {
-  context.commit('addToLocalHistory', event);
-  await prm
-    .catch(() => context.commit('removeFromLocalHistory', event));
 }
 
 export const ProjectStore: Module<ProjectState, any> = {
@@ -31,6 +26,7 @@ export const ProjectStore: Module<ProjectState, any> = {
     activeShotId: null,
     history: [],
     selectedImagesBoundaries: { left: 0, right: 3 },
+    pendingActions: 0,
   },
   mutations: {
     setMovie(state, payload: { projectId: string, movieHistory: BakuEvent[] }) {
@@ -55,6 +51,9 @@ export const ProjectStore: Module<ProjectState, any> = {
     setSelectedImagesBoundaries(state, newImagesSelection: ReadingSliderBoundaries) {
       state.selectedImagesBoundaries = newImagesSelection;
     },
+    incAction(state, count: number) {
+      state.pendingActions += count;
+    },
   },
   actions: {
     async loadProject(context: any, projectId: string): Promise<void> {
@@ -70,7 +69,10 @@ export const ProjectStore: Module<ProjectState, any> = {
         payload.image,
         context.rootState.user.username,
       );
-      await addLocalEvent(context, event, promise);
+      context.commit('addToLocalHistory', event);
+      context.commit('incAction', 1);
+      promise.catch(() => context.commit('removeFromLocalHistory', event))
+        .finally(() => context.commit('incAction', -1));
     },
     changeActiveShot(context, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
@@ -78,31 +80,43 @@ export const ProjectStore: Module<ProjectState, any> = {
 
     async updateTitle(context: any, title: string) {
       const [event, promise] = await movieService.updateTitle(context.state.id, title, context.rootState.user.username);
-      await addLocalEvent(context, event, promise);
+      context.commit('addToLocalHistory', event);
+      context.commit('incAction', 1);
+      promise.catch(() => context.commit('removeFromLocalHistory', event))
+        .finally(() => context.commit('incAction', -1));
     },
 
     async updateSynopsis(context: any, synopsis: string) {
       const [event, promise] = await movieService.updateSynopsis(context.state.id, synopsis, context.rootState.user.username);
-      await addLocalEvent(context, event, promise);
+      context.commit('addToLocalHistory', event);
+      context.commit('incAction', 1);
+      promise.catch(() => context.commit('removeFromLocalHistory', event))
+        .finally(() => context.commit('incAction', -1));
     },
 
     async createShot(context: any, _name = 'Default shot'): Promise<string> {
       const [event, promise] = await movieService.addShot(context.state.id, context.rootState.user.username);
-      await addLocalEvent(context, event, promise);
+      context.commit('addToLocalHistory', event);
+      context.commit('incAction', 1);
+      promise.catch(() => context.commit('removeFromLocalHistory', event))
+        .finally(() => context.commit('incAction', -1));
       return event.value.shotId;
     },
 
     async changeFps(context: any, fps: number): Promise<void> {
       const [event, promise] = await movieService.changeFps(context.state.id, fps, context.rootState.user.username);
-      await addLocalEvent(context, event, promise);
+      context.commit('addToLocalHistory', event);
+      context.commit('incAction', 1);
+      promise.catch(() => context.commit('removeFromLocalHistory', event))
+        .finally(() => context.commit('incAction', -1));
     },
-
   },
   getters: {
     history: (state: ProjectState): BakuEvent[] => state.history,
 
     movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
     getActiveShot: (state: ProjectState, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
+    synchronizing: (state: ProjectState): boolean => state.pendingActions !== 0,
   },
   modules: {},
 };

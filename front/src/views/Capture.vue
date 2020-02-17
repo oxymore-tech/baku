@@ -106,6 +106,14 @@
                 @click="moveRightBoundary()"
               />
             </div>
+            <div class="toolbar-button">
+              <img
+                v-if="synchronizing"
+                alt="loading"
+                id="synchronization"
+                src="@/assets/loading.svg"
+              />
+            </div>
           </div>
         </div>
         <CaptureToolboxComponent v-if="getActiveShot" />
@@ -166,6 +174,9 @@ export default class Capture extends Project {
 
   @ProjectNS.Getter
   public movie!: Movie;
+
+  @ProjectNS.Getter
+  public synchronizing!: boolean;
 
   @ProjectNS.Getter
   public getActiveShot!: Shot;
@@ -318,7 +329,6 @@ export default class Capture extends Project {
       Math.min(this.getActiveShot.images.length - 1, tmp),
     );
   }
-
 
   public setActiveCapture() {
     this.activeFrame = this.getActiveShot.images.length - 1;

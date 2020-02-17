@@ -192,6 +192,7 @@ export default class CarrouselComponent extends Vue {
       new UploadedImage(this.projectId, id),
       () => this.$forceUpdate(),
     );
+    this.$store.commit('project/incAction', -1);
   }
 
   public async onCaptured(id: string, thumb: Blob, b64: string) {
@@ -202,6 +203,7 @@ export default class CarrouselComponent extends Vue {
       image: id,
       thumb,
     });
+    this.$store.commit('project/incAction', 1);
     this.$emit('moveactiveframe', 1);
   }
 
