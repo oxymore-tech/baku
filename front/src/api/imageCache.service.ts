@@ -55,20 +55,22 @@ class ImageCacheServiceImpl {
   }
 
   public startPreloading(imageRefs: ImageRef[], activeIndex: number, onImagePreloaded: (imageId: string) => void) {
-    const imageRefsSliced = imageRefs.slice(activeIndex, imageRefs.length).concat(imageRefs.slice(0, activeIndex));
-    this.tasks.splice(0, this.tasks.length);
-    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Thumbnail, onImagePreloaded);
-    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Lightweight, onImagePreloaded);
-    this.createTaskIfNeeded(imageRefsSliced[0], Quality.Original, onImagePreloaded);
-    imageRefsSliced.forEach((image: ImageRef) => {
-      this.createTaskIfNeeded(image, Quality.Thumbnail, onImagePreloaded);
-    });
-    imageRefsSliced.forEach((image: ImageRef) => {
-      this.createTaskIfNeeded(image, Quality.Lightweight, onImagePreloaded);
-    });
-    imageRefsSliced.forEach((image: ImageRef) => {
-      this.createTaskIfNeeded(image, Quality.Original, onImagePreloaded);
-    });
+    if (imageRefs.length > 0) {
+      const imageRefsSliced = imageRefs.slice(activeIndex, imageRefs.length).concat(imageRefs.slice(0, activeIndex));
+      this.tasks.splice(0, this.tasks.length);
+      this.createTaskIfNeeded(imageRefsSliced[0], Quality.Thumbnail, onImagePreloaded);
+      this.createTaskIfNeeded(imageRefsSliced[0], Quality.Lightweight, onImagePreloaded);
+      this.createTaskIfNeeded(imageRefsSliced[0], Quality.Original, onImagePreloaded);
+      imageRefsSliced.forEach((image: ImageRef) => {
+        this.createTaskIfNeeded(image, Quality.Thumbnail, onImagePreloaded);
+      });
+      imageRefsSliced.forEach((image: ImageRef) => {
+        this.createTaskIfNeeded(image, Quality.Lightweight, onImagePreloaded);
+      });
+      imageRefsSliced.forEach((image: ImageRef) => {
+        this.createTaskIfNeeded(image, Quality.Original, onImagePreloaded);
+      });
+    }
   }
 
   private createTaskIfNeeded(image: ImageRef, quality: Quality, onImagePreloaded: (imageId: string) => void) {
