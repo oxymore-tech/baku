@@ -13,7 +13,7 @@ services:
       - "./deploy/traefik:/etc/traefik"
     restart: unless-stopped
 
-  proxy:
+  front:
     build:
       context: ./front/
       target: production
@@ -37,10 +37,10 @@ services:
     restart: unless-stopped
     labels:
       traefik.enable: "true"
-      traefik.http.routers.back.rule: "Host(`app.bakuanimation.com`) && PathPrefix(`/api`)"
+      traefik.http.routers.back.rule: "Host(`app.bakuanimation.com`) && (PathPrefix(`/api`) || PathPrefix(`/echo`))"
       traefik.http.routers.back.entrypoints: "web"
       traefik.http.routers.back.middlewares: "redirect@file"
-      traefik.http.routers.back-secure.rule: "Host(`app.bakuanimation.com`) && PathPrefix(`/api`)"
+      traefik.http.routers.back-secure.rule: "Host(`app.bakuanimation.com`) && (PathPrefix(`/api`) || PathPrefix(`/echo`))"
       traefik.http.routers.back-secure.entrypoints: "web-secure"
       traefik.http.routers.back-secure.tls.certResolver: "baku"
       traefik.http.services.back.loadbalancer.server.port: "3030"
