@@ -105,7 +105,7 @@
                 v-if="synchronizing"
                 alt="loading"
                 id="synchronization"
-                src="@/assets/loading.svg"
+                src="@/assets/baku-balls-spinner.svg"
               />
             </div>
           </div>
