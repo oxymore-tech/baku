@@ -215,7 +215,7 @@
       this.$store.commit('project/incAction', -1);
     }
 
-    public async onCaptured(id: string, thumb: Blob) {
+    public async onCaptured(id: string, thumb: Blob, b64: string) {
       ImageCacheService.putImageBlobInCache(id, b64);
       const newActiveFrame = this.activeImage + 1;
       await this.addImageToShot({

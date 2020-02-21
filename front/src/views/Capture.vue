@@ -8,6 +8,7 @@
           <div class="previewContent">
             <video
               v-if="activeCapture"
+              id="videoCapture"
               ref="videoCapture"
               autoplay
               muted
