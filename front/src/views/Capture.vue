@@ -14,7 +14,7 @@
               muted
               playsinline
             />
-            <img id="previewImg" ref="previewImg" v-else/>
+            <img id="previewImg" ref="previewImg" src="@/assets/baku-balls-spinner.svg" v-else/>
             <img
               v-if="getActiveShot && getActiveShot.images[activeFrame] && activeCapture"
               alt="ghostImg"

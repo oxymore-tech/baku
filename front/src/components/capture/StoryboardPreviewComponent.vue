@@ -36,7 +36,6 @@
   .shotPreview {
     width: 292px;
     height: 164px;
-    background-color: #bce0fd;
   }
 </style>
 

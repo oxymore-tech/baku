@@ -58,7 +58,6 @@ import {Quality} from "@/api/baku.service";
       max-height: 320px;
       width: 100%;
       flex: 3;
-      background-color: #bce0fd;
     }
   }
 

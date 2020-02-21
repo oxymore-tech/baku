@@ -62,7 +62,6 @@
   .shotPreview {
     width: 100%;
     height: 164px;
-    background-color: #bce0fd;
     max-width: unset;
   }
 
