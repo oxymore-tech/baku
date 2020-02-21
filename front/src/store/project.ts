@@ -37,13 +37,8 @@ export const ProjectStore: Module<ProjectState, any> = {
       state.history.push(event);
     },
     removeFromLocalHistory(state, event: BakuEvent) {
-      // TODO how to remove event nicely
-      for (let i = 0; i < state.history.length; i++) {
-        if (state.history[i] === event) {
-          state.history.splice(i, 1);
-          break;
-        }
-      }
+      const eventIdx = state.history.findIndex((historyEvent) => historyEvent === event);
+      state.history.splice(eventIdx, 1);
     },
     changeActiveShot(state, shotId: string) {
       state.activeShotId = shotId;
