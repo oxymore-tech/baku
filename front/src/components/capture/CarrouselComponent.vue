@@ -47,7 +47,6 @@
           :activeIndex="activeImage+1"
           @captured="onCaptured"
           @uploaded="onUploaded"
-          v-on:moveactiveframe="$emit('moveactiveframe', $event)"
         />
       </div>
     </template>
@@ -66,7 +65,7 @@
         </div>
       </template>
       <template v-else>
-        <div :key="'right'+index" @click="moveToImage(index + 1)" />
+        <div :key="'right'+index" @click="moveToImage(index + 1)"/>
       </template>
     </template>
 
@@ -82,161 +81,183 @@
 </template>
 
 <style lang="scss">
-.carrouselContainer {
-  background: white;
-  width: 100%;
-  height: 104px;
-  display: inline-flex;
-  padding: 12px 21px;
-  align-items: center;
+  .carrouselContainer {
+    background: white;
+    width: 100%;
+    height: 104px;
+    display: inline-flex;
+    padding: 12px 21px;
+    align-items: center;
 
-  .imageContainer {
-    border: 2px solid transparent;
-    // filter: grayscale(100%);
+    .imageContainer {
+      border: 2px solid transparent;
+      // filter: grayscale(100%);
 
-    .carrouselThumb {
-      height: 78px;
-      min-width: 140px;
-      margin: 0px 15px;
-      border: 2px solid #f2f2f2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      .carrouselThumb {
+        height: 78px;
+        min-width: 140px;
+        margin: 0px 15px;
+        border: 2px solid #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-      &.active {
-        border: 3px solid #FFBD72;
-        border-radius: 4px;
-        padding: 1px;
-        box-sizing: content-box;
+        &.active {
+          border: 3px solid #FFBD72;
+          border-radius: 4px;
+          padding: 1px;
+          box-sizing: content-box;
+        }
       }
     }
   }
-}
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import { Device } from '@/api/device.class';
-import { ImageCacheService } from '@/api/imageCache.service';
-import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
-import { ReadingSliderBoundaries } from '../../api/movie.service';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
+  import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+  import { Device } from '@/api/device.class';
+  import { ImageCacheService } from '@/api/imageCache.service';
+  import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
+  import { KeyCodes, ReadingSliderBoundaries } from '@/api/movie.service';
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+  const CaptureNS = namespace('capture');
+  const ProjectNS = namespace('project');
 
-@Component({
-  components: {
-    CaptureButtonComponent,
-  },
-})
-export default class CarrouselComponent extends Vue {
-  @Prop()
-  public images!: ImageRef[];
+  @Component({
+    components: {
+      CaptureButtonComponent,
+    },
+  })
+  export default class CarrouselComponent extends Vue {
+    @Prop()
+    public images!: ImageRef[];
 
-  @Prop()
-  public projectId!: string;
+    @Prop()
+    public projectId!: string;
 
-  @Prop()
-  public activeShot!: string;
+    @Prop()
+    public activeShot!: string;
 
-  @Prop()
-  public activeImage!: number;
+    @Prop()
+    public activeImage!: number;
 
-  @Prop()
-  public activeCapture!: boolean;
+    @Prop()
+    public activeCapture!: boolean;
 
-  @CaptureNS.State
-  public activeDevice!: Device;
+    @Prop()
+    public selectedImages!: ReadingSliderBoundaries;
 
-  @ProjectNS.Action('addImageToShot')
-  protected addImageToShot!: ({}) => Promise<void>;
+    @CaptureNS.State
+    public activeDevice!: Device;
 
-  @ProjectNS.State
-  public selectedImagesBoundaries!: ReadingSliderBoundaries;
+    @ProjectNS.Action('addImageToShot')
+    protected addImageToShot!: ({}) => Promise<void>;
 
-  mounted() {
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
-      let indexToMove = 0;
-      switch (e.keyCode) {
-        case 37:
-          indexToMove = -1;
-          break;
-        case 39:
-          indexToMove = 1;
-          break;
-        default:
-          indexToMove = 0;
+    mounted() {
+      window.addEventListener('keydown', (e: KeyboardEvent) => {
+        switch (e.keyCode) {
+          case KeyCodes.HOME:
+          case KeyCodes.PAGE_UP:
+            this.$emit('moveHome', e);
+            break;
+          case KeyCodes.END:
+          case KeyCodes.PAGE_DOWN:
+            this.$emit('moveEnd', e);
+            break;
+          case KeyCodes.LEFT_ARROW:
+            this.$emit('moveFrame', -1);
+            break;
+          case KeyCodes.RIGHT_ARROW:
+            this.$emit('moveFrame', 1);
+            break;
+          case KeyCodes.SPACE:
+            this.$emit('togglePlay', e);
+            break;
+        }
+      });
+      window.addEventListener('keyup', (e: KeyboardEvent) => {
+        switch (e.keyCode) {
+          case KeyCodes.LEFT_ARROW:
+          case KeyCodes.RIGHT_ARROW:
+            this.$emit('stopMovingFrame', e);
+            break;
+        }
+      });
+    }
+
+    get computedLeftCarrousel(): ImageRef[] {
+      const sliceIndex = this.activeCapture
+        ? this.activeImage + 1
+        : this.activeImage;
+      const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-5);
+      return Array(5 - leftImagesAvaible.length)
+        .fill(null)
+        .concat(leftImagesAvaible);
+    }
+
+    get computedActiveImage(): ImageRef | null {
+      return this.activeCapture ? null : this.images[this.activeImage];
+    }
+
+    public imageReady(imageId: string) {
+      if (this.images.find(i => i.id === imageId)) {
+        this.$forceUpdate();
       }
-      this.$emit('moveactiveframe', indexToMove);
-    });
-  }
-
-  get computedLeftCarrousel(): ImageRef[] {
-    const sliceIndex = this.activeCapture
-      ? this.activeImage + 1
-      : this.activeImage;
-    const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-5);
-    return Array(5 - leftImagesAvaible.length)
-      .fill(null)
-      .concat(leftImagesAvaible);
-  }
-
-  get computedActiveImage(): ImageRef | null {
-    return this.activeCapture ? null : this.images[this.activeImage];
-  }
-
-  public onUploaded(id: string) {
-    ImageCacheService.startPreloadingImage(
-      new UploadedImage(this.projectId, id),
-      () => this.$forceUpdate(),
-    );
-    this.$store.commit('project/incAction', -1);
-  }
-
-  public async onCaptured(id: string, thumb: Blob, b64: string) {
-    ImageCacheService.putImageBlobInCache(id, b64);
-    await this.addImageToShot({
-      shotId: this.activeShot,
-      imageIndex: this.activeImage + 1,
-      image: id,
-      thumb,
-    });
-    this.$store.commit('project/incAction', 1);
-    this.$emit('moveactiveframe', 1);
-  }
-
-  get computedRightCarrousel(): ImageRef[] {
-    const sliceIndex = this.activeImage + 1;
-    const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
-    return rightImagesAvaible.concat(
-      Array(6 - rightImagesAvaible.length).fill(null),
-    );
-  }
-
-  get computedNextImages(): ImageRef[] {
-    const sliceIndex = this.activeImage + 7;
-    return this.images.slice(sliceIndex, sliceIndex + 20);
-  }
-
-  public isInSelection(index: number, position: string) {
-    let cindex = index;
-    if (position === 'right') {
-      cindex = this.activeImage + index + 1;
     }
-    if (position === 'left') {
-      const leftSelectionSize = 5;
-      cindex = this.activeImage - (leftSelectionSize - index);
-    }
-    return (
-      cindex >= this.selectedImagesBoundaries.left
-      && cindex <= this.selectedImagesBoundaries.right
-    );
-  }
 
-  public moveToImage(indexToMove: number) {
-    this.$emit('moveactiveframe', indexToMove);
+    public onUploaded(id: string) {
+      ImageCacheService.startPreloadingImage(
+        new UploadedImage(this.projectId, id),
+        () => this.$forceUpdate(),
+      );
+      this.$store.commit('project/incAction', -1);
+    }
+
+    public async onCaptured(id: string, thumb: Blob, b64: string) {
+      ImageCacheService.putImageBlobInCache(id, b64);
+      const newActiveFrame = this.activeImage + 1;
+      await this.addImageToShot({
+        shotId: this.activeShot,
+        imageIndex: newActiveFrame,
+        image: id,
+        thumb,
+      });
+      this.$store.commit('project/incAction', 1);
+      this.$emit('activeImageChange', newActiveFrame);
+    }
+
+    get computedRightCarrousel(): ImageRef[] {
+      const sliceIndex = this.activeImage + 1;
+      const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
+      return rightImagesAvaible.concat(
+        Array(6 - rightImagesAvaible.length).fill(null),
+      );
+    }
+
+    get computedNextImages(): ImageRef[] {
+      const sliceIndex = this.activeImage + 7;
+      return this.images.slice(sliceIndex, sliceIndex + 20);
+    }
+
+    public isInSelection(index: number, position: string) {
+      let cindex = index;
+      if (position === 'right') {
+        cindex = this.activeImage + index + 1;
+      }
+      if (position === 'left') {
+        const leftSelectionSize = 5;
+        cindex = this.activeImage - (leftSelectionSize - index);
+      }
+      return (
+        cindex >= this.selectedImages.left
+        && cindex <= this.selectedImages.right
+      );
+    }
+
+    public moveToImage(indexToMove: number) {
+      this.$emit('activeImageChange', this.activeImage + indexToMove);
+    }
   }
-}
 </script>

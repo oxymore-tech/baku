@@ -1,8 +1,29 @@
 import * as uuid from 'uuid';
-import {
-  BakuAction, BakuEvent, BakuService,
-} from '@/api/baku.service';
+import { BakuAction, BakuEvent, BakuService, } from '@/api/baku.service';
 import { ImageRef, UploadedImage } from './uploadedImage.class';
+
+export enum KeyCodes {
+  BACKSPACE= 8,
+  TAB = 9,
+  ENTER = 13,
+  SHIFT = 16,
+  CTRL = 17,
+  ALT = 18,
+  PAUSE = 19,
+  CAPS_LOCK = 20,
+  ESCAPE = 27,
+  SPACE = 32,
+  PAGE_UP = 33,
+  PAGE_DOWN = 34,
+  END = 35,
+  HOME = 36,
+  LEFT_ARROW = 37,
+  UP_ARROW = 38,
+  RIGHT_ARROW = 39,
+  DOWN_ARROW = 40,
+  INSERT = 45,
+  DELETE = 46
+}
 
 export interface Movie {
   readonly title: string;
@@ -22,9 +43,7 @@ export interface ReadingSliderBoundaries {
   right: number;
 }
 
-export interface ReadingSliderValue {
-  left: number;
-  right: number;
+export interface ReadingSliderValue extends ReadingSliderBoundaries {
   selected: number;
 }
 
@@ -57,7 +76,7 @@ export class MovieService {
           poster = event.value;
           break;
         case BakuAction.MOVIE_INSERT_IMAGE: {
-          const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: string };
+          const {shotId, imageIndex, image} = event.value as { shotId: string, imageIndex: number, image: string };
           updateShot(shotId, (shot: Shot) => {
             shot.images.splice(imageIndex, 0, new UploadedImage(projectId, image));
             return shot;
@@ -129,7 +148,7 @@ export class MovieService {
   public addShot(projectId: string, username: string): [BakuEvent, Promise<void>] {
     const event: BakuEvent = {
       action: BakuAction.SHOT_ADD,
-      value: { shotId: uuid.v4() },
+      value: {shotId: uuid.v4()},
       user: username,
       timestamp: new Date(),
     };
@@ -149,7 +168,7 @@ export class MovieService {
   public insertImage(projectId: string, shotId: string, imgIndex: number, image: string, username: string): [BakuEvent, Promise<void>] {
     const event = {
       action: BakuAction.MOVIE_INSERT_IMAGE,
-      value: { shotId, imageIndex: imgIndex, image },
+      value: {shotId, imageIndex: imgIndex, image},
       user: username,
       timestamp: new Date(),
     };
