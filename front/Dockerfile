@@ -1,26 +1,21 @@
-FROM node:13.1.0-stretch AS builder
+FROM node:13.1.0-stretch AS setup
 WORKDIR /app
 COPY package.json \
      yarn.lock \
      ./
 RUN yarn
 COPY . .
+
+
+FROM setup AS watcher
+CMD yarn watch
+
+
+FROM setup AS builder
 RUN yarn build --release
-
-FROM builder AS watcher
-CMD npm run build --watch --no-clean
-
-
-FROM nginx AS production
-VOLUME /data/
-COPY --from=builder /app/dist /front_files
-COPY proxy/nginx-prod.conf /etc/nginx/nginx.conf
-CMD nginx -g "daemon off;"
 
 
 FROM nginx
-
-VOLUME /data/
 
 RUN apt-get update && \
     apt-get install -y gettext
