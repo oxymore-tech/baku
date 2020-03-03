@@ -5,6 +5,8 @@ data
 node_modules
 /dist
 
+**.iml
+
 # local env files
 .env.local
 .env.*.local
