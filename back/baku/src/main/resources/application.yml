@@ -1,3 +1,8 @@
 micronaut:
   application:
     name: baku
+netty:
+  responses:
+    file:
+      cache-seconds: 604800
+

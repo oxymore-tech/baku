@@ -2,11 +2,18 @@ package com.bakuanimation.server;
 
 import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.multipart.CompletedPart;
+import io.micronaut.http.multipart.StreamingFileUpload;
+import io.micronaut.http.server.types.files.SystemFile;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import org.reactivestreams.Publisher;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -19,13 +26,21 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @Post("/api/{projectId}/upload")
-    public Single<String> upload(@PathVariable String projectId, @Body Single<CompletedPart> part) {
-        return part
+    @Post(value = "/api/{projectId}/upload", consumes = MediaType.MULTIPART_FORM_DATA)
+    public Single<String> upload(@PathVariable String projectId, StreamingFileUpload file) {
+        File tempFile;
+        try {
+            tempFile = File.createTempFile(file.getFilename(), "temp");
+        } catch (IOException e) {
+            return Single.error(e);
+        }
+        Publisher<Boolean> uploadPublisher = file.transferTo(tempFile);
+        return Single.fromPublisher(uploadPublisher)
                 .subscribeOn(Schedulers.computation())
                 .map(upload -> {
-                    imageService.writeSmallerImages(projectId, upload.getInputStream(), upload.getName());
-                    return upload.getName();
+                    imageService.writeSmallerImages(projectId, new FileInputStream(tempFile), file.getFilename());
+                    Files.delete(tempFile.toPath());
+                    return file.getFilename();
                 });
 
     }
@@ -37,7 +52,7 @@ public class ImageController {
                                          @PathVariable String imageName) {
         var imagePath = imageService.getImage(Paths.get(projectId).resolve(quality).resolve(imageName));
         if (Files.exists(imagePath)) {
-            return HttpResponse.ok(imagePath);
+            return HttpResponse.ok(new SystemFile(imagePath.toFile()).attach(imageName));
         } else {
             return HttpResponse.notFound(imageName + "not found");
         }
