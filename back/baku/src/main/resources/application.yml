@@ -6,7 +6,7 @@ micronaut:
       default:
         enabled: true
         mapping: "/**"
-        paths: "classpath:dist"
+        paths: "fb:dist"
 netty:
   responses:
     file:
