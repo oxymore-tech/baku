@@ -1,6 +1,12 @@
 micronaut:
   application:
     name: baku
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: "/**"
+        paths: "classpath:dist"
 netty:
   responses:
     file:
