@@ -103,7 +103,7 @@ export default class Init extends Project {
     }
 
     public get poster() {
-      if (this.movie && this.movie.shots && this.movie.shots.length > 0) {
+      if (this.movie && this.movie.shots && this.movie.shots.length > 0 && this.movie.shots[0].images && this.movie.shots[0].images.length > 0) {
         return this.movie.shots[0].images[0].getUrl(Quality.Original);
       }
       return Spinner;

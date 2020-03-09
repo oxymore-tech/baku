@@ -49,14 +49,14 @@
               <i
                 class="icon-step-backward baku-button"
                 style="color:#455054;"
-                @click="onActiveFrameChange(0)"
+                @click="moveHome()"
               />
             </div>
             <div class="toolbar-button">
               <i
                 class="icon-backward baku-button"
                 style="color:#455054;"
-                @click="onActiveFrameChange(activeFrame - 1)"
+                @click="moveEnd()"
               />
             </div>
             <div class="toolbar-button toolbar-button-big" v-if="!isPlaying">
@@ -140,19 +140,19 @@
 </template>
 
 <script lang="ts">
-  import { Component, Watch } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-  import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-  import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
-  import store from '@/store';
-  import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-  import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
-  import Project from './Project.vue';
-  import { ImageCacheService } from '@/api/imageCache.service';
+import { Component, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
+import store from '@/store';
+import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
+import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
+import Project from './Project.vue';
+import { ImageCacheService } from '@/api/imageCache.service';
 
-  const CaptureNS = namespace('capture');
-  const ProjectNS = namespace('project');
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
 
   @Component({
     components: {
@@ -163,7 +163,7 @@
     },
     store,
   })
-  export default class Capture extends Project {
+export default class Capture extends Project {
     @ProjectNS.State
     public id!: string;
 
@@ -189,7 +189,7 @@
     @CaptureNS.State
     public stream!: MediaStream | null;
 
-    public selectedImages: ReadingSliderBoundaries = {left: 0, right: 3};
+    public selectedImages: ReadingSliderBoundaries = { left: 0, right: 3 };
 
     public animationFrame!: number;
 
@@ -271,7 +271,7 @@
     public playAnimation() {
       if (!this.isPlaying) {
         this.initPlay();
-        this.animationBoundaries = {left: 0, right: this.getActiveShot.images.length};
+        this.animationBoundaries = { left: 0, right: this.getActiveShot.images.length };
         this.animationFrame = requestAnimationFrame(this.animate);
       }
     }
@@ -287,7 +287,7 @@
         this.initPlay();
         this.animationBoundaries = {
           left: this.selectedImages.left,
-          right: this.selectedImages.right
+          right: this.selectedImages.right,
         };
         this.animationFrame = requestAnimationFrame(this.animate);
       }
@@ -309,13 +309,13 @@
 
     private syncActiveFrame() {
       if (!this.isPlaying) {
-        if (this.activeFrame != this.tmpActiveFrame) {
+        if (this.activeFrame !== this.tmpActiveFrame) {
           this.activeFrame = this.tmpActiveFrame;
           ImageCacheService.startPreloading(
             this.getActiveShot.images,
             this.activeFrame,
-            this.onImagePreloaded
-          )
+            this.onImagePreloaded,
+          );
         }
       }
     }
@@ -333,13 +333,13 @@
         ImageCacheService.startPreloading(
           shot.images,
           this.activeFrame,
-          this.onImagePreloaded
-        )
+          this.onImagePreloaded,
+        );
       }
     }
 
     private onImagePreloaded(imageId: string): void {
-      if (this.getActiveShot.images[this.tmpActiveFrame].id == imageId) {
+      if (this.getActiveShot.images[this.tmpActiveFrame].id === imageId) {
         this.displayFrame(this.tmpActiveFrame);
       }
       (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(imageId);
@@ -347,27 +347,25 @@
     }
 
     public moveFrame(moveOffset: number) {
-      let computedFrame = this.tmpActiveFrame + moveOffset;
+      const computedFrame = this.tmpActiveFrame + moveOffset;
       this.moveFrameAbsolute(computedFrame);
     }
 
     public moveHome() {
-      this.moveFrameAbsolute(0);
-      this.syncActiveFrame();
+      this.onActiveFrameChange(0);
     }
 
     public moveEnd() {
-      this.moveFrameAbsolute(this.getActiveShot.images.length - 1);
-      this.syncActiveFrame();
+      this.onActiveFrameChange(this.getActiveShot.images.length - 1);
     }
 
     private moveFrameAbsolute(frame: number): number {
       if (!this.isPlaying) {
         const minFrame = this.activeCapture ? -1 : 0;
         if (frame < minFrame) {
-          frame = minFrame;
+          this.tmpActiveFrame = minFrame;
         } else if (frame > (this.getActiveShot.images.length - 1)) {
-          frame = this.getActiveShot.images.length - 1;
+          this.tmpActiveFrame = this.getActiveShot.images.length - 1;
         }
         this.tmpActiveFrame = frame;
         this.displayFrame(this.tmpActiveFrame);
@@ -378,6 +376,14 @@
     public onActiveFrameChange(newActiveFrame: number) {
       this.moveFrameAbsolute(newActiveFrame);
       this.syncActiveFrame();
+    }
+
+    public moveLeftBoundary() {
+      this.onActiveFrameChange(this.selectedImages.left);
+    }
+
+    public moveRightBoundary() {
+      this.onActiveFrameChange(this.selectedImages.right);
     }
 
     public setActiveCapture() {
@@ -403,7 +409,7 @@
     public frameNb(frame: number): string {
       return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
     }
-  }
+}
 </script>
 
 <style lang="scss" scoped>
