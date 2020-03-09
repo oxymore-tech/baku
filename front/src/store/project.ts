@@ -1,5 +1,5 @@
 import { Module } from 'vuex';
-import { Movie, MovieService, Shot, } from '@/api/movie.service';
+import { Movie, MovieService, Shot } from '@/api/movie.service';
 import { BakuEvent } from '@/api/baku.service';
 
 const movieService = new MovieService();
@@ -22,7 +22,7 @@ export const ProjectStore: Module<ProjectState, any> = {
     id: '',
     activeShotId: null,
     history: [],
-    pendingActions: 0
+    pendingActions: 0,
   },
   mutations: {
     setMovie(state, payload: { projectId: string, movieHistory: BakuEvent[] }) {
@@ -41,15 +41,15 @@ export const ProjectStore: Module<ProjectState, any> = {
     },
     incAction(state, count: number) {
       state.pendingActions += count;
-    }
+    },
   },
   actions: {
     async loadProject(context: any, projectId: string): Promise<void> {
       const movieHistory = await movieService.getHistory(projectId);
-      await context.commit('setMovie', {projectId, movieHistory});
+      await context.commit('setMovie', { projectId, movieHistory });
     },
     async addImageToShot(context: any,
-                         payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
+      payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
       const [event, promise] = movieService.insertImage(
         context.state.id,
         payload.shotId,

@@ -81,7 +81,7 @@ export default {
       return this.$parent.precision;
     },
     currentPosition() {
-      return `${(this.value - this.min) / (this.max - this.min) * 100}%`;
+      return `${((this.value - this.min) / (this.max - this.min)) * 100}%`;
     },
     wrapperStyle() {
       return { left: this.currentPosition };
@@ -114,14 +114,14 @@ export default {
     onLeftKeyDown() {
       if (this.disabled || this.value === this.min) return;
       this.newPosition = parseFloat(this.currentPosition)
-        - this.step / (this.max - this.min) * 100;
+        - (this.step / (this.max - this.min)) * 100;
       this.setPosition(this.newPosition);
       this.$parent.emitValue('change');
     },
     onRightKeyDown() {
       if (this.disabled || this.value === this.max) return;
       this.newPosition = parseFloat(this.currentPosition)
-        + this.step / (this.max - this.min) * 100;
+        + (this.step / (this.max - this.min)) * 100;
       this.setPosition(this.newPosition);
       this.$parent.emitValue('change');
     },
@@ -152,7 +152,7 @@ export default {
         if (event.type === 'touchmove') {
           event.clientX = event.touches[0].clientX;
         }
-        const diff = (event.clientX - this.startX) / this.$parent.sliderSize * 100;
+        const diff = ((event.clientX - this.startX) / this.$parent.sliderSize) * 100;
         this.newPosition = this.startPosition + diff;
         this.setPosition(this.newPosition);
       }
@@ -176,15 +176,12 @@ export default {
       return `${(value - this.min) / (this.max - this.min) * 100}%`;
     },
     setPosition(percent) {
-      if (percent === null || isNaN(percent)) return;
-      if (percent < 0) {
-        percent = 0;
-      } else if (percent > 100) {
-        percent = 100;
-      }
+      if (percent === null || Number.isNaN(percent)) return;
+      let absPercent = (percent < 0) ? 0 : percent;
+      absPercent = (percent > 100) ? 100 : absPercent;
       const stepLength = 100 / ((this.max - this.min) / this.step);
-      const steps = Math.round(percent / stepLength);
-      let value = steps * stepLength / 100 * (this.max - this.min) + this.min;
+      const steps = Math.round(absPercent / stepLength);
+      let value = ((steps * stepLength) / 100) * (this.max - this.min) + this.min;
       value = parseFloat(value.toFixed(this.precision));
       this.$emit('input', value);
       if (!this.dragging && value !== this.oldValue) {

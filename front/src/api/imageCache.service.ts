@@ -12,6 +12,7 @@ class ImageCacheServiceImpl {
   };
 
   private readonly tasks: any = [];
+
   private readonly executorNb = 5;
 
   constructor() {
@@ -24,34 +25,34 @@ class ImageCacheServiceImpl {
 
 
   private processNewTask(executor: any, executorNb: number) {
-    let task = this.tasks.shift();
+    const task = this.tasks.shift();
     if (task) {
       // console.log("processNewTask [" + tasks.length + "]");
       executor
         .then(task)
         .then(() => {
-          this.pickNextTask(executor, executorNb)
+          this.pickNextTask(executor, executorNb);
         });
-      return true
+      return true;
     }
-    return false
+    return false;
   }
 
   private pickNextTask(executor: any, executorNb: number) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       if (this.processNewTask(executor, executorNb)) {
-        resolve()
+        resolve();
       } else {
-        let timer = setInterval(() => {
+        const timer = setInterval(() => {
           if (this.processNewTask(executor, executorNb)) {
             if (timer) {
               clearInterval(timer);
             }
             resolve();
           }
-        }, 50)
+        }, 50);
       }
-    })
+    });
   }
 
   public startPreloading(imageRefs: ImageRef[], activeIndex: number, onImagePreloaded: (imageId: string) => void) {
@@ -76,7 +77,7 @@ class ImageCacheServiceImpl {
   private createTaskIfNeeded(image: ImageRef, quality: Quality, onImagePreloaded: (imageId: string) => void) {
     if (!this.isCached(image.id, quality)) {
       this.tasks.push(async () => {
-        await this.preloadImage(image, quality, onImagePreloaded)
+        await this.preloadImage(image, quality, onImagePreloaded);
       });
     }
   }
@@ -128,7 +129,7 @@ class ImageCacheServiceImpl {
   }
 
   private async preloadImage(image: ImageRef, quality: Quality,
-                             onImagePreloaded: (imageId: string) => void) {
+    onImagePreloaded: (imageId: string) => void) {
     return new Promise<void>((resolve) => {
       const oReq = new XMLHttpRequest();
       oReq.onload = () => {
@@ -136,7 +137,7 @@ class ImageCacheServiceImpl {
         onImagePreloaded(image.id);
         resolve();
       };
-      oReq.open("get", image.getUrl(quality), true);
+      oReq.open('get', image.getUrl(quality), true);
       oReq.send();
     });
   }
@@ -148,7 +149,6 @@ class ImageCacheServiceImpl {
   private isCached(imageId: string, quality: Quality): boolean {
     return this.cachedImages[quality].hasOwnProperty(imageId);
   }
-
 }
 
 export const ImageCacheService = new ImageCacheServiceImpl();

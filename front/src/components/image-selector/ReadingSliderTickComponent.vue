@@ -24,8 +24,8 @@ export default {
   },
   computed: {
     position() {
-      const pos = (this.value - this.$parent.min)
-        / (this.$parent.max - this.$parent.min) * 100;
+      const pos = ((this.value - this.$parent.min)
+        / (this.$parent.max - this.$parent.min)) * 100;
       return (pos >= 0 && pos <= 100) ? pos : 0;
     },
     hidden() {

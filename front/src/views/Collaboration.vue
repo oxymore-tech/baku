@@ -14,11 +14,11 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import { BakuAction, BakuEvent } from "@/api/baku.service";
+import { Vue, Component } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { BakuAction, BakuEvent } from '@/api/baku.service';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component
 export default class History extends Vue {
@@ -32,19 +32,19 @@ export default class History extends Vue {
   public action(event: BakuEvent): string {
     switch (event.action) {
       case BakuAction.MOVIE_UPDATE_TITLE:
-        return "change le titre du film";
+        return 'change le titre du film';
       case BakuAction.MOVIE_UPDATE_SYNOPSIS:
-        return "change le synopsis du film";
+        return 'change le synopsis du film';
       case BakuAction.MOVIE_UPDATE_POSTER:
-        return "change le poster du film";
+        return 'change le poster du film';
       case BakuAction.MOVIE_INSERT_IMAGE:
-        return "ajoute une photo";
+        return 'ajoute une photo';
       case BakuAction.SHOT_ADD:
-        return "ajoute un plan";
+        return 'ajoute un plan';
       case BakuAction.CHANGE_FPS:
         return `change les fps du film ${event.value}`;
       default:
-        return "";
+        return '';
     }
   }
 
@@ -52,7 +52,7 @@ export default class History extends Vue {
     if (event.timestamp) {
       return new Date(event.timestamp).toLocaleString();
     }
-    return "";
+    return '';
   }
 }
 </script>

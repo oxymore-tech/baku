@@ -1,5 +1,5 @@
 import * as uuid from 'uuid';
-import { BakuAction, BakuEvent, BakuService, } from '@/api/baku.service';
+import { BakuAction, BakuEvent, BakuService } from '@/api/baku.service';
 import { ImageRef, UploadedImage } from './uploadedImage.class';
 
 export enum KeyCodes {
@@ -76,7 +76,7 @@ export class MovieService {
           poster = event.value;
           break;
         case BakuAction.MOVIE_INSERT_IMAGE: {
-          const {shotId, imageIndex, image} = event.value as { shotId: string, imageIndex: number, image: string };
+          const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: string };
           updateShot(shotId, (shot: Shot) => {
             shot.images.splice(imageIndex, 0, new UploadedImage(projectId, image));
             return shot;
@@ -148,7 +148,7 @@ export class MovieService {
   public addShot(projectId: string, username: string): [BakuEvent, Promise<void>] {
     const event: BakuEvent = {
       action: BakuAction.SHOT_ADD,
-      value: {shotId: uuid.v4()},
+      value: { shotId: uuid.v4() },
       user: username,
       timestamp: new Date(),
     };
@@ -168,7 +168,7 @@ export class MovieService {
   public insertImage(projectId: string, shotId: string, imgIndex: number, image: string, username: string): [BakuEvent, Promise<void>] {
     const event = {
       action: BakuAction.MOVIE_INSERT_IMAGE,
-      value: {shotId, imageIndex: imgIndex, image},
+      value: { shotId, imageIndex: imgIndex, image },
       user: username,
       timestamp: new Date(),
     };

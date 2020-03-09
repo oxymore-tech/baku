@@ -44,9 +44,6 @@ export default class CaptureToolboxComponent extends Vue {
 
   public selectedDevice: Device | null = null;
 
-  @CaptureNS.State
-  public activeCapture!: boolean;
-
   @CaptureNS.Action('selectDevice')
   protected selectDeviceAction!: (device: Device | null) => Promise<void>;
 

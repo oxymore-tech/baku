@@ -77,7 +77,7 @@
 </template>
 
 <style lang="scss">
-.b-slider .b-slider-tick{
+.b-slider .b-slider-tick {
   background: transparent;
 }
 
@@ -91,7 +91,7 @@
 }
 
 div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
-  background-color: #FFBD72;
+  background-color: #ffbd72;
   width: 0.7rem;
 }
 </style>
