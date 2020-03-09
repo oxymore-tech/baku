@@ -2,8 +2,11 @@
   <div class="mainFrame">
     <template>
       <div class="previewBloc">
-        <StoryboardPreviewComponent ref="previewComponent" :shots="movie.shots"
-                                    :activeShot="getActiveShot"/>
+        <StoryboardPreviewComponent
+          ref="previewComponent"
+          :shots="movie.shots"
+          :activeShot="getActiveShot"
+        />
         <div class="previewContainer">
           <div class="previewContent">
             <video
@@ -14,7 +17,12 @@
               muted
               playsinline
             />
-            <img id="previewImg" ref="previewImg" src="@/assets/baku-balls-spinner.svg" v-else/>
+            <img
+              id="previewImg"
+              ref="previewImg"
+              src="@/assets/baku-balls-spinner.svg"
+              v-else
+            />
             <img
               v-if="getActiveShot && getActiveShot.images[activeFrame] && activeCapture"
               alt="ghostImg"
@@ -28,11 +36,9 @@
             :projectId="id"
             :activeShot="getActiveShot.id"
             :images="getActiveShot.images"
-
             :activeImage="activeFrame"
             @activeImageChange="onActiveFrameChange"
             :activeCapture="activeCapture"
-
             v-model="selectedImages"
           />
           <div class="mediaControls">
@@ -43,7 +49,10 @@
               <span class="clock-small">:</span>
               <span ref='seconds'>{{ nbSecs(this.activeFrame) }}</span>
               <span class="clock-small">:</span>
-              <span ref='frames' class="clock-small">{{ frameNb(this.activeFrame) }}</span>
+              <span
+                ref='frames'
+                class="clock-small"
+              >{{ frameNb(this.activeFrame) }}</span>
             </div>
             <div class="toolbar-button">
               <i
@@ -59,18 +68,34 @@
                 @click="moveEnd()"
               />
             </div>
-            <div class="toolbar-button toolbar-button-big" v-if="!isPlaying">
-              <i class="icon-play baku-button" style="color:#FFBD72;" @click="playAnimation()"/>
+            <div
+              class="toolbar-button toolbar-button-big"
+              v-if="!isPlaying"
+            >
+              <i
+                class="icon-play baku-button"
+                style="color:#FFBD72;"
+                @click="playAnimation()"
+              />
             </div>
-            <div class="toolbar-button toolbar-button-big" v-if="!isPlaying">
+            <div
+              class="toolbar-button toolbar-button-big"
+              v-if="!isPlaying"
+            >
               <i
                 class="icon-play_loop baku-button"
                 style="color:#FFBD72;"
                 @click="playSelection()"
               />
             </div>
-            <div class="toolbar-button toolbar-button-big" v-if="isPlaying">
-              <i class="icon-pause baku-button" @click="pauseAnimation()"/>
+            <div
+              class="toolbar-button toolbar-button-big"
+              v-if="isPlaying"
+            >
+              <i
+                class="icon-pause baku-button"
+                @click="pauseAnimation()"
+              />
             </div>
             <div class="toolbar-button">
               <i
@@ -110,12 +135,15 @@
             </div>
           </div>
         </div>
-        <CaptureToolboxComponent v-if="getActiveShot"/>
+        <CaptureToolboxComponent v-if="getActiveShot" />
       </div>
 
       <div class="toolbar">
-        <div class="toolbar-button" @click="setActiveCapture()">
-          <i class="icon-camera baku-button"/>
+        <div
+          class="toolbar-button"
+          @click="setActiveCapture()"
+        >
+          <i class="icon-camera baku-button" />
           <span>Capture</span>
         </div>
       </div>
@@ -154,390 +182,390 @@ import { ImageCacheService } from '@/api/imageCache.service';
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
 
-  @Component({
-    components: {
-      CaptureToolboxComponent,
-      CarrouselComponent,
-      ImagesSelectorComponent,
-      StoryboardPreviewComponent,
-    },
-    store,
-  })
+@Component({
+  components: {
+    CaptureToolboxComponent,
+    CarrouselComponent,
+    ImagesSelectorComponent,
+    StoryboardPreviewComponent,
+  },
+  store,
+})
 export default class Capture extends Project {
-    @ProjectNS.State
-    public id!: string;
+  @ProjectNS.State
+  public id!: string;
 
-    @ProjectNS.State
-    public activeShotId!: string;
+  @ProjectNS.State
+  public activeShotId!: string;
 
-    @ProjectNS.Getter
-    public movie!: Movie;
+  @ProjectNS.Getter
+  public movie!: Movie;
 
   @ProjectNS.Getter
   public synchronizing!: boolean;
 
-    @ProjectNS.Getter
-    public getActiveShot!: Shot;
+  @ProjectNS.Getter
+  public getActiveShot!: Shot;
 
-    public activeFrame: number = 0;
+  public activeFrame: number = 0;
 
-    public tmpActiveFrame: number = 0;
+  public tmpActiveFrame: number = 0;
 
-    @CaptureNS.State
-    public activeCapture!: boolean;
+  @CaptureNS.State
+  public activeCapture!: boolean;
 
-    @CaptureNS.State
-    public stream!: MediaStream | null;
+  @CaptureNS.State
+  public stream!: MediaStream | null;
 
-    public selectedImages: ReadingSliderBoundaries = { left: 0, right: 3 };
+  public selectedImages: ReadingSliderBoundaries = { left: 0, right: 3 };
 
-    public animationFrame!: number;
+  public animationFrame!: number;
 
-    public animationStart!: number;
+  public animationStart!: number;
 
-    public animationStartFrame!: number;
+  public animationStartFrame!: number;
 
-    public animationBoundaries!: ReadingSliderBoundaries;
+  public animationBoundaries!: ReadingSliderBoundaries;
 
-    public isPlaying = false;
+  public isPlaying = false;
 
-    private previewImg!: HTMLImageElement;
+  private previewImg!: HTMLImageElement;
 
-    private hours!: HTMLElement;
+  private hours!: HTMLElement;
 
-    private minutes!: HTMLElement;
+  private minutes!: HTMLElement;
 
-    private seconds!: HTMLElement;
+  private seconds!: HTMLElement;
 
-    private frames!: HTMLElement;
+  private frames!: HTMLElement;
 
-    public mounted() {
-      this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
-      this.previewImg = this.$refs.previewImg as HTMLImageElement;
-      this.hours = this.$refs.hours as HTMLElement;
-      this.minutes = this.$refs.minutes as HTMLElement;
-      this.seconds = this.$refs.seconds as HTMLElement;
-      this.frames = this.$refs.frames as HTMLElement;
+  public mounted() {
+    this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
+    this.previewImg = this.$refs.previewImg as HTMLImageElement;
+    this.hours = this.$refs.hours as HTMLElement;
+    this.minutes = this.$refs.minutes as HTMLElement;
+    this.seconds = this.$refs.seconds as HTMLElement;
+    this.frames = this.$refs.frames as HTMLElement;
+  }
+
+  public animate(timestamp: number) {
+    if (!this.animationStart) {
+      this.animationStart = timestamp;
+    }
+    if (!this.animationStartFrame) {
+      this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
     }
 
-    public animate(timestamp: number) {
-      if (!this.animationStart) {
-        this.animationStart = timestamp;
-      }
-      if (!this.animationStartFrame) {
-        this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
-      }
+    const nextFrame = this.getNextFrame(timestamp);
+    if (nextFrame !== this.tmpActiveFrame) {
+      this.tmpActiveFrame = nextFrame;
+      this.displayFrame(nextFrame);
+    }
+    this.animationFrame = requestAnimationFrame(this.animate);
+  }
 
-      const nextFrame = this.getNextFrame(timestamp);
-      if (nextFrame !== this.tmpActiveFrame) {
-        this.tmpActiveFrame = nextFrame;
-        this.displayFrame(nextFrame);
-      }
+  private displayFrame(frame: number) {
+    const imageId = this.getActiveShot.images[frame].id;
+    this.previewImg!.src = ImageCacheService.getImage(imageId);
+    if (this.hours) {
+      this.hours.textContent = this.nbHours(frame);
+    }
+    if (this.minutes) {
+      this.minutes.textContent = this.nbMins(frame);
+    }
+    if (this.seconds) {
+      this.seconds.textContent = this.nbSecs(frame);
+    }
+    if (this.frames) {
+      this.frames.textContent = this.frameNb(frame);
+    }
+    (this.$refs.imageSelector as ImagesSelectorComponent).setFrame(frame);
+  }
+
+  private getNextFrame(timestamp: number) {
+    const imageFromStart = Math.floor((timestamp - this.animationStart) * (this.movie.fps / 1000));
+    const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
+    return this.animationBoundaries.left + ((this.animationStartFrame + imageFromStart) % animationLength);
+  }
+
+  public togglePlay() {
+    if (this.isPlaying) {
+      this.pauseAnimation();
+    } else {
+      this.playAnimation();
+    }
+  }
+
+  public playAnimation() {
+    if (!this.isPlaying) {
+      this.initPlay();
+      this.animationBoundaries = { left: 0, right: this.getActiveShot.images.length };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
+  }
 
-    private displayFrame(frame: number) {
-      const imageId = this.getActiveShot.images[frame].id;
-      this.previewImg!.src = ImageCacheService.getImage(imageId);
-      if (this.hours) {
-        this.hours.textContent = this.nbHours(frame);
+  public playSelection() {
+    if (!this.isPlaying) {
+      if (
+        this.activeFrame < this.selectedImages.left
+        || this.activeFrame > this.selectedImages.right
+      ) {
+        this.activeFrame = this.selectedImages.left;
       }
-      if (this.minutes) {
-        this.minutes.textContent = this.nbMins(frame);
-      }
-      if (this.seconds) {
-        this.seconds.textContent = this.nbSecs(frame);
-      }
-      if (this.frames) {
-        this.frames.textContent = this.frameNb(frame);
-      }
-      (this.$refs.imageSelector as ImagesSelectorComponent).setFrame(frame);
+      this.initPlay();
+      this.animationBoundaries = {
+        left: this.selectedImages.left,
+        right: this.selectedImages.right,
+      };
+      this.animationFrame = requestAnimationFrame(this.animate);
     }
+  }
 
-    private getNextFrame(timestamp: number) {
-      const imageFromStart = Math.floor((timestamp - this.animationStart) * (this.movie.fps / 1000));
-      const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
-      return this.animationBoundaries.left + ((this.animationStartFrame + imageFromStart) % animationLength);
+  public initPlay() {
+    this.isPlaying = true;
+  }
+
+  public pauseAnimation() {
+    if (this.isPlaying) {
+      this.isPlaying = false;
+      delete this.animationStart;
+      delete this.animationStartFrame;
+      cancelAnimationFrame(this.animationFrame);
+      this.syncActiveFrame();
     }
+  }
 
-    public togglePlay() {
-      if (this.isPlaying) {
-        this.pauseAnimation();
-      } else {
-        this.playAnimation();
-      }
-    }
-
-    public playAnimation() {
-      if (!this.isPlaying) {
-        this.initPlay();
-        this.animationBoundaries = { left: 0, right: this.getActiveShot.images.length };
-        this.animationFrame = requestAnimationFrame(this.animate);
-      }
-    }
-
-    public playSelection() {
-      if (!this.isPlaying) {
-        if (
-          this.activeFrame < this.selectedImages.left
-          || this.activeFrame > this.selectedImages.right
-        ) {
-          this.activeFrame = this.selectedImages.left;
-        }
-        this.initPlay();
-        this.animationBoundaries = {
-          left: this.selectedImages.left,
-          right: this.selectedImages.right,
-        };
-        this.animationFrame = requestAnimationFrame(this.animate);
-      }
-    }
-
-    public initPlay() {
-      this.isPlaying = true;
-    }
-
-    public pauseAnimation() {
-      if (this.isPlaying) {
-        this.isPlaying = false;
-        delete this.animationStart;
-        delete this.animationStartFrame;
-        cancelAnimationFrame(this.animationFrame);
-        this.syncActiveFrame();
-      }
-    }
-
-    private syncActiveFrame() {
-      if (!this.isPlaying) {
-        if (this.activeFrame !== this.tmpActiveFrame) {
-          this.activeFrame = this.tmpActiveFrame;
-          ImageCacheService.startPreloading(
-            this.getActiveShot.images,
-            this.activeFrame,
-            this.onImagePreloaded,
-          );
-        }
-      }
-    }
-
-    @Watch('stream')
-    public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
-      if (newValue) {
-        (this.$refs.videoCapture as HTMLVideoElement).srcObject = newValue;
-      }
-    }
-
-    @Watch('getActiveShot')
-    public async onActiveShotChange(shot: Shot) {
-      if (shot) {
+  private syncActiveFrame() {
+    if (!this.isPlaying) {
+      if (this.activeFrame !== this.tmpActiveFrame) {
+        this.activeFrame = this.tmpActiveFrame;
         ImageCacheService.startPreloading(
-          shot.images,
+          this.getActiveShot.images,
           this.activeFrame,
           this.onImagePreloaded,
         );
       }
     }
+  }
 
-    private onImagePreloaded(imageId: string): void {
-      if (this.getActiveShot.images[this.tmpActiveFrame].id === imageId) {
-        this.displayFrame(this.tmpActiveFrame);
+  @Watch('stream')
+  public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
+    if (newValue) {
+      (this.$refs.videoCapture as HTMLVideoElement).srcObject = newValue;
+    }
+  }
+
+  @Watch('getActiveShot')
+  public async onActiveShotChange(shot: Shot) {
+    if (shot) {
+      ImageCacheService.startPreloading(
+        shot.images,
+        this.activeFrame,
+        this.onImagePreloaded,
+      );
+    }
+  }
+
+  private onImagePreloaded(imageId: string): void {
+    if (this.getActiveShot.images[this.tmpActiveFrame].id === imageId) {
+      this.displayFrame(this.tmpActiveFrame);
+    }
+    (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(imageId);
+    (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
+  }
+
+  public moveFrame(moveOffset: number) {
+    const computedFrame = this.tmpActiveFrame + moveOffset;
+    this.moveFrameAbsolute(computedFrame);
+  }
+
+  public moveHome() {
+    this.onActiveFrameChange(0);
+  }
+
+  public moveEnd() {
+    this.onActiveFrameChange(this.getActiveShot.images.length - 1);
+  }
+
+  private moveFrameAbsolute(frame: number): number {
+    if (!this.isPlaying) {
+      const minFrame = this.activeCapture ? -1 : 0;
+      if (frame < minFrame) {
+        this.tmpActiveFrame = minFrame;
+      } else if (frame > (this.getActiveShot.images.length - 1)) {
+        this.tmpActiveFrame = this.getActiveShot.images.length - 1;
       }
-      (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(imageId);
-      (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
+      this.tmpActiveFrame = frame;
+      this.displayFrame(this.tmpActiveFrame);
     }
+    return this.tmpActiveFrame;
+  }
 
-    public moveFrame(moveOffset: number) {
-      const computedFrame = this.tmpActiveFrame + moveOffset;
-      this.moveFrameAbsolute(computedFrame);
-    }
+  public onActiveFrameChange(newActiveFrame: number) {
+    this.moveFrameAbsolute(newActiveFrame);
+    this.syncActiveFrame();
+  }
 
-    public moveHome() {
-      this.onActiveFrameChange(0);
-    }
+  public moveLeftBoundary() {
+    this.onActiveFrameChange(this.selectedImages.left);
+  }
 
-    public moveEnd() {
-      this.onActiveFrameChange(this.getActiveShot.images.length - 1);
-    }
+  public moveRightBoundary() {
+    this.onActiveFrameChange(this.selectedImages.right);
+  }
 
-    private moveFrameAbsolute(frame: number): number {
-      if (!this.isPlaying) {
-        const minFrame = this.activeCapture ? -1 : 0;
-        if (frame < minFrame) {
-          this.tmpActiveFrame = minFrame;
-        } else if (frame > (this.getActiveShot.images.length - 1)) {
-          this.tmpActiveFrame = this.getActiveShot.images.length - 1;
-        }
-        this.tmpActiveFrame = frame;
-        this.displayFrame(this.tmpActiveFrame);
-      }
-      return this.tmpActiveFrame;
-    }
+  public setActiveCapture() {
+    this.activeFrame = this.getActiveShot.images.length - 1;
+    this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
+  }
 
-    public onActiveFrameChange(newActiveFrame: number) {
-      this.moveFrameAbsolute(newActiveFrame);
-      this.syncActiveFrame();
-    }
-
-    public moveLeftBoundary() {
-      this.onActiveFrameChange(this.selectedImages.left);
-    }
-
-    public moveRightBoundary() {
-      this.onActiveFrameChange(this.selectedImages.right);
-    }
-
-    public setActiveCapture() {
-      this.activeFrame = this.getActiveShot.images.length - 1;
-      this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
-    }
-
-    public nbHours(frame: number): string {
-      return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
+  public nbHours(frame: number): string {
+    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
       % 60}`.padStart(2, '0');
-    }
+  }
 
-    public nbMins(frame: number): string {
-      return `${Math.floor((frame + 1) / this.movie.fps / 60)
+  public nbMins(frame: number): string {
+    return `${Math.floor((frame + 1) / this.movie.fps / 60)
       % 60}`.padStart(2, '0');
-    }
+  }
 
-    public nbSecs(frame: number): string {
-      return `${Math.floor((frame + 1) / this.movie.fps)
+  public nbSecs(frame: number): string {
+    return `${Math.floor((frame + 1) / this.movie.fps)
       % 60}`.padStart(2, '0');
-    }
+  }
 
-    public frameNb(frame: number): string {
-      return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
-    }
+  public frameNb(frame: number): string {
+    return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-  .mainFrame {
-    height: calc(100% - 48px);
-    display: flex;
-    flex-direction: column;
-  }
+.mainFrame {
+  height: calc(100% - 48px);
+  display: flex;
+  flex-direction: column;
+}
 
-  .previewBloc {
-    display: flex;
-    width: 100%;
-    flex: 1;
-    justify-content: space-between;
-    padding: 10px 24px;
-  }
+.previewBloc {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  justify-content: space-between;
+  padding: 10px 24px;
+}
 
-  #previewImg {
-    min-width: 640px;
-    min-height: 360px;
-    max-height: 720px;
-    height: 100%;
-    max-width: 100%;
-    background: white;
-  }
+#previewImg {
+  min-width: 640px;
+  min-height: 360px;
+  max-height: 720px;
+  height: 100%;
+  max-width: 100%;
+  background: white;
+}
 
-  #ghostImg {
-    min-width: 640px;
-    min-height: 360px;
-    max-height: 720px;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0.4;
-  }
+#ghostImg {
+  min-width: 640px;
+  min-height: 360px;
+  max-height: 720px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.4;
+}
 
+.previewContainer {
+  width: 1024px;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.previewContent {
+  width: 1024px;
+  height: 576px;
+  background: #ffffff 0 0 no-repeat padding-box;
+  border: 4px solid #ffbd72;
+  box-shadow: 0 6px 10px #00000066;
+  border-radius: 4px;
+  box-sizing: content-box;
+  justify-content: center;
+  display: flex;
+  position: relative;
+}
+
+#videoCapture {
+  min-width: 640px;
+  min-height: 360px;
+  max-height: 720px;
+  height: 100%;
+  max-width: 100%;
+}
+
+@media screen and (max-width: 1699px) {
+  #videoCapture {
+    width: 640px;
+    height: 360px;
+  }
   .previewContainer {
-    width: 1024px;
-    justify-content: center;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+    width: 640px;
   }
 
   .previewContent {
-    width: 1024px;
-    height: 576px;
-    background: #ffffff 0 0 no-repeat padding-box;
-    border: 4px solid #ffbd72;
-    box-shadow: 0 6px 10px #00000066;
-    border-radius: 4px;
-    box-sizing: content-box;
-    justify-content: center;
-    display: flex;
-    position: relative;
+    width: 640px;
+    height: 360px;
   }
 
+  #previewImg {
+    width: 640px;
+    height: 360px;
+  }
+}
+
+@media screen and (min-width: 1700px) {
   #videoCapture {
-    min-width: 640px;
-    min-height: 360px;
-    max-height: 720px;
-    height: 100%;
-    max-width: 100%;
+    width: 1024px;
+  }
+}
+
+.toolbar {
+  display: inline-flex;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid #f2f2f2;
+  padding: 11px 28px;
+  cursor: pointer;
+}
+
+.toolbar-button {
+  margin: 0 5px;
+}
+
+.mediaControls {
+  width: 100%;
+  display: flex;
+  font-size: 18px;
+  align-items: center;
+
+  .clock {
+    background: #455054;
+    border-radius: 8px;
+    color: white;
+    padding: 1px 5px;
+    width: 160px;
+    font-size: 26px;
+    margin-bottom: 5px;
+
+    .clock-small {
+      font-size: 18px;
+    }
   }
 
-  @media screen and (max-width: 1699px) {
-    #videoCapture {
-      width: 640px;
-      height: 360px;
-    }
-    .previewContainer {
-      width: 640px;
-    }
-
-    .previewContent {
-      width: 640px;
-      height: 360px;
-    }
-
-    #previewImg {
-      width: 640px;
-      height: 360px;
-    }
+  .toolbar-button-big {
+    font-size: 32px;
   }
-
-  @media screen and (min-width: 1700px) {
-    #videoCapture {
-      width: 1024px;
-    }
-  }
-
-  .toolbar {
-    display: inline-flex;
-    width: 100%;
-    background: #ffffff;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 1px solid #f2f2f2;
-    padding: 11px 28px;
-    cursor: pointer;
-  }
-
-  .toolbar-button {
-    margin: 0 5px;
-  }
-
-  .mediaControls {
-    width: 100%;
-    display: flex;
-    font-size: 18px;
-    align-items: center;
-
-    .clock {
-      background: #455054;
-      border-radius: 8px;
-      color: white;
-      padding: 1px 5px;
-      width: 160px;
-      font-size: 26px;
-      margin-bottom: 5px;
-
-      .clock-small {
-        font-size: 18px;
-      }
-    }
-
-    .toolbar-button-big {
-      font-size: 32px;
-    }
-  }
+}
 </style>
