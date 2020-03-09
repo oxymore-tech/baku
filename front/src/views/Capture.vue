@@ -68,33 +68,31 @@
                 @click="moveEnd()"
               />
             </div>
-            <div
-              class="toolbar-button toolbar-button-big"
-              v-if="!isPlaying"
-            >
+            <div class="toolbar-button toolbar-button-big">
               <i
-                class="icon-play baku-button"
-                style="color:#FFBD72;"
+                class="icon-play"
+                v-bind:class="isPlaying !== 'selection' ? 'baku-button primary-button' : 'disabled-button'"
                 @click="playAnimation()"
+                v-if="isPlaying !== 'animation'"
+                v-bind:disabled="true"
               />
-            </div>
-            <div
-              class="toolbar-button toolbar-button-big"
-              v-if="!isPlaying"
-            >
-              <i
-                class="icon-play_loop baku-button"
-                style="color:#FFBD72;"
-                @click="playSelection()"
-              />
-            </div>
-            <div
-              class="toolbar-button toolbar-button-big"
-              v-if="isPlaying"
-            >
               <i
                 class="icon-pause baku-button"
                 @click="pauseAnimation()"
+                v-else
+              />
+            </div>
+            <div class="toolbar-button toolbar-button-big">
+              <i
+                class="icon-play_loop"
+                v-bind:class="isPlaying !== 'animation' ? 'baku-button primary-button' : 'disabled-button'"
+                @click="playSelection()"
+                v-if="isPlaying !== 'selection'"
+              />
+              <i
+                class="icon-pause baku-button"
+                @click="pauseAnimation()"
+                v-else
               />
             </div>
             <div class="toolbar-button">
@@ -227,7 +225,7 @@ export default class Capture extends Project {
 
   public animationBoundaries!: ReadingSliderBoundaries;
 
-  public isPlaying = false;
+  public isPlaying: 'animation' | 'selection' | null = null;
 
   private previewImg!: HTMLImageElement;
 
@@ -298,7 +296,7 @@ export default class Capture extends Project {
 
   public playAnimation() {
     if (!this.isPlaying) {
-      this.initPlay();
+      this.initPlay('animation');
       this.animationBoundaries = { left: 0, right: this.getActiveShot.images.length };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
@@ -312,7 +310,7 @@ export default class Capture extends Project {
       ) {
         this.activeFrame = this.selectedImages.left;
       }
-      this.initPlay();
+      this.initPlay('selection');
       this.animationBoundaries = {
         left: this.selectedImages.left,
         right: this.selectedImages.right,
@@ -321,13 +319,13 @@ export default class Capture extends Project {
     }
   }
 
-  public initPlay() {
-    this.isPlaying = true;
+  public initPlay(type: 'animation' | 'selection') {
+    this.isPlaying = type;
   }
 
   public pauseAnimation() {
     if (this.isPlaying) {
-      this.isPlaying = false;
+      this.isPlaying = null;
       delete this.animationStart;
       delete this.animationStartFrame;
       cancelAnimationFrame(this.animationFrame);
@@ -542,6 +540,14 @@ export default class Capture extends Project {
 
 .toolbar-button {
   margin: 0 5px;
+}
+
+.primary-button {
+  color: #ffbd72;
+}
+
+.disabled-button {
+  color: #cccccc;
 }
 
 .mediaControls {
