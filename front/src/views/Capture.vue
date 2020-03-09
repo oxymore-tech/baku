@@ -95,6 +95,14 @@
                 v-else
               />
             </div>
+            <div class="toolbar-button toolbar-button-big">
+              <i
+                class="icon-camera baku-button"
+                style="color:#e66359;"
+                @click="setActiveCapture()"
+              />
+            </div>
+
             <div class="toolbar-button">
               <i
                 class="icon-forward baku-button"
