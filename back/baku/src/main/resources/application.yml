@@ -7,6 +7,10 @@ micronaut:
         enabled: true
         mapping: "/**"
         paths: "fb:dist"
+  executors:
+    io:
+      type: fixed
+      nThreads: 75
 netty:
   responses:
     file:

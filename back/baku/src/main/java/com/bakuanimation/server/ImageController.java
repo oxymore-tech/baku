@@ -1,5 +1,8 @@
 package com.bakuanimation.server;
 
+import io.micronaut.core.io.Streamable;
+import io.micronaut.core.io.Writable;
+import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -7,14 +10,15 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.multipart.StreamingFileUpload;
+import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.http.server.types.files.SystemFile;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import org.reactivestreams.Publisher;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import javax.annotation.Nullable;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -56,6 +60,36 @@ public class ImageController {
         } else {
             return HttpResponse.notFound(imageName + "not found");
         }
+    }
+
+    @Get(value = "/api/{projectId}/export.zip")
+    public Writable export(@PathVariable String projectId) {
+        return new Writable() {
+            @Override
+            public void writeTo(Writer out) throws IOException {
+                throw new IllegalArgumentException();
+            }
+
+            @Override
+            public void writeTo(OutputStream outputStream, @Nullable Charset charset) throws IOException {
+                imageService.export(projectId, null, outputStream);
+            }
+        };
+    }
+
+    @Get(value = "/api/{projectId}/{shotId}/export.zip")
+    public Writable exportShot(@PathVariable String projectId, @PathVariable String shotId) {
+        return new Writable() {
+            @Override
+            public void writeTo(Writer out) throws IOException {
+                throw new IllegalArgumentException();
+            }
+
+            @Override
+            public void writeTo(OutputStream outputStream, @Nullable Charset charset) throws IOException {
+                imageService.export(projectId, shotId, outputStream);
+            }
+        };
     }
 
 }
