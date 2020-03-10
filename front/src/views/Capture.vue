@@ -13,6 +13,7 @@
               v-if="activeCapture"
               id="videoCapture"
               ref="videoCapture"
+              :style="{transform: 'scale(' + scaleX +', ' +scaleY +')'}"
               autoplay
               muted
               playsinline
@@ -222,6 +223,12 @@ export default class Capture extends Project {
 
   @CaptureNS.State
   public stream!: MediaStream | null;
+
+  @CaptureNS.State
+  public scaleX!: number | 1;
+
+  @CaptureNS.State
+  public scaleY!: number | 1;
 
   public selectedImages: ReadingSliderBoundaries = { left: 0, right: 3 };
 
