@@ -42,8 +42,8 @@ export class Device {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
-    context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
     context2d.scale(scales.scaleX, scales.scaleY);
+    context2d.drawImage(video, 0, 0, canvas.width * scales.scaleX, canvas.height * scales.scaleY);
     const base64 = canvas.toDataURL('image/jpeg');
     return [Device.imagetoblob(base64), base64];
   }
