@@ -98,6 +98,8 @@
   width: 100%;
   height: 104px;
   display: inline-flex;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
   padding: 12px 21px;
   align-items: center;
 
@@ -203,20 +205,6 @@ export default class CarrouselComponent extends Vue {
     });
   }
 
-  get computedLeftCarrousel(): ImageRef[] {
-    const sliceIndex = this.activeCapture
-      ? this.activeImage + 1
-      : this.activeImage;
-    const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-5);
-    return Array(5 - leftImagesAvaible.length)
-      .fill(null)
-      .concat(leftImagesAvaible);
-  }
-
-  get computedActiveImage(): ImageRef | null {
-    return this.activeCapture ? null : this.images[this.activeImage];
-  }
-
   public imageReady(imageId: string) {
     if (this.images.find((i) => i.id === imageId)) {
       this.$forceUpdate();
@@ -244,12 +232,22 @@ export default class CarrouselComponent extends Vue {
     this.$emit('activeImageChange', newActiveFrame);
   }
 
+  get computedActiveImage(): ImageRef | null {
+    return this.activeCapture ? null : this.images[this.activeImage];
+  }
+
+  get computedLeftCarrousel(): ImageRef[] {
+    const sliceIndex = this.activeCapture
+      ? this.activeImage + 1
+      : this.activeImage;
+    const leftImagesAvaible = this.images.slice(0, sliceIndex);
+    return leftImagesAvaible;
+  }
+
   get computedRightCarrousel(): ImageRef[] {
     const sliceIndex = this.activeImage + 1;
-    const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, 6);
-    return rightImagesAvaible.concat(
-      Array(6 - rightImagesAvaible.length).fill(null),
-    );
+    const rightImagesAvaible = this.images.slice(sliceIndex);
+    return rightImagesAvaible;
   }
 
   get computedNextImages(): ImageRef[] {

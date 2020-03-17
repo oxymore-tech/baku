@@ -18,24 +18,28 @@
         <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
       </b-select>
     </b-field>
+
+    <div @click="toggleScaleY()">Miroir horizontal</div>
+
+    <div @click="toggleScaleX()">Miroir vertical</div>
   </div>
 </template>
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
-import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import { Device } from '@/api/device.class';
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import SmartphoneSynchroPopup from "@/components/SmartphoneSynchroPopup.vue";
+import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
+import { Device } from "@/api/device.class";
 
-const CaptureNS = namespace('capture');
+const CaptureNS = namespace("capture");
 
 @Component({
   components: {
     SmartphoneSynchroPopup,
-    CaptureButtonComponent,
-  },
+    CaptureButtonComponent
+  }
 })
 export default class CaptureToolboxComponent extends Vue {
   public devices: Device[] = [];
@@ -44,38 +48,54 @@ export default class CaptureToolboxComponent extends Vue {
 
   public selectedDevice: Device | null = null;
 
-  @CaptureNS.Action('selectDevice')
+  @CaptureNS.Action("selectDevice")
   protected selectDeviceAction!: (device: Device | null) => Promise<void>;
+
+  @CaptureNS.Action("toggleScaleX")
+  protected toggleScaleX!: () => Promise<void>;
+
+  @CaptureNS.Action("toggleScaleY")
+  protected toggleScaleY!: () => Promise<void>;
 
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices
-      .filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
+      .filter((input: MediaDeviceInfo) => input.kind === "videoinput")
       .map(
-        (input: MediaDeviceInfo) => new Device(input.deviceId, input.label || 'Caméra non reconnue'),
+        (input: MediaDeviceInfo) =>
+          new Device(input.deviceId, input.label || "Caméra non reconnue")
       );
-    const deviceIds = [...new Set(videoDevices.map((d) => d.id))];
+    const deviceIds = [...new Set(videoDevices.map(d => d.id))];
     this.devices = deviceIds.map(
-      (id) => videoDevices.find((d) => d.id === id) as Device,
+      id => videoDevices.find(d => d.id === id) as Device
     );
-    this.devices.push(new Device('smartphone', 'Smartphone'));
+    this.devices.push(new Device("smartphone", "Smartphone"));
   }
 
   public onCaptureDeviceChange() {
-    this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
+    this.selectedDevice =
+      this.devices.find(d => d.id === this.selectedDeviceId) || null;
     this.selectDeviceAction(this.selectedDevice);
 
     if (
-      this.selectedDevice
-      && this.selectedDevice.isSmartphone()
-      && !this.$store.state.dataChannel
+      this.selectedDevice &&
+      this.selectedDevice.isSmartphone() &&
+      !this.$store.state.dataChannel
     ) {
       this.$buefy.modal.open({
         parent: this,
         component: SmartphoneSynchroPopup,
-        hasModalCard: true,
+        hasModalCard: true
       });
     }
+  }
+
+  public verticalMirror() {
+    this.toggleScaleX();
+  }
+
+  public horizontalMirror() {
+    this.toggleScaleY();
   }
 }
 </script>

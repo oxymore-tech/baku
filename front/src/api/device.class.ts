@@ -1,6 +1,11 @@
 import * as uuid from 'uuid';
 import { BakuService } from '@/api/baku.service';
 
+interface Scales {
+  scaleX: number;
+  scaleY: number;
+}
+
 export class Device {
   public readonly id: string;
 
@@ -17,10 +22,10 @@ export class Device {
     return this.id === 'smartphone';
   }
 
-  public capture(videoElementTag: string, projectId: string, onCaptured: (id: string, original: Blob, b64: string) => void, onUploaded: (id: string) => void, onError: (e: any) => void, onFinally?: () => {}): void {
+  public capture(videoElementTag: string, scales: Scales, projectId: string, onCaptured: (id: string, original: Blob, b64: string) => void, onUploaded: (id: string) => void, onError: (e: any) => void, onFinally?: () => {}): void {
     try {
       const video = document.getElementById(videoElementTag) as HTMLVideoElement;
-      const [blob, b64] = Device.captureOriginal(video);
+      const [blob, b64] = Device.captureOriginal(video,  scales);
       const id = `${uuid.v4()}.jpg`;
       onCaptured(id, blob, b64);
       this.bakuService.upload(projectId, blob, id)
@@ -32,12 +37,13 @@ export class Device {
     }
   }
 
-  private static captureOriginal(video: HTMLVideoElement): [Blob, string] {
+  private static captureOriginal(video: HTMLVideoElement, scales: Scales): [Blob, string] {
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
-    context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
+    context2d.scale(scales.scaleX, scales.scaleY);
+    context2d.drawImage(video, 0, 0, canvas.width * scales.scaleX, canvas.height * scales.scaleY);
     const base64 = canvas.toDataURL('image/jpeg');
     return [Device.imagetoblob(base64), base64];
   }
