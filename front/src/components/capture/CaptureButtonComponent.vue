@@ -45,6 +45,7 @@
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { State, namespace } from "vuex-class";
 import { Device } from "@/api/device.class";
+import { KeyCodes } from "../../api/movie.service";
 
 const CaptureNS = namespace("capture");
 
@@ -72,6 +73,15 @@ export default class CaptureButtonComponent extends Vue {
   public async mounted() {
     console.log("WebcamCapture mounted", this.device);
     this.onDeviceIdChanged();
+    window.addEventListener('keyup', (e: KeyboardEvent) => {
+      switch (e.keyCode) {
+        case KeyCodes.ENTER:
+          this.capture()
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   public beforeDestroy() {

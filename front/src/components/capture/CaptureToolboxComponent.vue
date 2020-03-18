@@ -7,7 +7,7 @@
     </div>
 
     <b-field>
-      <i class="icon-webcam" />
+      <i class="icon-webcam"/>
       <b-select
         @input="onCaptureDeviceChange()"
         placeholder="Select a Camera"
@@ -19,9 +19,17 @@
       </b-select>
     </b-field>
 
-    <div @click="toggleScaleY()">Miroir horizontal</div>
+    <div @click="toggleScaleY()">
+      <i class="icon-check_box baku-button mirror-checkboxes" v-if="scaleY < 0"/>
+      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else/>
+      Miroir horizontal
+    </div>
 
-    <div @click="toggleScaleX()">Miroir vertical</div>
+    <div @click="toggleScaleX()">
+      <i class="icon-check_box baku-button mirror-checkboxes"  v-if="scaleX < 0"/>
+      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else/>
+      Miroir vertical
+    </div>
   </div>
 </template>
 
@@ -56,6 +64,12 @@ export default class CaptureToolboxComponent extends Vue {
 
   @CaptureNS.Action("toggleScaleY")
   protected toggleScaleY!: () => Promise<void>;
+
+  @CaptureNS.State("scaleX")
+  protected scaleX!: number;
+
+  @CaptureNS.State("scaleY")
+  protected scaleY!: number;
 
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -126,7 +140,11 @@ export default class CaptureToolboxComponent extends Vue {
   i {
     font-size: 20px;
     color: #707070;
-    margin: 3px 5px;
+    margin: 3px 5px 3px 0px
   }
+}
+
+.mirror-checkboxes {
+  margin-right: 5px;
 }
 </style>

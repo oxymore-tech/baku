@@ -3,10 +3,7 @@
     <!-- LEFT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedLeftCarrousel">
       <template v-if="image !== null">
-        <div
-          :key="'left'+index"
-          class="imageContainer"
-        >
+        <div :key="'left'+index" class="imageContainer">
           <img
             class="carrouselThumb"
             :alt="image"
@@ -17,10 +14,7 @@
         </div>
       </template>
       <template v-else>
-        <div
-          :key="'left'+index"
-          class="imageContainer"
-        >
+        <div :key="'left'+index" class="imageContainer">
           <div
             @click="moveToImage(index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
             class="carrouselThumb"
@@ -60,10 +54,7 @@
     <!-- RIGHT PART OF THE CARROUSEL -->
     <template v-for="(image, index) in computedRightCarrousel">
       <template v-if="image !== null">
-        <div
-          :key="'right'+index"
-          class="imageContainer"
-        >
+        <div :key="'right'+index" class="imageContainer">
           <img
             class="carrouselThumb"
             :alt="image"
@@ -74,10 +65,7 @@
         </div>
       </template>
       <template v-else>
-        <div
-          :key="'right'+index"
-          @click="moveToImage(index + 1)"
-        />
+        <div :key="'right'+index" @click="moveToImage(index + 1)" />
       </template>
     </template>
 
@@ -128,21 +116,21 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import { Device } from '@/api/device.class';
-import { ImageCacheService } from '@/api/imageCache.service';
-import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
-import { KeyCodes, ReadingSliderBoundaries } from '@/api/movie.service';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
+import { Device } from "@/api/device.class";
+import { ImageCacheService } from "@/api/imageCache.service";
+import { ImageRef, UploadedImage } from "@/api/uploadedImage.class";
+import { KeyCodes, ReadingSliderBoundaries } from "@/api/movie.service";
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+const CaptureNS = namespace("capture");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
-    CaptureButtonComponent,
-  },
+    CaptureButtonComponent
+  }
 })
 export default class CarrouselComponent extends Vue {
   @Prop()
@@ -166,38 +154,48 @@ export default class CarrouselComponent extends Vue {
   @CaptureNS.State
   public activeDevice!: Device;
 
-  @ProjectNS.Action('addImageToShot')
-  protected addImageToShot!: ({ }) => Promise<void>;
+  @ProjectNS.Action("addImageToShot")
+  protected addImageToShot!: ({}) => Promise<void>;
+
+  @ProjectNS.Action("removeImageFromShot")
+  protected removeImageFromShot!: ({}) => Promise<void>;
 
   mounted() {
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
+    window.addEventListener("keydown", (e: KeyboardEvent) => {
       switch (e.keyCode) {
         case KeyCodes.HOME:
         case KeyCodes.PAGE_UP:
-          this.$emit('moveHome', e);
+          this.$emit("moveHome", e);
           break;
         case KeyCodes.END:
         case KeyCodes.PAGE_DOWN:
-          this.$emit('moveEnd', e);
+          this.$emit("moveEnd", e);
           break;
         case KeyCodes.LEFT_ARROW:
-          this.$emit('moveFrame', -1);
+          this.$emit("moveFrame", -1);
           break;
         case KeyCodes.RIGHT_ARROW:
-          this.$emit('moveFrame', 1);
+          this.$emit("moveFrame", 1);
           break;
         case KeyCodes.SPACE:
-          this.$emit('togglePlay', e);
+          this.$emit("togglePlay", e);
           break;
         default:
           break;
       }
     });
-    window.addEventListener('keyup', (e: KeyboardEvent) => {
+    window.addEventListener("keyup", (e: KeyboardEvent) => {
       switch (e.keyCode) {
         case KeyCodes.LEFT_ARROW:
         case KeyCodes.RIGHT_ARROW:
-          this.$emit('stopMovingFrame', e);
+          this.$emit("stopMovingFrame", e);
+          break;
+        case KeyCodes.DELETE:
+          this.removeImageFromShot({
+            shotId: this.activeShot,
+            imageIndex: this.activeImage
+          });
+          this.$forceUpdate();
           break;
         default:
           break;
@@ -206,7 +204,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public imageReady(imageId: string) {
-    if (this.images.find((i) => i.id === imageId)) {
+    if (this.images.find(i => i.id === imageId)) {
       this.$forceUpdate();
     }
   }
@@ -214,9 +212,9 @@ export default class CarrouselComponent extends Vue {
   public onUploaded(id: string) {
     ImageCacheService.startPreloadingImage(
       new UploadedImage(this.projectId, id),
-      () => this.$forceUpdate(),
+      () => this.$forceUpdate()
     );
-    this.$store.commit('project/incAction', -1);
+    this.$store.commit("project/incAction", -1);
   }
 
   public async onCaptured(id: string, thumb: Blob, b64: string) {
@@ -226,10 +224,10 @@ export default class CarrouselComponent extends Vue {
       shotId: this.activeShot,
       imageIndex: newActiveFrame,
       image: id,
-      thumb,
+      thumb
     });
-    this.$store.commit('project/incAction', 1);
-    this.$emit('activeImageChange', newActiveFrame);
+    this.$store.commit("project/incAction", 1);
+    this.$emit("activeImageChange", newActiveFrame);
   }
 
   get computedActiveImage(): ImageRef | null {
@@ -257,21 +255,20 @@ export default class CarrouselComponent extends Vue {
 
   public isInSelection(index: number, position: string) {
     let cindex = index;
-    if (position === 'right') {
+    if (position === "right") {
       cindex = this.activeImage + index + 1;
     }
-    if (position === 'left') {
+    if (position === "left") {
       const leftSelectionSize = 5;
       cindex = this.activeImage - (leftSelectionSize - index);
     }
     return (
-      cindex >= this.selectedImages.left
-      && cindex <= this.selectedImages.right
+      cindex >= this.selectedImages.left && cindex <= this.selectedImages.right
     );
   }
 
   public moveToImage(indexToMove: number) {
-    this.$emit('activeImageChange', this.activeImage + indexToMove);
+    this.$emit("activeImageChange", this.activeImage + indexToMove);
   }
 }
 </script>

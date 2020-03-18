@@ -91,6 +91,14 @@ export class MovieService {
           });
           break;
         }
+        case BakuAction.MOVIE_REMOVE_IMAGE: {
+          const { shotId, imageIndex} = event.value as { shotId: string, imageIndex: number};
+          updateShot(shotId, (shot: Shot) => {
+            shot.images.splice(imageIndex, 1)
+            return shot;
+          })
+          break;
+        }
         case BakuAction.CHANGE_FPS: {
           fps = event.value;
           break;
@@ -169,6 +177,16 @@ export class MovieService {
     const event = {
       action: BakuAction.MOVIE_INSERT_IMAGE,
       value: { shotId, imageIndex: imgIndex, image },
+      user: username,
+      timestamp: new Date(),
+    };
+    return [event, this.bakuService.stack(projectId, event)];
+  }
+
+  public removeImage(projectId: string, shotId: string, imgIndex: number, username: string): [BakuEvent, Promise<void>] {
+    const event = {
+      action: BakuAction.MOVIE_REMOVE_IMAGE,
+      value: { shotId, imageIndex: imgIndex, },
       user: username,
       timestamp: new Date(),
     };
