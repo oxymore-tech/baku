@@ -62,6 +62,19 @@ export const ProjectStore: Module<ProjectState, any> = {
       promise.catch(() => context.commit('removeFromLocalHistory', event))
         .finally(() => context.commit('incAction', -1));
     },
+    async removeImageFromShot(context: any,
+      payload: { shotId: string, imageIndex: number }) {
+      const [event, promise] = movieService.removeImage(
+        context.state.id,
+        payload.shotId,
+        payload.imageIndex,
+        context.rootState.user.username,
+      );
+      context.commit('addToLocalHistory', event);
+      context.commit('incAction', 1);
+      promise.catch(() => context.commit('removeFromLocalHistory', event))
+        .finally(() => context.commit('incAction', -1));
+    },
     changeActiveShot(context, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },
