@@ -117,6 +117,7 @@ export const ProjectStore: Module<ProjectState, any> = {
 
     movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
     getActiveShot: (state: ProjectState, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
+    getActiveShotImgCount:  (state: ProjectState, getters: ProjectGetters): number | undefined => getters.getActiveShot ? getters.getActiveShot.images.length : 0,
     synchronizing: (state: ProjectState): boolean => state.pendingActions !== 0,
   },
   modules: {},

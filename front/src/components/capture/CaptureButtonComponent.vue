@@ -42,12 +42,14 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { State, namespace } from "vuex-class";
-import { Device } from "@/api/device.class";
-import { KeyCodes } from "../../api/movie.service";
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import { State, namespace } from 'vuex-class';
+import { Device } from '@/api/device.class';
+import { KeyCodes } from '../../api/movie.service';
 
-const CaptureNS = namespace("capture");
+const CaptureNS = namespace('capture');
 
 @Component
 export default class CaptureButtonComponent extends Vue {
@@ -71,12 +73,12 @@ export default class CaptureButtonComponent extends Vue {
   public peerConnected = false;
 
   public async mounted() {
-    console.log("WebcamCapture mounted", this.device);
+    console.log('WebcamCapture mounted', this.device);
     this.onDeviceIdChanged();
     window.addEventListener('keyup', (e: KeyboardEvent) => {
       switch (e.keyCode) {
         case KeyCodes.ENTER:
-          this.capture()
+          this.capture();
           break;
         default:
           break;
@@ -87,12 +89,12 @@ export default class CaptureButtonComponent extends Vue {
   public beforeDestroy() {
     // Removing tracks to stop using camera
     // @see: https://developers.google.com/web/updates/2015/07/mediastream-deprecations?hl=en#stop-ended-and-active
-    this.$store.commit("capture/detachMediaStream");
+    this.$store.commit('capture/detachMediaStream');
 
     if (this.$store.state.peerConnection) {
       this.$store.state.peerConnection.close();
-      this.$store.commit("webrtc/setPeerConnection", undefined);
-      this.$store.commit("webrtc/setDataChannel", undefined);
+      this.$store.commit('webrtc/setPeerConnection', undefined);
+      this.$store.commit('webrtc/setDataChannel', undefined);
     }
   }
 
@@ -105,10 +107,10 @@ export default class CaptureButtonComponent extends Vue {
     }
   }
 
-  @Watch("device")
+  @Watch('device')
   public onDeviceIdChanged() {
     this.isCapturing = false;
-    console.log("this.device.isSmartphone()", this.device.isSmartphone());
+    console.log('this.device.isSmartphone()', this.device.isSmartphone());
     if (!this.device.isSmartphone()) {
       this.setupWebCam();
     } else {
@@ -117,14 +119,14 @@ export default class CaptureButtonComponent extends Vue {
         this.setupSmarphone();
       } else {
         this.peerConnected = false;
-        this.$store.commit("capture/detachMediaStream");
+        this.$store.commit('capture/detachMediaStream');
       }
     }
   }
 
-  @Watch("dataChannel")
+  @Watch('dataChannel')
   public onDataChannelChanged() {
-    console.log("onDataChannelChanged", this.dataChannel);
+    console.log('onDataChannelChanged', this.dataChannel);
     this.peerConnected = !!this.dataChannel;
     if (this.dataChannel) {
       this.setChannelEvents(this.dataChannel);
@@ -135,36 +137,36 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   private setChannelEvents(channel: RTCDataChannel) {
-    channel.onmessage = event => {
+    channel.onmessage = (event) => {
       // TODO: Try to understand why you need TWO json parse
       const data = JSON.parse(JSON.parse(event.data));
       switch (data.type) {
-        case "capture":
+        case 'capture':
           // this.onCaptured(data.id, data.thumb); //TODO when captured by smartphone, do we have b64 to add ?
           break;
-        case "upload":
+        case 'upload':
           this.onUploaded(data.id);
           break;
         default:
           console.log(`Unknown message '${data.type}' (ignored)`);
       }
-      console.log("Message received", event);
+      console.log('Message received', event);
     };
 
     // eslint-disable-next-line no-param-reassign
-    channel.onerror = e => {
-      console.error("channel.onerror", JSON.stringify(e, null, "\t"));
+    channel.onerror = (e) => {
+      console.error('channel.onerror', JSON.stringify(e, null, '\t'));
     };
 
     // eslint-disable-next-line no-param-reassign
-    channel.onclose = e => {
-      console.warn("channel.onclose", JSON.stringify(e, null, "\t"));
+    channel.onclose = (e) => {
+      console.warn('channel.onclose', JSON.stringify(e, null, '\t'));
     };
   }
 
   private async setupSmarphone() {
     const { stream } = this.$store.state;
-    await this.$store.commit("capture/attachMediaStream", stream);
+    await this.$store.commit('capture/attachMediaStream', stream);
   }
 
   private async setupWebCam() {
@@ -173,41 +175,41 @@ export default class CaptureButtonComponent extends Vue {
       video: {
         width: { min: 640, ideal: 1280 },
         height: { min: 480, ideal: 720 },
-        deviceId: { exact: this.device.id }
-      }
+        deviceId: { exact: this.device.id },
+      },
     });
-    await this.$store.commit("capture/attachMediaStream", stream);
+    await this.$store.commit('capture/attachMediaStream', stream);
   }
 
   private captureSmartphone() {
     this.dataChannel.send(
       JSON.stringify({
-        message: "capture",
+        message: 'capture',
         projectId: this.projectId,
-        type: "cmd",
+        type: 'cmd',
         scaleX: this.scaleX,
-        scaleY: this.scaleY
-      })
+        scaleY: this.scaleY,
+      }),
     );
   }
 
   private captureWebcam() {
     this.device.capture(
-      "videoCapture",
+      'videoCapture',
       { scaleX: this.scaleX, scaleY: this.scaleY },
       this.projectId,
       this.onCaptured,
       this.onUploaded,
-      e => console.log("Error during webcam capture", e)
+      (e) => console.log('Error during webcam capture', e),
     );
   }
 
   private onUploaded(id: string) {
-    this.$emit("uploaded", id);
+    this.$emit('uploaded', id);
   }
 
   private async onCaptured(id: string, thumb: Blob, b64: string) {
-    this.$emit("captured", id, thumb, b64);
+    this.$emit('captured', id, thumb, b64);
     this.isCapturing = false;
   }
 }
