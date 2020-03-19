@@ -158,7 +158,7 @@ import * as _ from 'lodash';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { Device } from '@/api/device.class';
 import { ImageCacheService } from '@/api/imageCache.service';
-import { ImageRef, UploadedImage, ImageRef } from '@/api/uploadedImage.class';
+import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
 import { KeyCodes, ReadingSliderBoundaries } from '@/api/movie.service';
 
 
@@ -200,7 +200,7 @@ export default class CarrouselComponent extends Vue {
 
   protected selectedImagesForReal: number[] = [];
 
-  private imagesToCopy: ImageRef[] = [];
+  private imagesToCopy: string[] = [];
 
   mounted() {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -263,14 +263,16 @@ export default class CarrouselComponent extends Vue {
     this.$store.commit('project/incAction', 1);
     this.$emit('activeImageChange', newActiveFrame);
     const container = document.getElementById('carrouselContainer');
-    container.scrollTo(container!.scrollWidth, 0);
+    if(container){
+      container.scrollTo(container!.scrollWidth, 0);
+    }
   }
 
   public async deleteFrame() {
     const imagesToDelete = this.selectedImagesForReal;
     imagesToDelete.push(this.activeImage);
     imagesToDelete.sort();
-    await asyncForEach(imagesToDelete, (imgId, index) => this.removeImageFromShot({
+    await asyncForEach(imagesToDelete, (imgId: number, index: number) => this.removeImageFromShot({
       shotId: this.activeShot,
       imageIndex: imgId - index,
     }));
@@ -352,12 +354,11 @@ export default class CarrouselComponent extends Vue {
     const tmpImgsToCopy = this.selectedImagesForReal;
     tmpImgsToCopy.push(this.activeImage);
     tmpImgsToCopy.sort();
-    this.imagesToCopy = tmpImgsToCopy.map((index) => this.images[index].id);
-    console.log(this.imagesToCopy);
+    this.imagesToCopy = tmpImgsToCopy.map((index) => this.images[index].id as string);
   }
 
   public async onPaste() {
-    await asyncForEach(this.imagesToCopy, (imgref, index) => this.addImageToShot({
+    await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImageToShot({
       shotId: this.activeShot,
       imageIndex: this.activeImage + 1 + index,
       image: imgref,
@@ -365,14 +366,14 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async onReverse() {
-    await asyncForEach(_.reverse(this.imagesToCopy), (imgref, index) => this.addImageToShot({
+    await asyncForEach(_.reverse(this.imagesToCopy), (imgref: string) => this.addImageToShot({
       shotId: this.activeShot,
       imageIndex: this.activeImage,
       image: imgref,
     }));
   }
 }
-async function asyncForEach(array, callback) {
+async function asyncForEach(array: any[], callback: any) {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
   }
