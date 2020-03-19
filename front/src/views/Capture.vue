@@ -151,8 +151,8 @@ import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorC
 import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
-import Project from './Project.vue';
 import { ImageCacheService } from '@/api/imageCache.service';
+import Project from './Project.vue';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');

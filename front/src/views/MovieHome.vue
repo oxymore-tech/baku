@@ -79,9 +79,9 @@ import {Quality} from "@/api/baku.service";
 import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Movie } from '@/api/movie.service';
-import Project from './Project.vue';
 import { Spinner } from '@/api/spinner.class';
 import { Quality } from '@/api/uploadedImage.class';
+import Project from './Project.vue';
 
 const ProjectNS = namespace('project');
 

@@ -3,7 +3,7 @@
   <div class="boxContainer">
     <div class="settings-header">
       <i class="icon-cog baku-button" />
-      <h4>Réglages</h4>
+      <h4>Caméra</h4>
     </div>
 
     <b-field>
