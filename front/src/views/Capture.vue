@@ -74,7 +74,8 @@
             </div>
             <div class="toolbar-button toolbar-button-big">
               <i
-                class="icon-camera baku-button"
+                class="icon-recording baku-button"
+                :class="{ blinking: activeCapture}"
                 style="color:#e66359;"
                 @click="setActiveCapture()"
               />
@@ -566,6 +567,59 @@ export default class Capture extends Project {
 
   .toolbar-button-big {
     font-size: 32px;
+  }
+}
+
+.blinking {
+  -webkit-animation: 2s blink ease infinite;
+  -moz-animation: 2s blink ease infinite;
+  -ms-animation: 2s blink ease infinite;
+  -o-animation: 2s blink ease infinite;
+  animation: 2s blink ease infinite;
+}
+
+@keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
   }
 }
 </style>

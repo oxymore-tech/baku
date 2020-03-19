@@ -111,92 +111,95 @@
 .icon-reapeat:before {
   content: "\e918";
 }
-.icon-reverse:before {
+.icon-recording:before {
   content: "\e919";
 }
-.icon-set_begin:before {
+.icon-reverse:before {
   content: "\e91a";
 }
-.icon-set_end:before {
+.icon-set_begin:before {
   content: "\e91b";
 }
-.icon-signal:before {
+.icon-set_end:before {
   content: "\e91c";
 }
-.icon-step-backward:before {
+.icon-signal:before {
   content: "\e91d";
 }
-.icon-step-forward:before {
+.icon-step-backward:before {
   content: "\e91e";
 }
-.icon-stop:before {
+.icon-step-forward:before {
   content: "\e91f";
 }
-.icon-sync-alt:before {
+.icon-stop:before {
   content: "\e920";
 }
-.icon-trash-alt:before {
+.icon-sync-alt:before {
   content: "\e921";
 }
-.icon-user-bird .path1:before {
+.icon-trash-alt:before {
   content: "\e922";
+}
+.icon-user-bird .path1:before {
+  content: "\e923";
   color: rgb(0, 0, 0);
 }
 .icon-user-bird .path2:before {
-  content: "\e923";
+  content: "\e924";
   margin-left: -1em;
   color: rgb(243, 243, 243);
 }
 .icon-user-bird .path3:before {
-  content: "\e924";
+  content: "\e925";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-user-circle:before {
-  content: "\e925";
+  content: "\e926";
 }
 .icon-user-dragon .path1:before {
-  content: "\e926";
+  content: "\e927";
   color: rgb(0, 0, 0);
 }
 .icon-user-dragon .path2:before {
-  content: "\e927";
+  content: "\e928";
   margin-left: -1em;
   color: rgb(255, 255, 255);
 }
 .icon-user-dragon .path3:before {
-  content: "\e928";
+  content: "\e929";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-user-horse .path1:before {
-  content: "\e929";
+  content: "\e92a";
   color: rgb(0, 0, 0);
 }
 .icon-user-horse .path2:before {
-  content: "\e92a";
+  content: "\e92b";
   margin-left: -1em;
   color: rgb(255, 255, 255);
 }
 .icon-user-horse .path3:before {
-  content: "\e92b";
+  content: "\e92c";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-user-kiwi .path1:before {
-  content: "\e92c";
+  content: "\e92d";
   color: rgb(0, 0, 0);
 }
 .icon-user-kiwi .path2:before {
-  content: "\e92d";
+  content: "\e92e";
   margin-left: -1em;
   color: rgb(255, 255, 255);
 }
 .icon-user-kiwi .path3:before {
-  content: "\e92e";
+  content: "\e92f";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-webcam:before {
-  content: "\e92f";
+  content: "\e930";
 }
