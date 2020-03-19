@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'baku';
-  src:  url('fonts/baku.eot?ie6orm');
-  src:  url('fonts/baku.eot?ie6orm#iefix') format('embedded-opentype'),
-    url('fonts/baku.ttf?ie6orm') format('truetype'),
-    url('fonts/baku.woff?ie6orm') format('woff'),
-    url('fonts/baku.svg?ie6orm#baku') format('svg');
+  src:  url('fonts/baku.eot?z7czo3');
+  src:  url('fonts/baku.eot?z7czo3#iefix') format('embedded-opentype'),
+    url('fonts/baku.ttf?z7czo3') format('truetype'),
+    url('fonts/baku.woff?z7czo3') format('woff'),
+    url('fonts/baku.svg?z7czo3#baku') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -58,59 +58,59 @@
 .icon-edit:before {
   content: "\e90a";
 }
-.icon-enregistrement:before {
+.icon-forward:before {
   content: "\e90b";
 }
-.icon-forward:before {
+.icon-grid:before {
   content: "\e90c";
 }
-.icon-grid:before {
+.icon-info:before {
   content: "\e90d";
 }
-.icon-info:before {
+.icon-movie:before {
   content: "\e90e";
 }
-.icon-movie:before {
-  content: "\e90f";
-}
 .icon-oignon .path1:before {
-  content: "\e910";
+  content: "\e90f";
   color: rgb(0, 0, 0);
   opacity: 0.25;
 }
 .icon-oignon .path2:before {
-  content: "\e911";
+  content: "\e910";
   margin-left: -1em;
   color: rgb(0, 0, 0);
   opacity: 0.5;
 }
 .icon-oignon .path3:before {
-  content: "\e912";
+  content: "\e911";
   margin-left: -1em;
   color: rgb(0, 0, 0);
   opacity: 0.75;
 }
 .icon-oignon .path4:before {
-  content: "\e913";
+  content: "\e912";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-paste:before {
-  content: "\e914";
+  content: "\e913";
 }
 .icon-pause:before {
-  content: "\e915";
+  content: "\e914";
 }
 .icon-play:before {
-  content: "\e916";
+  content: "\e915";
 }
 .icon-play_loop:before {
-  content: "\e917";
+  content: "\e916";
 }
 .icon-plus:before {
-  content: "\e918";
+  content: "\e917";
 }
 .icon-reapeat:before {
+  content: "\e918";
+}
+.icon-recording:before {
   content: "\e919";
 }
 .icon-reverse:before {
