@@ -255,7 +255,7 @@ export default class ReadingSliderComponent extends Vue {
   }
 
   public setFrame(value: number) {
-    (this.$refs.buttonSelected as ReadingSliderComponent).setFrame(value);
+    (this.$refs.buttonSelected as ReadingSliderThumbComponent).setFrame(value);
   }
 
   emitValue(type: string) {

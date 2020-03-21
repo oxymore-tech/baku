@@ -399,7 +399,8 @@ export default class Capture extends Project {
       message: msg,
       position: 'is-bottom',
       type: 'is-success'
-    })
+    });
+    setTimeout(() => this.onActiveFrameChange(this.tmpActiveFrame));
   }
 
   @Watch('getActiveShotImgCount')
