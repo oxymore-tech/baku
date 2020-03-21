@@ -6,7 +6,11 @@
       @click="capture()"
       :class="{ capturing: isCapturing, hidden: !peerConnected }"
     >
-      <img alt="camera" class="captureIcon" src="@/assets/camera-solid-orange.svg" />
+      <img
+        alt="camera"
+        class="captureIcon"
+        src="@/assets/camera-solid-orange.svg"
+      />
     </div>
   </div>
 </template>
@@ -47,7 +51,7 @@ import {
 } from 'vue-property-decorator';
 import { State, namespace } from 'vuex-class';
 import { Device } from '@/api/device.class';
-import { KeyCodes } from '../../api/movie.service';
+import { KeyCodes } from '@/api/movie.service';
 
 const CaptureNS = namespace('capture');
 
@@ -137,6 +141,7 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   private setChannelEvents(channel: RTCDataChannel) {
+    // eslint-disable-next-line no-param-reassign
     channel.onmessage = (event) => {
       // TODO: Try to understand why you need TWO json parse
       const data = JSON.parse(JSON.parse(event.data));

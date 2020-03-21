@@ -15,7 +15,7 @@ export const captureStore = {
     activeDevice: null,
     activeCapture: false,
     scaleX: 1,
-    scaleY: 1
+    scaleY: 1,
   },
   mutations: {
     attachMediaStream(state: CaptureState, stream: MediaStream) {
@@ -36,11 +36,11 @@ export const captureStore = {
       state.activeDevice = device;
     },
     toggleScaleX(state: CaptureState) {
-      state.scaleX = state.scaleX * -1;
+      state.scaleX *= -1;
     },
     toggleScaleY(state: CaptureState) {
-      state.scaleY = state.scaleY * -1;
-    }
+      state.scaleY *= -1;
+    },
   },
   actions: {
     selectDevice(context: { commit: any, state: CaptureState }, device: Device | null) {
@@ -60,7 +60,7 @@ export const captureStore = {
 
     toggleScaleY(context: { commit: any, state: CaptureState }) {
       context.commit('toggleScaleY');
-    }
+    },
   },
   getters: {
   },

@@ -156,7 +156,9 @@ export default class ReadingSliderComponent extends Vue {
   public _isSlider = true; // Used by Thumb and Tick
 
   public valueLeft = 0;
+
   public valueRight = 0;
+
   public valueSelected = 0;
 
   created() {
@@ -193,7 +195,7 @@ export default class ReadingSliderComponent extends Vue {
   }
 
   get sliderSize() {
-    return (<any>this.$refs.slider).clientWidth;
+    return (this.$refs.slider as any).clientWidth;
   }
 
   setValues(newValue: ReadingSliderValue) {
@@ -226,7 +228,7 @@ export default class ReadingSliderComponent extends Vue {
 
   onSliderClick(event: any) {
     if (this.disabled || this.isTrackClickDisabled) return;
-    const sliderOffsetLeft = (<any>this.$refs.slider).getBoundingClientRect().left;
+    const sliderOffsetLeft = (this.$refs.slider as any).getBoundingClientRect().left;
     const percent = ((event.clientX - sliderOffsetLeft) / this.sliderSize) * 100;
     const targetValue = Math.round(this.min + (percent * (this.max - this.min)) / 100);
     const diffFirst = Math.abs(targetValue - this.valueSelected);

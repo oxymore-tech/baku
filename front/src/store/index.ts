@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { captureStore } from './capture';
 import { ProjectStore } from '@/store/project';
+import { captureStore } from './capture';
 import { WebrtcStore } from './webrtc';
 import { UserStore } from './user';
 

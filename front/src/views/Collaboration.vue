@@ -3,7 +3,11 @@
     <div class="history">
       <h4 class="title">Historique des actions :</h4>
       <ul>
-        <li v-for="(event, index) in history" :key="`action_${index}`" class="action">
+        <li
+          v-for="(event, index) in history"
+          :key="`action_${index}`"
+          class="action"
+        >
           {{user(event) +" "}}
           <span class="action-highlight">{{action(event)}}</span>
           <span class="action-date">{{" " + date(event)}}</span>
@@ -84,18 +88,18 @@ export default class History extends Vue {
   font-size: 18px;
   font-weight: lighter;
   color: #455054;
-  border-bottom: 1px solid #F2F2F2;
+  border-bottom: 1px solid #f2f2f2;
   margin: 5px;
 }
 
 .action-highlight {
-  color: #27A2BB;
+  color: #27a2bb;
   font-weight: bold;
 }
 
 .action-date {
   font-weight: lighter;
   font-size: 14px;
-  color:#7F7F7F;
+  color: #7f7f7f;
 }
 </style>

@@ -147,6 +147,7 @@ class ImageCacheServiceImpl {
   }
 
   private isCached(imageId: string, quality: Quality): boolean {
+    // eslint-disable-next-line no-prototype-builtins
     return this.cachedImages[quality].hasOwnProperty(imageId);
   }
 }

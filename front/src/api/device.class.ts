@@ -22,10 +22,18 @@ export class Device {
     return this.id === 'smartphone';
   }
 
-  public capture(videoElementTag: string, scales: Scales, projectId: string, onCaptured: (id: string, original: Blob, b64: string) => void, onUploaded: (id: string) => void, onError: (e: any) => void, onFinally?: () => {}): void {
+  public capture(
+    videoElementTag: string,
+    scales: Scales,
+    projectId: string,
+    onCaptured: (id: string, original: Blob, b64: string) => void,
+    onUploaded: (id: string) => void,
+    onError: (e: any) => void,
+    onFinally?: () => {},
+  ): void {
     try {
       const video = document.getElementById(videoElementTag) as HTMLVideoElement;
-      const [blob, b64] = Device.captureOriginal(video,  scales);
+      const [blob, b64] = Device.captureOriginal(video, scales);
       const id = `${uuid.v4()}.jpg`;
       onCaptured(id, blob, b64);
       this.bakuService.upload(projectId, blob, id)

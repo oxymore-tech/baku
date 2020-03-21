@@ -31,15 +31,14 @@ chromium -ignore-certificate-errors&
 # Contribution
 
 ### Front development
-Add the following line in your docker-compose.yml -> services -> proxy -> volumes
+Build & Run :
 ```
-- "./front/dist:/front_files/"
+./start-dev.sh
 ```
-Build:
+Lint:
 ```
 cd front
-yarn
-yarn build --watch --no-clean
+yarn lint
 ```
 
 ### Back development

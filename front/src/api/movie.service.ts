@@ -3,7 +3,7 @@ import { BakuAction, BakuEvent, BakuService } from '@/api/baku.service';
 import { ImageRef, UploadedImage } from './uploadedImage.class';
 
 export enum KeyCodes {
-  BACKSPACE= 8,
+  BACKSPACE = 8,
   TAB = 9,
   ENTER = 13,
   SHIFT = 16,
@@ -92,11 +92,11 @@ export class MovieService {
           break;
         }
         case BakuAction.MOVIE_REMOVE_IMAGE: {
-          const { shotId, imageIndex} = event.value as { shotId: string, imageIndex: number};
+          const { shotId, imageIndex } = event.value as { shotId: string, imageIndex: number };
           updateShot(shotId, (shot: Shot) => {
-            shot.images.splice(imageIndex, 1)
+            shot.images.splice(imageIndex, 1);
             return shot;
-          })
+          });
           break;
         }
         case BakuAction.CHANGE_FPS: {
@@ -186,7 +186,7 @@ export class MovieService {
   public removeImage(projectId: string, shotId: string, imgIndex: number, username: string): [BakuEvent, Promise<void>] {
     const event = {
       action: BakuAction.MOVIE_REMOVE_IMAGE,
-      value: { shotId, imageIndex: imgIndex, },
+      value: { shotId, imageIndex: imgIndex },
       user: username,
       timestamp: new Date(),
     };
