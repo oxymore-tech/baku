@@ -7,7 +7,7 @@
     </div>
 
     <b-field>
-      <i class="icon-webcam"/>
+      <i class="icon-webcam" />
       <b-select
         @input="onCaptureDeviceChange()"
         placeholder="Sélectionner une caméra"
@@ -15,19 +15,35 @@
         v-model="selectedDeviceId"
         size="is-small"
       >
-        <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
+        <option
+          v-for="device in devices"
+          :key="device.id"
+          :value="device.id"
+        >{{device.label}}</option>
       </b-select>
     </b-field>
 
     <div @click="toggleScaleY()">
-      <i class="icon-check_box baku-button mirror-checkboxes" v-if="scaleY < 0"/>
-      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else/>
+      <i
+        class="icon-check_box baku-button mirror-checkboxes"
+        v-if="scaleY < 0"
+      />
+      <i
+        class="icon-check_box_outline_blank baku-button mirror-checkboxes"
+        v-else
+      />
       Miroir horizontal
     </div>
 
     <div @click="toggleScaleX()">
-      <i class="icon-check_box baku-button mirror-checkboxes"  v-if="scaleX < 0"/>
-      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else/>
+      <i
+        class="icon-check_box baku-button mirror-checkboxes"
+        v-if="scaleX < 0"
+      />
+      <i
+        class="icon-check_box_outline_blank baku-button mirror-checkboxes"
+        v-else
+      />
       Miroir vertical
     </div>
   </div>
@@ -138,7 +154,7 @@ export default class CaptureToolboxComponent extends Vue {
   i {
     font-size: 20px;
     color: #707070;
-    margin: 3px 5px 3px 0px
+    margin: 3px 5px 3px 0px;
   }
 }
 

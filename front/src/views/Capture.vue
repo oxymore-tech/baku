@@ -391,6 +391,17 @@ export default class Capture extends Project {
     }
   }
 
+  @Watch('activeCapture')
+  public async onActiveCaptureChange(activeCapture: boolean) {
+    const msg = activeCapture ? 'Vous entrez en mode Capture' : 'Vous sortez du mode Capture';
+    this.$buefy.toast.open({
+      duration: 2000,
+      message: msg,
+      position: 'is-bottom',
+      type: 'is-success'
+    })
+  }
+
   @Watch('getActiveShotImgCount')
   public async onActiveShotImgCountChange(nb: number) {
     if (nb) {
