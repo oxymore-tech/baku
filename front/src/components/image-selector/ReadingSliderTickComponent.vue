@@ -23,21 +23,21 @@ export default {
     },
   },
   computed: {
-    position () {
+    position() {
       const pos = ((this.value - this.$parent.min)
         / (this.$parent.max - this.$parent.min)) * 100;
       return (pos >= 0 && pos <= 100) ? pos : 0;
     },
-    hidden () {
+    hidden() {
       return this.value === this.$parent.min || this.value === this.$parent.max;
     },
   },
   methods: {
-    getTickStyle (position) {
+    getTickStyle(position) {
       return { left: `${position}%` };
     },
   },
-  created () {
+  created() {
     // eslint-disable-next-line no-underscore-dangle
     if (!this.$parent.$data._isSlider) {
       this.$destroy();

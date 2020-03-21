@@ -20,7 +20,7 @@ module.exports = {
     'no-unused-vars': 'off',
     // 'quotes': ["error", "double"],
     '@typescript-eslint/no-unused-vars': ['error', {
-      argsIgnorePattern: '^_'
+      argsIgnorePattern: '^_',
     }],
   },
   parserOptions: {

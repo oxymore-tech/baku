@@ -10,7 +10,7 @@
       <i class="icon-webcam"/>
       <b-select
         @input="onCaptureDeviceChange()"
-        placeholder="Select a Camera"
+        placeholder="Sélectionner une caméra"
         :loading="!devices.length"
         v-model="selectedDeviceId"
         size="is-small"

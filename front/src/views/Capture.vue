@@ -18,7 +18,12 @@
               muted
               playsinline
             />
-            <img id="previewImg" ref="previewImg" src="@/assets/baku-balls-spinner.svg" v-else />
+            <img
+              id="previewImg"
+              ref="previewImg"
+              src="@/assets/baku-balls-spinner.svg"
+              v-else
+            />
             <img
               v-if="getActiveShot && getActiveShot.images[activeFrame] && activeCapture"
               alt="ghostImg"
@@ -45,13 +50,24 @@
               <span class="clock-small">:</span>
               <span ref="seconds">{{ nbSecs(this.activeFrame) }}</span>
               <span class="clock-small">:</span>
-              <span ref="frames" class="clock-small">{{ frameNb(this.activeFrame) }}</span>
+              <span
+                ref="frames"
+                class="clock-small"
+              >{{ frameNb(this.activeFrame) }}</span>
             </div>
             <div class="toolbar-button">
-              <i class="icon-step-backward baku-button" style="color:#455054;" @click="moveHome()" />
+              <i
+                class="icon-step-backward baku-button"
+                style="color:#455054;"
+                @click="moveHome()"
+              />
             </div>
             <div class="toolbar-button">
-              <i class="icon-backward baku-button" style="color:#455054;" @click="moveEnd()" />
+              <i
+                class="icon-backward baku-button"
+                style="color:#455054;"
+                @click="moveEnd()"
+              />
             </div>
             <div class="toolbar-button toolbar-button-big">
               <i
@@ -61,7 +77,11 @@
                 v-if="isPlaying !== 'animation'"
                 v-bind:disabled="true"
               />
-              <i class="icon-pause baku-button" @click="pauseAnimation()" v-else />
+              <i
+                class="icon-pause baku-button"
+                @click="pauseAnimation()"
+                v-else
+              />
             </div>
             <div class="toolbar-button toolbar-button-big">
               <i
@@ -70,7 +90,11 @@
                 @click="playSelection()"
                 v-if="isPlaying !== 'selection'"
               />
-              <i class="icon-pause baku-button" @click="pauseAnimation()" v-else />
+              <i
+                class="icon-pause baku-button"
+                @click="pauseAnimation()"
+                v-else
+              />
             </div>
             <div class="toolbar-button toolbar-button-big">
               <i
@@ -153,6 +177,7 @@ import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewCo
 import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
 import { ImageCacheService } from '@/api/imageCache.service';
 import Project from './Project.vue';
+import { Device } from '../api/device.class';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -186,7 +211,7 @@ export default class Capture extends Project {
   public getActiveShotImgCount!: Shot;
 
   @ProjectNS.Action('removeImageFromShot')
-  protected removeImageFromShot!: ({}) => Promise<void>;
+  protected removeImageFromShot!: ({ }) => Promise<void>;
 
   public activeFrame: number = 0;
 
@@ -194,6 +219,9 @@ export default class Capture extends Project {
 
   @CaptureNS.State
   public activeCapture!: boolean;
+
+  @CaptureNS.State
+  public activeDevice!: Device;
 
   @CaptureNS.State
   public stream!: MediaStream | null;
@@ -421,8 +449,20 @@ export default class Capture extends Project {
   }
 
   public setActiveCapture() {
-    this.activeFrame = this.getActiveShot.images.length - 1;
-    this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
+    if (this.activeDevice) {
+      this.activeFrame = this.getActiveShot.images.length - 1;
+      this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
+    } else {
+      this.$buefy.dialog.alert({
+        message: 'Veuillez sélectionner une caméra',
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa',
+        ariaRole: 'alertdialog',
+        ariaModal: true
+      })
+    }
   }
 
   public nbHours(frame: number): string {
@@ -579,7 +619,8 @@ export default class Capture extends Project {
 }
 
 @keyframes blink {
-  from, to {
+  from,
+  to {
     opacity: 0;
   }
   50% {
@@ -588,7 +629,8 @@ export default class Capture extends Project {
 }
 
 @-moz-keyframes blink {
-  from, to {
+  from,
+  to {
     opacity: 0;
   }
   50% {
@@ -597,7 +639,8 @@ export default class Capture extends Project {
 }
 
 @-webkit-keyframes blink {
-  from, to {
+  from,
+  to {
     opacity: 0;
   }
   50% {
@@ -606,7 +649,8 @@ export default class Capture extends Project {
 }
 
 @-ms-keyframes blink {
-  from, to {
+  from,
+  to {
     opacity: 0;
   }
   50% {
@@ -615,7 +659,8 @@ export default class Capture extends Project {
 }
 
 @-o-keyframes blink {
-  from, to {
+  from,
+  to {
     opacity: 0;
   }
   50% {

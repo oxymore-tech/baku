@@ -54,7 +54,7 @@ export default {
     },
     customFormatter: Function,
   },
-  data () {
+  data() {
     return {
       isFocused: false,
       dragging: false,
@@ -65,41 +65,41 @@ export default {
     };
   },
   computed: {
-    disabled () {
+    disabled() {
       return this.$parent.disabled;
     },
-    max () {
+    max() {
       return this.$parent.max;
     },
-    min () {
+    min() {
       return this.$parent.min;
     },
-    step () {
+    step() {
       return this.$parent.step;
     },
-    precision () {
+    precision() {
       return this.$parent.precision;
     },
-    currentPosition () {
+    currentPosition() {
       return `${((this.value - this.min) / (this.max - this.min)) * 100}%`;
     },
-    wrapperStyle () {
+    wrapperStyle() {
       return { left: this.currentPosition };
     },
-    tooltipLabel () {
+    tooltipLabel() {
       return typeof this.customFormatter !== 'undefined'
         ? this.customFormatter(this.value)
         : this.value.toString();
     },
   },
   methods: {
-    onFocus () {
+    onFocus() {
       this.isFocused = true;
     },
-    onBlur () {
+    onBlur() {
       this.isFocused = false;
     },
-    onButtonDown (event) {
+    onButtonDown(event) {
       if (this.disabled) return;
       event.preventDefault();
       this.onDragStart(event);
@@ -111,33 +111,33 @@ export default {
         document.addEventListener('contextmenu', this.onDragEnd);
       }
     },
-    onLeftKeyDown () {
+    onLeftKeyDown() {
       if (this.disabled || this.value === this.min) return;
       this.newPosition = parseFloat(this.currentPosition)
         - (this.step / (this.max - this.min)) * 100;
       this.setPosition(this.newPosition);
       this.$parent.emitValue('change');
     },
-    onRightKeyDown () {
+    onRightKeyDown() {
       if (this.disabled || this.value === this.max) return;
       this.newPosition = parseFloat(this.currentPosition)
         + (this.step / (this.max - this.min)) * 100;
       this.setPosition(this.newPosition);
       this.$parent.emitValue('change');
     },
-    onHomeKeyDown () {
+    onHomeKeyDown() {
       if (this.disabled || this.value === this.min) return;
       this.newPosition = 0;
       this.setPosition(this.newPosition);
       this.$parent.emitValue('change');
     },
-    onEndKeyDown () {
+    onEndKeyDown() {
       if (this.disabled || this.value === this.max) return;
       this.newPosition = 100;
       this.setPosition(this.newPosition);
       this.$parent.emitValue('change');
     },
-    onDragStart (event) {
+    onDragStart(event) {
       this.dragging = true;
       this.$emit('dragstart');
       if (event.type === 'touchstart') {
@@ -148,7 +148,7 @@ export default {
       this.startPosition = parseFloat(this.currentPosition);
       this.newPosition = this.startPosition;
     },
-    onDragging (event) {
+    onDragging(event) {
       if (this.dragging) {
         if (event.type === 'touchmove') {
           // eslint-disable-next-line no-param-reassign
@@ -159,7 +159,7 @@ export default {
         this.setPosition(this.newPosition);
       }
     },
-    onDragEnd () {
+    onDragEnd() {
       this.dragging = false;
       this.$emit('dragend');
       if (this.value !== this.oldValue) {
@@ -174,10 +174,10 @@ export default {
         document.removeEventListener('contextmenu', this.onDragEnd);
       }
     },
-    getCurrentPosition (value) {
+    getCurrentPosition(value) {
       return `${((value - this.min) / (this.max - this.min)) * 100}%`;
     },
-    setPosition (percent) {
+    setPosition(percent) {
       if (percent === null || Number.isNaN(percent)) return;
       let absPercent = (percent < 0) ? 0 : percent;
       absPercent = (percent > 100) ? 100 : absPercent;
@@ -190,7 +190,7 @@ export default {
         this.oldValue = value;
       }
     },
-    setFrame (frame) {
+    setFrame(frame) {
       this.$refs.sliderWrapper.style.left = this.getCurrentPosition(frame);
     },
   },
