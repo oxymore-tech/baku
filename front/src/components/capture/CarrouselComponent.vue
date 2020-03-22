@@ -5,11 +5,11 @@
         <i class="icon-copy baku-button" />
         <span>Copier</span>
       </div>
-      <div class="toolbar-button" @click="onPaste()" :class="{disabled: activeCapture}">
+      <div class="toolbar-button" @click="onPaste()" :class="{disabled: activeCapture || !imagesToCopy.length}">
         <i class="icon-paste baku-button" />
         <span>Coller</span>
       </div>
-      <div class="toolbar-button" @click="onReverse()" :class="{disabled: activeCapture}">
+      <div class="toolbar-button" @click="onReverse()" :class="{disabled: activeCapture || !imagesToCopy.length}">
         <i class="icon-reverse baku-button" />
         <span>Inverser</span>
       </div>
@@ -91,8 +91,8 @@
       <template v-if="computedNextImages">
         <img
           style="display:none"
-          v-for="image in computedNextImages"
-          :key="image.id"
+          v-for="(image, index) in computedNextImages"
+          :key="image.id + index"
           :src="ImageCacheService.getThumbnail(image.id)"
         />
       </template>
