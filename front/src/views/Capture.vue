@@ -206,9 +206,6 @@ export default class Capture extends Project {
   @ProjectNS.Getter
   public getActiveShotImgCount!: Shot;
 
-  @ProjectNS.Action('removeImageFromShot')
-  protected removeImageFromShot!: ({ }) => Promise<void>;
-
   // Carroussel Frame
   public currentCarrousselFrame: number = 0;
 
@@ -308,7 +305,7 @@ export default class Capture extends Project {
       this.initPlay('selection');
       this.animationBoundaries = {
         left: this.selectedImages.left,
-        right: this.selectedImages.right +1,
+        right: this.selectedImages.right + 1,
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
@@ -366,7 +363,7 @@ export default class Capture extends Project {
       duration: 2000,
       message: msg,
       position: 'is-bottom',
-      type: 'is-success'
+      type: 'is-success',
     });
     setTimeout(() => this.onActiveFrameChange(this.currentDisplayedFrame));
   }
@@ -440,8 +437,8 @@ export default class Capture extends Project {
         icon: 'times-circle',
         iconPack: 'fa',
         ariaRole: 'alertdialog',
-        ariaModal: true
-      })
+        ariaModal: true,
+      });
     }
   }
 
