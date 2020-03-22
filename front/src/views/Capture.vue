@@ -17,7 +17,6 @@
               autoplay
               muted
               playsinline
-              controls
             />
             <img
               id="previewImg"
@@ -25,12 +24,12 @@
               src="@/assets/baku-balls-spinner.svg"
               :class="{hidden: activeCapture}"
             />
-            <!--<img
+            <img
               v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame] && activeCapture"
               alt="ghostImg"
               id="ghostImg"
               :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame].id)"
-            /> -->
+            />
           </div>
           <ImagesSelectorComponent
             v-if="getActiveShot"
@@ -645,12 +644,6 @@ export default class Capture extends Project {
     opacity: 1;
   }
 }
-
-video::-webkit-media-controls-play-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-current-time-display
- {
-  display: none;
-}
-
 .hidden {
   display: none;
 }
