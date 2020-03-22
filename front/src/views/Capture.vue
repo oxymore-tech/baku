@@ -52,18 +52,10 @@
               <span class="clock-small">{{ frameNb(this.currentDisplayedFrame) }}</span>
             </div>
             <div class="toolbar-button">
-              <i
-                class="icon-step-backward baku-button"
-                style="color:#455054;"
-                @click="moveHome()"
-              />
+              <i class="icon-step-backward baku-button" style="color:#455054;" @click="moveHome()" />
             </div>
             <div class="toolbar-button">
-              <i
-                class="icon-backward baku-button"
-                style="color:#455054;"
-                @click="moveEnd()"
-              />
+              <i class="icon-backward baku-button" style="color:#455054;" @click="moveEnd()" />
             </div>
             <div class="toolbar-button toolbar-button-big" :class="{disabled : activeCapture}">
               <i
@@ -73,11 +65,7 @@
                 v-if="isPlaying !== 'animation'"
                 v-bind:disabled="true"
               />
-              <i
-                class="icon-pause baku-button"
-                @click="pauseAnimation()"
-                v-else
-              />
+              <i class="icon-pause baku-button" @click="pauseAnimation()" v-else />
             </div>
             <div class="toolbar-button toolbar-button-big" :class="{disabled : activeCapture}">
               <i
@@ -86,11 +74,7 @@
                 @click="playSelection()"
                 v-if="isPlaying !== 'selection'"
               />
-              <i
-                class="icon-pause baku-button"
-                @click="pauseAnimation()"
-                v-else
-              />
+              <i class="icon-pause baku-button" @click="pauseAnimation()" v-else />
             </div>
             <div class="toolbar-button toolbar-button-big">
               <i
@@ -159,33 +143,42 @@
         :selectedImages="selectedImages"
       />
     </template>
+     <video
+      v-if="activeCapture"
+      id="videoCaptureFullscreen"
+      ref="videoCaptureFullscreen"
+      :style="{transform: 'scale(' + scaleX +', ' +scaleY +')'}"
+      autoplay
+      muted
+      playsinline
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Watch } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
-import store from '@/store';
-import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
-import { ImageCacheService } from '@/api/imageCache.service';
-import Project from './Project.vue';
-import { Device } from '../api/device.class';
+import { Component, Watch } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
+import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
+import ImagesSelectorComponent from "@/components/image-selector/ImagesSelectorComponent.vue";
+import store from "@/store";
+import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
+import { Movie, ReadingSliderBoundaries, Shot } from "@/api/movie.service";
+import { ImageCacheService } from "@/api/imageCache.service";
+import Project from "./Project.vue";
+import { Device } from "../api/device.class";
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+const CaptureNS = namespace("capture");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
     ImagesSelectorComponent,
-    StoryboardPreviewComponent,
+    StoryboardPreviewComponent
   },
-  store,
+  store
 })
 export default class Capture extends Project {
   @ProjectNS.State
@@ -237,12 +230,12 @@ export default class Capture extends Project {
 
   public animationBoundaries!: ReadingSliderBoundaries;
 
-  public isPlaying: 'animation' | 'selection' | null = null;
+  public isPlaying: "animation" | "selection" | null = null;
 
   private previewImg!: HTMLImageElement;
 
   public mounted() {
-    this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
+    this.$store.dispatch("project/changeActiveShot", this.$route.params.shotId);
     this.previewImg = this.$refs.previewImg as HTMLImageElement;
   }
 
@@ -251,7 +244,8 @@ export default class Capture extends Project {
       this.animationStart = timestamp;
     }
     if (!this.animationStartFrame) {
-      this.animationStartFrame = this.currentCarrousselFrame - this.animationBoundaries.left;
+      this.animationStartFrame =
+        this.currentCarrousselFrame - this.animationBoundaries.left;
     }
 
     const nextFrame = this.getNextFrame(timestamp);
@@ -269,12 +263,13 @@ export default class Capture extends Project {
 
   private getNextFrame(timestamp: number) {
     const imageFromStart = Math.floor(
-      (timestamp - this.animationStart) * (this.movie.fps / 1000),
+      (timestamp - this.animationStart) * (this.movie.fps / 1000)
     );
-    const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
+    const animationLength =
+      this.animationBoundaries.right - this.animationBoundaries.left;
     return (
-      this.animationBoundaries.left
-      + ((this.animationStartFrame + imageFromStart) % animationLength)
+      this.animationBoundaries.left +
+      ((this.animationStartFrame + imageFromStart) % animationLength)
     );
   }
 
@@ -288,10 +283,10 @@ export default class Capture extends Project {
 
   public playAnimation() {
     if (!this.isPlaying) {
-      this.initPlay('animation');
+      this.initPlay("animation");
       this.animationBoundaries = {
         left: 0,
-        right: this.getActiveShot.images.length,
+        right: this.getActiveShot.images.length
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
@@ -299,19 +294,22 @@ export default class Capture extends Project {
 
   public playSelection() {
     if (!this.isPlaying) {
-      if (this.currentCarrousselFrame < this.selectedImages.left || this.currentCarrousselFrame > this.selectedImages.right) {
+      if (
+        this.currentCarrousselFrame < this.selectedImages.left ||
+        this.currentCarrousselFrame > this.selectedImages.right
+      ) {
         this.currentCarrousselFrame = this.selectedImages.left;
       }
-      this.initPlay('selection');
+      this.initPlay("selection");
       this.animationBoundaries = {
         left: this.selectedImages.left,
-        right: this.selectedImages.right + 1,
+        right: this.selectedImages.right + 1
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
   }
 
-  public initPlay(type: 'animation' | 'selection') {
+  public initPlay(type: "animation" | "selection") {
     this.isPlaying = type;
   }
 
@@ -332,43 +330,46 @@ export default class Capture extends Project {
         ImageCacheService.startPreloading(
           this.getActiveShot.images,
           this.currentCarrousselFrame,
-          this.onImagePreloaded,
+          this.onImagePreloaded
         );
       }
     }
   }
 
-  @Watch('stream')
+  @Watch("stream")
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
     if (newValue) {
       (this.$refs.videoCapture as HTMLVideoElement).srcObject = newValue;
+      // (this.$refs.videoCaptureFullscreen as HTMLVideoElement).srcObject = newValue;
     }
   }
 
-  @Watch('getActiveShot')
+  @Watch("getActiveShot")
   public async onActiveShotChange(shot: Shot) {
     if (shot) {
       ImageCacheService.startPreloading(
         shot.images,
         this.currentCarrousselFrame,
-        this.onImagePreloaded,
+        this.onImagePreloaded
       );
     }
   }
 
-  @Watch('activeCapture')
+  @Watch("activeCapture")
   public async onActiveCaptureChange(activeCapture: boolean) {
-    const msg = activeCapture ? 'Vous entrez en mode Capture' : 'Vous sortez du mode Capture';
+    const msg = activeCapture
+      ? "Vous entrez en mode Capture"
+      : "Vous sortez du mode Capture";
     this.$buefy.toast.open({
       duration: 2000,
       message: msg,
-      position: 'is-bottom',
-      type: 'is-success',
+      position: "is-bottom",
+      type: "is-success"
     });
     setTimeout(() => this.onActiveFrameChange(this.currentDisplayedFrame));
   }
 
-  @Watch('getActiveShotImgCount')
+  @Watch("getActiveShotImgCount")
   public async onActiveShotImgCountChange(nb: number) {
     if (nb) {
       this.displayFrame(this.currentCarrousselFrame);
@@ -380,7 +381,7 @@ export default class Capture extends Project {
       this.displayFrame(this.currentDisplayedFrame);
     }
     (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(
-      imageId,
+      imageId
     );
     (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
   }
@@ -428,38 +429,38 @@ export default class Capture extends Project {
   public setActiveCapture() {
     if (this.activeDevice) {
       this.currentCarrousselFrame = this.getActiveShot.images.length - 1;
-      this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
+      this.$store.dispatch("capture/setActiveCapture", !this.activeCapture);
     } else {
       this.$buefy.dialog.alert({
-        message: 'Veuillez sélectionner une caméra',
-        type: 'is-danger',
+        message: "Veuillez sélectionner une caméra",
+        type: "is-danger",
         hasIcon: true,
-        icon: 'times-circle',
-        iconPack: 'fa',
-        ariaRole: 'alertdialog',
-        ariaModal: true,
+        icon: "times-circle",
+        iconPack: "fa",
+        ariaRole: "alertdialog",
+        ariaModal: true
       });
     }
   }
 
   public nbHours(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
-      % 60}`.padStart(2, '0');
+    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60) %
+      60}`.padStart(2, "0");
   }
 
   public nbMins(frame: number): string {
     return `${Math.floor((frame + 1) / this.movie.fps / 60) % 60}`.padStart(
       2,
-      '0',
+      "0"
     );
   }
 
   public nbSecs(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps) % 60}`.padStart(2, '0');
+    return `${Math.floor((frame + 1) / this.movie.fps) % 60}`.padStart(2, "0");
   }
 
   public frameNb(frame: number): string {
-    return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
+    return `${(frame + 1) % this.movie.fps}`.padStart(2, "0");
   }
 }
 </script>
@@ -526,6 +527,17 @@ export default class Capture extends Project {
   max-height: 720px;
   height: 100%;
   max-width: 100%;
+}
+
+#videoCaptureFullscreen {
+  display: none;
+  position: absolute;
+  top:0;
+  left:0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  background: white;
 }
 
 @media screen and (max-width: 1699px) {
