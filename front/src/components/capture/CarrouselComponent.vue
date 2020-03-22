@@ -285,7 +285,6 @@ export default class CarrouselComponent extends Vue {
       'captureButtonComponent',
     );
     if (container && captureButtonComponent) {
-      console.log(captureButtonComponent.offsetWidth);
       container.scrollTo(captureButtonComponent.offsetLeft, 0);
     }
   }
@@ -295,10 +294,10 @@ export default class CarrouselComponent extends Vue {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
       imagesToDelete.sort();
-      await asyncForEach(imagesToDelete, (imgId: number, index: number) => this.removeImageFromShot({
+      Promise.all(imagesToDelete.map((imgId: number, index: number) => this.removeImageFromShot({
         shotId: this.activeShot,
         imageIndex: imgId - index,
-      }));
+      })));
       this.selectedImagesForReal = [];
     }
   }
@@ -391,30 +390,25 @@ export default class CarrouselComponent extends Vue {
 
   public async onPaste() {
     if (!this.activeCapture) {
-      await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImageToShot({
+      Promise.all(this.imagesToCopy.map((imgref: string, index: number) => this.addImageToShot({
         shotId: this.activeShot,
         imageIndex: this.activeImage + 1 + index,
         image: imgref,
-      }));
+      })));
     }
   }
 
   public async onReverse() {
     if (!this.activeCapture) {
-      await asyncForEach(
-        _.reverse(this.imagesToCopy),
-        (imgref: string, index: number) => this.addImageToShot({
+      const reverted = [...this.imagesToCopy].reverse();
+      Promise.all(reverted.map((imgref: string, index: number) => {
+        return this.addImageToShot({
           shotId: this.activeShot,
           imageIndex: this.activeImage + 1 + index,
           image: imgref,
-        }),
-      );
+        })}
+      ));
     }
-  }
-}
-async function asyncForEach(array: any[], callback: any) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
   }
 }
 </script>
