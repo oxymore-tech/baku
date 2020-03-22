@@ -43,16 +43,13 @@
           />
           <div class="mediaControls">
             <div class="clock">
-              <span ref="hours">{{ nbHours(this.currentCarrousselFrame) }}</span>
+              <span>{{nbHours(this.currentDisplayedFrame)}}</span>
               <span class="clock-small">:</span>
-              <span ref="minutes">{{ nbMins(this.currentCarrousselFrame) }}</span>
+              <span>{{ nbMins(this.currentDisplayedFrame) }}</span>
               <span class="clock-small">:</span>
-              <span ref="seconds">{{ nbSecs(this.currentCarrousselFrame) }}</span>
+              <span>{{ nbSecs(this.currentDisplayedFrame) }}</span>
               <span class="clock-small">:</span>
-              <span
-                ref="frames"
-                class="clock-small"
-              >{{ frameNb(this.currentCarrousselFrame) }}</span>
+              <span class="clock-small">{{ frameNb(this.currentDisplayedFrame) }}</span>
             </div>
             <div class="toolbar-button">
               <i
@@ -247,21 +244,9 @@ export default class Capture extends Project {
 
   private previewImg!: HTMLImageElement;
 
-  private hours!: HTMLElement;
-
-  private minutes!: HTMLElement;
-
-  private seconds!: HTMLElement;
-
-  private frames!: HTMLElement;
-
   public mounted() {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
     this.previewImg = this.$refs.previewImg as HTMLImageElement;
-    this.hours = this.$refs.hours as HTMLElement;
-    this.minutes = this.$refs.minutes as HTMLElement;
-    this.seconds = this.$refs.seconds as HTMLElement;
-    this.frames = this.$refs.frames as HTMLElement;
   }
 
   public animate(timestamp: number) {
@@ -283,18 +268,6 @@ export default class Capture extends Project {
   private displayFrame(frame: number) {
     const imageId = this.getActiveShot.images[frame].id;
     this.previewImg!.src = ImageCacheService.getImage(imageId);
-    if (this.hours) {
-      this.hours.textContent = this.nbHours(frame);
-    }
-    if (this.minutes) {
-      this.minutes.textContent = this.nbMins(frame);
-    }
-    if (this.seconds) {
-      this.seconds.textContent = this.nbSecs(frame);
-    }
-    if (this.frames) {
-      this.frames.textContent = this.frameNb(frame);
-    }
   }
 
   private getNextFrame(timestamp: number) {
