@@ -302,16 +302,13 @@ export default class Capture extends Project {
 
   public playSelection() {
     if (!this.isPlaying) {
-      if (
-        this.currentCarrousselFrame < this.selectedImages.left
-        || this.currentCarrousselFrame > this.selectedImages.right
-      ) {
+      if (this.currentCarrousselFrame < this.selectedImages.left || this.currentCarrousselFrame > this.selectedImages.right) {
         this.currentCarrousselFrame = this.selectedImages.left;
       }
       this.initPlay('selection');
       this.animationBoundaries = {
         left: this.selectedImages.left,
-        right: this.selectedImages.right,
+        right: this.selectedImages.right +1,
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
