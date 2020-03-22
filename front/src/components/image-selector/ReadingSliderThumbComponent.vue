@@ -1,8 +1,6 @@
 <template>
   <div
     class="b-slider-thumb-wrapper"
-    id="slider-wrapper"
-    ref="sliderWrapper"
     :class="{ 'is-dragging': dragging }"
     :style="wrapperStyle"
   >
@@ -174,9 +172,6 @@ export default {
         document.removeEventListener('contextmenu', this.onDragEnd);
       }
     },
-    getCurrentPosition(value) {
-      return `${((value - this.min) / (this.max - this.min)) * 100}%`;
-    },
     setPosition(percent) {
       if (percent === null || Number.isNaN(percent)) return;
       let absPercent = (percent < 0) ? 0 : percent;
@@ -189,9 +184,6 @@ export default {
       if (!this.dragging && value !== this.oldValue) {
         this.oldValue = value;
       }
-    },
-    setFrame(frame) {
-      this.$refs.sliderWrapper.style.left = this.getCurrentPosition(frame);
     },
   },
 };

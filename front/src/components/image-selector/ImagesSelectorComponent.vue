@@ -1,7 +1,6 @@
 <template>
   <div>
     <ReadingSliderComponent
-      ref="slider"
       :value="sliderValue"
       @input="onSliderValueChange"
       :min="0"
@@ -64,10 +63,6 @@ export default class ImagesSelectorComponent extends Vue {
     if (this.value.left !== newSliderValue.left || this.value.right !== newSliderValue.right) {
       this.$emit('input', { left: newSliderValue.left, right: newSliderValue.right });
     }
-  }
-
-  public setFrame(value: number) {
-    (this.$refs.slider as ReadingSliderComponent).setFrame(value);
   }
 }
 </script>

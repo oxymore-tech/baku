@@ -32,12 +32,11 @@
             />
           </div>
           <ImagesSelectorComponent
-            ref="imageSelector"
             v-if="getActiveShot"
             :projectId="id"
             :activeShot="getActiveShot.id"
             :images="getActiveShot.images"
-            :activeImage="currentCarrousselFrame"
+            :activeImage="currentDisplayedFrame"
             @activeImageChange="onActiveFrameChange"
             :activeCapture="activeCapture"
             v-model="selectedImages"
@@ -295,9 +294,6 @@ export default class Capture extends Project {
     }
     if (this.frames) {
       this.frames.textContent = this.frameNb(frame);
-    }
-    if (this.$refs.imageSelector as ImagesSelectorComponent) {
-      (this.$refs.imageSelector as ImagesSelectorComponent)!.setFrame(frame);
     }
   }
 
