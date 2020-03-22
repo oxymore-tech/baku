@@ -25,10 +25,10 @@
               v-else
             />
             <img
-              v-if="getActiveShot && getActiveShot.images[activeFrame] && activeCapture"
+              v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame] && activeCapture"
               alt="ghostImg"
               id="ghostImg"
-              :src="ImageCacheService.getImage(getActiveShot.images[activeFrame].id)"
+              :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame].id)"
             />
           </div>
           <ImagesSelectorComponent
@@ -37,23 +37,23 @@
             :projectId="id"
             :activeShot="getActiveShot.id"
             :images="getActiveShot.images"
-            :activeImage="activeFrame"
+            :activeImage="currentCarrousselFrame"
             @activeImageChange="onActiveFrameChange"
             :activeCapture="activeCapture"
             v-model="selectedImages"
           />
           <div class="mediaControls">
             <div class="clock">
-              <span ref="hours">{{ nbHours(this.activeFrame) }}</span>
+              <span ref="hours">{{ nbHours(this.currentCarrousselFrame) }}</span>
               <span class="clock-small">:</span>
-              <span ref="minutes">{{ nbMins(this.activeFrame) }}</span>
+              <span ref="minutes">{{ nbMins(this.currentCarrousselFrame) }}</span>
               <span class="clock-small">:</span>
-              <span ref="seconds">{{ nbSecs(this.activeFrame) }}</span>
+              <span ref="seconds">{{ nbSecs(this.currentCarrousselFrame) }}</span>
               <span class="clock-small">:</span>
               <span
                 ref="frames"
                 class="clock-small"
-              >{{ frameNb(this.activeFrame) }}</span>
+              >{{ frameNb(this.currentCarrousselFrame) }}</span>
             </div>
             <div class="toolbar-button">
               <i
@@ -109,7 +109,7 @@
               <i
                 class="icon-forward baku-button"
                 style="color:#455054;"
-                @click="onActiveFrameChange(activeFrame + 1)"
+                @click="onActiveFrameChange(currentCarrousselFrame + 1)"
               />
             </div>
             <div class="toolbar-button">
@@ -152,7 +152,7 @@
         :projectId="id"
         :activeShot="getActiveShot.id"
         :images="getActiveShot.images"
-        :activeImage="activeFrame"
+        :activeImage="currentCarrousselFrame"
         @activeImageChange="onActiveFrameChange"
         @moveFrame="moveFrame"
         @moveHome="moveHome"
@@ -213,9 +213,11 @@ export default class Capture extends Project {
   @ProjectNS.Action('removeImageFromShot')
   protected removeImageFromShot!: ({ }) => Promise<void>;
 
-  public activeFrame: number = 0;
+  // Carroussel Frame
+  public currentCarrousselFrame: number = 0;
 
-  public tmpActiveFrame: number = 0;
+  // Displayed Frame (previewImg + imageSelector)
+  public currentDisplayedFrame: number = 0;
 
   @CaptureNS.State
   public activeCapture!: boolean;
@@ -268,12 +270,12 @@ export default class Capture extends Project {
       this.animationStart = timestamp;
     }
     if (!this.animationStartFrame) {
-      this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
+      this.animationStartFrame = this.currentCarrousselFrame - this.animationBoundaries.left;
     }
 
     const nextFrame = this.getNextFrame(timestamp);
-    if (nextFrame !== this.tmpActiveFrame) {
-      this.tmpActiveFrame = nextFrame;
+    if (nextFrame !== this.currentDisplayedFrame) {
+      this.currentDisplayedFrame = nextFrame;
       this.displayFrame(nextFrame);
     }
     this.animationFrame = requestAnimationFrame(this.animate);
@@ -332,10 +334,10 @@ export default class Capture extends Project {
   public playSelection() {
     if (!this.isPlaying) {
       if (
-        this.activeFrame < this.selectedImages.left
-        || this.activeFrame > this.selectedImages.right
+        this.currentCarrousselFrame < this.selectedImages.left
+        || this.currentCarrousselFrame > this.selectedImages.right
       ) {
-        this.activeFrame = this.selectedImages.left;
+        this.currentCarrousselFrame = this.selectedImages.left;
       }
       this.initPlay('selection');
       this.animationBoundaries = {
@@ -362,11 +364,11 @@ export default class Capture extends Project {
 
   private syncActiveFrame() {
     if (!this.isPlaying) {
-      if (this.activeFrame !== this.tmpActiveFrame) {
-        this.activeFrame = this.tmpActiveFrame;
+      if (this.currentCarrousselFrame !== this.currentDisplayedFrame) {
+        this.currentCarrousselFrame = this.currentDisplayedFrame;
         ImageCacheService.startPreloading(
           this.getActiveShot.images,
-          this.activeFrame,
+          this.currentCarrousselFrame,
           this.onImagePreloaded,
         );
       }
@@ -385,7 +387,7 @@ export default class Capture extends Project {
     if (shot) {
       ImageCacheService.startPreloading(
         shot.images,
-        this.activeFrame,
+        this.currentCarrousselFrame,
         this.onImagePreloaded,
       );
     }
@@ -400,19 +402,19 @@ export default class Capture extends Project {
       position: 'is-bottom',
       type: 'is-success'
     });
-    setTimeout(() => this.onActiveFrameChange(this.tmpActiveFrame));
+    setTimeout(() => this.onActiveFrameChange(this.currentDisplayedFrame));
   }
 
   @Watch('getActiveShotImgCount')
   public async onActiveShotImgCountChange(nb: number) {
     if (nb) {
-      this.displayFrame(this.activeFrame);
+      this.displayFrame(this.currentCarrousselFrame);
     }
   }
 
   private onImagePreloaded(imageId: string): void {
-    if (this.getActiveShot.images[this.tmpActiveFrame].id === imageId) {
-      this.displayFrame(this.tmpActiveFrame);
+    if (this.getActiveShot.images[this.currentDisplayedFrame].id === imageId) {
+      this.displayFrame(this.currentDisplayedFrame);
     }
     (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(
       imageId,
@@ -421,7 +423,7 @@ export default class Capture extends Project {
   }
 
   public moveFrame(moveOffset: number) {
-    const computedFrame = this.tmpActiveFrame + moveOffset;
+    const computedFrame = this.currentDisplayedFrame + moveOffset;
     this.moveFrameAbsolute(computedFrame);
   }
 
@@ -437,14 +439,14 @@ export default class Capture extends Project {
     if (!this.isPlaying) {
       const minFrame = this.activeCapture ? -1 : 0;
       if (frame < minFrame) {
-        this.tmpActiveFrame = minFrame;
+        this.currentDisplayedFrame = minFrame;
       } else if (frame > this.getActiveShot.images.length - 1) {
-        this.tmpActiveFrame = this.getActiveShot.images.length - 1;
+        this.currentDisplayedFrame = this.getActiveShot.images.length - 1;
       }
-      this.tmpActiveFrame = frame;
-      this.displayFrame(this.tmpActiveFrame);
+      this.currentDisplayedFrame = frame;
+      this.displayFrame(this.currentDisplayedFrame);
     }
-    return this.tmpActiveFrame;
+    return this.currentDisplayedFrame;
   }
 
   public onActiveFrameChange(newActiveFrame: number) {
@@ -462,7 +464,7 @@ export default class Capture extends Project {
 
   public setActiveCapture() {
     if (this.activeDevice) {
-      this.activeFrame = this.getActiveShot.images.length - 1;
+      this.currentCarrousselFrame = this.getActiveShot.images.length - 1;
       this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
     } else {
       this.$buefy.dialog.alert({
