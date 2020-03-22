@@ -17,6 +17,7 @@
               autoplay
               muted
               playsinline
+              controls
             />
             <img
               id="previewImg"
@@ -24,12 +25,12 @@
               src="@/assets/baku-balls-spinner.svg"
               v-else
             />
-            <img
+            <!--<img
               v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame] && activeCapture"
               alt="ghostImg"
               id="ghostImg"
               :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame].id)"
-            />
+            /> -->
           </div>
           <ImagesSelectorComponent
             v-if="getActiveShot"
@@ -65,7 +66,7 @@
                 @click="moveEnd()"
               />
             </div>
-            <div class="toolbar-button toolbar-button-big">
+            <div class="toolbar-button toolbar-button-big" :class="{disabled : activeCapture}">
               <i
                 class="icon-play"
                 v-bind:class="isPlaying !== 'selection' ? 'baku-button primary-button' : 'disabled-button'"
@@ -79,7 +80,7 @@
                 v-else
               />
             </div>
-            <div class="toolbar-button toolbar-button-big">
+            <div class="toolbar-button toolbar-button-big" :class="{disabled : activeCapture}">
               <i
                 class="icon-play_loop"
                 v-bind:class="isPlaying !== 'animation' ? 'baku-button primary-button' : 'disabled-button'"
@@ -643,5 +644,10 @@ export default class Capture extends Project {
   50% {
     opacity: 1;
   }
+}
+
+video::-webkit-media-controls-play-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-current-time-display
+ {
+  display: none;
 }
 </style>
