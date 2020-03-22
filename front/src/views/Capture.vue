@@ -23,7 +23,7 @@
               id="previewImg"
               ref="previewImg"
               src="@/assets/baku-balls-spinner.svg"
-              v-else
+              :class="{hidden: activeCapture}"
             />
             <!--<img
               v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame] && activeCapture"
@@ -648,6 +648,10 @@ export default class Capture extends Project {
 
 video::-webkit-media-controls-play-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-current-time-display
  {
+  display: none;
+}
+
+.hidden {
   display: none;
 }
 </style>
