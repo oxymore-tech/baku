@@ -29,7 +29,7 @@
 
 <style lang="scss" >
 @import "styles/style.scss";
-@import "styles/font.css";
+@import "assets/style.css";
 
 .left-nav {
   display: flex;
