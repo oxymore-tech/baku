@@ -9,8 +9,19 @@
       <b>{{ socketId }}</b>
     </p>
 
-    <qrcode-stream @decode="onDecode" @init="onInit" v-if="activeqrreader" />
-    <video id="localVideo" autoplay playsinline v-else width="1920" height="1080"></video>
+    <qrcode-stream
+      @decode="onDecode"
+      @init="onInit"
+      v-if="activeqrreader"
+    />
+    <video
+      id="localVideo"
+      autoplay
+      playsinline
+      v-else
+      width="1920"
+      height="1080"
+    ></video>
   </div>
 </template>
 
@@ -19,12 +30,12 @@
 import { QrcodeStream } from 'vue-qrcode-reader';
 import { Component, Vue } from 'vue-property-decorator';
 import { Device } from '@/api/device.class';
-import { WSSocket } from './socket.class';
+import { WSSocket } from '@/api/socket.class';
 
 @Component({
   components: { QrcodeStream },
 })
-export default class QrReader extends Vue {
+export default class QrReaderComponent extends Vue {
   public socketId: string | undefined = '';
 
   public socket = new WSSocket();

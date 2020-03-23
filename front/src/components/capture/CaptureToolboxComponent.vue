@@ -53,7 +53,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import SmartphoneSynchroPopup from '@/components/SmartphoneSynchroPopup.vue';
+import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneSynchroPopupComponent.vue';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { Device } from '@/api/device.class';
 
@@ -61,7 +61,7 @@ const CaptureNS = namespace('capture');
 
 @Component({
   components: {
-    SmartphoneSynchroPopup,
+    SmartphoneSynchroPopupComponent,
     CaptureButtonComponent,
   },
 })
@@ -112,7 +112,7 @@ export default class CaptureToolboxComponent extends Vue {
     ) {
       this.$buefy.modal.open({
         parent: this,
-        component: SmartphoneSynchroPopup,
+        component: SmartphoneSynchroPopupComponent,
         hasModalCard: true,
       });
     }

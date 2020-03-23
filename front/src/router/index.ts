@@ -6,6 +6,7 @@ import Capture from '../views/Capture.vue';
 import MovieHome from '../views/MovieHome.vue';
 import Shots from '../views/Shots.vue';
 import Todo from '../views/Todo.vue';
+import SmartphoneView from '../views/SmartphoneView.vue';
 
 Vue.use(VueRouter);
 
@@ -19,7 +20,7 @@ const routes = [
   {
     name: 'smartphone',
     path: '/smartphone',
-    component: () => import('../views/SmartphoneView.vue'),
+    component: SmartphoneView,
   },
   {
     name: 'movieHome',

@@ -51,13 +51,13 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class';
-import { WSSocket } from './socket.class';
+import { WSSocket } from '@/api/socket.class';
 import { SocketStatus } from '@/store/store.types';
 
 type Status = 'CONNECTED' | 'ERROR' | 'WAITING';
 
 @Component
-export default class QrGenerator extends Vue {
+export default class SmartphoneSynchroPopupComponent extends Vue {
   public qrvalue = '';
 
   public status: Status = 'WAITING';

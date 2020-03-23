@@ -14,5 +14,5 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component
-export default class Smartphone extends Vue { }
+export default class SmartphoneLocalVideoComponent extends Vue { }
 </script>
