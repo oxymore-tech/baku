@@ -76,7 +76,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
       loadEvent(context, BakuAction.MOVIE_UPDATE_SYNOPSIS, synopsis);
     },
 
-    async createShot(context, _name = 'Default shot'): Promise<string> {
+    async createShot(context): Promise<string> {
       const shotId = uuid.v4();
       loadEvent(context, BakuAction.SHOT_ADD, { shotId });
       return shotId;

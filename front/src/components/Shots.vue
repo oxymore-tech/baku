@@ -32,7 +32,7 @@
           </a>
           <b-dropdown-item aria-role="listitem">(TODO) Exporter en séquence d'image</b-dropdown-item>
           <b-dropdown-item aria-role="listitem">(TODO) Exporter en fichier vidéo</b-dropdown-item>
-          <b-dropdown-item aria-role="listitem">(TODO) Supprimer le plan</b-dropdown-item>
+          <b-dropdown-item aria-role="listitem" @click="removeShot(shot.id)">Supprimer le plan</b-dropdown-item>
         </b-dropdown>
       </div>
       <div
@@ -194,6 +194,10 @@ export default class Shots extends Vue {
   public async activateShot(shotId: string) {
     await this.$store.dispatch('project/changeActiveShot', shotId);
     this.$emit('close');
+  }
+
+  public async removeShot(shotId: string) {
+    await this.$store.dispatch('project/removeShot', shotId);
   }
 
   public close() {

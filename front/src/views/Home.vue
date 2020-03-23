@@ -23,13 +23,19 @@
 
     <div class="bottomPanel panel">
       <div class="title">
-        <span> Quelques films de démonstration </span>
+        <span> Quelques films de démonstration</span>
       </div>
       <div class="movieGallery">
         <div class="movieCard" @click="open('premier_montage')">
           <img src="@/assets/PremFois.jpg" />
           <div class="cardFooter">
             <p>Mes premières fois</p>
+          </div>
+        </div>
+        <div class="movieCard" @click="open('491df190-9c30-4e86-8e0a-c3bb06763379')">
+          <img src="@/assets/PremFois.jpg" />
+          <div class="cardFooter">
+            <p>Custom</p>
           </div>
         </div>
         <div class="movieCard" @click="open('premier')">

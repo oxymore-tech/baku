@@ -91,8 +91,6 @@ export class MovieService {
           break;
         }
         case BakuAction.SHOT_REMOVE: {
-          console.log('SHOT_REMOVE', event.value.shotId);
-          console.log('shots', shots);
           const shotIndex = shots.findIndex((shot) => shot.id === event.value.shotId);
           shots.splice(shotIndex, 1);
           break;
