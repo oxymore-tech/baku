@@ -1,14 +1,6 @@
-export type SocketStatus = 'opened' | 'closed' | 'error';
+import { BakuModule, SocketStatus, WebrtcState } from './store.types';
 
-interface WebrtcState {
-  peerConnection: undefined | RTCPeerConnection,
-  dataChannel: null | RTCDataChannel,
-  stream: undefined | MediaStream,
-  isConnected: boolean,
-  socketStatus: SocketStatus,
-}
-
-export const WebrtcStore = {
+export const WebrtcStore: BakuModule<WebrtcState> = {
   namespaced: true,
   state: {
     peerConnection: undefined as undefined | RTCPeerConnection,
@@ -18,28 +10,28 @@ export const WebrtcStore = {
     socketStatus: 'closed' as SocketStatus,
   },
   mutations: {
-    setupConnection(state: WebrtcState) {
+    setupConnection(state) {
       console.log('SETUP CONNECTION');
       state.isConnected = true;
     },
-    setPeerConnection(state: WebrtcState, peerConnection: RTCPeerConnection) {
+    setPeerConnection(state, peerConnection: RTCPeerConnection) {
       console.log('setPeerConnection', peerConnection);
       state.peerConnection = peerConnection;
     },
-    setDataChannel(state: WebrtcState, dataChannel: RTCDataChannel) {
+    setDataChannel(state, dataChannel: RTCDataChannel) {
       console.log('setDataChannel', dataChannel);
       state.dataChannel = dataChannel;
     },
-    setMediaStream(state: WebrtcState, stream: MediaStream) {
+    setMediaStream(state, stream: MediaStream) {
       console.log('setMediaStream', stream);
       state.stream = stream;
     },
-    setSocketStatus(state: WebrtcState, status: SocketStatus) {
+    setSocketStatus(state, status: SocketStatus) {
       console.log('setSocketStatus', status);
       state.socketStatus = status;
     },
   },
-  actions: { },
-  getters: { },
+  actions: {},
+  getters: {},
   modules: {},
 };

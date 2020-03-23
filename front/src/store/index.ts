@@ -1,24 +1,24 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { StoreOptions } from 'vuex';
 
 import { ProjectStore } from '@/store/project';
-import { captureStore } from './capture';
-import { WebrtcStore } from './webrtc';
-import { UserStore } from './user';
+import { CaptureStore } from '@/store/capture';
+import { WebrtcStore } from '@/store/webrtc';
+import { UserStore } from '@/store/user';
+import { BakuRootState } from './store.types';
+
 
 Vue.use(Vuex);
-
-export default new Vuex.Store({
-  // state: {
-  // },
+const bakuStore: StoreOptions<BakuRootState> = {
   mutations: {
   },
   actions: {},
   modules: {
     webrtc: WebrtcStore,
     project: ProjectStore,
-    capture: captureStore,
+    capture: CaptureStore,
     user: UserStore,
   },
   strict: process.env.NODE_ENV !== 'production',
-});
+};
+export default new Vuex.Store(bakuStore);

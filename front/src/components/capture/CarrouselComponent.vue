@@ -401,13 +401,11 @@ export default class CarrouselComponent extends Vue {
   public async onReverse() {
     if (!this.activeCapture) {
       const reverted = [...this.imagesToCopy].reverse();
-      Promise.all(reverted.map((imgref: string, index: number) => {
-        return this.addImageToShot({
-          shotId: this.activeShot,
-          imageIndex: this.activeImage + 1 + index,
-          image: imgref,
-        })}
-      ));
+      Promise.all(reverted.map((imgref: string, index: number) => this.addImageToShot({
+        shotId: this.activeShot,
+        imageIndex: this.activeImage + 1 + index,
+        image: imgref,
+      })));
     }
   }
 }

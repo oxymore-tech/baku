@@ -1,22 +1,29 @@
-import { Module } from 'vuex';
+import { BakuAction, BakuEvent, BakuService } from '@/api/baku.service';
 import { Movie, MovieService, Shot } from '@/api/movie.service';
-import { BakuEvent } from '@/api/baku.service';
+import { BakuActionContext, BakuModule, ProjectState } from '@/store/store.types';
+import uuid from 'uuid';
 
-const movieService = new MovieService();
-
-interface ProjectState {
-  id: string;
-  activeShotId: string | null;
-  history: BakuEvent[];
-  pendingActions: number;
-}
+const bakuService = new BakuService();
 
 interface ProjectGetters {
   movie: Movie;
   getActiveShot: Shot;
 }
 
-export const ProjectStore: Module<ProjectState, any> = {
+const loadEvent = (context: BakuActionContext<ProjectState>, action: BakuAction, value: any): void => {
+  const user = context.rootState.user.username;
+  const projectId = context.state.id;
+  const event = {
+    action, value, user, timestamp: new Date(),
+  };
+  const promise = bakuService.stack(projectId, event);
+  context.commit('addToLocalHistory', event);
+  context.commit('incAction', 1);
+  promise.catch(() => context.commit('removeFromLocalHistory', event))
+    .finally(() => context.commit('incAction', -1));
+};
+
+export const ProjectStore: BakuModule<ProjectState> = {
   namespaced: true,
   state: {
     id: '',
@@ -44,81 +51,51 @@ export const ProjectStore: Module<ProjectState, any> = {
     },
   },
   actions: {
-    async loadProject(context: any, projectId: string): Promise<void> {
-      const movieHistory = await movieService.getHistory(projectId);
+    async loadProject(context, projectId: string): Promise<void> {
+      const movieHistory = await bakuService.getHistory(projectId);
       await context.commit('setMovie', { projectId, movieHistory });
     },
-    async addImageToShot(context: any,
+    async addImageToShot(context,
       payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
-      const [event, promise] = movieService.insertImage(
-        context.state.id,
-        payload.shotId,
-        payload.imageIndex,
-        payload.image,
-        context.rootState.user.username,
-      );
-      context.commit('addToLocalHistory', event);
-      context.commit('incAction', 1);
-      promise.catch(() => context.commit('removeFromLocalHistory', event))
-        .finally(() => context.commit('incAction', -1));
+      loadEvent(context, BakuAction.MOVIE_INSERT_IMAGE, payload);
     },
-    async removeImageFromShot(context: any,
+    async removeImageFromShot(context,
       payload: { shotId: string, imageIndex: number }) {
-      const [event, promise] = movieService.removeImage(
-        context.state.id,
-        payload.shotId,
-        payload.imageIndex,
-        context.rootState.user.username,
-      );
-      context.commit('addToLocalHistory', event);
-      context.commit('incAction', 1);
-      promise.catch(() => context.commit('removeFromLocalHistory', event))
-        .finally(() => context.commit('incAction', -1));
+      loadEvent(context, BakuAction.MOVIE_REMOVE_IMAGE, payload);
     },
+
     changeActiveShot(context, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },
 
-    async updateTitle(context: any, title: string) {
-      const [event, promise] = await movieService.updateTitle(context.state.id, title, context.rootState.user.username);
-      context.commit('addToLocalHistory', event);
-      context.commit('incAction', 1);
-      promise.catch(() => context.commit('removeFromLocalHistory', event))
-        .finally(() => context.commit('incAction', -1));
+    async updateTitle(context, title: string) {
+      loadEvent(context, BakuAction.MOVIE_UPDATE_TITLE, title);
     },
 
-    async updateSynopsis(context: any, synopsis: string) {
-      const [event, promise] = await movieService.updateSynopsis(context.state.id, synopsis, context.rootState.user.username);
-      context.commit('addToLocalHistory', event);
-      context.commit('incAction', 1);
-      promise.catch(() => context.commit('removeFromLocalHistory', event))
-        .finally(() => context.commit('incAction', -1));
+    async updateSynopsis(context, synopsis: string) {
+      loadEvent(context, BakuAction.MOVIE_UPDATE_SYNOPSIS, synopsis);
     },
 
-    async createShot(context: any, _name = 'Default shot'): Promise<string> {
-      const [event, promise] = await movieService.addShot(context.state.id, context.rootState.user.username);
-      context.commit('addToLocalHistory', event);
-      context.commit('incAction', 1);
-      promise.catch(() => context.commit('removeFromLocalHistory', event))
-        .finally(() => context.commit('incAction', -1));
-      return event.value.shotId;
+    async createShot(context, _name = 'Default shot'): Promise<string> {
+      const shotId = uuid.v4();
+      loadEvent(context, BakuAction.SHOT_ADD, { shotId });
+      return shotId;
     },
 
-    async changeFps(context: any, fps: number): Promise<void> {
-      const [event, promise] = await movieService.changeFps(context.state.id, fps, context.rootState.user.username);
-      context.commit('addToLocalHistory', event);
-      context.commit('incAction', 1);
-      promise.catch(() => context.commit('removeFromLocalHistory', event))
-        .finally(() => context.commit('incAction', -1));
+    async removeShot(context, shotId: string) {
+      loadEvent(context, BakuAction.SHOT_REMOVE, { shotId });
+    },
+
+    async changeFps(context, fps: number): Promise<void> {
+      loadEvent(context, BakuAction.CHANGE_FPS, fps);
     },
   },
   getters: {
-    history: (state: ProjectState): BakuEvent[] => state.history,
-
-    movie: (state: ProjectState): Movie => MovieService.merge(state.id, state.history),
-    getActiveShot: (state: ProjectState, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
-    getActiveShotImgCount: (state: ProjectState, getters: ProjectGetters): number | undefined => (getters.getActiveShot ? getters.getActiveShot.images.length : 0),
-    synchronizing: (state: ProjectState): boolean => state.pendingActions !== 0,
+    history: (state): BakuEvent[] => state.history,
+    movie: (state): Movie => MovieService.merge(state.id, state.history),
+    getActiveShot: (state, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
+    getActiveShotImgCount: (state, getters: ProjectGetters): number | undefined => (getters.getActiveShot ? getters.getActiveShot.images.length : 0),
+    synchronizing: (state): boolean => state.pendingActions !== 0,
   },
   modules: {},
 };

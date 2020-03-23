@@ -1,3 +1,5 @@
+import { BakuModule, UserState } from './store.types';
+
 const yokaiList = [
   'Akuma', 'Asobibi', 'Bakebi', 'Bakeneko', 'Baku', 'Daki', 'Enkō', 'Fūbo', 'Genbu', 'Hakuba', 'Hinode',
   'Ikuchi', 'Jashin', 'Kappa', 'Kirin', 'Kitsune', 'Kodama', 'Kowai', 'Mononoke', 'Ninko', 'Ōgama', 'Ōkami',
@@ -19,7 +21,7 @@ const initializeUsername = () => {
   return generatedUsername;
 };
 
-export const UserStore = {
+export const UserStore: BakuModule<UserState> = {
   namespaced: true,
   state: {
     username: initializeUsername(),

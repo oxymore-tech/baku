@@ -45,6 +45,8 @@ export default class History extends Vue {
         return 'ajoute une photo';
       case BakuAction.SHOT_ADD:
         return 'ajoute un plan';
+      case BakuAction.SHOT_REMOVE:
+        return 'supprime un plan';
       case BakuAction.CHANGE_FPS:
         return `change les fps du film ${event.value}`;
       default:

@@ -52,7 +52,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class';
 import { WSSocket } from './socket.class';
-import { SocketStatus } from '../store/webrtc';
+import { SocketStatus } from '@/store/store.types';
 
 type Status = 'CONNECTED' | 'ERROR' | 'WAITING';
 

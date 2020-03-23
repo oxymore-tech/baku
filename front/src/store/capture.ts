@@ -1,14 +1,7 @@
 import { Device } from '@/api/device.class';
+import { BakuModule, CaptureState } from '@/store/store.types';
 
-interface CaptureState {
-  stream: MediaStream | null;
-  activeDevice: Device | null,
-  activeCapture: boolean;
-  scaleX: number;
-  scaleY: number;
-}
-
-export const captureStore = {
+export const CaptureStore: BakuModule<CaptureState> = {
   namespaced: true,
   state: {
     stream: null,
@@ -18,10 +11,10 @@ export const captureStore = {
     scaleY: 1,
   },
   mutations: {
-    attachMediaStream(state: CaptureState, stream: MediaStream) {
+    attachMediaStream(state, stream: MediaStream) {
       state.stream = stream;
     },
-    detachMediaStream(state: CaptureState) {
+    detachMediaStream(state) {
       if (state.stream) {
         state.stream.getTracks().forEach((track) => {
           track.stop();
@@ -29,36 +22,36 @@ export const captureStore = {
       }
       state.stream = null;
     },
-    setActiveCapture(state: CaptureState, activeCapture: boolean) {
+    setActiveCapture(state, activeCapture: boolean) {
       state.activeCapture = activeCapture;
     },
-    setDevice(state: CaptureState, device: Device | null) {
+    setDevice(state, device: Device | null) {
       state.activeDevice = device;
     },
-    toggleScaleX(state: CaptureState) {
+    toggleScaleX(state) {
       state.scaleX *= -1;
     },
-    toggleScaleY(state: CaptureState) {
+    toggleScaleY(state) {
       state.scaleY *= -1;
     },
   },
   actions: {
-    selectDevice(context: { commit: any, state: CaptureState }, device: Device | null) {
+    selectDevice(context, device: Device | null) {
       context.commit('setDevice', device);
     },
 
-    setActiveCapture(context: { commit: any, state: CaptureState }, activeCapture: boolean) {
+    setActiveCapture(context, activeCapture: boolean) {
       context.commit('setActiveCapture', activeCapture);
       if (!activeCapture) {
         context.commit('detachMediaStream');
       }
     },
 
-    toggleScaleX(context: { commit: any, state: CaptureState }) {
+    toggleScaleX(context) {
       context.commit('toggleScaleX');
     },
 
-    toggleScaleY(context: { commit: any, state: CaptureState }) {
+    toggleScaleY(context) {
       context.commit('toggleScaleY');
     },
   },
