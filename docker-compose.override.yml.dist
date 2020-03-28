@@ -4,6 +4,13 @@ services:
 
   app:
     ports:
-      # TODO: redirect all requests from 80 to 443
-      # - "80:443"
       - "443:443"
+    volumes:
+      - ./front/dist:/app/dist
+
+  front-watcher:
+    build: 
+      context: .
+      target: front-watcher
+    volumes:
+      - ./front/dist:/app/dist

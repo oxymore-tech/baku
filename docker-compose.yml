@@ -5,6 +5,6 @@ services:
   app:
     build: 
       context: .
-      target: prod
+      target: app
     volumes:
       - "./data:/app/data"
