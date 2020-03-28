@@ -2,15 +2,9 @@ version: '3.6'
 
 services:
 
-  proxy:
-    build: ./front/
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "./data:/data"
-
-  back:
-    build: ./back/
+  app:
+    build: 
+      context: .
+      target: prod
     volumes:
       - "./data:/app/data"

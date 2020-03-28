@@ -10,6 +10,12 @@ cp docker-compose.yml.dist docker-compose.yml
 docker-compose up -d
 ```
 
+### SSL
+TODO: make a clean process
+```
+openssl pkcs12 -export -out server.pkcs12 -in server.cert -inkey server.key -passout pass:toto
+```
+
 ### Computer connection
 - visit <https://localhost>
 - ignore certifiacte warnings

@@ -2,17 +2,8 @@ version: '3.6'
 
 services:
 
-  proxy:
-    build: ./front/
-    volumes:
-      - ./front/dist:/front_files
-#    environment:
-#      - BACK_URI=https://localhost:3030
-
-  watcher:
-    build: 
-      context: ./front/
-      target: watcher
-    volumes:
-      - ./front/src:/app/src
-      - ./front/dist:/app/dist
+  app:
+    ports:
+      # TODO: redirect all requests from 80 to 443
+      # - "80:443"
+      - "443:443"
