@@ -14,3 +14,4 @@ services:
       target: front-watcher
     volumes:
       - ./front/dist:/app/dist
+      - ./front/src:/app/src
