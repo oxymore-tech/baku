@@ -16,7 +16,6 @@ micronaut:
   ssl:
     port: 443
     enabled: true
-    buildSelfSigned: true
     keyStore:
       path: file:/app/ssl/server.pkcs12
       type: PKCS12
