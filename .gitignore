@@ -5,6 +5,8 @@ data
 node_modules
 /dist
 
+**.iml
+
 # local env files
 .env.local
 .env.*.local
@@ -26,4 +28,4 @@ yarn-error.log*
 # Files created by the app
 /back/upload_*
 
-deploy/traefik
+letsencrypt/

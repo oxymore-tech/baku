@@ -1,0 +1,26 @@
+micronaut:
+  server:
+    port: 80
+  application:
+    name: baku
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: "/**"
+        paths: "fb:dist"
+  executors:
+    io:
+      type: fixed
+      nThreads: 75
+  ssl:
+    port: 443
+    enabled: true
+    keyStore:
+      path: file:/app/ssl/server.pkcs12
+      type: PKCS12
+      password: GHsLvjmDiAYrpao9
+netty:
+  responses:
+    file:
+      cache-seconds: 604800
