@@ -14,8 +14,8 @@ import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import store from '@/store';
 import Shots from '@/components/Shots.vue';
-import { Movie, Shot } from '@/api/movie.service';
-import Project from './Project.vue';
+import { Movie } from '@/api/movie.service';
+import AbstractProjectView from './AbstractProjectView.vue';
 
 const ProjectNS = namespace('project');
 @Component({
@@ -24,7 +24,7 @@ const ProjectNS = namespace('project');
   },
   store,
 })
-export default class Capture extends Project {
+export default class CaptureView extends AbstractProjectView {
   @ProjectNS.State
   public id!: string;
 
@@ -33,9 +33,6 @@ export default class Capture extends Project {
 
   @ProjectNS.State
   public activeShotId!: string;
-
-  @ProjectNS.Getter
-  public getActiveShot!: Shot;
 
   public async openCapture() {
     await this.$router.push({

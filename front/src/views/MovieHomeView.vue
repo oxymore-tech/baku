@@ -81,12 +81,12 @@ import { namespace } from 'vuex-class';
 import { Movie } from '@/api/movie.service';
 import { Spinner } from '@/api/spinner.class';
 import { Quality } from '@/api/uploadedImage.class';
-import Project from './Project.vue';
+import AbstractProjectView from './AbstractProjectView.vue';
 
 const ProjectNS = namespace('project');
 
   @Component
-export default class Init extends Project {
+export default class MovieHomeView extends AbstractProjectView {
     @ProjectNS.State
     public id!: string;
 

@@ -41,9 +41,9 @@
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
-import Project from './Project.vue';
+import AbstractProjectView from './AbstractProjectView.vue';
 
 @Component
-export default class Todo extends Project {
+export default class TodoView extends AbstractProjectView {
 }
 </script>

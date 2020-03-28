@@ -173,7 +173,7 @@ import * as uuid from 'uuid';
 const ProjectNS = namespace('project');
 
 @Component
-export default class Init extends Vue {
+export default class HomeView extends Vue {
   @ProjectNS.Action('createShot')
   private createShotAction!: (name?: string) => Promise<string>;
 

@@ -7,7 +7,7 @@
         class="shotCard"
       >
         <a
-          class="activateShot"
+          class="activateShotLink"
           @click="activateShot(shot.id)"
         >
           <img
@@ -26,13 +26,14 @@
           position="is-bottom-left"
         >
           <a slot="trigger">
-            <b-icon
-              custom-class="icon-cog"
-            ></b-icon>
+            <b-icon custom-class="icon-cog"></b-icon>
           </a>
           <b-dropdown-item aria-role="listitem">(TODO) Exporter en séquence d'image</b-dropdown-item>
           <b-dropdown-item aria-role="listitem">(TODO) Exporter en fichier vidéo</b-dropdown-item>
-          <b-dropdown-item aria-role="listitem" @click="removeShot(shot.id)">Supprimer le plan</b-dropdown-item>
+          <b-dropdown-item
+            aria-role="listitem"
+            @click="removeShot(shot.id)"
+          >Supprimer le plan</b-dropdown-item>
         </b-dropdown>
       </div>
       <div
@@ -45,7 +46,7 @@
           width="48px"
           height="48px"
         />
-        <a class="activateShot">Créer un plan</a>
+        <a class="activateShotLink">Créer un plan</a>
       </div>
     </div>
   </div>
@@ -126,7 +127,7 @@
     color: #455054;
   }
 
-  .activateShot {
+  .activateShotLink {
     color: #fe676f;
     text-align: center;
   }

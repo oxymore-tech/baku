@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
-import Collaboration from '../views/Collaboration.vue';
-import Capture from '../views/Capture.vue';
-import MovieHome from '../views/MovieHome.vue';
-import Shots from '../views/Shots.vue';
-import Todo from '../views/Todo.vue';
+import HomeView from '../views/HomeView.vue';
+import CollaborationView from '../views/CollaborationView.vue';
+import CaptureView from '../views/CaptureView.vue';
+import MovieHomeView from '../views/MovieHomeView.vue';
+import ShotsView from '../views/ShotsView.vue';
+import TodoView from '../views/TodoView.vue';
 import SmartphoneView from '../views/SmartphoneView.vue';
 
 Vue.use(VueRouter);
@@ -14,7 +14,7 @@ const routes = [
   {
     name: 'home',
     path: '/',
-    component: Home,
+    component: HomeView,
   },
 
   {
@@ -25,37 +25,37 @@ const routes = [
   {
     name: 'movieHome',
     path: '/movies/:projectId',
-    component: MovieHome,
+    component: MovieHomeView,
   },
   {
     name: 'scenario',
     path: '/movies/:projectId/scenario',
-    component: Todo,
+    component: TodoView,
   },
   {
     name: 'storyboard',
     path: '/movies/:projectId/storyboard',
-    component: Todo,
+    component: TodoView,
   },
   {
     name: 'captureShots',
     path: '/movies/:projectId/capture/shots',
-    component: Shots,
+    component: ShotsView,
   },
   {
     name: 'captureShot',
     path: '/movies/:projectId/capture/shots/:shotId',
-    component: Capture,
+    component: CaptureView,
   },
   {
     name: 'movieEditing',
     path: '/movies/:projectId/movieEditing',
-    component: Todo,
+    component: TodoView,
   },
   {
     name: 'collaboration',
     path: '/movies/:projectId/collaboration',
-    component: Collaboration,
+    component: CollaborationView,
   },
 ];
 

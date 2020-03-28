@@ -187,7 +187,7 @@ import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
 import { ImageCacheService } from '@/api/imageCache.service';
-import Project from './Project.vue';
+import AbstractProjectView from './AbstractProjectView.vue';
 import { Device } from '../api/device.class';
 
 const CaptureNS = namespace('capture');
@@ -202,7 +202,7 @@ const ProjectNS = namespace('project');
   },
   store,
 })
-export default class Capture extends Project {
+export default class CaptureView extends AbstractProjectView {
   @ProjectNS.State
   public id!: string;
 
@@ -368,6 +368,7 @@ export default class Capture extends Project {
 
   @Watch('getActiveShot')
   public async onActiveShotChange(shot: Shot) {
+    console.log('[Capture] onActiveShotChange()');
     if (shot) {
       ImageCacheService.startPreloading(
         shot.images,

@@ -25,7 +25,7 @@ import { BakuAction, BakuEvent } from '@/api/baku.service';
 const ProjectNS = namespace('project');
 
 @Component
-export default class History extends Vue {
+export default class CollaborationView extends Vue {
   @ProjectNS.Getter
   public history!: BakuEvent[];
 
