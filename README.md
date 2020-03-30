@@ -32,6 +32,9 @@ docker-compose up -d --build
 #### To remove the CA Authority
 - In your Chrome settings (Settings > Manage certificates > Authorities), look for org-LaRuche and remove it
 
+#### WARNING
+- do NOT commit generated certifcates files !!!
+
 #### TODO
 - Voir pour commiter ou ignorer les fichiers de certification
 
