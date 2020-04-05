@@ -50,10 +50,11 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { State } from 'vuex-class';
+import { namespace } from 'vuex-class';
 import { WSSocket } from '@/api/socket.class';
 import { SocketStatus } from '@/store/store.types';
 
+const WebrtcNS = namespace('webrtc');
 type Status = 'CONNECTED' | 'ERROR' | 'WAITING';
 
 @Component
@@ -67,7 +68,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
     scale: 1,
   };
 
-  @State
+  @WebrtcNS.State
   private socketStatus!: SocketStatus;
 
   private socket!: WSSocket;

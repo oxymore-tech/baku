@@ -12,7 +12,7 @@ export class WSSocket {
 
   constructor() {
     try {
-      this.socket = new WebSocket(`wss://${window.location.hostname}/echo`);
+      this.socket = new WebSocket(`wss://${window.location.hostname}:${window.location.port}/echo`);
     } catch (e) {
       store.commit('webrtc/setSocketStatus', 'error');
     }
