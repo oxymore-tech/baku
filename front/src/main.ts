@@ -3,7 +3,6 @@ import Buefy from 'buefy';
 import VueQrcodeReader from 'vue-qrcode-reader';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
 import 'buefy/dist/buefy.css';
-import { ImageCacheService } from '@/api/imageCache.service';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -15,16 +14,6 @@ Vue.use(VueQrcodeReader);
 Vue.use(VueQrcode);
 
 Vue.component(VueQrcode.name, VueQrcode);
-
-Vue.mixin({
-  data() {
-    return {
-      get ImageCacheService() {
-        return ImageCacheService;
-      },
-    };
-  },
-});
 
 new Vue({
   router,

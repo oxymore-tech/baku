@@ -5,7 +5,11 @@
 <template>
   <div>
     <div class="toolbar">
-      <div class="toolbar-button" @click="onCopy()" :class="{disabled : activeCapture}">
+      <div
+        class="toolbar-button"
+        @click="onCopy()"
+        :class="{disabled : activeCapture}"
+      >
         <i class="icon-copy baku-button" />
         <span>Copier</span>
       </div>
@@ -25,7 +29,11 @@
         <i class="icon-reverse baku-button" />
         <span>Coller & Inverser</span>
       </div>
-      <div class="toolbar-button" @click="deleteFrame()" :class="{disabled: activeCapture}">
+      <div
+        class="toolbar-button"
+        @click="deleteFrame()"
+        :class="{disabled: activeCapture}"
+      >
         <i class="icon-trash-alt baku-button" />
         <span>Supprimer</span>
       </div>
@@ -53,7 +61,7 @@
               class="carrousel-thumb"
               :alt="image"
               :class="{active : selectedImagesForReal.includes(index)}"
-              :src="ImageCacheService.getThumbnail(image.id)"
+              :src="image.preloadedUrl"
               @click="moveToImage($event, index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
             />
           </div>
@@ -76,7 +84,7 @@
             v-if="computedActiveImage !== undefined"
             class="carrousel-thumb active previewed"
             :alt="computedActiveImage"
-            :src="ImageCacheService.getThumbnail(computedActiveImage.id)"
+            :src="computedActiveImage.preloadedUrl"
           />
         </div>
       </template>
@@ -103,13 +111,16 @@
               class="carrousel-thumb"
               :alt="image"
               :class="{active : selectedImagesForReal.includes(activeImage + index +1)}"
-              :src="ImageCacheService.getThumbnail(image.id)"
+              :src="image.preloadedUrl"
               @click="moveToImage($event,index + 1)"
             />
           </div>
         </template>
         <template v-else>
-          <div :key="'right'+index" @click="moveToImage($event,index + 1)" />
+          <div
+            :key="'right'+index"
+            @click="moveToImage($event,index + 1)"
+          />
         </template>
       </template>
 
@@ -131,7 +142,7 @@
           style="display:none"
           v-for="(image, index) in computedNextImages"
           :key="image.id + index"
-          :src="ImageCacheService.getThumbnail(image.id)"
+          :src="image.preloadedUrl"
         />
       </template>
     </div>
@@ -146,11 +157,11 @@ import { namespace } from 'vuex-class';
 import * as _ from 'lodash';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { Device } from '@/api/device.class';
-import { ImageCacheService } from '@/api/imageCache.service';
-import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
+import { ImageRef } from '@/api/uploadedImage.class';
 import { KeyCodes, ReadingSliderBoundaries } from '@/api/movie.service';
 
 const CaptureNS = namespace('capture');
+// const CacheImageNS = namespace('cacheImage');
 const ProjectNS = namespace('project');
 
 @Component({
@@ -181,10 +192,10 @@ export default class CarrouselComponent extends Vue {
   public activeDevice!: Device;
 
   @ProjectNS.Action('addImageToShot')
-  protected addImageToShot!: ({}) => Promise<void>;
+  protected addImageToShot!: ({ }) => Promise<void>;
 
   @ProjectNS.Action('removeImageFromShot')
-  protected removeImageFromShot!: ({}) => Promise<void>;
+  protected removeImageFromShot!: ({ }) => Promise<void>;
 
   protected selectedImagesForReal: number[] = [];
 
@@ -237,24 +248,21 @@ export default class CarrouselComponent extends Vue {
           break;
       }
     });
-  }
 
-  public imageReady(imageId: string) {
-    if (this.images.find((i) => i.id === imageId)) {
-      this.$forceUpdate();
-    }
+
   }
 
   public onUploaded(id: string) {
-    ImageCacheService.startPreloadingImage(
-      new UploadedImage(this.projectId, id),
-      () => this.$forceUpdate(),
-    );
+    // ImageCacheService.startPreloadingImage(
+    //   new UploadedImage(this.projectId, id),
+    //   () => this.$forceUpdate(),
+    // );
     this.$store.commit('project/incAction', -1);
   }
 
   public async onCaptured(id: string, thumb: Blob, b64: string) {
-    ImageCacheService.putImageBlobInCache(id, b64);
+    // TODO
+    // ImageCacheService.putImageBlobInCache(id, b64);
     const newActiveFrame = this.activeImage + 1;
     await this.addImageToShot({
       shotId: this.activeShot,
@@ -270,8 +278,8 @@ export default class CarrouselComponent extends Vue {
     if (container && captureButtonComponent) {
       container.scrollTo(
         captureButtonComponent.offsetLeft
-          - container.clientWidth / 2
-          + captureButtonComponent.clientWidth * 1.5,
+        - container.clientWidth / 2
+        + captureButtonComponent.clientWidth * 1.5,
         0,
       );
     }
@@ -436,8 +444,8 @@ export default class CarrouselComponent extends Vue {
         if (container && captureButtonComponent) {
           container.scrollTo(
             captureButtonComponent.offsetLeft
-              - container.clientWidth / 2
-              + captureButtonComponent.clientWidth / 2,
+            - container.clientWidth / 2
+            + captureButtonComponent.clientWidth / 2,
             0,
           );
         }

@@ -92,7 +92,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
   },
   getters: {
     movie: (state): Movie => MovieService.merge(state.id, state.history),
-    getActiveShot: (state, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
+    getActiveShot: (state, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot) => shot.id === state.activeShotId),
     getActiveShotImgCount: (state, getters: ProjectGetters): number | undefined => (getters.getActiveShot ? getters.getActiveShot.images.length : 0),
     synchronizing: (state): boolean => state.pendingActions !== 0,
   },

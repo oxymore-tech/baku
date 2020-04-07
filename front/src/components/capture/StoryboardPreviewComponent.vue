@@ -4,7 +4,7 @@
       <i class="icon-grid baku-button" />
       <h4 class="baku-button">Plans</h4>
     </div>
-    <img class="shot-preview" alt="preview" ref="preview" />
+    <img class="shot-preview" alt="preview" ref="preview" :src="getActiveShot && getActiveShot.images[0].preloadedUrl" />
   </div>
 </template>
 
@@ -14,8 +14,6 @@ import {
 } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Shot } from '@/api/movie.service';
-import { Spinner } from '@/api/spinner.class';
-import { ImageCacheService } from '@/api/imageCache.service';
 
 const ProjectNS = namespace('project');
 const CaptureNS = namespace('capture');
@@ -23,14 +21,12 @@ const WebRTCNS = namespace('webrtc');
 
 @Component
 export default class StoryboardPreviewComponent extends Vue {
-  @Prop()
-  public activeShot!: Shot;
+
+  @ProjectNS.Getter
+  public getActiveShot!: Shot;
 
   @ProjectNS.State
   public id!: string;
-
-  @ProjectNS.Getter
-  public getActiveShotImgCount!: Shot;
 
   @CaptureNS.Action('resetState')
   private resetCapture!: () => Promise<void>;
@@ -49,32 +45,14 @@ export default class StoryboardPreviewComponent extends Vue {
     });
   }
 
-  mounted() {
-    (this.$refs.preview as HTMLImageElement).src = this.getPreview();
-  }
+  // Rebase TODO fix  display new image in shots preview
+  // @Watch('getActiveShotImgCount')
+  // public async onActiveShotImgCountChange(nb: number) {
+  //   if (nb) {
+  //     this.imageReady(this.activeShot.images[0].id);
+  //   }
+  // }
 
-  @Watch('getActiveShotImgCount')
-  public async onActiveShotImgCountChange(nb: number) {
-    if (nb) {
-      this.imageReady(this.activeShot.images[0].id);
-    }
-  }
-
-  public imageReady(imageId: string) {
-    if (this.activeShot && this.activeShot.images.length > 0) {
-      if (this.activeShot.images[0].id === imageId) {
-        (this.$refs.preview as HTMLImageElement).src = this.getPreview();
-      }
-    }
-  }
-
-  private getPreview() {
-    if (this.activeShot && this.activeShot.images.length > 0) {
-      const imageId = this.activeShot.images[0].id;
-      return ImageCacheService.getImage(imageId);
-    }
-    return Spinner;
-  }
 }
 </script>
 

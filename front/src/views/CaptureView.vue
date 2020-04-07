@@ -1,20 +1,16 @@
 <template>
   <div class="main-frame">
     <template>
-      <div class="preview-bloc">
-        <StoryboardPreviewComponent
-          ref="previewComponent"
-          :shots="movie.shots"
-          :activeShot="getActiveShot"
-        />
-        <div class="preview-container">
-          <div class="preview-content">
+      <div class="previewBloc">
+        <StoryboardPreviewComponent ref="previewComponent" />
+        <div class="previewContainer">
+          <div class="previewContent">
             <template v-if="onionSkin">
               <img
                 v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkin +1] && activeCapture && onionSkin > 0"
                 alt="ghostImg"
                 id="ghost-img"
-                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkin +1].id)"
+                :src="getActiveShot.images[currentCarrousselFrame - onionSkin +1].preloadedUrl"
               />
               <template v-for="ghostIndex in onionSkinAsArray">
                 <img
@@ -22,7 +18,7 @@
                   v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeCapture"
                   alt="ghostImg"
                   class="onion-skin"
-                  :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - ghostIndex].id)"
+                  :src="getActiveShot.images[currentCarrousselFrame - ghostIndex].preloadedUrl"
                 />
               </template>
             </template>
@@ -180,11 +176,14 @@ import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorC
 import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
-import { ImageCacheService } from '@/api/imageCache.service';
 import * as _ from 'lodash';
 import AbstractProjectView from './AbstractProjectView.vue';
 import { Device } from '../api/device.class';
 import SmartphoneSynchroPopupComponent from '../components/smartphone/SmartphoneSynchroPopupComponent.vue';
+import { Quality } from '../api/uploadedImage.class';
+
+
+export const actions = new Worker('../api/worker', { type: 'module' });
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -279,8 +278,7 @@ export default class CaptureView extends AbstractProjectView {
 
   private displayFrame(frame: number) {
     if (this.getActiveShot.images[frame]) {
-      const imageId = this.getActiveShot.images[frame].id;
-      this.previewImg!.src = ImageCacheService.getImage(imageId);
+      this.previewImg!.src = this.getActiveShot.images[frame].preloadedUrl;
     }
   }
 
@@ -346,14 +344,16 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   private syncActiveFrame() {
+    console.log('[Capture] syncActiveFrame()');
     if (!this.isPlaying) {
       if (this.currentCarrousselFrame !== this.currentDisplayedFrame) {
         this.currentCarrousselFrame = this.currentDisplayedFrame;
-        ImageCacheService.startPreloading(
-          this.getActiveShot.images,
-          this.currentCarrousselFrame,
-          this.onImagePreloaded,
-        );
+        // TODO CALL la fonction updatePreloading, qui remet les tasks dans l'ordre
+        // ImageCacheService.startPreloading(
+        //   this.getActiveShot.images,
+        //   this.currentCarrousselFrame,
+        //   this.onImagePreloaded,
+        // );
       }
     }
   }
@@ -369,13 +369,20 @@ export default class CaptureView extends AbstractProjectView {
 
   @Watch('getActiveShot')
   public async onActiveShotChange(shot: Shot) {
-    console.log('[Capture] onActiveShotChange()');
     if (shot) {
-      ImageCacheService.startPreloading(
-        shot.images,
-        this.currentCarrousselFrame,
-        this.onImagePreloaded,
-      );
+      console.log('[Capture][WebWorker] onActiveShotChange()');
+      actions.postMessage({ action: 'startPreloading', payload: { images: shot.images } });
+
+      const images = shot.images;
+      actions.onmessage = (e) => {
+        // We update img only for the thumbs
+        const img = images.find((img) => img.id === e.data.imageId);
+        if (img) {
+          img.preloadedUrl = e.data.url;
+          this.onImagePreloaded(img.id, e.data.quality)
+        }
+
+      };
     }
   }
 
@@ -404,14 +411,19 @@ export default class CaptureView extends AbstractProjectView {
     return _.range(this.onionSkin - 2, -1, -1);
   }
 
-  private onImagePreloaded(imageId: string): void {
+  private onImagePreloaded(imageId: string, quality: Quality): void {
     if (this.getActiveShot.images[this.currentDisplayedFrame].id === imageId) {
       this.displayFrame(this.currentDisplayedFrame);
     }
-    (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(
-      imageId,
-    );
-    (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
+
+    // We force display the storyboard preview image if necessary
+    if (this.getActiveShot.images[0].id === imageId && quality === Quality.Thumbnail) {
+      (this.$refs.previewComponent as StoryboardPreviewComponent).$forceUpdate();
+    }
+
+    if (quality === Quality.Thumbnail) {
+      (this.$refs.carrousel as CarrouselComponent).$forceUpdate();
+    }
   }
 
   public moveFrame(moveOffset: number) {
