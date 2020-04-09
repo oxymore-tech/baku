@@ -55,6 +55,7 @@
               <i
                 class="icon-step-backward baku-button"
                 style="color:#455054;"
+                :class="{disabled : activeCapture}"
                 @click="moveHome()"
               />
             </div>
@@ -62,69 +63,50 @@
               <i
                 class="icon-backward baku-button"
                 style="color:#455054;"
-                @click="moveEnd()"
-              />
-            </div>
-            <div
-              class="toolbar-button toolbar-button-big"
-              :class="{disabled : activeCapture}"
-            >
-              <i
-                class="icon-play"
-                v-bind:class="isPlaying !== 'selection' ? 'baku-button primary-button' : 'disabled-button'"
-                @click="playAnimation()"
-                v-if="isPlaying !== 'animation'"
-                v-bind:disabled="true"
-              />
-              <i
-                class="icon-pause baku-button"
-                @click="pauseAnimation()"
-                v-else
-              />
-            </div>
-            <div
-              class="toolbar-button toolbar-button-big"
-              :class="{disabled : activeCapture}"
-            >
-              <i
-                class="icon-play_loop"
-                v-bind:class="isPlaying !== 'animation' ? 'baku-button primary-button' : 'disabled-button'"
-                @click="playSelection()"
-                v-if="isPlaying !== 'selection'"
-              />
-              <i
-                class="icon-pause baku-button"
-                @click="pauseAnimation()"
-                v-else
+                :class="{disabled : activeCapture}"
+                @click="activeCapture ? () => {} : moveFrame(- 1)"
               />
             </div>
             <div class="toolbar-button toolbar-button-big">
               <i
-                class="icon-recording baku-button"
-                :class="{ blinking: activeCapture}"
-                style="color:#e66359;"
-                @click="setActiveCapture()"
+                class="icon-play"
+                :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': activeCapture}"
+                @click="playAnimation()"
+                v-if="isPlaying !== 'animation'"
+                v-bind:disabled="true"
               />
+              <i class="icon-pause baku-button" @click="pauseAnimation()" v-else />
             </div>
-
+            <div class="toolbar-button toolbar-button-big">
+              <i
+                class="icon-play_loop"
+                :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': activeCapture}"
+                @click="playSelection()"
+                v-if="isPlaying !== 'selection'"
+              />
+              <i class="icon-pause baku-button" @click="pauseAnimation()" v-else />
+            </div>
             <div class="toolbar-button">
               <i
                 class="icon-forward baku-button"
                 style="color:#455054;"
-                @click="onActiveFrameChange(currentCarrousselFrame + 1)"
+                :class="{disabled : activeCapture}"
+                @click="activeCapture ? () => {} :  moveFrame(1)"
               />
             </div>
             <div class="toolbar-button">
               <i
                 class="icon-step-forward baku-button"
                 style="color:#455054;"
-                @click="onActiveFrameChange(getActiveShot.images.length - 1)"
+                :class="{disabled : activeCapture}"
+                @click="moveEnd()"
               />
             </div>
             <div class="toolbar-button">
               <i
                 class="icon-set_begin baku-button"
                 style="color:#455054;"
+                :class="{disabled : activeCapture}"
                 @click="moveLeftBoundary()"
               />
             </div>
@@ -132,7 +114,16 @@
               <i
                 class="icon-set_end baku-button"
                 style="color:#455054;"
+                :class="{disabled : activeCapture}"
                 @click="moveRightBoundary()"
+              />
+            </div>
+            <div class="toolbar-button toolbar-button-big">
+              <i
+                class="icon-recording baku-button"
+                :class="{ blinking: activeCapture}"
+                style="color:#e66359;"
+                @click="setActiveCapture(activeCapture)"
               />
             </div>
             <div class="toolbar-button">
@@ -304,7 +295,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public playAnimation() {
-    if (!this.isPlaying) {
+    if (!this.isPlaying && !this.activeCapture) {
       this.initPlay('animation');
       this.animationBoundaries = {
         left: 0,
@@ -315,7 +306,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public playSelection() {
-    if (!this.isPlaying) {
+    if (!this.isPlaying && !this.activeCapture) {
       if (
         this.currentCarrousselFrame < this.selectedImages.left
         || this.currentCarrousselFrame > this.selectedImages.right
@@ -336,7 +327,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public pauseAnimation() {
-    if (this.isPlaying) {
+    if (this.isPlaying && !this.activeCapture) {
       this.isPlaying = null;
       delete this.animationStart;
       delete this.animationStartFrame;
@@ -415,11 +406,15 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public moveHome() {
-    this.onActiveFrameChange(0);
+    if (!this.activeCapture) {
+      this.onActiveFrameChange(0);
+    }
   }
 
   public moveEnd() {
-    this.onActiveFrameChange(this.getActiveShot.images.length - 1);
+    if (!this.activeCapture) {
+      this.onActiveFrameChange(this.getActiveShot.images.length - 1);
+    }
   }
 
   private moveFrameAbsolute(frame: number): number {
@@ -442,11 +437,15 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public moveLeftBoundary() {
-    this.onActiveFrameChange(this.selectedImages.left);
+    if (!this.activeCapture) {
+      this.onActiveFrameChange(this.selectedImages.left);
+    }
   }
 
   public moveRightBoundary() {
-    this.onActiveFrameChange(this.selectedImages.right);
+    if (!this.activeCapture) {
+      this.onActiveFrameChange(this.selectedImages.right);
+    }
   }
 
   public setActiveCapture() {
@@ -681,5 +680,10 @@ export default class CaptureView extends AbstractProjectView {
 }
 .hidden {
   display: none;
+}
+
+.disabled {
+  color: lightgray !important;
+  cursor: not-allowed;
 }
 </style>

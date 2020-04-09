@@ -11,7 +11,7 @@
       </div>
       <div class="toolbar-button" @click="onReverse()" :class="{disabled: activeCapture || !imagesToCopy.length}">
         <i class="icon-reverse baku-button" />
-        <span>Inverser</span>
+        <span>Coller & Inverser</span>
       </div>
       <div class="toolbar-button" @click="deleteFrame()" :class="{disabled: activeCapture}">
         <i class="icon-trash-alt baku-button" />
@@ -395,6 +395,7 @@ export default class CarrouselComponent extends Vue {
         imageIndex: this.activeImage + 1 + index,
         image: imgref,
       })));
+      this.selectedImagesForReal = _.range(this.activeImage + 1, this.activeImage + 1 + this.imagesToCopy.length);
     }
   }
 
@@ -406,6 +407,7 @@ export default class CarrouselComponent extends Vue {
         imageIndex: this.activeImage + 1 + index,
         image: imgref,
       })));
+      this.selectedImagesForReal = _.range(this.activeImage + 1, this.activeImage + 1 + this.imagesToCopy.length);
     }
   }
 }

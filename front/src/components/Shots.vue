@@ -113,6 +113,7 @@
   flex-direction: column;
   overflow: hidden;
   align-items: center;
+  position:relative;
 
   .cardFooter {
     padding: 7px;
