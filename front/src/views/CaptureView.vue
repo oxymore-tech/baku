@@ -146,6 +146,7 @@
         :activeShot="getActiveShot.id"
         :images="getActiveShot.images"
         :activeImage="currentCarrousselFrame"
+        :isPlaying="isPlaying"
         @activeImageChange="onActiveFrameChange"
         @moveFrame="moveFrame"
         @moveHome="moveHome"

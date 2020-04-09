@@ -5,11 +5,19 @@
         <i class="icon-copy baku-button" />
         <span>Copier</span>
       </div>
-      <div class="toolbar-button" @click="onPaste()" :class="{disabled: activeCapture || !imagesToCopy.length}">
+      <div
+        class="toolbar-button"
+        @click="onPaste()"
+        :class="{disabled: activeCapture || !imagesToCopy.length}"
+      >
         <i class="icon-paste baku-button" />
         <span>Coller</span>
       </div>
-      <div class="toolbar-button" @click="onReverse()" :class="{disabled: activeCapture || !imagesToCopy.length}">
+      <div
+        class="toolbar-button"
+        @click="onReverse()"
+        :class="{disabled: activeCapture || !imagesToCopy.length}"
+      >
         <i class="icon-reverse baku-button" />
         <span>Coller & Inverser</span>
       </div>
@@ -45,7 +53,7 @@
 
       <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
       <template v-if="computedActiveImage !== null">
-        <div class="imageContainer">
+        <div class="imageContainer" id="carrouselActiveImg">
           <span class="framenumber-indicator">{{ activeImage + 1 }}</span>
           <img
             v-if="computedActiveImage !== undefined"
@@ -171,7 +179,9 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import * as _ from 'lodash';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
@@ -206,6 +216,9 @@ export default class CarrouselComponent extends Vue {
 
   @Prop()
   public selectedImages!: ReadingSliderBoundaries;
+
+  @Prop()
+  public isPlaying!: 'animation' | 'selection' | null;
 
   @CaptureNS.State
   public activeDevice!: Device;
@@ -294,10 +307,12 @@ export default class CarrouselComponent extends Vue {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
       imagesToDelete.sort();
-      Promise.all(imagesToDelete.map((imgId: number, index: number) => this.removeImageFromShot({
-        shotId: this.activeShot,
-        imageIndex: imgId - index,
-      })));
+      Promise.all(
+        imagesToDelete.map((imgId: number, index: number) => this.removeImageFromShot({
+          shotId: this.activeShot,
+          imageIndex: imgId - index,
+        })),
+      );
       this.selectedImagesForReal = [];
     }
   }
@@ -390,25 +405,49 @@ export default class CarrouselComponent extends Vue {
 
   public async onPaste() {
     if (!this.activeCapture) {
-      Promise.all(this.imagesToCopy.map((imgref: string, index: number) => this.addImageToShot({
-        shotId: this.activeShot,
-        imageIndex: this.activeImage + 1 + index,
-        image: imgref,
-      })));
-      this.selectedImagesForReal = _.range(this.activeImage + 1, this.activeImage + 1 + this.imagesToCopy.length);
+      Promise.all(
+        this.imagesToCopy.map((imgref: string, index: number) => this.addImageToShot({
+          shotId: this.activeShot,
+          imageIndex: this.activeImage + 1 + index,
+          image: imgref,
+        })),
+      );
+      this.selectedImagesForReal = _.range(
+        this.activeImage + 1,
+        this.activeImage + 1 + this.imagesToCopy.length,
+      );
     }
   }
 
   public async onReverse() {
     if (!this.activeCapture) {
       const reverted = [...this.imagesToCopy].reverse();
-      Promise.all(reverted.map((imgref: string, index: number) => this.addImageToShot({
-        shotId: this.activeShot,
-        imageIndex: this.activeImage + 1 + index,
-        image: imgref,
-      })));
-      this.selectedImagesForReal = _.range(this.activeImage + 1, this.activeImage + 1 + this.imagesToCopy.length);
+      Promise.all(
+        reverted.map((imgref: string, index: number) => this.addImageToShot({
+          shotId: this.activeShot,
+          imageIndex: this.activeImage + 1 + index,
+          image: imgref,
+        })),
+      );
+      this.selectedImagesForReal = _.range(
+        this.activeImage + 1,
+        this.activeImage + 1 + this.imagesToCopy.length,
+      );
     }
+  }
+
+  @Watch('activeImage')
+  public moveToActiveImageOnPause() {
+    // trick to start after vue change detection
+    setTimeout(() => {
+      const carrouselActiveImg = document.getElementById('carrouselActiveImg');
+      if (carrouselActiveImg) {
+        carrouselActiveImg.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
+    });
   }
 }
 </script>
