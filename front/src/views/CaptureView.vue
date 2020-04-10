@@ -9,11 +9,28 @@
         />
         <div class="previewContainer">
           <div class="previewContent">
+            <template v-if="onionSkin">
+              <img
+                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue +1] && activeCapture && onionSkin"
+                alt="ghostImg"
+                id="ghostImg"
+                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue +1].id)"
+              />
+              <template v-for="ghostIndex in onionSkinAsArray">
+                <img
+                  :key="ghostIndex"
+                  v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeCapture"
+                  alt="ghostImg"
+                  class="onionSkin"
+                  :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - ghostIndex].id)"
+                />
+              </template>
+            </template>
             <video
               v-if="activeCapture"
               id="videoCapture"
               ref="videoCapture"
-              :style="{transform: 'scale(' + scaleX +', ' +scaleY +')'}"
+              :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkin ? 0.4 : 1}"
               autoplay
               muted
               playsinline
@@ -23,12 +40,6 @@
               ref="previewImg"
               src="@/assets/baku-balls-spinner.svg"
               :class="{hidden: activeCapture}"
-            />
-            <img
-              v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame] && activeCapture"
-              alt="ghostImg"
-              id="ghostImg"
-              :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame].id)"
             />
           </div>
           <ImagesSelectorComponent
@@ -179,8 +190,10 @@ import store from '@/store';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
 import { ImageCacheService } from '@/api/imageCache.service';
+import * as _ from 'lodash';
 import AbstractProjectView from './AbstractProjectView.vue';
 import { Device } from '../api/device.class';
+
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -233,6 +246,12 @@ export default class CaptureView extends AbstractProjectView {
 
   @CaptureNS.State
   public scaleY!: number | 1;
+
+  @CaptureNS.State('onionSkinValue')
+  protected onionSkinValue!: number;
+
+  @CaptureNS.State('onionSkin')
+  protected onionSkin!: number;
 
   public selectedImages: ReadingSliderBoundaries = { left: 0, right: 3 };
 
@@ -391,6 +410,11 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
+  get onionSkinAsArray() {
+    console.log(_.range(this.onionSkinValue - 2, -1, -1));
+    return _.range(this.onionSkinValue - 2, -1, -1);
+  }
+
   private onImagePreloaded(imageId: string): void {
     if (this.getActiveShot.images[this.currentDisplayedFrame].id === imageId) {
       this.displayFrame(this.currentDisplayedFrame);
@@ -518,9 +542,16 @@ export default class CaptureView extends AbstractProjectView {
   max-height: 720px;
   height: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0.4;
+  opacity: 1;
+}
+
+.onionSkin {
+  min-width: 640px;
+  min-height: 360px;
+  max-height: 720px;
+  height: 100%;
+  position: absolute;
+  opacity: 0.3;
 }
 
 .previewContainer {

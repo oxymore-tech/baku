@@ -46,6 +46,18 @@
       />
       Miroir vertical
     </div>
+    <div>
+      <i  @click="toggleOnionSkin()"
+        class="icon-check_box baku-button mirror-checkboxes"
+        v-if="onionSkin"
+      />
+      <i  @click="toggleOnionSkin()"
+        class="icon-check_box_outline_blank baku-button mirror-checkboxes"
+        v-else
+      />
+      Pelure d'oignon
+      <input type="number" max=5 min=0 :value="onionSkinValue" @change="setOnionSkinValue($event.target.value)">
+    </div>
   </div>
 </template>
 
@@ -81,11 +93,23 @@ export default class CaptureToolboxComponent extends Vue {
   @CaptureNS.Action('toggleScaleY')
   protected toggleScaleY!: () => Promise<void>;
 
+  @CaptureNS.Action('toggleOnionSkin')
+  protected toggleOnionSkin!: () => Promise<void>;
+
+  @CaptureNS.Action('setOnionSkinValue')
+  protected setOnionSkinValue!: (val: number) => Promise<void>;
+
   @CaptureNS.State('scaleX')
   protected scaleX!: number;
 
   @CaptureNS.State('scaleY')
   protected scaleY!: number;
+
+  @CaptureNS.State('onionSkinValue')
+  protected onionSkinValue!: number;
+
+  @CaptureNS.State('onionSkin')
+  protected onionSkin!: number;
 
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();

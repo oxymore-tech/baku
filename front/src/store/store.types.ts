@@ -8,6 +8,8 @@ export interface CaptureState {
   activeCapture: boolean;
   scaleX: number;
   scaleY: number;
+  onionSkin: boolean;
+  onionSkinValue: number;
 }
 
 export interface ProjectState {
