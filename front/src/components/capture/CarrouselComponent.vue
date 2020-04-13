@@ -26,7 +26,7 @@
         <span>Supprimer</span>
       </div>
     </div>
-    <div id="carrouselContainer" class="carrouselContainer">
+    <div ref="carrouselContainer" class="carrouselContainer">
       <!-- LEFT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedLeftCarrousel">
         <template v-if="image !== null">
@@ -53,7 +53,7 @@
 
       <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
       <template v-if="computedActiveImage !== null">
-        <div class="imageContainer" id="carrouselActiveImg">
+        <div class="imageContainer" ref="carrouselActiveImg">
           <span class="framenumber-indicator">{{ activeImage + 1 }}</span>
           <img
             v-if="computedActiveImage !== undefined"
@@ -64,7 +64,7 @@
         </div>
       </template>
       <template v-else>
-        <div id="captureButtonComponent" class="carrouselThumb active">
+        <div ref="captureButtonComponent" class="carrouselThumb active">
           <CaptureButtonComponent
             v-if="activeDevice"
             :device="activeDevice"
@@ -293,12 +293,17 @@ export default class CarrouselComponent extends Vue {
     });
     this.$store.commit('project/incAction', 1);
     this.$emit('activeImageChange', newActiveFrame);
-    const container = document.getElementById('carrouselContainer');
-    const captureButtonComponent = document.getElementById(
-      'captureButtonComponent',
-    );
+    const container = this.$refs.carrouselContainer as HTMLElement;
+    const captureButtonComponent = this.$refs
+      .captureButtonComponent as HTMLElement;
+
     if (container && captureButtonComponent) {
-      container.scrollTo(captureButtonComponent.offsetLeft, 0);
+      container.scrollTo(
+        captureButtonComponent.offsetLeft
+          - container.clientWidth / 2
+          + captureButtonComponent.clientWidth * 1.5,
+        0,
+      );
     }
   }
 
@@ -438,16 +443,33 @@ export default class CarrouselComponent extends Vue {
 
   @Watch('activeImage')
   public moveToActiveImageOnPause() {
-    // trick to start after vue change detection
-    setTimeout(() => {
-      const carrouselActiveImg = document.getElementById('carrouselActiveImg');
-      if (carrouselActiveImg) {
-        carrouselActiveImg.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }
-    });
+    if (!this.activeCapture) {
+      // trick to start after vue change detection
+      setTimeout(() => {
+        const carrouselActiveImg = this.$refs.carrouselActiveImg as HTMLElement;
+        if (carrouselActiveImg) {
+          carrouselActiveImg.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+        }
+      });
+    } else {
+      setTimeout(() => {
+        const container = this.$refs.carrouselContainer as HTMLElement;
+        const captureButtonComponent = this.$refs
+          .captureButtonComponent as HTMLElement;
+
+        if (container && captureButtonComponent) {
+          container.scrollTo(
+            captureButtonComponent.offsetLeft
+              - container.clientWidth / 2
+              + captureButtonComponent.clientWidth / 2,
+            0,
+          );
+        }
+      });
+    }
   }
 }
 </script>

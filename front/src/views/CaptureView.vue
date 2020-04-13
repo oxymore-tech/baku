@@ -128,6 +128,7 @@
             >Mode Capture</div>
             <div class="toolbar-button">
               <img
+                style="height: 28px; width:28px"
                 v-if="synchronizing"
                 alt="loading"
                 id="synchronization"
