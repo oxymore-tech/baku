@@ -11,10 +11,10 @@
           <div class="previewContent">
             <template v-if="onionSkin">
               <img
-                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue +1] && activeCapture && onionSkin"
+                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkin +1] && activeCapture && onionSkin > 0"
                 alt="ghostImg"
                 id="ghostImg"
-                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue +1].id)"
+                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkin +1].id)"
               />
               <template v-for="ghostIndex in onionSkinAsArray">
                 <img
@@ -30,7 +30,7 @@
               v-if="activeCapture"
               id="videoCapture"
               ref="videoCapture"
-              :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkin ? 0.4 : 1}"
+              :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkin > 0 ? 0.4 : 1}"
               autoplay
               muted
               playsinline
@@ -62,81 +62,70 @@
               <span class="clock-small">:</span>
               <span class="clock-small">{{ frameNb(this.currentDisplayedFrame) }}</span>
             </div>
-            <div class="toolbar-button">
-              <i
-                class="icon-step-backward baku-button"
-                style="color:#455054;"
-                :class="{disabled : activeCapture}"
-                @click="moveHome()"
-              />
-            </div>
-            <div class="toolbar-button">
-              <i
-                class="icon-backward baku-button"
-                style="color:#455054;"
-                :class="{disabled : activeCapture}"
-                @click="activeCapture ? () => {} : moveFrame(- 1)"
-              />
-            </div>
-            <div class="toolbar-button toolbar-button-big">
-              <i
-                class="icon-play"
-                :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': activeCapture}"
-                @click="playAnimation()"
-                v-if="isPlaying !== 'animation'"
-                v-bind:disabled="true"
-              />
-              <i class="icon-pause baku-button" @click="pauseAnimation()" v-else />
-            </div>
-            <div class="toolbar-button toolbar-button-big">
-              <i
-                class="icon-play_loop"
-                :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': activeCapture}"
-                @click="playSelection()"
-                v-if="isPlaying !== 'selection'"
-              />
-              <i class="icon-pause baku-button" @click="pauseAnimation()" v-else />
-            </div>
-            <div class="toolbar-button">
-              <i
-                class="icon-forward baku-button"
-                style="color:#455054;"
-                :class="{disabled : activeCapture}"
-                @click="activeCapture ? () => {} :  moveFrame(1)"
-              />
-            </div>
-            <div class="toolbar-button">
-              <i
-                class="icon-step-forward baku-button"
-                style="color:#455054;"
-                :class="{disabled : activeCapture}"
-                @click="moveEnd()"
-              />
-            </div>
-            <div class="toolbar-button">
-              <i
-                class="icon-set_begin baku-button"
-                style="color:#455054;"
-                :class="{disabled : activeCapture}"
-                @click="moveLeftBoundary()"
-              />
-            </div>
-            <div class="toolbar-button">
-              <i
-                class="icon-set_end baku-button"
-                style="color:#455054;"
-                :class="{disabled : activeCapture}"
-                @click="moveRightBoundary()"
-              />
-            </div>
-            <div class="toolbar-button toolbar-button-big">
-              <i
-                class="icon-recording baku-button"
-                :class="{ blinking: activeCapture}"
-                style="color:#e66359;"
-                @click="setActiveCapture(activeCapture)"
-              />
-            </div>
+            <i
+              class="toolbar-button icon-step-backward baku-button"
+              style="color:#455054;"
+              :class="{disabled : activeCapture}"
+              @click="moveHome()"
+            />
+            <i
+              class="toolbar-button icon-backward baku-button"
+              style="color:#455054;"
+              :class="{disabled : activeCapture}"
+              @click="activeCapture ? () => {} : moveFrame(- 1)"
+            />
+            <i
+              class="toolbar-button toolbar-button-big icon-play"
+              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': activeCapture}"
+              @click="playAnimation()"
+              v-if="isPlaying !== 'animation'"
+              v-bind:disabled="true"
+            />
+            <i
+              class="toolbar-button toolbar-button-big icon-pause baku-button"
+              @click="pauseAnimation()"
+              v-else
+            />
+            <i
+              class="toolbar-button toolbar-button-big icon-play_loop"
+              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': activeCapture}"
+              @click="playSelection()"
+              v-if="isPlaying !== 'selection'"
+            />
+            <i
+              class="toolbar-button toolbar-button-big icon-pause baku-button"
+              @click="pauseAnimation()"
+              v-else
+            />
+            <i
+              class="toolbar-button icon-forward baku-button"
+              style="color:#455054;"
+              :class="{disabled : activeCapture}"
+              @click="activeCapture ? () => {} :  moveFrame(1)"
+            />
+            <i
+              class="toolbar-button icon-step-forward baku-button"
+              style="color:#455054;"
+              :class="{disabled : activeCapture}"
+              @click="moveEnd()"
+            />
+            <i
+              class="toolbar-button icon-set_begin baku-button"
+              style="color:#455054;"
+              :class="{disabled : activeCapture}"
+              @click="moveLeftBoundary()"
+            />
+            <i
+              class="toolbar-button icon-set_end baku-button"
+              style="color:#455054;"
+              :class="{disabled : activeCapture}"
+              @click="moveRightBoundary()"
+            />
+            <div
+              class="toolbar-button toolbar-capture-button"
+              :class="{ activeCapture: activeCapture}"
+              @click="setActiveCapture(activeCapture)"
+            >Mode Capture</div>
             <div class="toolbar-button">
               <img
                 v-if="synchronizing"
@@ -194,7 +183,6 @@ import * as _ from 'lodash';
 import AbstractProjectView from './AbstractProjectView.vue';
 import { Device } from '../api/device.class';
 
-
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
 
@@ -246,9 +234,6 @@ export default class CaptureView extends AbstractProjectView {
 
   @CaptureNS.State
   public scaleY!: number | 1;
-
-  @CaptureNS.State('onionSkinValue')
-  protected onionSkinValue!: number;
 
   @CaptureNS.State('onionSkin')
   protected onionSkin!: number;
@@ -411,8 +396,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   get onionSkinAsArray() {
-    console.log(_.range(this.onionSkinValue - 2, -1, -1));
-    return _.range(this.onionSkinValue - 2, -1, -1);
+    return _.range(this.onionSkin - 2, -1, -1);
   }
 
   private onImagePreloaded(imageId: string): void {
@@ -513,209 +497,5 @@ export default class CaptureView extends AbstractProjectView {
 </script>
 
 <style lang="scss" scoped>
-.mainFrame {
-  height: calc(100% - 48px);
-  display: flex;
-  flex-direction: column;
-}
-
-.previewBloc {
-  display: flex;
-  width: 100%;
-  flex: 1;
-  justify-content: space-between;
-  padding: 10px 24px;
-}
-
-#previewImg {
-  min-width: 640px;
-  min-height: 360px;
-  max-height: 720px;
-  height: 100%;
-  max-width: 100%;
-  background: white;
-}
-
-#ghostImg {
-  min-width: 640px;
-  min-height: 360px;
-  max-height: 720px;
-  height: 100%;
-  position: absolute;
-  opacity: 1;
-}
-
-.onionSkin {
-  min-width: 640px;
-  min-height: 360px;
-  max-height: 720px;
-  height: 100%;
-  position: absolute;
-  opacity: 0.3;
-}
-
-.previewContainer {
-  width: 1024px;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.previewContent {
-  width: 1024px;
-  height: 576px;
-  background: #ffffff 0 0 no-repeat padding-box;
-  border: 4px solid #ffbd72;
-  box-shadow: 0 6px 10px #00000066;
-  border-radius: 4px;
-  box-sizing: content-box;
-  justify-content: center;
-  display: flex;
-  position: relative;
-}
-
-#videoCapture {
-  min-width: 640px;
-  min-height: 360px;
-  max-height: 720px;
-  height: 100%;
-  max-width: 100%;
-}
-
-#videoCaptureFullscreen {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 99;
-  background: white;
-}
-
-@media screen and (max-width: 1699px) {
-  #videoCapture {
-    width: 640px;
-    height: 360px;
-  }
-  .previewContainer {
-    width: 640px;
-  }
-
-  .previewContent {
-    width: 640px;
-    height: 360px;
-  }
-
-  #previewImg {
-    width: 640px;
-    height: 360px;
-  }
-}
-
-@media screen and (min-width: 1700px) {
-  #videoCapture {
-    width: 1024px;
-  }
-}
-
-.primary-button {
-  color: #ffbd72;
-}
-
-.disabled-button {
-  color: #cccccc;
-}
-
-.mediaControls {
-  width: 100%;
-  display: flex;
-  font-size: 18px;
-  align-items: center;
-
-  .clock {
-    background: #455054;
-    border-radius: 8px;
-    color: white;
-    padding: 1px 5px;
-    width: 160px;
-    font-size: 26px;
-    margin-bottom: 5px;
-
-    .clock-small {
-      font-size: 18px;
-    }
-  }
-
-  .toolbar-button-big {
-    font-size: 32px;
-  }
-}
-
-.blinking {
-  -webkit-animation: 2s blink ease infinite;
-  -moz-animation: 2s blink ease infinite;
-  -ms-animation: 2s blink ease infinite;
-  -o-animation: 2s blink ease infinite;
-  animation: 2s blink ease infinite;
-}
-
-@keyframes blink {
-  from,
-  to {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@-moz-keyframes blink {
-  from,
-  to {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@-webkit-keyframes blink {
-  from,
-  to {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@-ms-keyframes blink {
-  from,
-  to {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@-o-keyframes blink {
-  from,
-  to {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-.hidden {
-  display: none;
-}
-
-.disabled {
-  color: lightgray !important;
-  cursor: not-allowed;
-}
+  @import "../styles/Capture.scss";
 </style>

@@ -9,8 +9,7 @@ export const CaptureStore: BakuModule<CaptureState> = {
     activeCapture: false,
     scaleX: 1,
     scaleY: 1,
-    onionSkin: false,
-    onionSkinValue: 3,
+    onionSkin: 3,
   },
   mutations: {
     attachMediaStream(state, stream: MediaStream) {
@@ -36,11 +35,8 @@ export const CaptureStore: BakuModule<CaptureState> = {
     toggleScaleY(state) {
       state.scaleY *= -1;
     },
-    toggleOnionSkin(state) {
-      state.onionSkin = !state.onionSkin;
-    },
-    setOnionSkinValue(state, val: number){
-      state.onionSkinValue = val;
+    setOnionSkin(state, val: number){
+      state.onionSkin = val;
     }
   },
   actions: {
@@ -63,12 +59,8 @@ export const CaptureStore: BakuModule<CaptureState> = {
       context.commit('toggleScaleY');
     },
 
-    toggleOnionSkin(context) {
-      context.commit('toggleOnionSkin');
-    },
-
-    setOnionSkinValue(context, val: number) {
-      context.commit('setOnionSkinValue', val);
+    setOnionSkin(context, val: number) {
+      context.commit('setOnionSkin', val);
     }
   },
   getters: {
