@@ -46,4 +46,11 @@ export class BakuService {
     return axios
       .post(`${BakuService.BaseUrl}/${projectId}/stack`, event);
   }
+
+  public static getExportUrl(projectId: string, shotId?: string) {
+    if (shotId) {
+      return `${BakuService.BaseUrl}/${projectId}/${shotId}/export.zip`;
+    }
+    return `${BakuService.BaseUrl}/${projectId}/export.zip`;
+  }
 }

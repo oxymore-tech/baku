@@ -6,6 +6,24 @@
         :key="shot.id"
         class="shotCard"
       >
+        <b-dropdown
+          aria-role="list"
+          class="shot-menu is-pulled-right"
+          position="is-bottom-left"
+        >
+          <a slot="trigger">
+            <b-icon custom-class="icon-cog"></b-icon>
+          </a>
+          <b-dropdown-item aria-role="listitem">
+            <a
+              :href="getExportUrl(shot.id)"
+              target="_blank"
+            >Exporter le plan</a></b-dropdown-item>
+          <b-dropdown-item
+            aria-role="listitem"
+            @click="removeShot(shot.id)"
+          >Supprimer le plan</b-dropdown-item>
+        </b-dropdown>
         <a
           class="activateShotLink"
           @click="activateShot(shot.id)"
@@ -20,21 +38,6 @@
           </div>
         </a>
 
-        <b-dropdown
-          aria-role="list"
-          class="shot-menu is-pulled-right"
-          position="is-bottom-left"
-        >
-          <a slot="trigger">
-            <b-icon custom-class="icon-cog"></b-icon>
-          </a>
-          <b-dropdown-item aria-role="listitem">(TODO) Exporter en séquence d'image</b-dropdown-item>
-          <b-dropdown-item aria-role="listitem">(TODO) Exporter en fichier vidéo</b-dropdown-item>
-          <b-dropdown-item
-            aria-role="listitem"
-            @click="removeShot(shot.id)"
-          >Supprimer le plan</b-dropdown-item>
-        </b-dropdown>
       </div>
       <div
         class="shotCard createShot"
@@ -113,7 +116,7 @@
   flex-direction: column;
   overflow: hidden;
   align-items: center;
-  position:relative;
+  position: relative;
 
   .cardFooter {
     padding: 7px;
@@ -158,6 +161,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Spinner } from '@/api/spinner.class';
 import { Quality } from '@/api/uploadedImage.class';
+import { BakuService } from '@/api/baku.service';
 
 type Shot = {
   id: string;
@@ -202,6 +206,9 @@ export default class Shots extends Vue {
     await this.$store.dispatch('project/removeShot', shotId);
   }
 
+  public getExportUrl(shotId): string {
+    return BakuService.getExportUrl(this.projectId, shotId);
+  }
   public close() {
     this.$emit('close');
   }
