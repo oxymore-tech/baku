@@ -206,7 +206,7 @@ export default class Shots extends Vue {
     await this.$store.dispatch('project/removeShot', shotId);
   }
 
-  public getExportUrl(shotId): string {
+  public getExportUrl(shotId: string): string {
     return BakuService.getExportUrl(this.projectId, shotId);
   }
   public close() {
