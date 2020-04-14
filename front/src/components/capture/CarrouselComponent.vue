@@ -28,6 +28,19 @@
     </div>
     <div ref="carrouselContainer" class="carrouselContainer">
       <!-- LEFT PART OF THE CARROUSEL -->
+      <!-- Five divs to center capture button -->
+      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrouselThumb" />
+      </div>
+      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrouselThumb" />
+      </div>
+      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrouselThumb" />
+      </div>
+      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrouselThumb" />
+      </div>
       <template v-for="(image, index) in computedLeftCarrousel">
         <template v-if="image !== null">
           <div :key="'left'+index" class="imageContainer">
@@ -96,6 +109,19 @@
         </template>
       </template>
 
+      <!-- Five divs to center capture button -->
+      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrouselThumb" />
+      </div>
+      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrouselThumb" />
+      </div>
+      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrouselThumb" />
+      </div>
+      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrouselThumb" />
+      </div>
       <template v-if="computedNextImages">
         <img
           style="display:none"
