@@ -103,6 +103,7 @@ public class ImageService {
             int action = o.get("action").getAsInt();
             switch (action) {
                 case 4: {
+                    // new shot
                     String shotId = o.get("value").getAsJsonObject().get("shotId").getAsString();
                     if (shot == null || shot.equals(shotId)) {
                         shots.put(shotId, new LinkedList<>());
@@ -110,6 +111,7 @@ public class ImageService {
                     break;
                 }
                 case 3: {
+                    // add image
                     JsonObject v = o.get("value").getAsJsonObject();
                     String shotId = v.get("shotId").getAsString();
                     if (shot == null || shot.equals(shotId)) {
@@ -117,6 +119,16 @@ public class ImageService {
                         String image = v.get("image").getAsString();
                         Path imageFile = imagePath.resolve(projectId).resolve("original").resolve(image);
                         shots.computeIfAbsent(shotId, k -> new LinkedList<>()).add(imageIndex, imageFile);
+                    }
+                    break;
+                }
+                case 6: {
+                    // remove image
+                    JsonObject v = o.get("value").getAsJsonObject();
+                    String shotId = v.get("shotId").getAsString();
+                    if (shot == null || shot.equals(shotId)) {
+                        int imageIndex = v.get("imageIndex").getAsInt();
+                        shots.get(shotId).remove(imageIndex);
                     }
                     break;
                 }

@@ -1,9 +1,5 @@
 package com.bakuanimation.server;
 
-import com.google.cloud.Tuple;
-import io.micronaut.core.io.Streamable;
-import io.micronaut.core.io.Writable;
-import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -13,20 +9,14 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.http.server.types.files.SystemFile;
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import org.graalvm.collections.Pair;
 import org.reactivestreams.Publisher;
 
-import javax.annotation.Nullable;
-import javax.inject.Named;
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
 
 @Controller
 public class ImageController {
@@ -69,7 +59,7 @@ public class ImageController {
     }
 
     @Get(value = "/api/{projectId}/export.zip")
-    public StreamedFile export(@PathVariable String projectId) throws IOException {
+    public HttpResponse<StreamedFile> export(@PathVariable String projectId) throws IOException {
         PipedOutputStream outputStream = new PipedOutputStream();
         InputStream inputStream = new PipedInputStream(outputStream);
         Schedulers.io().scheduleDirect(() -> {
@@ -86,13 +76,14 @@ public class ImageController {
                 }
             }
         });
-        return new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
-                .attach(projectId+".zip");
+        StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
+                .attach(projectId + ".zip");
+        return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
 
     }
 
     @Get(value = "/api/{projectId}/{shotId}/export.zip")
-    public StreamedFile exportShot(@PathVariable String projectId, @PathVariable String shotId) throws IOException {
+    public HttpResponse<StreamedFile> exportShot(@PathVariable String projectId, @PathVariable String shotId) throws IOException {
         PipedOutputStream outputStream = new PipedOutputStream();
         InputStream inputStream = new PipedInputStream(outputStream);
         Schedulers.io().scheduleDirect(() -> {
@@ -109,8 +100,9 @@ public class ImageController {
                 }
             }
         });
-        return new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
-                .attach(projectId+".zip");
+        StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
+                .attach(projectId + ".zip");
+        return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
     }
 
 }
