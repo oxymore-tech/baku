@@ -434,8 +434,9 @@ export default class CaptureView extends AbstractProjectView {
         this.currentDisplayedFrame = minFrame;
       } else if (frame > this.getActiveShot.images.length - 1) {
         this.currentDisplayedFrame = this.getActiveShot.images.length - 1;
+      } else {
+        this.currentDisplayedFrame = frame;
       }
-      this.currentDisplayedFrame = frame;
       this.displayFrame(this.currentDisplayedFrame);
     }
     return this.currentDisplayedFrame;
