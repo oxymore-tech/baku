@@ -22,9 +22,13 @@ public class HistoryController {
     }
 
     @Post("/api/{projectId}/stack")
-    public HttpResponse<Void> stack(@PathVariable String projectId, @Body byte[] stack) {
-        historyService.addStack(projectId, stack);
-        return HttpResponse.ok();
+    public Single<HttpResponse<Void>> stack(@PathVariable String projectId, @Body byte[] stack) {
+        return Single.fromCallable(() -> {
+            historyService.addStack(projectId, stack);
+            return true;
+        })
+                .map(v -> (HttpResponse<Void>) HttpResponse.<Void>ok())
+                .subscribeOn(Schedulers.io());
     }
 
     @Get("/api/{projectId}/history")
@@ -36,7 +40,7 @@ public class HistoryController {
             } else {
                 return Files.readAllBytes(imagePath);
             }
-        }).subscribeOn(Schedulers.computation());
+        }).subscribeOn(Schedulers.io());
     }
 
 }

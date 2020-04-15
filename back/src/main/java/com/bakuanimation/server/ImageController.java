@@ -1,5 +1,6 @@
 package com.bakuanimation.server;
 
+import com.google.cloud.Tuple;
 import io.micronaut.core.io.Streamable;
 import io.micronaut.core.io.Writable;
 import io.micronaut.core.util.CollectionUtils;
@@ -12,15 +13,20 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.http.server.types.files.SystemFile;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import org.graalvm.collections.Pair;
 import org.reactivestreams.Publisher;
 
 import javax.annotation.Nullable;
+import javax.inject.Named;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
 
 @Controller
 public class ImageController {
@@ -41,7 +47,7 @@ public class ImageController {
         }
         Publisher<Boolean> uploadPublisher = file.transferTo(tempFile);
         return Single.fromPublisher(uploadPublisher)
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .map(upload -> {
                     imageService.writeSmallerImages(projectId, new FileInputStream(tempFile), file.getFilename());
                     Files.delete(tempFile.toPath());
@@ -63,33 +69,48 @@ public class ImageController {
     }
 
     @Get(value = "/api/{projectId}/export.zip")
-    public Writable export(@PathVariable String projectId) {
-        return new Writable() {
-            @Override
-            public void writeTo(Writer out) throws IOException {
-                throw new IllegalArgumentException();
-            }
-
-            @Override
-            public void writeTo(OutputStream outputStream, @Nullable Charset charset) throws IOException {
+    public StreamedFile export(@PathVariable String projectId) throws IOException {
+        PipedOutputStream outputStream = new PipedOutputStream();
+        InputStream inputStream = new PipedInputStream(outputStream);
+        Schedulers.io().scheduleDirect(() -> {
+            try {
                 imageService.export(projectId, null, outputStream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        };
+        });
+        return new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
+                .attach(projectId+".zip");
+
     }
 
     @Get(value = "/api/{projectId}/{shotId}/export.zip")
-    public Writable exportShot(@PathVariable String projectId, @PathVariable String shotId) {
-        return new Writable() {
-            @Override
-            public void writeTo(Writer out) throws IOException {
-                throw new IllegalArgumentException();
-            }
-
-            @Override
-            public void writeTo(OutputStream outputStream, @Nullable Charset charset) throws IOException {
+    public StreamedFile exportShot(@PathVariable String projectId, @PathVariable String shotId) throws IOException {
+        PipedOutputStream outputStream = new PipedOutputStream();
+        InputStream inputStream = new PipedInputStream(outputStream);
+        Schedulers.io().scheduleDirect(() -> {
+            try {
                 imageService.export(projectId, shotId, outputStream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        };
+        });
+        return new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
+                .attach(projectId+".zip");
     }
 
 }
