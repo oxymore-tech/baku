@@ -9,7 +9,7 @@ export const CaptureStore: BakuModule<CaptureState> = {
     activeCapture: false,
     scaleX: 1,
     scaleY: 1,
-    onionSkin: 3,
+    onionSkin: 0,
   },
   mutations: {
     attachMediaStream(state, stream: MediaStream) {
