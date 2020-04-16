@@ -2,7 +2,7 @@
 <template>
   <div class="boxContainer">
     <div class="settings-header">
-      <i class="icon-cog baku-button" />
+      <i class="icon-cog" />
       <h4>Caméra</h4>
     </div>
 
