@@ -209,6 +209,7 @@ export default class Shots extends Vue {
   public getExportUrl(shotId: string): string {
     return BakuService.getExportUrl(this.projectId, shotId);
   }
+
   public close() {
     this.$emit('close');
   }

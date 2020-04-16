@@ -19,7 +19,7 @@ const routes = [
 
   {
     name: 'smartphone',
-    path: '/smartphone',
+    path: '/smartphone/:socketId',
     component: SmartphoneView,
   },
   {

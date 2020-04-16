@@ -99,7 +99,8 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
     this.socket.messageListenerFunction = (message) => {
       switch (message.action) {
         case 'getSocketId':
-          this.qrvalue = message.value;
+          console.log(`${window.location.origin}/smartphone/${message.value}`);
+          this.qrvalue = `${window.location.origin}/smartphone/${message.value}`;
           break;
         case 'linkEstablished':
           this.createOffer().then((offer) => {
