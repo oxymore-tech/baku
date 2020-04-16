@@ -38,7 +38,7 @@
             <img
               id="previewImg"
               ref="previewImg"
-              src="@/assets/baku-balls-spinner.svg"
+              src="@/assets/baku-cloud-spinner.svg"
               :class="{hidden: activeCapture}"
             />
           </div>
