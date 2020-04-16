@@ -1,7 +1,7 @@
 <template>
   <div class="boxContainer storyboard-preview-container">
-    <div class="storyboard-preview-header">
-      <i class="icon-grid baku-button" @click="onDisplayShots()"/>
+    <div class="storyboard-preview-header"  @click="onDisplayShots()">
+      <i class="icon-grid baku-button"/>
       <h4>Plans</h4>
     </div>
     <img
