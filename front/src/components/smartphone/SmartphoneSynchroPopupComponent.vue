@@ -1,9 +1,6 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <div
-    class="modal-card"
-    style="width: auto"
-  >
+  <div class="modal-card" style="width: auto">
     <header class="modal-card-head">
       <p class="modal-card-title">Synchroniser la caméra smartphone</p>
     </header>
@@ -13,34 +10,16 @@
         <li>Autoriser la caméra</li>
         <li>Fixer le QR Code avec la caméra de votre smartphone</li>
       </ul>
-      <qrcode
-        :value="qrvalue"
-        :options="options"
-        v-if="qrvalue && status !== 'CONNECTED'"
-      ></qrcode>
+      <qrcode :value="qrvalue" :options="options" v-if="qrvalue && status !== 'CONNECTED'"></qrcode>
       <h1
         class="title is-4 has-text-warning"
         v-if="status === 'WAITING'"
-      >
-        Synchronisation en attente...
-      </h1>
-      <h1
-        class="title is-4 has-text-danger"
-        v-if="status === 'ERROR'"
-      >
-        Erreur de synchronisation
-      </h1>
-      <h1
-        class="title is-4 has-text-success"
-        v-if="status === 'CONNECTED'"
-      >Synchronisation OK</h1>
+      >Synchronisation en attente...</h1>
+      <h1 class="title is-4 has-text-danger" v-if="status === 'ERROR'">Erreur de synchronisation</h1>
+      <h1 class="title is-4 has-text-success" v-if="status === 'CONNECTED'">Synchronisation OK</h1>
     </section>
     <footer class="modal-card-foot">
-      <b-button
-        class="button"
-        type="button"
-        @click="$parent.close()"
-      >Fermer</b-button>
+      <b-button class="button" type="button" @click="$parent.close()">Fermer</b-button>
     </footer>
   </div>
 </template>
@@ -99,25 +78,30 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
     this.socket.messageListenerFunction = (message) => {
       switch (message.action) {
         case 'getSocketId':
+          console.log(message);
           console.log(`${window.location.origin}/smartphone/${message.value}`);
           this.qrvalue = `${window.location.origin}/smartphone/${message.value}`;
           break;
         case 'linkEstablished':
+          console.log(message);
           this.createOffer().then((offer) => {
             this.socket.sendWSMessage({ action: 'rtcOffer', value: offer });
           });
           break;
         case 'icecandidate':
+          console.log(message);
           if (message.value) {
             this.peerConnection.addIceCandidate(message.value);
           }
           break;
         case 'rtcAnswer':
+          console.log(message);
           this.peerConnection
             .setRemoteDescription(message.value)
-            .then(() => { });
+            .then(() => {});
           break;
         default:
+          console.log(message);
           break;
       }
     };
@@ -169,7 +153,6 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
       return null;
     }
   }
-
 
   private onIceCandidate(event: any) {
     this.socket.sendWSMessage({

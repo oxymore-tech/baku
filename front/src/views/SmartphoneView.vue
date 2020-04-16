@@ -59,7 +59,7 @@ export default class SmartphoneView extends Vue {
 
   @Watch('socketStatus')
   public onSocketStatusChanged() {
-    if (this.socketStatus !== 'opened') {
+    if (this.socketStatus === 'opened') {
       this.socket.sendWSMessage({ action: 'link', value: this.socketId });
     }
   }
@@ -76,7 +76,8 @@ export default class SmartphoneView extends Vue {
           }
           break;
         default:
-          this.startStream(message.value);
+          console.log(message);
+          // this.startStream(message.value);
       }
     };
     this.peerConnection = new RTCPeerConnection({
