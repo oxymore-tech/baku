@@ -1,5 +1,8 @@
 package com.bakuanimation.server;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
@@ -9,12 +12,24 @@ import io.micronaut.websocket.annotation.OnClose;
 import io.micronaut.websocket.annotation.OnMessage;
 import io.micronaut.websocket.annotation.OnOpen;
 import io.micronaut.websocket.annotation.ServerWebSocket;
+import io.reactivex.Single;
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 @ServerWebSocket("/echo")
 public final class WebSocketController {
 
-    private WebSocketBroadcaster broadcaster;
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
+
+    private final WebSocketBroadcaster broadcaster;
+    private final BiMap<String, String> links = Maps.synchronizedBiMap(HashBiMap.create());
+    private final Map<String, String> sessions = Maps.newConcurrentMap();
+    private final AtomicLong ids = new AtomicLong();
 
     public WebSocketController(WebSocketBroadcaster broadcaster) {
         this.broadcaster = broadcaster;
@@ -22,36 +37,51 @@ public final class WebSocketController {
 
     @OnOpen
     public void onOpen(WebSocketSession session) {
-        System.out.println(session);
+        String sessionId = sessions.computeIfAbsent(session.getId(), s -> Long.toString(ids.getAndIncrement()));
+        LOGGER.info("new session id {}", sessionId);
     }
 
     @OnMessage
     public Publisher<String> onMessage(String message, WebSocketSession session) {
-        System.out.println(message);
+        String sessionId = sessions.get(session.getId());
+        LOGGER.debug("message from session id {}: {}", sessionId, message);
         JsonObject o = JsonParser.parseString(message).getAsJsonObject();
         if (o.get("action") != null) {
             String action = o.get("action").getAsString();
             if (action.equals("getSocketId")) {
                 JsonObject p = new JsonObject();
                 p.add("action", new JsonPrimitive("getSocketId"));
-                p.add("value", new JsonPrimitive(session.getId()));
+                p.add("value", new JsonPrimitive(sessionId));
                 return session.send(p.toString());
             } else if (action.equals("link")) {
-                String from = session.getId();
-                //String to = o.get("value").getAsString();
+                String socketId = o.get("value").getAsString();
+                links.put(sessionId, socketId);
                 JsonObject p = new JsonObject();
-                p.add("linkEstablished", new JsonPrimitive(from));
-                p.add("value", new JsonPrimitive(from));
-                //p.add("to", new JsonPrimitive(to));
-                return session.send(p.toString());
+                p.add("action", new JsonPrimitive("linkEstablished"));
+                p.add("value", new JsonPrimitive(sessionId));
+                return broadcaster.broadcast(p.toString(), aSession -> Optional.ofNullable(sessions.get(aSession.getId()))
+                        .map(socketId::equals)
+                        .orElse(false));
             }
         }
-        return broadcaster.broadcast(message);
+        String destId = Optional.ofNullable(links.get(sessionId))
+                .orElseGet(() -> Optional.ofNullable(links.inverse().get(sessionId))
+                        .orElse(sessionId));
+
+        return broadcaster.broadcast(message, aSession -> Optional.ofNullable(sessions.get(aSession.getId()))
+                .map(destId::equals)
+                .orElse(false));
 
     }
 
     @OnClose
     public void onClose(WebSocketSession session) {
+        Optional.ofNullable(sessions.remove(session.getId()))
+                .ifPresent(sessionId -> {
+                    LOGGER.info("Close {}", sessionId);
 
+                    links.remove(sessionId);
+                    links.inverse().remove(sessionId);
+                });
     }
 }
