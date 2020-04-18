@@ -5,40 +5,12 @@
       <h4>Plans</h4>
     </div>
     <img
-      class="shotPreview"
+      class="shot-preview"
       alt="preview"
       ref="preview"
     />
   </div>
 </template>
-
-<style lang="scss">
-  .storyboard-preview-container {
-    max-width: 292px;
-
-    .storyboard-preview-header {
-      display: inline-flex;
-      align-items: center;
-      width: 100%;
-
-      h4 {
-        font-size: 28px;
-        font-weight: lighter;
-      }
-
-      i {
-        font-size: 28px;
-        padding-right: 10px
-      }
-    }
-  }
-
-  .shotPreview {
-    width: 292px;
-    height: 164px;
-  }
-</style>
-
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -103,3 +75,30 @@ export default class StoryboardPreviewComponent extends Vue {
     }
 }
 </script>
+
+<style lang="scss">
+  .storyboard-preview-container {
+    max-width: 292px;
+
+    .storyboard-preview-header {
+      display: inline-flex;
+      align-items: center;
+      width: 100%;
+
+      h4 {
+        font-size: 28px;
+        font-weight: lighter;
+      }
+
+      i {
+        font-size: 28px;
+        padding-right: 10px
+      }
+    }
+  }
+
+  .shot-preview {
+    width: 292px;
+    height: 164px;
+  }
+</style>

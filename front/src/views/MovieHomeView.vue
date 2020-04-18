@@ -1,79 +1,25 @@
+<style lang="scss" scoped>
+  @import "../styles/movieHome.scss";
+</style>
+
 import {Quality} from "@/api/baku.service";
 <template>
   <div class="movie-home-main">
-    <div class="movieCard">
+    <div class="movie-card">
       <img
         v-if="poster"
         alt="poster"
-        class="moviePreview"
+        class="movie-preview"
         :src="poster"
       />
-      <div class="cardFooter">
-        <p class="movieTitle">{{ movie.title }}</p>
+      <div class="card-footer">
+        <p class="movie-title">{{ movie.title }}</p>
         <p>{{ movie.synopsis }}</p>
       </div>
     </div>
-    <button class="openButton" @click="onAccessProject">Accéder au film</button>
+    <button class="open-button" @click="onAccessProject">Accéder au film</button>
   </div>
 </template>
-
-<style lang="scss" scoped>
-  .movie-home-main {
-    background: #f2f2f2;
-    width: 100%;
-    height: calc(100% - 48px);
-    display: flex;
-    flex-direction: column;
-    padding: 24px;
-    justify-content: space-evenly;
-  }
-
-  .movieCard {
-    margin: 0 auto;
-    width: 569px;
-    height: 320px;
-    max-height: 620px;
-    min-height: 400px;
-    background: #ffffff 0 0 no-repeat padding-box;
-    border-radius: 16px;
-    opacity: 1;
-    font-size: 16px/6px;
-    letter-spacing: 0;
-    box-shadow: 0 0 20px #00000029;
-    display: flex;
-    flex-direction: column;
-
-    .cardFooter {
-      padding: 7px;
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-
-      .movieTitle {
-        font-size: 32px;
-      }
-    }
-
-    .moviePreview {
-      max-height: 320px;
-      width: 100%;
-      flex: 3;
-    }
-  }
-
-  .openButton {
-    margin: 0 auto;
-    width: 292px;
-    height: 48px;
-    background: #e66359 0 0 no-repeat padding-box;
-    box-shadow: 0 0 20px #00000029;
-    border-radius: 44px;
-    color: white;
-    border: 0;
-    cursor: pointer;
-    font-size: 16px;
-  }
-</style>
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator';

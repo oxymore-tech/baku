@@ -1,5 +1,5 @@
 <template>
-  <div class="mainFrame">
+  <div class="main-frame">
     <Shots
       :projectId="id"
       :shots="movie.shots"
@@ -45,11 +45,3 @@ export default class CaptureView extends AbstractProjectView {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.mainFrame {
-  height: calc(100% - 48px);
-  display: flex;
-  flex-direction: column;
-}
-</style>

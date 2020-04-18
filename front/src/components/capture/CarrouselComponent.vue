@@ -1,3 +1,7 @@
+<style lang="scss" scoped>
+  @import "../../styles/carrousel.scss";
+</style>
+
 <template>
   <div>
     <div class="toolbar">
@@ -26,27 +30,27 @@
         <span>Supprimer</span>
       </div>
     </div>
-    <div ref="carrouselContainer" class="carrouselContainer">
+    <div ref="carrouselContainer" class="carrousel-container">
       <!-- LEFT PART OF THE CARROUSEL -->
       <!-- Five divs to center capture button -->
-      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
-        <div class="carrouselThumb" />
+      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrousel-thumb" />
       </div>
-      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
-        <div class="carrouselThumb" />
+      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrousel-thumb" />
       </div>
-      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
-        <div class="carrouselThumb" />
+      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrousel-thumb" />
       </div>
-      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
-        <div class="carrouselThumb" />
+      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrousel-thumb" />
       </div>
       <template v-for="(image, index) in computedLeftCarrousel">
         <template v-if="image !== null">
-          <div :key="'left'+index" class="imageContainer">
+          <div :key="'left'+index" class="image-container">
             <span class="framenumber-indicator">{{ index + 1 }}</span>
             <img
-              class="carrouselThumb"
+              class="carrousel-thumb"
               :alt="image"
               :class="{active : selectedImagesForReal.includes(index)}"
               :src="ImageCacheService.getThumbnail(image.id)"
@@ -55,10 +59,10 @@
           </div>
         </template>
         <template v-else>
-          <div :key="'left'+index" class="imageContainer">
+          <div :key="'left'+index" class="image-container">
             <div
               @click="moveToImage($event, index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
-              class="carrouselThumb"
+              class="carrousel-thumb"
             />
           </div>
         </template>
@@ -66,18 +70,18 @@
 
       <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
       <template v-if="computedActiveImage !== null">
-        <div class="imageContainer" ref="carrouselActiveImg">
+        <div class="image-container" ref="carrouselActiveImg">
           <span class="framenumber-indicator">{{ activeImage + 1 }}</span>
           <img
             v-if="computedActiveImage !== undefined"
-            class="carrouselThumb active previewed"
+            class="carrousel-thumb active previewed"
             :alt="computedActiveImage"
             :src="ImageCacheService.getThumbnail(computedActiveImage.id)"
           />
         </div>
       </template>
       <template v-else>
-        <div ref="captureButtonComponent" class="carrouselThumb active">
+        <div ref="captureButtonComponent" class="carrousel-thumb active">
           <CaptureButtonComponent
             v-if="activeDevice"
             :device="activeDevice"
@@ -93,10 +97,10 @@
       <!-- RIGHT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedRightCarrousel">
         <template v-if="image !== null">
-          <div :key="'right'+index" class="imageContainer">
+          <div :key="'right'+index" class="image-container">
             <span class="framenumber-indicator">{{ activeImage + index + 2 }}</span>
             <img
-              class="carrouselThumb"
+              class="carrousel-thumb"
               :alt="image"
               :class="{active : selectedImagesForReal.includes(activeImage + index +1)}"
               :src="ImageCacheService.getThumbnail(image.id)"
@@ -110,17 +114,17 @@
       </template>
 
       <!-- Five divs to center capture button -->
-      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
-        <div class="carrouselThumb" />
+      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrousel-thumb" />
       </div>
-      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
-        <div class="carrouselThumb" />
+      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrousel-thumb" />
       </div>
-      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
-        <div class="carrouselThumb" />
+      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrousel-thumb" />
       </div>
-      <div class="imageContainer"  :style="{ display: activeCapture? 'block':'none'}">
-        <div class="carrouselThumb" />
+      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+        <div class="carrousel-thumb" />
       </div>
       <template v-if="computedNextImages">
         <img
@@ -133,76 +137,6 @@
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.toolbar {
-  display: inline-flex;
-  width: 100%;
-  background: #ffffff;
-  border-radius: 8px 8px 0 0;
-  border-bottom: 1px solid #f2f2f2;
-  padding: 11px 28px;
-}
-
-.toolbar-button {
-  margin: 0 5px;
-  cursor: pointer;
-}
-
-.disabled {
-  color: lightgray;
-  cursor: not-allowed;
-}
-
-.carrouselContainer {
-  background: white;
-  width: 100%;
-  height: 104px;
-  display: inline-flex;
-  flex-wrap: nowrap;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  padding: 12px 21px;
-  align-items: center;
-
-  .framenumber-indicator {
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 0px 3px;
-    border-radius: 60%;
-    font-size: 12px;
-    background: rgba(255, 255, 255, 0.8);
-  }
-
-  .imageContainer {
-    border: 2px solid transparent;
-    position: relative;
-    // filter: grayscale(100%);
-
-    .carrouselThumb {
-      height: 78px;
-      min-width: 140px;
-      margin: 0px 15px;
-      border: 2px solid #f2f2f2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      &.active {
-        border: 3px solid #ffbd72;
-        border-radius: 4px;
-        padding: 1px;
-        box-sizing: content-box;
-      }
-
-      &.previewed {
-        background-color: red;
-      }
-    }
-  }
-}
-</style>
 
 <script lang="ts">
 import {

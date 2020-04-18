@@ -9,6 +9,15 @@
   </div>
 </template>
 
+<script lang="ts">
+import { Component } from 'vue-property-decorator';
+import AbstractProjectView from './AbstractProjectView.vue';
+
+@Component
+export default class TodoView extends AbstractProjectView {
+}
+</script>
+
 <style lang="scss" scoped>
 .main {
   background: white;
@@ -38,12 +47,3 @@
   }
 }
 </style>
-
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
-import AbstractProjectView from './AbstractProjectView.vue';
-
-@Component
-export default class TodoView extends AbstractProjectView {
-}
-</script>

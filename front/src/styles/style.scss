@@ -4,6 +4,12 @@ body {
   overflow: hidden;
 }
 
+.main-frame {
+  height: calc(100% - 48px);
+  display: flex;
+  flex-direction: column;
+}
+
 #app {
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
   color: #455054;

@@ -1,10 +1,14 @@
+<style lang="scss" scoped>
+  @import "../styles/shots.scss";
+</style>
+
 <template>
   <div class="shots">
-    <div class="shotCardsContainer">
+    <div class="shot-cards-container">
       <div
         v-for="shot in shots"
         :key="shot.id"
-        class="shotCard"
+        class="shot-card"
       >
         <b-dropdown
           aria-role="list"
@@ -25,22 +29,22 @@
           >Supprimer le plan</b-dropdown-item>
         </b-dropdown>
         <a
-          class="activateShotLink"
+          class="activate-shot-link"
           @click="activateShot(shot.id)"
         >
           <img
-            class="shotPreview"
+            class="shot-preview"
             :src="shot.previewUrl"
             alt="shotPreview"
           />
-          <div class="cardFooter">
+          <div class="card-footer">
             <p>{{ shot.name }}</p>
           </div>
         </a>
 
       </div>
       <div
-        class="shotCard createShot"
+        class="shot-card create-shot"
         @click="createNewShot()"
       >
         <img
@@ -49,112 +53,11 @@
           width="48px"
           height="48px"
         />
-        <a class="activateShotLink">Créer un plan</a>
+        <a class="activate-shot-link">Créer un plan</a>
       </div>
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.createButton {
-  margin: 24px 0 0 auto;
-  width: 292px;
-  height: 48px;
-  background: #fe676f 0 0 no-repeat padding-box;
-  box-shadow: 0 0 20px #00000029;
-  border-radius: 44px;
-  color: white;
-  border: 0;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.shots {
-  width: 100%;
-  height: 100%;
-  background: #f2f2f2;
-  display: flex;
-  flex-direction: column;
-
-  .shotsTitle {
-    margin: 0 24px;
-    display: inline-flex;
-    align-items: baseline;
-    justify-content: space-between;
-
-    h3 {
-      font-size: 28px;
-      font-weight: bold;
-    }
-  }
-}
-
-.shotCardsContainer {
-  width: 100%;
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  overflow-y: auto;
-}
-
-.shotPreview {
-  width: 100%;
-  height: 164px;
-  max-width: unset;
-}
-
-.shotCard {
-  width: 292px;
-  height: 241px;
-  background: #ffffff 0 0 no-repeat padding-box;
-  border-radius: 16px;
-  opacity: 1;
-  margin: 24px;
-  font-size: 16px/6px;
-  letter-spacing: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  align-items: center;
-  position: relative;
-
-  .cardFooter {
-    padding: 7px;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .shotName {
-    text-align: center;
-    color: #455054;
-  }
-
-  .activateShotLink {
-    color: #fe676f;
-    text-align: center;
-  }
-
-  .shot-menu {
-    position: absolute;
-    align-self: flex-end;
-  }
-}
-
-.createShot {
-  justify-content: center;
-  align-items: center;
-
-  img {
-    cursor: pointer;
-  }
-}
-
-.shotCard:hover {
-  box-shadow: 0 0 20px #00000029;
-}
-</style>
 
 
 <script lang="ts">

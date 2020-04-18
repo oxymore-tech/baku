@@ -1,0 +1,68 @@
+.shots {
+  width: 100%;
+  height: 100%;
+  background: #f2f2f2;
+  display: flex;
+  flex-direction: column;
+}
+
+.shot-cards-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: auto;
+}
+
+.shot-preview {
+  width: 100%;
+  height: 164px;
+  max-width: unset;
+}
+
+.shot-card {
+  width: 292px;
+  height: 241px;
+  background: #ffffff 0 0 no-repeat padding-box;
+  border-radius: 16px;
+  opacity: 1;
+  margin: 24px;
+  font-size: 16px/6px;
+  letter-spacing: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  align-items: center;
+  position: relative;
+
+  .card-footer {
+    padding: 7px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .activate-shot-link {
+    color: #fe676f;
+    text-align: center;
+  }
+
+  .shot-menu {
+    position: absolute;
+    align-self: flex-end;
+  }
+}
+
+.create-shot {
+  justify-content: center;
+  align-items: center;
+
+  img {
+    cursor: pointer;
+  }
+}
+
+.shot-card:hover {
+  box-shadow: 0 0 20px #00000029;
+}

@@ -1,5 +1,9 @@
+<style lang="scss" scoped>
+  @import "../styles/collaboration.scss";
+</style>
+
 <template>
-  <div class="mainFrame">
+  <div class="main-frame">
     <div class="history">
       <h4 class="title">Historique des actions :</h4>
       <ul>
@@ -64,46 +68,3 @@ export default class CollaborationView extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.mainFrame {
-  background: white;
-  width: 100%;
-  height: calc(100% - 48px);
-  display: inline-flex;
-  flex-direction: column;
-  overflow: auto;
-}
-
-.history {
-  margin: 24px 24px;
-}
-
-.title {
-  text-align: left;
-  font-size: 24px;
-  font-weight: lighter;
-  color: #455054;
-  margin: 5px 0;
-}
-
-.action {
-  text-align: left;
-  font-size: 18px;
-  font-weight: lighter;
-  color: #455054;
-  border-bottom: 1px solid #f2f2f2;
-  margin: 5px;
-}
-
-.action-highlight {
-  color: #27a2bb;
-  font-weight: bold;
-}
-
-.action-date {
-  font-weight: lighter;
-  font-size: 14px;
-  color: #7f7f7f;
-}
-</style>

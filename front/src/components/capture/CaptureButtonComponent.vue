@@ -1,28 +1,24 @@
 <template>
   <div class="webcamCapture">
     <div
-      id="captureButton"
-      class="captureButton"
+      id="capture-button"
+      class="capture-button"
       @click="capture()"
       :class="{ capturing: isCapturing, hidden: !mediaOk }"
     >
-      <img alt="camera" class="captureIcon" src="@/assets/camera-solid-orange.svg" />
+      <img alt="camera" class="capture-icon" src="@/assets/camera-solid-orange.svg" />
     </div>
   </div>
 </template>
 
 <style lang="scss">
-.captureButton {
+.capture-button {
   width: 144px;
   height: 82px;
   font-size: 30px;
   cursor: pointer;
   color: #e66359;
   text-align: center;
-}
-
-#remoteVideo {
-  height: 157px;
 }
 
 .hidden {
@@ -34,7 +30,7 @@
   cursor: progress;
 }
 
-.captureIcon {
+.capture-icon {
   margin-top: 18px;
   width: 48px;
   height: 43px;
