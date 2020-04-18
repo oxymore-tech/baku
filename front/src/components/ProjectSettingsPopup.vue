@@ -31,7 +31,7 @@
 
 <style lang="scss">
   input, textarea {
-    width: 200px;
+    width: 100%;
   }
   .baku-button {
     margin-left: 5px;
