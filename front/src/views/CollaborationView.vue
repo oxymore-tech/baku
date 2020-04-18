@@ -22,15 +22,16 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import AbstractProjectView from './AbstractProjectView.vue';
+import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { BakuAction, BakuEvent } from '@/api/baku.service';
 
 const ProjectNS = namespace('project');
 
 @Component
-export default class CollaborationView extends Vue {
-  @ProjectNS.Getter
+export default class CollaborationView extends AbstractProjectView {
+  @ProjectNS.State
   public history!: BakuEvent[];
 
   public user(event: BakuEvent): string {

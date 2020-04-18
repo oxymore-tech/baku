@@ -10,8 +10,7 @@ import { BakuRootState } from './store.types';
 Vue.use(Vuex);
 
 const bakuStore: StoreOptions<BakuRootState> = {
-  mutations: {
-  },
+  mutations: {},
   actions: {},
   modules: {
     webrtc: WebrtcStore,
