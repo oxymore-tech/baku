@@ -33,11 +33,11 @@ public class ImageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageService.class);
 
-    private final Path imagePath;
+    private final PathService pathService;
     private final HistoryService historyService;
 
     public ImageService(PathService pathService, HistoryService historyService) {
-        this.imagePath = pathService.imagePath();
+        this.pathService = pathService;
         this.historyService = historyService;
     }
 
@@ -77,16 +77,12 @@ public class ImageService {
 
     private void writeSmallerImages(BufferedImage image, String projectId, String filename) {
         try {
-            save(reduce(image, 1280), imagePath.resolve(projectId).resolve("original").resolve(filename), 1f);
-            save(reduce(image, 1280), imagePath.resolve(projectId).resolve("lightweight").resolve(filename), .3f);
-            save(reduce(image, 355), imagePath.resolve(projectId).resolve("thumbnail").resolve(filename), .6f);
+            save(reduce(image, 1280), pathService.getImageFile(projectId, "original", filename), 1f);
+            save(reduce(image, 1280), pathService.getImageFile(projectId, "lightweight", filename), .3f);
+            save(reduce(image, 355), pathService.getImageFile(projectId, "thumbnail", filename), .6f);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public Path getImage(Path imageName) {
-        return imagePath.resolve(imageName);
     }
 
     public void export(String projectId, @Nullable String shotId, OutputStream outputStream) throws IOException {

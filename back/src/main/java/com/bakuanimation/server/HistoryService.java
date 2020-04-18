@@ -23,21 +23,19 @@ import java.util.concurrent.Executors;
 
 @Singleton
 public class HistoryService {
-    private final Path stackDirectory;
-    private final Path imageDirectory;
     private final Scheduler stackScheduler;
+    private final PathService pathService;
 
     public HistoryService(PathService pathService) {
-        this.stackDirectory = pathService.stackDirectory();
-        this.imageDirectory = pathService.imagePath();
         this.stackScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
+        this.pathService = pathService;
     }
 
     @VisibleForTesting
     void writeHistory(String projectId, JsonArray content) throws IOException {
-        Path stackFile = stackFile(projectId);
-        Files.createDirectories(stackDirectory);
-        Path temp = Files.createTempFile(stackDirectory, "_", ".temp");
+        Path stackFile = pathService.getStackFile(projectId);
+        Path temp = pathService.getStackTempFile(projectId);
+        pathService.createDirectory(projectId);
         try (Writer w = new OutputStreamWriter(new FileOutputStream(temp.toFile()), StandardCharsets.UTF_8)) {
             w.write(content.toString());
         }
@@ -48,17 +46,13 @@ public class HistoryService {
     }
 
     public JsonArray readHistory(String projectId) throws IOException {
-        Path stackFile = stackFile(projectId);
+        Path stackFile = pathService.getStackFile(projectId);
         if (!Files.exists(stackFile)) {
             return new JsonArray();
         }
         try (Reader r = new InputStreamReader(new FileInputStream(stackFile.toFile()), StandardCharsets.UTF_8)) {
             return JsonParser.parseReader(r).getAsJsonArray();
         }
-    }
-
-    public Path stackFile(String projectId) {
-        return stackDirectory.resolve(projectId + ".stack");
     }
 
     public Single<Boolean> addStack(String projectId, byte[] stack) {
@@ -88,38 +82,38 @@ public class HistoryService {
             int action = o.get("action").getAsInt();
             switch (action) {
                 case 4: {
-                    // new shot
-                    String shotId = o.get("value").getAsJsonObject().get("shotId").getAsString();
-                    if (shot == null || shot.equals(shotId)) {
-                        shots.put(shotId, new LinkedList<>());
-                    }
-                    break;
+                            // new shot
+                            String shotId = o.get("value").getAsJsonObject().get("shotId").getAsString();
+                            if (shot == null || shot.equals(shotId)) {
+                                shots.put(shotId, new LinkedList<>());
+                            }
+                            break;
                 }
                 case 3: {
-                    // add image
-                    JsonObject v = o.get("value").getAsJsonObject();
-                    String shotId = v.get("shotId").getAsString();
-                    if (shot == null || shot.equals(shotId)) {
-                        int imageIndex = v.get("imageIndex").getAsInt();
-                        String image = v.get("image").getAsString();
-                        Path imageFile = imageDirectory.resolve(projectId).resolve("original").resolve(image);
-                        shots.computeIfAbsent(shotId, k -> new LinkedList<>()).add(imageIndex, imageFile);
-                    }
-                    break;
+                            // add image
+                            JsonObject v = o.get("value").getAsJsonObject();
+                            String shotId = v.get("shotId").getAsString();
+                            if (shot == null || shot.equals(shotId)) {
+                                int imageIndex = v.get("imageIndex").getAsInt();
+                                String imageId = v.get("image").getAsString();
+                                Path imageFile = pathService.getImageFile(projectId, "original", imageId);
+                                shots.computeIfAbsent(shotId, k -> new LinkedList<>()).add(imageIndex, imageFile);
+                            }
+                            break;
                 }
                 case 6: {
-                    // remove image
-                    JsonObject v = o.get("value").getAsJsonObject();
-                    String shotId = v.get("shotId").getAsString();
-                    if (shot == null || shot.equals(shotId)) {
-                        int imageIndex = v.get("imageIndex").getAsInt();
-                        shots.get(shotId).remove(imageIndex);
-                    }
-                    break;
+                            // remove image
+                            JsonObject v = o.get("value").getAsJsonObject();
+                            String shotId = v.get("shotId").getAsString();
+                            if (shot == null || shot.equals(shotId)) {
+                                int imageIndex = v.get("imageIndex").getAsInt();
+                                shots.get(shotId).remove(imageIndex);
+                            }
+                            break;
                 }
                 default: {
-                    // Ignored
-                    break;
+                             // Ignored
+                             break;
                 }
             }
         }

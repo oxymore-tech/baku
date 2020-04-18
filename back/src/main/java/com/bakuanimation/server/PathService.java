@@ -3,9 +3,11 @@ package com.bakuanimation.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import javax.inject.Singleton;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Files;
 
 @Singleton
 public class PathService {
@@ -23,11 +25,32 @@ public class PathService {
         LOGGER.info("Data path : {}", dataPath);
     }
 
-    Path stackDirectory() {
-        return dataPath.resolve("stacks");
+    private Path projectDir(String projectId) {
+        return dataPath
+            .resolve(projectId);
     }
 
-    public Path imagePath() {
-        return dataPath.resolve("images");
+    public void createDirectory(String projectId) throws IOException {
+        Files.createDirectories(this.projectDir(projectId));
+    }
+
+    public Path getStackFile(String projectId) {
+        return this
+            .projectDir(projectId)
+            .resolve("stack.json");
+    }
+
+    public Path getStackTempFile(String projectId) {
+        return this
+            .projectDir(projectId)
+            .resolve("stack.json.tmp");
+    }
+
+    public Path getImageFile(String projectId, String imageType, String imageId) {
+        return this
+            .projectDir(projectId)
+            .resolve("images")
+            .resolve(imageType)
+            .resolve(imageId);
     }
 }

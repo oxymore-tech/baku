@@ -16,9 +16,11 @@ import java.util.Arrays;
 public class HistoryController {
 
     private final HistoryService historyService;
+    private final PathService pathService;
 
-    public HistoryController(HistoryService historyService) {
+    public HistoryController(HistoryService historyService, PathService pathService) {
         this.historyService = historyService;
+        this.pathService = pathService;
     }
 
     @Post("/api/{projectId}/stack")
@@ -29,7 +31,7 @@ public class HistoryController {
 
     @Get("/api/{projectId}/history")
     public Single<byte[]> stack(@PathVariable String projectId) {
-        Path imagePath = historyService.stackFile(projectId);
+        Path imagePath = pathService.getStackFile(projectId);
         return Single.fromCallable(() -> {
             if (!Files.exists(imagePath)) {
                 return "[]".getBytes();

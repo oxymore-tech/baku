@@ -22,9 +22,11 @@ import java.nio.file.Paths;
 public class ImageController {
 
     private final ImageService imageService;
+    private final PathService pathService;
 
-    public ImageController(ImageService imageService) {
+    public ImageController(ImageService imageService, PathService pathService) {
         this.imageService = imageService;
+        this.pathService = pathService;
     }
 
     @Post(value = "/api/{projectId}/upload", consumes = MediaType.MULTIPART_FORM_DATA)
@@ -50,7 +52,7 @@ public class ImageController {
     public HttpResponse<Object> getImage(@PathVariable String projectId,
                                          @PathVariable String quality,
                                          @PathVariable String imageName) {
-        var imagePath = imageService.getImage(Paths.get(projectId).resolve(quality).resolve(imageName));
+        var imagePath = pathService.getImageFile(projectId, quality, imageName);
         if (Files.exists(imagePath)) {
             return HttpResponse.ok(new SystemFile(imagePath.toFile()).attach(imageName));
         } else {
