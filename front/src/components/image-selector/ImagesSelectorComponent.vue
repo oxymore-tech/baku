@@ -3,7 +3,6 @@
     <ReadingSliderComponent
       :value="sliderValue"
       @input="onSliderValueChange"
-      @customFormatter="val => val + '%'"
       :min="0"
       :max="images.length - 1"
       :step="1"
