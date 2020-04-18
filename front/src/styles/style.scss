@@ -9,21 +9,10 @@ body {
   color: #455054;
   width: 100%;
   height: 100%;
-  //background: url("assets/main-background.jpg") 0% 0% no-repeat padding-box;
   background: #F2F2F2;
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
 }
-
-/* #nav {
-        padding: 30px;
-    }
-
-    #nav a {
-        font-weight: bold;
-        color: #2c3e50;
-        margin-left: 16px;
-    } */
 
 nav {
   width: 100%;
@@ -54,12 +43,12 @@ nav {
   border-radius: 17px;
 }
 
-.boxContainer {
+.box-container {
   border-radius: 8px;
   padding: 6px;
 }
 
-.bakulogo {
+.baku-logo {
   height: 40px;
   width: auto;
 }

@@ -1,10 +1,10 @@
-.mainFrame {
+.main-frame {
   height: calc(100% - 48px);
   display: flex;
   flex-direction: column;
 }
 
-.previewBloc {
+.preview-bloc {
   display: flex;
   width: 100%;
   flex: 1;
@@ -12,7 +12,7 @@
   padding: 10px 24px;
 }
 
-#previewImg {
+#preview-img {
   min-width: 640px;
   min-height: 360px;
   max-height: 720px;
@@ -21,7 +21,7 @@
   background: white;
 }
 
-#ghostImg {
+#ghost-img {
   min-width: 640px;
   min-height: 360px;
   max-height: 720px;
@@ -30,7 +30,7 @@
   opacity: 1;
 }
 
-.onionSkin {
+.onion-skin {
   min-width: 640px;
   min-height: 360px;
   max-height: 720px;
@@ -39,15 +39,7 @@
   opacity: 0.3;
 }
 
-.previewContainer {
-  width: 1024px;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.previewContent {
+.preview-content {
   width: 1024px;
   height: 576px;
   background: #ffffff 0 0 no-repeat padding-box;
@@ -60,7 +52,7 @@
   position: relative;
 }
 
-#videoCapture {
+#video-capture {
   min-width: 640px;
   min-height: 360px;
   max-height: 720px;
@@ -68,7 +60,7 @@
   max-width: 100%;
 }
 
-#videoCaptureFullscreen {
+#video-capture-fullscreen {
   display: none;
   position: absolute;
   top: 0;
@@ -80,27 +72,27 @@
 }
 
 @media screen and (max-width: 1699px) {
-  #videoCapture {
+  #video-capture {
     width: 640px;
     height: 360px;
   }
-  .previewContainer {
+  .preview-container {
     width: 640px;
   }
 
-  .previewContent {
+  .preview-content {
     width: 640px;
     height: 360px;
   }
 
-  #previewImg {
+  #preview-img {
     width: 640px;
     height: 360px;
   }
 }
 
 @media screen and (min-width: 1700px) {
-  #videoCapture {
+  #video-capture {
     width: 1024px;
   }
 }
@@ -113,7 +105,7 @@
   color: #cccccc;
 }
 
-.mediaControls {
+.media-controls {
   width: 100%;
   display: flex;
   font-size: 18px;
@@ -137,7 +129,7 @@
     margin-left: 100px;
   }
 
-  .activeCapture {
+  .active-capture {
     color: #e66359;
   }
 

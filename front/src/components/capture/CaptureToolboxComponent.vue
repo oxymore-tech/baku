@@ -1,6 +1,6 @@
 <!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
-  <div class="boxContainer">
+  <div class="box-container">
     <div class="settings-header">
       <i class="icon-cog" />
       <h4>Caméra</h4>

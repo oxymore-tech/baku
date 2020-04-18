@@ -5,7 +5,7 @@
     <nav>
       <div class="left-nav">
         <a style="height:auto" href="/">
-          <img src="@/assets/baku_logo.svg" class="bakulogo" alt="bakuanimation" />
+          <img src="@/assets/baku_logo.svg" class="baku-logo" alt="bakuanimation" />
         </a>
         <span class="movie-title" v-if="id && movie !==undefined">{{movie.title}}</span>
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />

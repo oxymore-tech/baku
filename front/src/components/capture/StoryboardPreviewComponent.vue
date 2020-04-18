@@ -1,5 +1,5 @@
 <template>
-  <div class="boxContainer storyboard-preview-container">
+  <div class="box-container storyboard-preview-container">
     <div class="storyboard-preview-header"  @click="onDisplayShots()">
       <i class="icon-grid baku-button"/>
       <h4>Plans</h4>

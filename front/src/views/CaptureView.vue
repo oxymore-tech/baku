@@ -1,19 +1,19 @@
 <template>
-  <div class="mainFrame">
+  <div class="main-frame">
     <template>
-      <div class="previewBloc">
+      <div class="preview-bloc">
         <StoryboardPreviewComponent
           ref="previewComponent"
           :shots="movie.shots"
           :activeShot="getActiveShot"
         />
-        <div class="previewContainer">
-          <div class="previewContent">
+        <div class="preview-container">
+          <div class="preview-content">
             <template v-if="onionSkin">
               <img
                 v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkin +1] && activeCapture && onionSkin > 0"
                 alt="ghostImg"
-                id="ghostImg"
+                id="ghost-img"
                 :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkin +1].id)"
               />
               <template v-for="ghostIndex in onionSkinAsArray">
@@ -21,14 +21,14 @@
                   :key="ghostIndex"
                   v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeCapture"
                   alt="ghostImg"
-                  class="onionSkin"
+                  class="onion-skin"
                   :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - ghostIndex].id)"
                 />
               </template>
             </template>
             <video
               v-if="activeCapture"
-              id="videoCapture"
+              id="video-capture"
               ref="videoCapture"
               :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkin > 0 ? 0.4 : 1}"
               autoplay
@@ -36,7 +36,7 @@
               playsinline
             />
             <img
-              id="previewImg"
+              id="preview-img"
               ref="previewImg"
               src="@/assets/baku-cloud-spinner.svg"
               :class="{hidden: activeCapture}"
@@ -52,7 +52,7 @@
             :activeCapture="activeCapture"
             v-model="selectedImages"
           />
-          <div class="mediaControls">
+          <div class="media-controls">
             <div class="clock">
               <span>{{nbHours(this.currentDisplayedFrame)}}</span>
               <span class="clock-small">:</span>
@@ -123,9 +123,10 @@
             />
             <div
               class="toolbar-button toolbar-capture-button"
-              :class="{ activeCapture: activeCapture}"
-              @click="setActiveCapture(activeCapture)"
-            >Mode Capture</div>
+              :class="{'active-capture': activeCapture}"
+              @click="setActiveCapture(activeCapture)">
+            Mode Capture
+            </div>
             <div class="toolbar-button">
               <img
                 style="height: 28px; width:28px"
@@ -160,7 +161,7 @@
     </template>
     <video
       v-if="activeCapture"
-      id="videoCaptureFullscreen"
+      id="video-capture-fullscreen"
       ref="videoCaptureFullscreen"
       :style="{transform: 'scale(' + scaleX +', ' +scaleY +')'}"
       autoplay
@@ -499,5 +500,5 @@ export default class CaptureView extends AbstractProjectView {
 </script>
 
 <style lang="scss" scoped>
-  @import "../styles/Capture.scss";
+  @import "../styles/capture.scss";
 </style>
