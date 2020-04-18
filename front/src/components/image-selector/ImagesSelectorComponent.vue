@@ -22,7 +22,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ImageRef } from '@/api/uploadedImage.class';
 import ReadingSliderComponent from '@/components/image-selector/ReadingSliderComponent.vue';
-import ReadingSliderTickComponent from '@/components/image-selector/ReadingSliderTickComponent.vue';
 import {
   ReadingSliderBoundaries,
   ReadingSliderValue,
@@ -31,18 +30,11 @@ import {
 @Component({
   components: {
     ReadingSliderComponent,
-    ReadingSliderTickComponent,
   },
 })
 export default class ImagesSelectorComponent extends Vue {
   @Prop()
   public images!: ImageRef[];
-
-  @Prop()
-  public projectId!: string;
-
-  @Prop()
-  public activeShot!: string;
 
   @Prop()
   public activeImage!: number;

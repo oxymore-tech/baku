@@ -23,14 +23,8 @@ const WebRTCNS = namespace('webrtc');
 
 @Component
 export default class StoryboardPreviewComponent extends Vue {
-  @Prop({ required: true })
-  public shots!: Shot[];
-
   @Prop()
   public activeShot!: Shot;
-
-  @Prop()
-  public displayShots!: boolean;
 
   @ProjectNS.State
   public id!: string;

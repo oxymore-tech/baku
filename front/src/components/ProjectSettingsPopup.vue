@@ -2,7 +2,7 @@
   <div
     class="modal-card"
     style="width: auto"
-  >
+    >
     <header class="modal-card-head">
       <p class="modal-card-title">Réglages du film</p>
       <i @click="$emit('close')" class="icon-close baku-button"></i>
@@ -13,9 +13,9 @@
       <div class="link-container">
         <a :href="getLink()">{{getLink()}}</a>
         <i class="baku-button"
-          v-bind:class="{ 'icon-copy': !copied, 'icon-check': copied }"
-          v-bind:title="copied ? 'Lien copié' : 'Copier dans le presse-papier'"
-          @click="copyLink()">
+           v-bind:class="{ 'icon-copy': !copied, 'icon-check': copied }"
+           v-bind:title="copied ? 'Lien copié' : 'Copier dans le presse-papier'"
+           @click="copyLink()">
         </i>
       </div>
       <br>
@@ -30,16 +30,16 @@
 </template>
 
 <style lang="scss">
-  input, textarea {
-    width: 100%;
-  }
-  .baku-button {
-    margin-left: 5px;
+input, textarea {
+  width: 100%;
+}
+.baku-button {
+  margin-left: 5px;
 
-    &.icon-check {
-      color: #009600;
-    }
+  &.icon-check {
+    color: #009600;
   }
+}
 </style>
 
 
@@ -51,52 +51,52 @@ import { Movie } from '@/api/movie.service';
 
 const ProjectNS = namespace('project');
 
-  @Component
+@Component
 export default class ProjectSettingsPopup extends Vue {
-    @ProjectNS.State
-    public id!: string;
+  @ProjectNS.State
+  public id!: string;
 
-    @ProjectNS.Getter
-    public movie!: Movie;
+  @ProjectNS.Getter
+  public movie!: Movie;
 
-    public url = window.location.origin;
+  public url = window.location.origin;
 
-    public copied: boolean = false;
+  public copied: boolean = false;
 
-    public setTitle(event: any) {
-      const newTitle = event.target.value;
-      if (newTitle !== this.movie.title) {
-        this.$store.dispatch('project/updateTitle', newTitle);
-      }
+  public setTitle(event: any) {
+    const newTitle = event.target.value;
+    if (newTitle !== this.movie.title) {
+      this.$store.dispatch('project/updateTitle', newTitle);
     }
+  }
 
-    public setSynopsis(event: any) {
-      const newSynopsis = event.target.value;
-      if (newSynopsis !== this.movie.synopsis) {
-        this.$store.dispatch('project/updateSynopsis', newSynopsis);
-      }
+  public setSynopsis(event: any) {
+    const newSynopsis = event.target.value;
+    if (newSynopsis !== this.movie.synopsis) {
+      this.$store.dispatch('project/updateSynopsis', newSynopsis);
     }
+  }
 
-    public setFps(event: any) {
-      const newFps = event.target.value;
-      if (newFps !== this.movie.fps) {
-        this.$store.dispatch('project/changeFps', newFps);
-      }
+  public setFps(event: any) {
+    const newFps = event.target.value;
+    if (newFps !== this.movie.fps) {
+      this.$store.dispatch('project/changeFps', newFps);
     }
+  }
 
-    public getLink(): string {
-      return `${this.url}/movies/${this.id}`;
-    }
+  public getLink(): string {
+    return `${this.url}/movies/${this.id}`;
+  }
 
-    public copyLink(): void {
-      const input = document.createElement('input');
-      input.value = this.getLink();
-      document.body.appendChild(input);
-      input.select();
-      input.setSelectionRange(0, 99999);
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      this.copied = true;
-    }
+  public copyLink(): void {
+    const input = document.createElement('input');
+    input.value = this.getLink();
+    document.body.appendChild(input);
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    this.copied = true;
+  }
 }
 </script>

@@ -50,11 +50,17 @@ const WebRTCNS = namespace('webrtc');
 
 @Component
 export default class CaptureButtonComponent extends Vue {
+  @Prop()
+  public projectId!: string;
+
   @Prop(Device)
   public readonly device!: Device;
 
-  @Prop()
-  public projectId!: string;
+  @CaptureNS.State
+  public scaleX!: number | 1;
+
+  @CaptureNS.State
+  public scaleY!: number | 1;
 
   @WebRTCNS.State
   public dataChannel!: RTCDataChannel;
@@ -66,12 +72,6 @@ export default class CaptureButtonComponent extends Vue {
   public peerConnected!: boolean;
 
   public mediaOk: boolean = false;
-
-  @CaptureNS.State
-  public scaleX!: number | 1;
-
-  @CaptureNS.State
-  public scaleY!: number | 1;
 
   public isCapturing = false;
 

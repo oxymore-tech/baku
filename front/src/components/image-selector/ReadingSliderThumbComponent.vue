@@ -30,12 +30,8 @@
 </template>
 
 <script>
-// import Tooltip from '../tooltip/Tooltip'
 export default {
   name: 'BSliderThumb',
-  components: {
-    // [Tooltip.name]: Tooltip
-  },
   inheritAttrs: false,
   props: {
     value: {

@@ -6,9 +6,6 @@ const ProjectNS = namespace('project');
 
 @Component
 export default class Project extends Vue {
-  @ProjectNS.State
-  public history!: string;
-
   @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 

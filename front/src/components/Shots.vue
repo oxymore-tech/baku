@@ -77,9 +77,6 @@ export default class Shots extends Vue {
   @Prop({ required: true })
   public projectId!: string;
 
-  @Prop({ required: true })
-  public activeShotId!: string;
-
   get shots(): Shots {
     return this.$store.getters['project/movie'].shots.map(
       (shot: any, index: any): Shot => {

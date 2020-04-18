@@ -56,7 +56,6 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   @CaptureNS.Action('setActiveCapture')
   private setActiveCapture!: ({}) => Promise<void>;
 
-
   private socket!: WSSocket;
 
   private peerConnection!: RTCPeerConnection;

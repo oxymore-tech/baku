@@ -1,4 +1,3 @@
-<!-- Source: https://fengyuanchen.github.io/vue-qrcode/ -->
 <template>
   <div class="box-container">
     <div class="settings-header">
@@ -85,9 +84,6 @@ export default class CaptureToolboxComponent extends Vue {
 
   @CaptureNS.State('onionSkin')
   protected onionSkin!: number;
-
-  @WebRTCNS.State('dataChannel')
-  protected dataChannel!: RTCDataChannel;
 
   @WebRTCNS.Action('resetState')
   private resetRTC!: () => Promise<void>;

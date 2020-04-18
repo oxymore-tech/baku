@@ -77,9 +77,6 @@ export default class App extends Vue {
   @ProjectNS.Getter
   public movie!: Movie;
 
-  @ProjectNS.State
-  public activeShotId!: string;
-
   @UserNS.State
   public username!: string;
 

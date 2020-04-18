@@ -72,9 +72,9 @@ export default class HomeView extends Vue {
 
   public description2 = 'C’est une plateforme de création de films d’animation collaborative destinée aux enfants.';
 
-  public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
-  Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
-  souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées.`;
+  // public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
+  //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
+  //   souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées.`;
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(

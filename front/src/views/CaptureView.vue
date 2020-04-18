@@ -203,9 +203,6 @@ export default class CaptureView extends AbstractProjectView {
   @ProjectNS.State
   public id!: string;
 
-  @ProjectNS.State
-  public activeShotId!: string;
-
   @ProjectNS.Getter
   public movie!: Movie;
 

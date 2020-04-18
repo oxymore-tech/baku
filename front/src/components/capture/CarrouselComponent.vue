@@ -177,9 +177,6 @@ export default class CarrouselComponent extends Vue {
   @Prop()
   public selectedImages!: ReadingSliderBoundaries;
 
-  @Prop()
-  public isPlaying!: 'animation' | 'selection' | null;
-
   @CaptureNS.State
   public activeDevice!: Device;
 

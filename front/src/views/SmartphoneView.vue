@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <SmartphoneLocalVideoComponent v-if="isConnected" /> -->
     <h1>QR Reader Page</h1>
 
     <video id="localVideo" autoplay playsinline width="1920" height="1080"></video>
@@ -35,8 +34,6 @@ export default class SmartphoneView extends Vue {
 
   public localVideo: any;
 
-  public error = '';
-
   public peerConnection!: RTCPeerConnection;
 
   private device = new Device('smartphone', 'Smartphone');
@@ -44,13 +41,6 @@ export default class SmartphoneView extends Vue {
   public created() {
     const { socketId } = this.$route.params;
     this.socketId = socketId;
-  }
-
-  @Watch('socketStatus')
-  public onSocketStatusChanged() {
-    if (this.socketStatus === 'opened') {
-      this.socket.sendWSMessage({ action: 'link', value: this.socketId });
-    }
   }
 
   public mounted() {
@@ -97,6 +87,13 @@ export default class SmartphoneView extends Vue {
         window.close();
       }
     };
+  }
+
+  @Watch('socketStatus')
+  public onSocketStatusChanged() {
+    if (this.socketStatus === 'opened') {
+      this.socket.sendWSMessage({ action: 'link', value: this.socketId });
+    }
   }
 
   private async startStream(remoteOffer: any) {
