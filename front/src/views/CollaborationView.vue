@@ -4,7 +4,7 @@
       <h4 class="title">Historique des actions :</h4>
       <ul>
         <li
-          v-for="(event, index) in history"
+          v-for="(event, index) in history.slice().reverse()"
           :key="`action_${index}`"
           class="action"
         >
