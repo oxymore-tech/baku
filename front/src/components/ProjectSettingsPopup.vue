@@ -10,11 +10,19 @@
     <section class="modal-card-body">
       <span>Votre film est automatiquement installé à l'adresse suivante :</span><br>
       <!-- TODO: use router -->
-      <a :href="url+'/movies/'+id">{{url+'/movies/'+id}}</a><br>
+      <div class="link-container">
+        <a :href="getLink()">{{getLink()}}</a>
+        <i class="baku-button"
+          v-bind:class="{ 'icon-copy': !copied, 'icon-check': copied }"
+          v-bind:title="copied ? 'Lien copié' : 'Copier dans le presse-papier'"
+          @click="copyLink()">
+        </i>
+      </div>
+      <br>
       <span>Titre du film</span><br>
       <input type="text" :value="movie.title" @blur="setTitle($event)"/><br>
       <span>Synopsis</span><br>
-      <input type="text" :value="movie.synopsis" @blur="setSynopsis($event)"/><br>
+      <textarea v-model="movie.synopsis" @blur="setSynopsis($event)" rows="4"></textarea><br>
       <span>Frequence</span><br>
       <input type="number" :value="movie.fps" @blur="setFps($event)"/><br>
     </section>
@@ -22,6 +30,16 @@
 </template>
 
 <style lang="scss">
+  input, textarea {
+    width: 100%;
+  }
+  .baku-button {
+    margin-left: 5px;
+
+    &.icon-check {
+      color: #009600;
+    }
+  }
 </style>
 
 
@@ -43,6 +61,8 @@ export default class ProjectSettingsPopup extends Vue {
 
     public url = window.location.origin;
 
+    public copied: boolean = false;
+
     public setTitle(event: any) {
       const newTitle = event.target.value;
       if (newTitle !== this.movie.title) {
@@ -62,6 +82,21 @@ export default class ProjectSettingsPopup extends Vue {
       if (newFps !== this.movie.fps) {
         this.$store.dispatch('project/changeFps', newFps);
       }
+    }
+
+    public getLink(): string {
+      return this.url + '/movies/' + this.id;
+    }
+
+    public copyLink(): void {
+      const input = document.createElement('input');
+      input.value = this.getLink();
+      document.body.appendChild(input);
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      this.copied = true;
     }
 }
 </script>
