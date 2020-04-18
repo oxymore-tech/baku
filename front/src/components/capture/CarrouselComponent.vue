@@ -212,6 +212,19 @@ export default class CarrouselComponent extends Vue {
           break;
         case KeyCodes.SPACE:
           this.$emit('togglePlay', e);
+          break;        
+        case KeyCodes.DELETE:
+          this.deleteFrame();
+          break;
+        case KeyCodes.C:
+          if (e.ctrlKey) {
+            this.onCopy();
+          }          
+          break;
+        case KeyCodes.V:
+          if (e.ctrlKey) {
+            this.onPaste();
+          }          
           break;
         default:
           break;

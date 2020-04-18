@@ -21,7 +21,9 @@ export enum KeyCodes {
   RIGHT_ARROW = 39,
   DOWN_ARROW = 40,
   INSERT = 45,
-  DELETE = 46
+  DELETE = 46,
+  C = 67,
+  V = 86
 }
 
 export interface Movie {
