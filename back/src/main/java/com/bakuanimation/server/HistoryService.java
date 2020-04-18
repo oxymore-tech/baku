@@ -8,6 +8,8 @@ import com.google.gson.JsonParser;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
@@ -23,6 +25,8 @@ import java.util.concurrent.Executors;
 
 @Singleton
 public class HistoryService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryService.class);
+
     private final Scheduler stackScheduler;
     private final PathService pathService;
 
@@ -82,38 +86,38 @@ public class HistoryService {
             int action = o.get("action").getAsInt();
             switch (action) {
                 case 4: {
-                            // new shot
-                            String shotId = o.get("value").getAsJsonObject().get("shotId").getAsString();
-                            if (shot == null || shot.equals(shotId)) {
-                                shots.put(shotId, new LinkedList<>());
-                            }
-                            break;
+                    // new shot
+                    String shotId = o.get("value").getAsJsonObject().get("shotId").getAsString();
+                    if (shot == null || shot.equals(shotId)) {
+                        shots.put(shotId, new LinkedList<>());
+                    }
+                    break;
                 }
                 case 3: {
-                            // add image
-                            JsonObject v = o.get("value").getAsJsonObject();
-                            String shotId = v.get("shotId").getAsString();
-                            if (shot == null || shot.equals(shotId)) {
-                                int imageIndex = v.get("imageIndex").getAsInt();
-                                String imageId = v.get("image").getAsString();
-                                Path imageFile = pathService.getImageFile(projectId, "original", imageId);
-                                shots.computeIfAbsent(shotId, k -> new LinkedList<>()).add(imageIndex, imageFile);
-                            }
-                            break;
+                    // add image
+                    JsonObject v = o.get("value").getAsJsonObject();
+                    String shotId = v.get("shotId").getAsString();
+                    if (shot == null || shot.equals(shotId)) {
+                        int imageIndex = v.get("imageIndex").getAsInt();
+                        String imageId = v.get("image").getAsString();
+                        Path imageFile = pathService.getImageFile(projectId, "original", imageId);
+                        shots.computeIfAbsent(shotId, k -> new LinkedList<>()).add(imageIndex, imageFile);
+                    }
+                    break;
                 }
                 case 6: {
-                            // remove image
-                            JsonObject v = o.get("value").getAsJsonObject();
-                            String shotId = v.get("shotId").getAsString();
-                            if (shot == null || shot.equals(shotId)) {
-                                int imageIndex = v.get("imageIndex").getAsInt();
-                                shots.get(shotId).remove(imageIndex);
-                            }
-                            break;
+                    // remove image
+                    JsonObject v = o.get("value").getAsJsonObject();
+                    String shotId = v.get("shotId").getAsString();
+                    if (shot == null || shot.equals(shotId)) {
+                        int imageIndex = v.get("imageIndex").getAsInt();
+                        shots.get(shotId).remove(imageIndex);
+                    }
+                    break;
                 }
                 default: {
-                             // Ignored
-                             break;
+                    // Ignored
+                    break;
                 }
             }
         }
