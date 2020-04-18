@@ -213,7 +213,7 @@ export default class CaptureButtonComponent extends Vue {
     this.$emit('uploaded', id);
   }
 
-  private async onCaptured(id: string, thumb: Blob, b64: string) {
+  private async onCaptured(id: string, thumb: Blob | undefined, b64: string) {
     this.$emit('captured', id, thumb, b64);
     this.isCapturing = false;
   }
