@@ -85,7 +85,7 @@ export default class ProjectSettingsPopup extends Vue {
     }
 
     public getLink(): string {
-      return this.url + '/movies/' + this.id;
+      return `${this.url}/movies/${this.id}`;
     }
 
     public copyLink(): void {

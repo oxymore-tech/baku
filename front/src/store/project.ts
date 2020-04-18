@@ -60,7 +60,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
       loadEvent(context, BakuAction.MOVIE_INSERT_IMAGE, payload);
     },
     async removeImageFromShot(context,
-      payload: { shotId: string, imageIndex: number }) {
+      payload: { shotId: string, imageIndex: number }[]) {
       loadEvent(context, BakuAction.MOVIE_REMOVE_IMAGE, payload);
     },
 

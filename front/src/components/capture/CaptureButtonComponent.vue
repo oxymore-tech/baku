@@ -6,11 +6,7 @@
       @click="capture()"
       :class="{ capturing: isCapturing, hidden: !mediaOk }"
     >
-      <img
-        alt="camera"
-        class="captureIcon"
-        src="@/assets/camera-solid-orange.svg"
-      />
+      <img alt="camera" class="captureIcon" src="@/assets/camera-solid-orange.svg" />
     </div>
   </div>
 </template>
@@ -83,7 +79,6 @@ export default class CaptureButtonComponent extends Vue {
 
   public isCapturing = false;
 
-
   public async mounted() {
     this.onDeviceIdChanged();
     window.addEventListener('keyup', (e: KeyboardEvent) => {
@@ -147,7 +142,9 @@ export default class CaptureButtonComponent extends Vue {
       const data = JSON.parse(event.data);
       switch (data.type) {
         case 'capture':
-          this.onCaptured(data.message, undefined, ''); // TODO when captured by smartphone, do we have b64 to add ?
+          const video = document.getElementById('video-capture') as HTMLVideoElement;
+          const [blob, b64] = this.captureOriginal(video, { scaleX: this.scaleX, scaleY: this.scaleY });
+          this.onCaptured(data.message, blob, b64);
           break;
         case 'upload':
           this.onUploaded(data.message);
@@ -170,7 +167,10 @@ export default class CaptureButtonComponent extends Vue {
 
   private async setupSmarphone() {
     this.setChannelEvents(this.dataChannel);
-    await this.$store.commit('capture/attachMediaStream', this.smartphoneStream);
+    await this.$store.commit(
+      'capture/attachMediaStream',
+      this.smartphoneStream,
+    );
   }
 
   private async setupWebCam() {
@@ -200,7 +200,7 @@ export default class CaptureButtonComponent extends Vue {
 
   private captureWebcam() {
     this.device.capture(
-      'videoCapture',
+      'video-capture',
       { scaleX: this.scaleX, scaleY: this.scaleY },
       this.projectId,
       this.onCaptured,
@@ -216,6 +216,45 @@ export default class CaptureButtonComponent extends Vue {
   private async onCaptured(id: string, thumb: Blob | undefined, b64: string) {
     this.$emit('captured', id, thumb, b64);
     this.isCapturing = false;
+  }
+
+  private captureOriginal(video: HTMLVideoElement, scales: {scaleX: number, scaleY: number}): [Blob, string] {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
+    context2d.scale(scales.scaleX, scales.scaleY);
+    context2d.drawImage(video, 0, 0, canvas.width * scales.scaleX, canvas.height * scales.scaleY);
+    const base64 = canvas.toDataURL('image/jpeg');
+    return [this.imagetoblob(base64), base64];
+  }
+
+  private imagetoblob(base64String: string): Blob {
+    // Split the base64 string in data and contentType
+    const block = base64String.split(';');
+    // Get the content type of the image
+    const contentType = block[0].split(':')[1]; // In this case "image/gif"
+    // get the real base64 content of the file
+    const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
+
+    // Convert it to a blob to upload
+    const byteCharacters = atob(realData);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: contentType });
   }
 }
 </script>
