@@ -2,7 +2,7 @@
   <div class="box-container storyboard-preview-container">
     <div class="storyboard-preview-header" @click="onDisplayShots()">
       <i class="icon-grid baku-button" />
-      <h4>Plans</h4>
+      <h4 class="baku-button">Plans</h4>
     </div>
     <img class="shot-preview" alt="preview" ref="preview" />
   </div>

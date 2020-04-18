@@ -281,13 +281,15 @@ export default class CarrouselComponent extends Vue {
     if (!this.activeCapture) {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
-      imagesToDelete.sort();
-      imagesToDelete.reverse();
+      imagesToDelete.sort((a: any, b: any) => b - a);
       Promise.all(
-        imagesToDelete.map((imgId: number) => this.removeImageFromShot({
-          shotId: this.activeShot,
-          imageIndex: imgId,
-        })),
+        imagesToDelete.map((imgId: number) => {
+          console.log(imgId);
+          return this.removeImageFromShot({
+            shotId: this.activeShot,
+            imageIndex: imgId,
+          });
+        }),
       );
       this.selectedImagesForReal = [];
     }
@@ -372,7 +374,7 @@ export default class CarrouselComponent extends Vue {
     if (!this.activeCapture) {
       const tmpImgsToCopy = this.selectedImagesForReal;
       tmpImgsToCopy.push(this.activeImage);
-      tmpImgsToCopy.sort();
+      tmpImgsToCopy.sort((a: any, b: any) => a - b);
       this.imagesToCopy = tmpImgsToCopy.map(
         (index) => this.images[index].id as string,
       );

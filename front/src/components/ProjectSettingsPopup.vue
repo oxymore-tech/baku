@@ -87,9 +87,9 @@ export default class ProjectSettingsPopup extends Vue {
     const path = this.$router.resolve({
       name: 'movieHome',
       params: {
-        projectId: this.id
-      }
-    }).href
+        projectId: this.id,
+      },
+    }).href;
     return this.url + path;
   }
 

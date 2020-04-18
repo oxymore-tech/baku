@@ -89,18 +89,17 @@ export default class CaptureToolboxComponent extends Vue {
   private resetRTC!: () => Promise<void>;
 
   public async mounted() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices
-      .filter(
-        (input: MediaDeviceInfo) => input.kind === 'videoinput' && input.deviceId !== '',
-      )
+    const devices = await navigator.mediaDevices.enumerateDevices() || [];
+    const videoDevices = devices.filter(
+      (input: MediaDeviceInfo) => input.kind === 'videoinput' && input.deviceId !== '',
+    )
       .map(
         (input: MediaDeviceInfo) => new Device(input.deviceId, input.label || 'Caméra non reconnue'),
       );
     const deviceIds = [...new Set(videoDevices.map((d) => d.id))];
     this.devices = deviceIds.map(
       (id) => videoDevices.find((d) => d.id === id) as Device,
-    );
+    ) || [];
     this.devices.push(new Device('smartphone', 'Smartphone'));
   }
 
