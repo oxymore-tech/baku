@@ -171,7 +171,6 @@ export default class CaptureButtonComponent extends Vue {
 
   private async setupWebCam() {
     this.mediaOk = true;
-    console.log(this.device);
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         width: { min: 640, ideal: 1280 },
