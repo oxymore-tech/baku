@@ -78,24 +78,19 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
     this.socket.messageListenerFunction = (message) => {
       switch (message.action) {
         case 'getSocketId':
-          console.log(message);
-          console.log(`${window.location.origin}/smartphone/${message.value}`);
           this.qrvalue = `${window.location.origin}/smartphone/${message.value}`;
           break;
         case 'linkEstablished':
-          console.log(message);
           this.createOffer().then((offer) => {
             this.socket.sendWSMessage({ action: 'rtcOffer', value: offer });
           });
           break;
         case 'icecandidate':
-          console.log(message);
           if (message.value) {
             this.peerConnection.addIceCandidate(message.value);
           }
           break;
         case 'rtcAnswer':
-          console.log(message);
           this.peerConnection
             .setRemoteDescription(message.value)
             .then(() => {});
@@ -132,7 +127,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
         console.log('CONNECTION OK');
         this.status = 'CONNECTED';
         this.$store.commit('webrtc/setDataChannel', this.dataChannel);
-        this.$store.commit('webrtc/setPeerCOnnection', this.peerConnection);
+        this.$store.commit('webrtc/setPeerConnection', this.peerConnection);
         this.$store.commit('webrtc/setupConnection');
       }
     };

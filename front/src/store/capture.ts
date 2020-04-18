@@ -35,7 +35,7 @@ export const CaptureStore: BakuModule<CaptureState> = {
     toggleScaleY(state) {
       state.scaleY *= -1;
     },
-    setOnionSkin(state, val: number){
+    setOnionSkin(state, val: number) {
       state.onionSkin = val;
     }
   },
@@ -46,9 +46,6 @@ export const CaptureStore: BakuModule<CaptureState> = {
 
     setActiveCapture(context, activeCapture: boolean) {
       context.commit('setActiveCapture', activeCapture);
-      if (!activeCapture) {
-        context.commit('detachMediaStream');
-      }
     },
 
     toggleScaleX(context) {

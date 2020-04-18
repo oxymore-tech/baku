@@ -4,7 +4,7 @@
       id="captureButton"
       class="captureButton"
       @click="capture()"
-      :class="{ capturing: isCapturing, hidden: !peerConnected }"
+      :class="{ capturing: isCapturing, hidden: !mediaOk }"
     >
       <img
         alt="camera"
@@ -49,11 +49,12 @@
 import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
-import { State, namespace } from 'vuex-class';
+import { namespace } from 'vuex-class';
 import { Device } from '@/api/device.class';
 import { KeyCodes } from '@/api/movie.service';
 
 const CaptureNS = namespace('capture');
+const WebRTCNS = namespace('webrtc');
 
 @Component
 export default class CaptureButtonComponent extends Vue {
@@ -63,8 +64,16 @@ export default class CaptureButtonComponent extends Vue {
   @Prop()
   public projectId!: string;
 
-  @State
+  @WebRTCNS.State
   public dataChannel!: RTCDataChannel;
+
+  @WebRTCNS.State('stream')
+  public smartphoneStream!: MediaStream;
+
+  @WebRTCNS.State('isConnected')
+  public peerConnected!: boolean;
+
+  public mediaOk: boolean = false;
 
   @CaptureNS.State
   public scaleX!: number | 1;
@@ -74,10 +83,8 @@ export default class CaptureButtonComponent extends Vue {
 
   public isCapturing = false;
 
-  public peerConnected = false;
 
   public async mounted() {
-    console.log('WebcamCapture mounted', this.device);
     this.onDeviceIdChanged();
     window.addEventListener('keyup', (e: KeyboardEvent) => {
       switch (e.keyCode) {
@@ -114,24 +121,18 @@ export default class CaptureButtonComponent extends Vue {
   @Watch('device')
   public onDeviceIdChanged() {
     this.isCapturing = false;
-    console.log('this.device.isSmartphone()', this.device.isSmartphone());
     if (!this.device.isSmartphone()) {
       this.setupWebCam();
+    } else if (this.peerConnected) {
+      this.mediaOk = true;
+      this.setupSmarphone();
     } else {
-      const peerConnected = !!this.dataChannel;
-      if (peerConnected) {
-        this.setupSmarphone();
-      } else {
-        this.peerConnected = false;
-        this.$store.commit('capture/detachMediaStream');
-      }
+      this.$store.commit('capture/detachMediaStream');
     }
   }
 
   @Watch('dataChannel')
   public onDataChannelChanged() {
-    console.log('onDataChannelChanged', this.dataChannel);
-    this.peerConnected = !!this.dataChannel;
     if (this.dataChannel) {
       this.setChannelEvents(this.dataChannel);
     }
@@ -143,19 +144,17 @@ export default class CaptureButtonComponent extends Vue {
   private setChannelEvents(channel: RTCDataChannel) {
     // eslint-disable-next-line no-param-reassign
     channel.onmessage = (event) => {
-      // TODO: Try to understand why you need TWO json parse
-      const data = JSON.parse(JSON.parse(event.data));
+      const data = JSON.parse(event.data);
       switch (data.type) {
         case 'capture':
           // this.onCaptured(data.id, data.thumb); //TODO when captured by smartphone, do we have b64 to add ?
           break;
         case 'upload':
-          this.onUploaded(data.id);
+          this.onUploaded(data.message);
           break;
         default:
           console.log(`Unknown message '${data.type}' (ignored)`);
       }
-      console.log('Message received', event);
     };
 
     // eslint-disable-next-line no-param-reassign
@@ -170,12 +169,13 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   private async setupSmarphone() {
-    const { stream } = this.$store.state;
-    await this.$store.commit('capture/attachMediaStream', stream);
+    this.setChannelEvents(this.dataChannel);
+    await this.$store.commit('capture/attachMediaStream', this.smartphoneStream);
   }
 
   private async setupWebCam() {
-    this.peerConnected = true;
+    this.mediaOk = true;
+    console.log(this.device);
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         width: { min: 640, ideal: 1280 },
@@ -210,6 +210,7 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   private onUploaded(id: string) {
+    console.log(id);
     this.$emit('uploaded', id);
   }
 

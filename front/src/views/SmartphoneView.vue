@@ -16,8 +16,6 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { State, namespace } from 'vuex-class';
-// import SmartphoneLocalVideoComponent from '@/components/smartphone/SmartphoneLocalVideoComponent.vue';
-import QrReaderComponent from '@/components/smartphone/QrReaderComponent.vue';
 import store from '@/store';
 import { Device } from '@/api/device.class';
 import { WSSocket } from '@/api/socket.class';
@@ -28,8 +26,6 @@ const WebrtcNS = namespace('webrtc');
 
 @Component({
   components: {
-    // SmartphoneLocalVideoComponent,
-    QrReaderComponent,
   },
   store,
 })
@@ -76,7 +72,7 @@ export default class SmartphoneView extends Vue {
           }
           break;
         default:
-          console.log(message);
+          console.log('default', message);
           // this.startStream(message.value);
       }
     };
@@ -96,10 +92,8 @@ export default class SmartphoneView extends Vue {
     this.peerConnection.onconnectionstatechange = (_event) => {
       if (this.peerConnection.connectionState === 'connected') {
         // CONNECTION OK
-        console.log('CONNECTION OK');
         this.$store.commit('webrtc/setupConnection');
       }
-      console.log(this.peerConnection.connectionState);
       if (this.peerConnection.connectionState === 'disconnected') {
         delete this.peerConnection;
         this.localVideo.srcObject
@@ -122,7 +116,6 @@ export default class SmartphoneView extends Vue {
         },
       },
     });
-    console.log('Received local stream');
     this.localVideo.srcObject = stream;
 
     this.peerConnection.ondatachannel = (event) => {
@@ -134,7 +127,6 @@ export default class SmartphoneView extends Vue {
       .getVideoTracks()
       .forEach((track) => this.peerConnection.addTrack(track, stream));
     try {
-      console.log('remoteOffer', remoteOffer, this.peerConnection);
       await this.peerConnection.setRemoteDescription(remoteOffer);
     } catch (e) {
       console.error('Failed to set remote description', e);
@@ -158,12 +150,14 @@ export default class SmartphoneView extends Vue {
           'localVideo',
           { scaleX: data.scaleX, scaleY: data.scaleY },
           data.projectId,
-          (id) => channel.send(
-            JSON.stringify({
-              type: 'capture',
-              message: { id },
-            }),
-          ),
+          (id) => {
+            channel.send(
+              JSON.stringify({
+                type: 'capture',
+                message: { id },
+              }),
+            );
+          },
           (id) => channel.send(
             JSON.stringify({
               type: 'upload',
@@ -173,15 +167,6 @@ export default class SmartphoneView extends Vue {
           (e) => console.error('Unable to capture', e),
         );
       }
-    };
-    // eslint-disable-next-line no-param-reassign
-    channel.onopen = () => {
-      const channelpush = channel.send;
-      // eslint-disable-next-line no-param-reassign
-      channel.send = (data: any) => {
-        console.log('Sending message: ', data);
-        channelpush(JSON.stringify(data));
-      };
     };
 
     // eslint-disable-next-line no-param-reassign

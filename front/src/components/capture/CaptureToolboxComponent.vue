@@ -58,7 +58,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneSynchroPopupComponent.vue';
-import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { Device } from '@/api/device.class';
 
 const CaptureNS = namespace('capture');
@@ -66,7 +65,6 @@ const CaptureNS = namespace('capture');
 @Component({
   components: {
     SmartphoneSynchroPopupComponent,
-    CaptureButtonComponent,
   },
 })
 export default class CaptureToolboxComponent extends Vue {
@@ -99,8 +97,9 @@ export default class CaptureToolboxComponent extends Vue {
 
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
+    console.log(devices.filter((input: MediaDeviceInfo) => input.kind === 'videoinput'));
     const videoDevices = devices
-      .filter((input: MediaDeviceInfo) => input.kind === 'videoinput')
+      .filter((input: MediaDeviceInfo) => input.kind === 'videoinput' && input.deviceId !== '')
       .map(
         (input: MediaDeviceInfo) => new Device(input.deviceId, input.label || 'Caméra non reconnue'),
       );
