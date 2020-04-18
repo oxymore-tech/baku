@@ -64,12 +64,6 @@ export default class SmartphoneView extends Vue {
             this.peerConnection.addIceCandidate(message.value);
           }
           break;
-        case 'restartStream':
-          const stream = this.localVideo.srcObject;
-          stream
-            .getVideoTracks()
-            .forEach((track) => this.peerConnection.addTrack(track, stream));
-          break;
         default:
           console.log('default', message);
         // this.startStream(message.value);
