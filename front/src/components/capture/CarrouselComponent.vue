@@ -274,7 +274,7 @@ export default class CarrouselComponent extends Vue {
       imagesToDelete.sort();
       imagesToDelete.reverse();
       Promise.all(
-        imagesToDelete.map((imgId: number, index: number) => this.removeImageFromShot({
+        imagesToDelete.map((imgId: number) => this.removeImageFromShot({
           shotId: this.activeShot,
           imageIndex: imgId,
         })),
