@@ -15,7 +15,11 @@ public class PathService {
     private final Path dataPath;
 
     public PathService() {
-        dataPath = Paths.get("data");
+        this(Paths.get("data"));
+    }
+
+    public PathService(Path dataPath) {
+        this.dataPath = dataPath;
         LOGGER.info("Data path : {}", dataPath);
     }
 

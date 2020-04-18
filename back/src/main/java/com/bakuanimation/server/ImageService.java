@@ -1,6 +1,5 @@
 package com.bakuanimation.server;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -92,57 +91,11 @@ public class ImageService {
 
     public void export(String projectId, @Nullable String shotId, OutputStream outputStream) throws IOException {
         LOGGER.info("Export {}", projectId);
-        Map<String, List<Path>> shots = interpretHistory(projectId, this.historyService.readHistory(projectId), shotId);
-        writeHistory(shots, outputStream);
+        Map<String, List<Path>> shots = historyService.interpretHistory(projectId, this.historyService.readHistory(projectId), shotId);
+        writeMovie(shots, outputStream);
     }
 
-    private Map<String, List<Path>> interpretHistory(String projectId, JsonArray history, @Nullable String shot) throws IOException {
-        Map<String, List<Path>> shots = new LinkedHashMap<>();
-        for (JsonElement e : history) {
-            JsonObject o = e.getAsJsonObject();
-            int action = o.get("action").getAsInt();
-            switch (action) {
-                case 4: {
-                    // new shot
-                    String shotId = o.get("value").getAsJsonObject().get("shotId").getAsString();
-                    if (shot == null || shot.equals(shotId)) {
-                        shots.put(shotId, new LinkedList<>());
-                    }
-                    break;
-                }
-                case 3: {
-                    // add image
-                    JsonObject v = o.get("value").getAsJsonObject();
-                    String shotId = v.get("shotId").getAsString();
-                    if (shot == null || shot.equals(shotId)) {
-                        int imageIndex = v.get("imageIndex").getAsInt();
-                        String image = v.get("image").getAsString();
-                        Path imageFile = imagePath.resolve(projectId).resolve("original").resolve(image);
-                        shots.computeIfAbsent(shotId, k -> new LinkedList<>()).add(imageIndex, imageFile);
-                    }
-                    break;
-                }
-                case 6: {
-                    // remove image
-                    JsonObject v = o.get("value").getAsJsonObject();
-                    String shotId = v.get("shotId").getAsString();
-                    if (shot == null || shot.equals(shotId)) {
-                        int imageIndex = v.get("imageIndex").getAsInt();
-                        shots.get(shotId).remove(imageIndex);
-                    }
-                    break;
-                }
-                default: {
-                    // Ignored
-                    break;
-                }
-            }
-        }
-
-        return shots;
-    }
-
-    private void writeHistory(Map<String, List<Path>> shots, OutputStream outputStream) throws IOException {
+    private void writeMovie(Map<String, List<Path>> shots, OutputStream outputStream) throws IOException {
         if (shots.isEmpty()) {
             return;
         }
