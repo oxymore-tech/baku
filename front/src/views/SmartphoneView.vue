@@ -154,7 +154,7 @@ export default class SmartphoneView extends Vue {
             channel.send(
               JSON.stringify({
                 type: 'capture',
-                message: { id },
+                message: id,
               }),
             );
           },

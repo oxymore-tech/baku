@@ -97,7 +97,6 @@ export default class CaptureToolboxComponent extends Vue {
 
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    console.log(devices.filter((input: MediaDeviceInfo) => input.kind === 'videoinput'));
     const videoDevices = devices
       .filter((input: MediaDeviceInfo) => input.kind === 'videoinput' && input.deviceId !== '')
       .map(
