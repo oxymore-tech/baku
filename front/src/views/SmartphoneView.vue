@@ -101,6 +101,7 @@ export default class SmartphoneView extends Vue {
           .forEach((track: MediaStreamTrack) => {
             track.stop();
           });
+        window.close();
       }
     };
   }

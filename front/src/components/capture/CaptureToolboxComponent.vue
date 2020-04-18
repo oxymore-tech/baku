@@ -15,40 +15,30 @@
         v-model="selectedDeviceId"
         size="is-small"
       >
-        <option
-          v-for="device in devices"
-          :key="device.id"
-          :value="device.id"
-        >{{device.label}}</option>
+        <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
       </b-select>
     </b-field>
 
     <div @click="toggleScaleY()">
-      <i
-        class="icon-check_box baku-button mirror-checkboxes"
-        v-if="scaleY < 0"
-      />
-      <i
-        class="icon-check_box_outline_blank baku-button mirror-checkboxes"
-        v-else
-      />
+      <i class="icon-check_box baku-button mirror-checkboxes" v-if="scaleY < 0" />
+      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else />
       Miroir horizontal
     </div>
 
     <div @click="toggleScaleX()">
-      <i
-        class="icon-check_box baku-button mirror-checkboxes"
-        v-if="scaleX < 0"
-      />
-      <i
-        class="icon-check_box_outline_blank baku-button mirror-checkboxes"
-        v-else
-      />
+      <i class="icon-check_box baku-button mirror-checkboxes" v-if="scaleX < 0" />
+      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else />
       Miroir vertical
     </div>
     <div>
       Pelure d'oignon
-      <input type="number" max=5 min=0 :value="onionSkin" @change="setOnionSkin($event.target.value)">
+      <input
+        type="number"
+        max="5"
+        min="0"
+        :value="onionSkin"
+        @change="setOnionSkin($event.target.value)"
+      />
     </div>
   </div>
 </template>
@@ -61,6 +51,7 @@ import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneS
 import { Device } from '@/api/device.class';
 
 const CaptureNS = namespace('capture');
+const WebRTCNS = namespace('webrtc');
 
 @Component({
   components: {
@@ -95,10 +86,18 @@ export default class CaptureToolboxComponent extends Vue {
   @CaptureNS.State('onionSkin')
   protected onionSkin!: number;
 
+  @WebRTCNS.State('dataChannel')
+  protected dataChannel!: RTCDataChannel;
+
+  @WebRTCNS.Action('resetState')
+  private resetRTC!: () => Promise<void>;
+
   public async mounted() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices
-      .filter((input: MediaDeviceInfo) => input.kind === 'videoinput' && input.deviceId !== '')
+      .filter(
+        (input: MediaDeviceInfo) => input.kind === 'videoinput' && input.deviceId !== '',
+      )
       .map(
         (input: MediaDeviceInfo) => new Device(input.deviceId, input.label || 'Caméra non reconnue'),
       );
@@ -116,13 +115,17 @@ export default class CaptureToolboxComponent extends Vue {
     if (
       this.selectedDevice
       && this.selectedDevice.isSmartphone()
-      && !this.$store.state.dataChannel
+      && !this.dataChannel
     ) {
       this.$buefy.modal.open({
         parent: this,
         component: SmartphoneSynchroPopupComponent,
         hasModalCard: true,
       });
+    }
+
+    if (this.selectedDevice && !this.selectedDevice.isSmartphone()) {
+      this.resetRTC();
     }
   }
 

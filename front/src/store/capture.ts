@@ -37,9 +37,21 @@ export const CaptureStore: BakuModule<CaptureState> = {
     },
     setOnionSkin(state, val: number) {
       state.onionSkin = val;
+    },
+    reset(state) {
+      state.stream= null;
+      state.activeDevice=null;
+      state.activeCapture=false;
+      state.scaleX=1;
+      state.scaleY=1;
+      state.onionSkin=0;
     }
   },
   actions: {
+    resetState(context) {
+      context.commit('detachMediaStream');
+      context.commit('reset');
+    },
     selectDevice(context, device: Device | null) {
       context.commit('setDevice', device);
     },

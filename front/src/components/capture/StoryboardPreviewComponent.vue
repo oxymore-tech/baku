@@ -48,6 +48,8 @@ import { Spinner } from '@/api/spinner.class';
 import { ImageCacheService } from '@/api/imageCache.service';
 
 const ProjectNS = namespace('project');
+const CaptureNS = namespace('capture');
+const WebRTCNS = namespace('webrtc');
 
   @Component
 export default class StoryboardPreviewComponent extends Vue {
@@ -63,7 +65,15 @@ export default class StoryboardPreviewComponent extends Vue {
     @ProjectNS.State
     public id!: string;
 
+    @CaptureNS.Action('resetState')
+    private resetCapture!: () => Promise<void>;
+
+    @WebRTCNS.Action('resetState')
+    private resetRTC!: () => Promise<void>;
+
     public onDisplayShots() {
+      this.resetCapture();
+      this.resetRTC();
       this.$router.push({
         name: 'captureShots',
         params: {
