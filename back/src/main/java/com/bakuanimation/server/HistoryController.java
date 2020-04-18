@@ -23,12 +23,8 @@ public class HistoryController {
 
     @Post("/api/{projectId}/stack")
     public Single<HttpResponse<Void>> stack(@PathVariable String projectId, @Body byte[] stack) {
-        return Single.fromCallable(() -> {
-            historyService.addStack(projectId, stack);
-            return true;
-        })
-                .map(v -> (HttpResponse<Void>) HttpResponse.<Void>ok())
-                .subscribeOn(Schedulers.io());
+        return historyService.addStack(projectId, stack)
+                .map(v -> HttpResponse.ok());
     }
 
     @Get("/api/{projectId}/history")

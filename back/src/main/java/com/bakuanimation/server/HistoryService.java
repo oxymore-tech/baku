@@ -5,6 +5,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
@@ -16,15 +19,18 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 @Singleton
 public class HistoryService {
     private final Path stackDirectory;
     private final Path imageDirectory;
+    private final Scheduler stackScheduler;
 
     public HistoryService(PathService pathService) {
         this.stackDirectory = pathService.stackDirectory();
         this.imageDirectory = pathService.imagePath();
+        this.stackScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
     }
 
     @VisibleForTesting
@@ -55,23 +61,24 @@ public class HistoryService {
         return stackDirectory.resolve(projectId + ".stack");
     }
 
-
-    // TODO synchronized ?
-    public void addStack(String projectId, byte[] stack) {
-        try {
-            JsonArray history = readHistory(projectId);
-            JsonElement jsonElement = JsonParser.parseString(new String(stack));
-            if (jsonElement.isJsonArray()) {
-                for (JsonElement element : jsonElement.getAsJsonArray()) {
-                    history.add(element);
+    public Single<Boolean> addStack(String projectId, byte[] stack) {
+        return Single.fromCallable(() -> {
+            try {
+                JsonArray history = readHistory(projectId);
+                JsonElement jsonElement = JsonParser.parseString(new String(stack));
+                if (jsonElement.isJsonArray()) {
+                    for (JsonElement element : jsonElement.getAsJsonArray()) {
+                        history.add(element);
+                    }
+                } else {
+                    history.add(jsonElement);
                 }
-            } else {
-                history.add(jsonElement);
+                writeHistory(projectId, history);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            writeHistory(projectId, history);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+            return true;
+        }).subscribeOn(stackScheduler);
     }
 
     public Map<String, List<Path>> interpretHistory(String projectId, JsonArray history, @Nullable String shot) throws IOException {

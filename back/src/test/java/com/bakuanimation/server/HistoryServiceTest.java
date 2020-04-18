@@ -8,11 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @MicronautTest
 class HistoryServiceTest {
@@ -48,7 +47,7 @@ class HistoryServiceTest {
         }
         tested.writeHistory(projectId, content);
         JsonPrimitive toAdd = new JsonPrimitive(11);
-        tested.addStack(projectId, toAdd.toString().getBytes());
+        tested.addStack(projectId, toAdd.toString().getBytes()).blockingGet();
         JsonArray actual = tested.readHistory(projectId);
         content.add(toAdd);
         assertThat(actual).isEqualTo(content);
@@ -65,7 +64,7 @@ class HistoryServiceTest {
         JsonArray toAdd = new JsonArray();
         toAdd.add("test");
         toAdd.add(11);
-        tested.addStack(projectId, toAdd.toString().getBytes());
+        tested.addStack(projectId, toAdd.toString().getBytes()).blockingGet();
         JsonArray actual = tested.readHistory(projectId);
         content.add(toAdd.get(0));
         content.add(toAdd.get(1));
