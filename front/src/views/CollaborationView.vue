@@ -43,6 +43,8 @@ export default class CollaborationView extends Vue {
         return 'change le poster du film';
       case BakuAction.MOVIE_INSERT_IMAGE:
         return 'ajoute une photo';
+      case BakuAction.MOVIE_REMOVE_IMAGE:
+        return 'supprime une photo';
       case BakuAction.SHOT_ADD:
         return 'ajoute un plan';
       case BakuAction.SHOT_REMOVE:
