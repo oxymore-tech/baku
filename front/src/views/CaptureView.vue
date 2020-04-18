@@ -124,9 +124,9 @@
             <div
               class="toolbar-button toolbar-capture-button"
               :class="{'active-capture': activeCapture}"
-              @click="setActiveCapture(activeCapture)">
-            Mode Capture
-            </div>
+              @click="setActiveCapture(activeCapture)"
+              style="cursor:pointer;"
+            >Mode Capture</div>
             <div class="toolbar-button">
               <img
                 style="height: 28px; width:28px"
@@ -184,9 +184,11 @@ import { ImageCacheService } from '@/api/imageCache.service';
 import * as _ from 'lodash';
 import AbstractProjectView from './AbstractProjectView.vue';
 import { Device } from '../api/device.class';
+import SmartphoneSynchroPopupComponent from '../components/smartphone/SmartphoneSynchroPopupComponent.vue';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
+const WebRTCNS = namespace('webrtc');
 
 @Component({
   components: {
@@ -239,6 +241,9 @@ export default class CaptureView extends AbstractProjectView {
 
   @CaptureNS.State('onionSkin')
   protected onionSkin!: number;
+
+  @WebRTCNS.State
+  protected dataChannel!: RTCDataChannel;
 
   public selectedImages: ReadingSliderBoundaries = { left: 0, right: 3 };
 
@@ -358,6 +363,7 @@ export default class CaptureView extends AbstractProjectView {
 
   @Watch('stream')
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
+    console.log(newValue);
     if (newValue) {
       (this.$refs.videoCapture as HTMLVideoElement).srcObject = newValue;
       // (this.$refs.videoCaptureFullscreen as HTMLVideoElement).srcObject = newValue;
@@ -464,6 +470,13 @@ export default class CaptureView extends AbstractProjectView {
     if (this.activeDevice) {
       this.currentCarrousselFrame = this.getActiveShot.images.length - 1;
       this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
+      if (this.activeDevice.isSmartphone() && this.activeCapture && !this.dataChannel) {
+        this.$buefy.modal.open({
+          parent: this,
+          component: SmartphoneSynchroPopupComponent,
+          hasModalCard: true,
+        });
+      }
     } else {
       this.$buefy.dialog.alert({
         message: 'Veuillez sélectionner une caméra',
@@ -500,5 +513,5 @@ export default class CaptureView extends AbstractProjectView {
 </script>
 
 <style lang="scss" scoped>
-  @import "../styles/capture.scss";
+@import "../styles/capture.scss";
 </style>

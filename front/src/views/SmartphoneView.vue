@@ -1,15 +1,9 @@
 <template>
   <div>
     <!-- <SmartphoneLocalVideoComponent v-if="isConnected" /> -->
-   <h1>QR Reader Page</h1>
+    <h1>QR Reader Page</h1>
 
-    <video
-      id="localVideo"
-      autoplay
-      playsinline
-      width="1920"
-      height="1080"
-    ></video>
+    <video id="localVideo" autoplay playsinline width="1920" height="1080"></video>
   </div>
 </template>
 
@@ -25,8 +19,7 @@ import { SocketStatus } from '../store/store.types';
 const WebrtcNS = namespace('webrtc');
 
 @Component({
-  components: {
-  },
+  components: {},
   store,
 })
 export default class SmartphoneView extends Vue {
@@ -71,9 +64,15 @@ export default class SmartphoneView extends Vue {
             this.peerConnection.addIceCandidate(message.value);
           }
           break;
+        case 'restartStream':
+          const stream = this.localVideo.srcObject;
+          stream
+            .getVideoTracks()
+            .forEach((track) => this.peerConnection.addTrack(track, stream));
+          break;
         default:
           console.log('default', message);
-          // this.startStream(message.value);
+        // this.startStream(message.value);
       }
     };
     this.peerConnection = new RTCPeerConnection({

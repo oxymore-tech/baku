@@ -16,7 +16,7 @@ export const CaptureStore: BakuModule<CaptureState> = {
       state.stream = stream;
     },
     detachMediaStream(state) {
-      if (state.stream) {
+      if (state.stream && !state.activeDevice?.isSmartphone()) {
         state.stream.getTracks().forEach((track) => {
           track.stop();
         });

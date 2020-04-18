@@ -6,8 +6,7 @@
     </header>
     <section class="modal-card-body">
       <ul>
-        <li>Aller sur XXX avec votre smartphone</li>
-        <li>Autoriser la caméra</li>
+        <li>Aller sur l'application appareil photo de votre smartphone</li>
         <li>Fixer le QR Code avec la caméra de votre smartphone</li>
       </ul>
       <qrcode :value="qrvalue" :options="options" v-if="qrvalue && status !== 'CONNECTED'"></qrcode>
@@ -19,7 +18,7 @@
       <h1 class="title is-4 has-text-success" v-if="status === 'CONNECTED'">Synchronisation OK</h1>
     </section>
     <footer class="modal-card-foot">
-      <b-button class="button" type="button" @click="$parent.close()">Fermer</b-button>
+      <b-button class="button" type="button" @click="close()">Fermer</b-button>
     </footer>
   </div>
 </template>
@@ -34,6 +33,7 @@ import { WSSocket } from '@/api/socket.class';
 import { SocketStatus } from '@/store/store.types';
 
 const WebrtcNS = namespace('webrtc');
+const CaptureNS = namespace('capture');
 type Status = 'CONNECTED' | 'ERROR' | 'WAITING';
 
 @Component
@@ -49,6 +49,13 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
 
   @WebrtcNS.State
   private socketStatus!: SocketStatus;
+
+  @WebrtcNS.Action('resetState')
+  private resetRTC!: () => Promise<void>;
+
+  @CaptureNS.Action('setActiveCapture')
+  private setActiveCapture!: ({}) => Promise<void>;
+
 
   private socket!: WSSocket;
 
@@ -129,6 +136,10 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
         this.$store.commit('webrtc/setDataChannel', this.dataChannel);
         this.$store.commit('webrtc/setPeerConnection', this.peerConnection);
         this.$store.commit('webrtc/setupConnection');
+        setTimeout(() => (this.$parent as any).close(), 500);
+      }
+      if (this.peerConnection.connectionState === 'disconnected') {
+        this.resetRTC();
       }
     };
 
@@ -158,6 +169,13 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
 
   private gotRemoteStream(e: any) {
     this.$store.commit('webrtc/setMediaStream', e.streams[0]);
+  }
+
+  public close() {
+    if (this.status !== 'CONNECTED') {
+      this.setActiveCapture(false);
+    }
+    (this.$parent as any).close();
   }
 }
 </script>

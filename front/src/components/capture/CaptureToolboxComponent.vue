@@ -93,7 +93,6 @@ export default class CaptureToolboxComponent extends Vue {
   private resetRTC!: () => Promise<void>;
 
   public async mounted() {
-    await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices
       .filter(
@@ -112,18 +111,6 @@ export default class CaptureToolboxComponent extends Vue {
   public onCaptureDeviceChange() {
     this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
     this.selectDeviceAction(this.selectedDevice);
-
-    if (
-      this.selectedDevice
-      && this.selectedDevice.isSmartphone()
-      && !this.dataChannel
-    ) {
-      this.$buefy.modal.open({
-        parent: this,
-        component: SmartphoneSynchroPopupComponent,
-        hasModalCard: true,
-      });
-    }
 
     if (this.selectedDevice && !this.selectedDevice.isSmartphone()) {
       this.resetRTC();

@@ -31,17 +31,15 @@ export const WebrtcStore: BakuModule<WebrtcState> = {
       state.socketStatus = status;
     },
     reset(state) {
-      state = {
-        peerConnection: undefined as undefined | RTCPeerConnection,
-        dataChannel: null as null | RTCDataChannel,
-        stream: undefined as undefined | MediaStream,
-        isConnected: false,
-        socketStatus: 'closed' as SocketStatus,
-      };
+      state.peerConnection = undefined as undefined | RTCPeerConnection;
+      state.dataChannel = null as null | RTCDataChannel;
+      state.stream = undefined as undefined | MediaStream;
+      state.isConnected = false;
+      state.socketStatus = 'closed' as SocketStatus;
     }
   },
   actions: {
-    resetState(context){
+    resetState(context) {
       context.commit('reset');
     }
   },
