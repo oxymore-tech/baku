@@ -11,11 +11,21 @@
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
       <div class="routerlinks" v-if="id">
-        <router-link :to="`/movies/${id}/scenario`">Scenario</router-link>
-        <router-link :to="`/movies/${id}/storyboard`">Storyboard</router-link>
-        <router-link :to="`/movies/${id}/capture/shots/`">Capture</router-link>
-        <router-link :to="`/movies/${id}/movieEditing`">Montage</router-link>
-        <router-link :to="`/movies/${id}/collaboration`">Collaboratif</router-link>
+        <router-link :to="{ name: 'scenario', params: { projectId: id } }">
+          Scenario
+        </router-link>
+        <router-link :to="{ name: 'storyboard', params: { projectId: id } }">
+          Storyboard
+        </router-link>
+        <router-link :to="{ name: 'captureShots', params: { projectId: id } }">
+          Capture
+        </router-link>
+        <router-link :to="{ name: 'movieEditing', params: { projectId: id } }">
+          Montage
+        </router-link>
+        <router-link :to="{ name: 'collaboration', params: { projectId: id } }">
+          Collaboratif
+        </router-link>
       </div>
       <div
         v-if="this.$route.path != '/'"
