@@ -9,7 +9,6 @@
     </header>
     <section class="modal-card-body">
       <span>Votre film est automatiquement installé à l'adresse suivante :</span><br>
-      <!-- TODO: use router -->
       <div class="link-container">
         <a :href="getLink()">{{getLink()}}</a>
         <i class="baku-button"
@@ -85,7 +84,13 @@ export default class ProjectSettingsPopup extends Vue {
   }
 
   public getLink(): string {
-    return `${this.url}/movies/${this.id}`;
+    const path = this.$router.resolve({
+      name: 'movieHome',
+      params: {
+        projectId: this.id
+      }
+    }).href
+    return this.url + path;
   }
 
   public copyLink(): void {
