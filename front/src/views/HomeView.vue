@@ -36,18 +36,6 @@
             <p>Mes premières fois</p>
           </div>
         </div>
-        <div class="movie-card" @click="open('491df190-9c30-4e86-8e0a-c3bb06763379')">
-          <img src="@/assets/PremFois.jpg" />
-          <div class="card-footer">
-            <p>Custom</p>
-          </div>
-        </div>
-        <div class="movie-card" @click="open('premier')">
-          <img src="@/assets/PremFois.jpg" />
-          <div class="card-footer">
-            <p>Test performance</p>
-          </div>
-        </div>
       </div>
     </div>
   </div>
