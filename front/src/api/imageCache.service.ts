@@ -14,8 +14,10 @@ export class ImageCacheServiceImpl {
   private readonly tasks: (() => Promise<void>)[] = [];
 
   private readonly executorNb = 5;
+  private readonly worker: Worker;
 
-  constructor() {
+  constructor(worker: Worker) {
+    this.worker = worker;
     // console.log('WebWorker IMAGE CACHE SERVICE CONSTRUCTOR');
     for (let i = 0; i < this.executorNb; i++) {
       // console.log('EXEC Launch', i);
@@ -23,10 +25,6 @@ export class ImageCacheServiceImpl {
         r();
       }), i); // .then(() => console.log('EXEC FINISH'));
     }
-  }
-
-  public testMSG() {
-    console.log('WebWorker ImageCacheService.testMSG()');
   }
 
   private processNewTask(executor: any, executorNb: number) {
@@ -65,9 +63,12 @@ export class ImageCacheServiceImpl {
   }
 
   // TODO Faire une fonction updatePreloading, qui remet les tasks dans l'ordre
+  public updatePreloading(index: number) {
+    // this.tasks
+  }
 
-  public startPreloading(imageRefs: ImageRef[], activeIndex: number, onImagePreloaded: (imageId: string, quality: Quality, url: string) => void) {
-    console.log('[ImageCache][WebWorker] startPreloading()', imageRefs, activeIndex);
+  public startPreloading(imageRefs: ImageRef[]) {
+    console.log('[ImageCache][WebWorker] startPreloading()', imageRefs);
     if (imageRefs.length > 0) {
       // We empty the task list
       this.tasks.splice(0, this.tasks.length);
@@ -77,28 +78,28 @@ export class ImageCacheServiceImpl {
       imageRefsSliced.shift();
 
       // Download first image in priority
-      this.createTaskIfNeeded(imageRefs[0], Quality.Thumbnail, onImagePreloaded);
-      this.createTaskIfNeeded(imageRefs[0], Quality.Lightweight, onImagePreloaded);
-      this.createTaskIfNeeded(imageRefs[0], Quality.Original, onImagePreloaded);
+      this.createTaskIfNeeded(imageRefs[0], Quality.Thumbnail);
+      this.createTaskIfNeeded(imageRefs[0], Quality.Lightweight);
+      this.createTaskIfNeeded(imageRefs[0], Quality.Original);
 
       // Download all other images in following order : (first, all Thumb, second, all LightWeight, at last all Original)
       imageRefsSliced.forEach((image: ImageRef) => {
-        this.createTaskIfNeeded(image, Quality.Thumbnail, onImagePreloaded);
+        this.createTaskIfNeeded(image, Quality.Thumbnail);
       });
       imageRefsSliced.forEach((image: ImageRef) => {
-        this.createTaskIfNeeded(image, Quality.Lightweight, onImagePreloaded);
+        this.createTaskIfNeeded(image, Quality.Lightweight);
       });
       imageRefsSliced.forEach((image: ImageRef) => {
-        this.createTaskIfNeeded(image, Quality.Original, onImagePreloaded);
+        this.createTaskIfNeeded(image, Quality.Original);
       });
     }
   }
 
-  private createTaskIfNeeded(image: ImageRef, quality: Quality, onImagePreloaded: (imageId: string, quality: Quality, url: string) => void) {
+  private createTaskIfNeeded(image: ImageRef, quality: Quality) {
     // console.log('CALL createTaskIfNeeded', image, quality);
     if (!this.isCached(image.id, quality)) {
       this.tasks.push(async () => {
-        await this.preloadImage(image, quality, onImagePreloaded);
+        await this.preloadImage(image, quality);
       });
     }
   }
@@ -118,26 +119,23 @@ export class ImageCacheServiceImpl {
     };
   }
 
-  public startPreloadingImage(image: ImageRef, onLoad?: (image: ImageRef, quality: Quality) => void) {
+  public startPreloadingImage(image: ImageRef) {
     Object.values(Quality).forEach(async (quality) => {
-      await this.preloadImage(image, quality, () => {
-        if (onLoad) {
-          onLoad(image, quality);
-        }
-      });
+      await this.preloadImage(image, quality);
     });
   }
 
-  private async preloadImage(image: ImageRef, quality: Quality,
-    onImagePreloaded: (imageId: string, quality: Quality, url: string) => void) {
+  private async preloadImage(image: ImageRef, quality: Quality) {
     return new Promise<void>((resolve) => {
       const oReq = new XMLHttpRequest();
+      const imgUrl = this.getImageUrl(image as any, quality);
       oReq.onload = () => {
         // this.putImageInCacheInternal(image, quality);
-        onImagePreloaded(image.id, quality, this.getImageUrl(image as any, quality));
+        // onImagePreloaded(image.id, quality, this.getImageUrl(image as any, quality));
+        this.worker.postMessage({ imageId: image.id, quality, url: imgUrl });
         resolve();
       };
-      oReq.open('get', this.getImageUrl(image as any, quality), true);
+      oReq.open('get', imgUrl, true);
       oReq.send();
     });
   }

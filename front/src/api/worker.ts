@@ -1,19 +1,20 @@
 import { ImageCacheServiceImpl } from './imageCache.service';
-import { Quality } from './uploadedImage.class';
 
 
-const ctx: Worker = self as any;
+const worker: Worker = self as any;
 
-const ImageCacheService = new ImageCacheServiceImpl();
+const ImageCacheService = new ImageCacheServiceImpl(worker);
 
-export const MSG = 'toto';
 
-ctx.onmessage = (event) => {
-  console.log('WebWorker worker.js call testMSG 2', event.data.action, event.data.payload);
-  if (event.data && event.data.action === 'startPreloading') {
-    const { images } = event.data.payload;
-    console.log('WebWorker Images', images);
-    ImageCacheService.startPreloading(images, 0, (imageId: string, quality: Quality, url: string) => {ctx.postMessage({ imageId, quality, url }); });
+worker.onmessage = (event) => {
+  console.log('WebWorker worker.js onmessage', event.data.action, event.data.payload);
+  if (event.data) {
+    if (event.data.action === 'startPreloading') {
+      const { images } = event.data.payload;
+      ImageCacheService.startPreloading(images);
+    } else if (event.data.action === 'updatePreloading') {
+      const { index } = event.data.payload;
+      ImageCacheService.updatePreloading(index);
+    }
   }
-  ImageCacheService.testMSG();
 };

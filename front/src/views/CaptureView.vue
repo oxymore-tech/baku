@@ -180,7 +180,7 @@ import * as _ from 'lodash';
 import AbstractProjectView from './AbstractProjectView.vue';
 import { Device } from '../api/device.class';
 import SmartphoneSynchroPopupComponent from '../components/smartphone/SmartphoneSynchroPopupComponent.vue';
-import { Quality } from '../api/uploadedImage.class';
+import { Quality, ImageRef } from '../api/uploadedImage.class';
 
 
 export const actions = new Worker('../api/worker', { type: 'module' });
@@ -255,9 +255,24 @@ export default class CaptureView extends AbstractProjectView {
 
   private previewImg!: HTMLImageElement;
 
+  private imagesQuickAccess: {[id: string]: ImageRef} = {};
+
   public mounted() {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
     this.previewImg = this.$refs.previewImg as HTMLImageElement;
+
+
+    actions.onmessage = (e) => {
+      // const images = this.getActiveShot.images;
+    //   // We update img only for the thumbs
+    //   const img = images.find((img) => img.id === e.data.imageId);
+    const img = this.imagesQuickAccess[e.data.imageId];
+      if (img) {
+        img.preloadedUrl = e.data.url;
+        this.onImagePreloaded(img.id, e.data.quality)
+      }
+
+    };
   }
 
   public animate(timestamp: number) {
@@ -369,20 +384,13 @@ export default class CaptureView extends AbstractProjectView {
 
   @Watch('getActiveShot')
   public async onActiveShotChange(shot: Shot) {
+    this.imagesQuickAccess = this.getActiveShot.images.reduce((acc, img) => {
+      acc[img.id] = img;
+      return acc;
+    }, {});
     if (shot) {
       console.log('[Capture][WebWorker] onActiveShotChange()');
       actions.postMessage({ action: 'startPreloading', payload: { images: shot.images } });
-
-      const images = shot.images;
-      actions.onmessage = (e) => {
-        // We update img only for the thumbs
-        const img = images.find((img) => img.id === e.data.imageId);
-        if (img) {
-          img.preloadedUrl = e.data.url;
-          this.onImagePreloaded(img.id, e.data.quality)
-        }
-
-      };
     }
   }
 
