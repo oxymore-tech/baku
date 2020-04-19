@@ -52,7 +52,7 @@ input, textarea {
 
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { Movie, Shot } from '@/api/movie.service';
+import { Movie } from '@/api/movie.service';
 import { BakuService } from '@/api/baku.service';
 
 const ProjectNS = namespace('project');
