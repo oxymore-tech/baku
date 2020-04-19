@@ -18,8 +18,15 @@ export interface ProjectState {
   pendingActions: number;
 }
 
+export interface SeenProject {
+  id: string,
+  title: string,
+  posterUrl: string,
+}
+
 export interface UserState {
   username: string;
+  seenProjects: SeenProject[];
 }
 
 export interface BakuRootState {

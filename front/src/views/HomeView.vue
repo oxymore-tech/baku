@@ -27,17 +27,26 @@
 
     <div class="bottom-panel panel">
       <div class="title">
-        <span> Quelques films de démonstration</span>
+        <span>{{ bottomPanelTitle() }}</span>
       </div>
+
       <div class="movie-gallery">
-        <div class="movie-card" @click="open('premier_montage')">
-          <img src="@/assets/PremFois.jpg" />
+        <div
+          v-for="project in seenProjects"
+          :key="project.id"
+          class="movie-card"
+          @click="open(project.id)"
+        >
+          <img :src="project.posterUrl" />
           <div class="card-footer">
-            <p>Mes premières fois</p>
+            <p>{{ project.title }}</p>
           </div>
         </div>
       </div>
+
+
     </div>
+
   </div>
 </template>
 
@@ -47,9 +56,13 @@ import { namespace } from 'vuex-class';
 import * as uuid from 'uuid';
 
 const ProjectNS = namespace('project');
+const UserNS = namespace('user');
 
 @Component
 export default class HomeView extends Vue {
+  @UserNS.State('seenProjects')
+  public seenProjects!: string[];
+
   @ProjectNS.Action('createShot')
   private createShotAction!: (name?: string) => Promise<string>;
 
@@ -70,6 +83,14 @@ export default class HomeView extends Vue {
   //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
   //   souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées.`;
 
+  public bottomPanelTitle() {
+    if (this.seenProjects.length == 0) {
+      return "Quelques films de démonstration"
+    } else {
+      return "Mes films"
+    }
+  }
+
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent,
@@ -77,6 +98,8 @@ export default class HomeView extends Vue {
   }
 
   public async created() {
+    if (!this.seenProjects) {
+    }
     if (this.isMobile()) {
       this.$router.push({ name: 'smartphone' });
     }
@@ -105,12 +128,10 @@ export default class HomeView extends Vue {
     });
   }
 
-  public async open(movie: string) {
+  public async open(projectId: string) {
     await this.$router.push({
       name: 'movieHome',
-      params: {
-        projectId: movie,
-      },
+      params: { projectId },
     });
   }
 }

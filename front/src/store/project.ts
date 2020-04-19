@@ -1,3 +1,4 @@
+import store from "@/store";
 import * as api from '@/api';
 import { BakuAction, BakuEvent } from '@/utils/types';
 import { Movie, MovieService, Shot } from '@/utils/movie.service';
@@ -20,6 +21,15 @@ const loadEvent = (context: BakuActionContext<ProjectState>, action: BakuAction,
   context.commit('incAction', 1);
   promise.catch(() => context.commit('removeFromLocalHistory', event))
     .finally(() => context.commit('incAction', -1));
+
+  if (
+    action == BakuAction.MOVIE_UPDATE_TITLE ||
+    action == BakuAction.MOVIE_INSERT_IMAGE ||
+    action == BakuAction.MOVIE_REMOVE_IMAGE ||
+    action == BakuAction.SHOT_REMOVE
+  ) {
+    store.dispatch('user/updateSeenProjects');
+  }
 };
 
 export const ProjectStore: BakuModule<ProjectState> = {
@@ -59,6 +69,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
     async addImageToShot(context,
       payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
       loadEvent(context, BakuAction.MOVIE_INSERT_IMAGE, payload);
+      store.dispatch('user/addSeenProject');
     },
     async removeImageFromShot(context,
       payload: { shotId: string, imageIndex: number }[]) {

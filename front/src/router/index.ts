@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+import store from "@/store";
 import HomeView from '@/views/HomeView.vue';
 import TodoView from '@/views/TodoView.vue';
 import ShotsView from '@/views/ShotsView.vue';
@@ -84,8 +85,14 @@ const routes = [
 ];
 
 Vue.use(VueRouter);
+
 const router = new VueRouter({
   mode: 'history',
   routes,
 });
+
+router.afterEach((to, from) => {
+  store.dispatch('user/updateSeenProjects');
+})
+
 export default router;
