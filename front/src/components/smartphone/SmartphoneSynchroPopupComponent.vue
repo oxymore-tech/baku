@@ -57,6 +57,9 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   @CaptureNS.Action('setActiveCapture')
   private setActiveCapture!: ({}) => Promise<void>;
 
+  @CaptureNS.State
+  public activeCapture!: boolean;
+
   private socket!: WSSocket;
 
   private peerConnection!: RTCPeerConnection;
@@ -139,6 +142,9 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
         setTimeout(() => (this.$parent as any).close(), 500);
       }
       if (this.peerConnection.connectionState === 'disconnected') {
+        if(this.activeCapture) {
+          this.setActiveCapture(false);
+        }
         this.resetRTC();
       }
     };
