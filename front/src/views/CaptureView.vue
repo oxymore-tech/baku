@@ -175,24 +175,6 @@
 </template>
 
 <script lang="ts">
-// import { Component, Watch } from 'vue-property-decorator';
-// import { namespace } from 'vuex-class';
-// import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-// import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-// import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
-// import store from '@/store';
-// import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-// import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
-// import { ImageCacheService } from '@/api/imageCache.service';
-// import * as _ from 'lodash';
-// import AbstractProjectView from './AbstractProjectView.vue';
-// import { Device } from '../api/device.class';
-// import SmartphoneSynchroPopupComponent from '../components/smartphone/SmartphoneSynchroPopupComponent.vue';
-// 
-// const CaptureNS = namespace('capture');
-// const ProjectNS = namespace('project');
-// const WebRTCNS = namespace('webrtc');
-
 import { Component, Watch } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 import * as _ from "lodash";
