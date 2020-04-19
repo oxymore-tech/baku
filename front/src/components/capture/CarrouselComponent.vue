@@ -214,12 +214,12 @@ export default class CarrouselComponent extends Vue {
           this.deleteFrame();
           break;
         case KeyCodes.C:
-          if (e.ctrlKey) {
+          if (e.ctrlKey || e.metaKey) {
             this.onCopy();
           }
           break;
         case KeyCodes.V:
-          if (e.ctrlKey) {
+          if (e.ctrlKey || e.metaKey) {
             this.onPaste();
           }
           break;
