@@ -90,7 +90,7 @@ public class ImageService {
     private void writeMovie(Movie movie, OutputStream outputStream) throws IOException {
         if (!movie.getImages().isEmpty()) {
             try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(outputStream))) {
-
+                zip.setLevel(ZipOutputStream.STORED);
                 int shotIndex = 0;
                 for (Map.Entry<String, Collection<Path>> entry : movie.getImages().asMap().entrySet()) {
                     int imageIndex = 0;
