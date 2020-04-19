@@ -1,10 +1,10 @@
 <template>
   <div class="main-frame">
     <template>
-      <div class="previewBloc">
+      <div class="preview-bloc">
         <StoryboardPreviewComponent ref="previewComponent" />
-        <div class="previewContainer">
-          <div class="previewContent">
+        <div class="preview-container">
+          <div class="preview-content">
             <template v-if="onionSkin">
               <img
                 v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkin +1] && activeCapture && onionSkin > 0"
