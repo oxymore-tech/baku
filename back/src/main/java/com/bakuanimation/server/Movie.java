@@ -21,7 +21,7 @@ public final class Movie {
         this.projectId = projectId;
         this.name = name;
         this.synopsis = synopsis;
-        this.fps = fps;
+        this.fps = fps == 0 ? 12 : fps;
     }
 
     public String getProjectId() {

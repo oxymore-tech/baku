@@ -109,7 +109,18 @@ public class HistoryService {
                             int imageIndex = v.get("imageIndex").getAsInt();
                             String imageId = v.get("image").getAsString();
                             Path imageFile = pathService.getImageFile(projectId, "original", imageId);
-                            images.computeIfAbsent(shotId, k -> new ArrayList<>()).add(imageIndex, imageFile);
+                            List<Path> imageList = images.computeIfAbsent(shotId, k -> new ArrayList<>());
+                            int imageListSize = imageList.size();
+                            if (imageIndex > imageListSize) {
+                                for (int i = 0; i < (imageIndex - imageListSize); i++) {
+                                    imageList.add(null);
+                                }
+                            }
+                            if (imageIndex < imageList.size() && imageList.get(imageIndex) == null) {
+                                imageList.set(imageIndex, imageFile);
+                            } else {
+                                imageList.add(imageIndex, imageFile);
+                            }
                         }
                         break;
                     }

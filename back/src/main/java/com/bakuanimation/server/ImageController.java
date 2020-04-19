@@ -13,12 +13,16 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Files;
 
 @Controller
 public class ImageController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
     private final HistoryService historyService;
     private final ImageService imageService;
@@ -82,12 +86,14 @@ public class ImageController {
                         try {
                             imageService.export(movie, outputStream);
                         } catch (IOException e) {
+                            LOGGER.warn("Error while exporting {}", movie.getProjectId(), e);
                             throw new RuntimeException(e);
                         } finally {
                             try {
                                 outputStream.flush();
                                 outputStream.close();
                             } catch (IOException e) {
+                                LOGGER.warn("Error while closing {}", movie.getProjectId(), e);
                                 e.printStackTrace();
                             }
                         }
