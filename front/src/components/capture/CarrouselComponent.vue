@@ -1,5 +1,5 @@
 <style lang="scss" scoped>
-  @import "../../styles/carrousel.scss";
+@import "../../styles/carrousel.scss";
 </style>
 
 <template>
@@ -33,16 +33,16 @@
     <div ref="carrouselContainer" class="carrousel-container">
       <!-- LEFT PART OF THE CARROUSEL -->
       <!-- Five divs to center capture button -->
-      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
       <template v-for="(image, index) in computedLeftCarrousel">
@@ -114,16 +114,16 @@
       </template>
 
       <!-- Five divs to center capture button -->
-      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container"  :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
       <template v-if="computedNextImages">
@@ -282,15 +282,10 @@ export default class CarrouselComponent extends Vue {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
       imagesToDelete.sort((a: any, b: any) => b - a);
-      Promise.all(
-        imagesToDelete.map((imgId: number) => {
-          console.log(imgId);
-          return this.removeImageFromShot({
-            shotId: this.activeShot,
-            imageIndex: imgId,
-          });
-        }),
-      );
+      await asyncForEach(imagesToDelete, (imgId: number) => this.removeImageFromShot({
+        shotId: this.activeShot,
+        imageIndex: imgId,
+      }));
       this.selectedImagesForReal = [];
     }
   }
@@ -383,13 +378,11 @@ export default class CarrouselComponent extends Vue {
 
   public async onPaste() {
     if (!this.activeCapture) {
-      Promise.all(
-        this.imagesToCopy.map((imgref: string, index: number) => this.addImageToShot({
-          shotId: this.activeShot,
-          imageIndex: this.activeImage + 1 + index,
-          image: imgref,
-        })),
-      );
+      await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImageToShot({
+        shotId: this.activeShot,
+        imageIndex: this.activeImage + 1 + index,
+        image: imgref,
+      }));
       this.selectedImagesForReal = _.range(
         this.activeImage + 1,
         this.activeImage + 1 + this.imagesToCopy.length,
@@ -400,13 +393,11 @@ export default class CarrouselComponent extends Vue {
   public async onReverse() {
     if (!this.activeCapture) {
       const reverted = [...this.imagesToCopy].reverse();
-      Promise.all(
-        reverted.map((imgref: string, index: number) => this.addImageToShot({
-          shotId: this.activeShot,
-          imageIndex: this.activeImage + 1 + index,
-          image: imgref,
-        })),
-      );
+      await asyncForEach(reverted, (imgref: string, index: number) => this.addImageToShot({
+        shotId: this.activeShot,
+        imageIndex: this.activeImage + 1 + index,
+        image: imgref,
+      }));
       this.selectedImagesForReal = _.range(
         this.activeImage + 1,
         this.activeImage + 1 + this.imagesToCopy.length,
@@ -443,6 +434,11 @@ export default class CarrouselComponent extends Vue {
         }
       });
     }
+  }
+}
+async function asyncForEach(array: any[], callback: any) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
   }
 }
 </script>
