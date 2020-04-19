@@ -12,6 +12,7 @@
     <ul class="dependsOnOrientation">
       <li>Pensez à placer votre téléphone en mode paysage (activer la rotation automatique)</li>
     </ul>
+    <img  class="dependsOnOrientation" src="@/assets/rotate_phone.gif">
     <video id="localVideo" style="display:none" autoplay playsinline width="1920" height="1080"></video>
   </div>
 </template>
