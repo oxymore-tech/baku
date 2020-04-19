@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import {
-  Component, Prop, Vue, Watch,
+  Component, Vue
 } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Shot } from '@/api/movie.service';
