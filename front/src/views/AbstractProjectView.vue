@@ -18,7 +18,7 @@ export default class Project extends Vue {
     if (projectId) {
       // TODO: do not load project every time
       // if (this.id == "") {
-        await this.loadProjectAction(projectId);
+      await this.loadProjectAction(projectId);
       // }
     } else {
       await this.$router.push({ name: 'home' });

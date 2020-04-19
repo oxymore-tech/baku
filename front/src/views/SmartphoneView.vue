@@ -1,14 +1,24 @@
 <template>
-  <div>
-    <h1>QR Reader Page</h1>
-
-    <video id="localVideo" autoplay playsinline width="1920" height="1080"></video>
+  <div style="padding: 5px;">
+    <h1 v-if="isConnected">
+      Synchronisation en
+      <span class="has-text-success">OK</span>
+    </h1>
+    <h1 v-else>Synchronisation en cours...</h1>
+    <h1 class="dependsOnOrientationOk">
+      Orientation
+      <span class="has-text-success">OK</span>
+    </h1>
+    <ul class="dependsOnOrientation">
+      <li>Pensez à placer votre téléphone en mode paysage (activer la rotation automatique)</li>
+    </ul>
+    <video id="localVideo" style="display:none" autoplay playsinline width="1920" height="1080"></video>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { State, namespace } from 'vuex-class';
+import { namespace } from 'vuex-class';
 import store from '@/store';
 import { Device } from '@/api/device.class';
 import { WSSocket } from '@/api/socket.class';
@@ -22,7 +32,7 @@ const WebrtcNS = namespace('webrtc');
   store,
 })
 export default class SmartphoneView extends Vue {
-  @State
+  @WebrtcNS.State
   public isConnected!: boolean;
 
   @WebrtcNS.State
@@ -180,5 +190,21 @@ export default class SmartphoneView extends Vue {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+@media screen and (orientation: portrait) {
+  .dependsOnOrientation {
+    display: block;
+  }
+  .dependsOnOrientationOk {
+    display: none;
+  }
+}
+@media screen and (orientation: landscape) {
+  .dependsOnOrientation {
+    display: none;
+  }
+  .dependsOnOrientationOk {
+    display: block;
+  }
+}
 </style>

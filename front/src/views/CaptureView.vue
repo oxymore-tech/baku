@@ -171,32 +171,32 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
-import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
-import ImagesSelectorComponent from "@/components/image-selector/ImagesSelectorComponent.vue";
-import store from "@/store";
-import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
-import { Movie, ReadingSliderBoundaries, Shot } from "@/api/movie.service";
-import { ImageCacheService } from "@/api/imageCache.service";
-import * as _ from "lodash";
-import AbstractProjectView from "./AbstractProjectView.vue";
-import { Device } from "../api/device.class";
-import SmartphoneSynchroPopupComponent from "../components/smartphone/SmartphoneSynchroPopupComponent.vue";
+import { Component, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
+import store from '@/store';
+import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
+import { Movie, ReadingSliderBoundaries, Shot } from '@/api/movie.service';
+import { ImageCacheService } from '@/api/imageCache.service';
+import * as _ from 'lodash';
+import AbstractProjectView from './AbstractProjectView.vue';
+import { Device } from '../api/device.class';
+import SmartphoneSynchroPopupComponent from '../components/smartphone/SmartphoneSynchroPopupComponent.vue';
 
-const CaptureNS = namespace("capture");
-const ProjectNS = namespace("project");
-const WebRTCNS = namespace("webrtc");
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
+const WebRTCNS = namespace('webrtc');
 
 @Component({
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
     ImagesSelectorComponent,
-    StoryboardPreviewComponent
+    StoryboardPreviewComponent,
   },
-  store
+  store,
 })
 export default class CaptureView extends AbstractProjectView {
   @ProjectNS.State
@@ -235,7 +235,7 @@ export default class CaptureView extends AbstractProjectView {
   @CaptureNS.State
   public scaleY!: number | 1;
 
-  @CaptureNS.State("onionSkin")
+  @CaptureNS.State('onionSkin')
   protected onionSkin!: number;
 
   @WebRTCNS.State
@@ -251,12 +251,12 @@ export default class CaptureView extends AbstractProjectView {
 
   public animationBoundaries!: ReadingSliderBoundaries;
 
-  public isPlaying: "animation" | "selection" | null = null;
+  public isPlaying: 'animation' | 'selection' | null = null;
 
   private previewImg!: HTMLImageElement;
 
   public mounted() {
-    this.$store.dispatch("project/changeActiveShot", this.$route.params.shotId);
+    this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
     this.previewImg = this.$refs.previewImg as HTMLImageElement;
   }
 
@@ -265,8 +265,7 @@ export default class CaptureView extends AbstractProjectView {
       this.animationStart = timestamp;
     }
     if (!this.animationStartFrame) {
-      this.animationStartFrame =
-        this.currentCarrousselFrame - this.animationBoundaries.left;
+      this.animationStartFrame = this.currentCarrousselFrame - this.animationBoundaries.left;
     }
 
     const nextFrame = this.getNextFrame(timestamp);
@@ -286,13 +285,12 @@ export default class CaptureView extends AbstractProjectView {
 
   private getNextFrame(timestamp: number) {
     const imageFromStart = Math.floor(
-      (timestamp - this.animationStart) * (this.movie.fps / 1000)
+      (timestamp - this.animationStart) * (this.movie.fps / 1000),
     );
-    const animationLength =
-      this.animationBoundaries.right - this.animationBoundaries.left;
+    const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
     return (
-      this.animationBoundaries.left +
-      ((this.animationStartFrame + imageFromStart) % animationLength)
+      this.animationBoundaries.left
+      + ((this.animationStartFrame + imageFromStart) % animationLength)
     );
   }
 
@@ -306,10 +304,10 @@ export default class CaptureView extends AbstractProjectView {
 
   public playAnimation() {
     if (!this.isPlaying && !this.activeCapture) {
-      this.initPlay("animation");
+      this.initPlay('animation');
       this.animationBoundaries = {
         left: 0,
-        right: this.getActiveShot.images.length
+        right: this.getActiveShot.images.length,
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
@@ -318,21 +316,21 @@ export default class CaptureView extends AbstractProjectView {
   public playSelection() {
     if (!this.isPlaying && !this.activeCapture) {
       if (
-        this.currentCarrousselFrame < this.selectedImages.left ||
-        this.currentCarrousselFrame > this.selectedImages.right
+        this.currentCarrousselFrame < this.selectedImages.left
+        || this.currentCarrousselFrame > this.selectedImages.right
       ) {
         this.currentCarrousselFrame = this.selectedImages.left;
       }
-      this.initPlay("selection");
+      this.initPlay('selection');
       this.animationBoundaries = {
         left: this.selectedImages.left,
-        right: this.selectedImages.right + 1
+        right: this.selectedImages.right + 1,
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
   }
 
-  public initPlay(type: "animation" | "selection") {
+  public initPlay(type: 'animation' | 'selection') {
     this.isPlaying = type;
   }
 
@@ -353,13 +351,13 @@ export default class CaptureView extends AbstractProjectView {
         ImageCacheService.startPreloading(
           this.getActiveShot.images,
           this.currentCarrousselFrame,
-          this.onImagePreloaded
+          this.onImagePreloaded,
         );
       }
     }
   }
 
-  @Watch("stream")
+  @Watch('stream')
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
     console.log(newValue);
     if (newValue) {
@@ -368,33 +366,33 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
-  @Watch("getActiveShot")
+  @Watch('getActiveShot')
   public async onActiveShotChange(shot: Shot) {
-    console.log("[Capture] onActiveShotChange()");
+    console.log('[Capture] onActiveShotChange()');
     if (shot) {
       ImageCacheService.startPreloading(
         shot.images,
         this.currentCarrousselFrame,
-        this.onImagePreloaded
+        this.onImagePreloaded,
       );
     }
   }
 
-  @Watch("activeCapture")
+  @Watch('activeCapture')
   public async onActiveCaptureChange(activeCapture: boolean) {
     const msg = activeCapture
-      ? "Vous entrez en mode Capture"
-      : "Vous sortez du mode Capture";
+      ? 'Vous entrez en mode Capture'
+      : 'Vous sortez du mode Capture';
     this.$buefy.toast.open({
       duration: 2000,
       message: msg,
-      position: "is-bottom",
-      type: "is-success"
+      position: 'is-bottom',
+      type: 'is-success',
     });
     setTimeout(() => this.onActiveFrameChange(this.currentDisplayedFrame));
   }
 
-  @Watch("getActiveShotImgCount")
+  @Watch('getActiveShotImgCount')
   public async onActiveShotImgCountChange(nb: number) {
     if (nb) {
       this.displayFrame(this.currentCarrousselFrame);
@@ -410,7 +408,7 @@ export default class CaptureView extends AbstractProjectView {
       this.displayFrame(this.currentDisplayedFrame);
     }
     (this.$refs.previewComponent as StoryboardPreviewComponent).imageReady(
-      imageId
+      imageId,
     );
     (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
   }
@@ -468,50 +466,50 @@ export default class CaptureView extends AbstractProjectView {
     if (!this.isPlaying) {
       if (this.activeDevice) {
         this.currentCarrousselFrame = this.getActiveShot.images.length - 1;
-        this.$store.dispatch("capture/setActiveCapture", !this.activeCapture);
+        this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
         if (
-          this.activeDevice.isSmartphone() &&
-          this.activeCapture &&
-          !this.dataChannel
+          this.activeDevice.isSmartphone()
+          && this.activeCapture
+          && !this.dataChannel
         ) {
           this.$buefy.modal.open({
             parent: this,
             component: SmartphoneSynchroPopupComponent,
-            hasModalCard: true
+            hasModalCard: true,
           });
         }
       } else {
         this.$buefy.dialog.alert({
-          message: "Veuillez sélectionner une caméra",
-          type: "is-danger",
+          message: 'Veuillez sélectionner une caméra',
+          type: 'is-danger',
           hasIcon: true,
-          icon: "times-circle",
-          iconPack: "fa",
-          ariaRole: "alertdialog",
-          ariaModal: true
+          icon: 'times-circle',
+          iconPack: 'fa',
+          ariaRole: 'alertdialog',
+          ariaModal: true,
         });
       }
     }
   }
 
   public nbHours(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60) %
-      60}`.padStart(2, "0");
+    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
+      % 60}`.padStart(2, '0');
   }
 
   public nbMins(frame: number): string {
     return `${Math.floor((frame + 1) / this.movie.fps / 60) % 60}`.padStart(
       2,
-      "0"
+      '0',
     );
   }
 
   public nbSecs(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps) % 60}`.padStart(2, "0");
+    return `${Math.floor((frame + 1) / this.movie.fps) % 60}`.padStart(2, '0');
   }
 
   public frameNb(frame: number): string {
-    return `${(frame + 1) % this.movie.fps}`.padStart(2, "0");
+    return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
   }
 }
 </script>

@@ -22,10 +22,10 @@
 </template>
 
 <script lang="ts">
-import AbstractProjectView from './AbstractProjectView.vue';
 import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { BakuAction, BakuEvent } from '@/api/baku.service';
+import AbstractProjectView from './AbstractProjectView.vue';
 
 const ProjectNS = namespace('project');
 

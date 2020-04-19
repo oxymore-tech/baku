@@ -8,6 +8,7 @@
       <ul>
         <li>Aller sur l'application appareil photo de votre smartphone</li>
         <li>Fixer le QR Code avec la caméra de votre smartphone</li>
+        <li>Placer votre téléphone en mode paysage (penser à activer la rotation automatique)</li>
       </ul>
       <qrcode :value="qrvalue" :options="options" v-if="qrvalue && status !== 'CONNECTED'"></qrcode>
       <h1
