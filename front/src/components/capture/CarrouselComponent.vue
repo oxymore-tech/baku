@@ -262,7 +262,6 @@ export default class CarrouselComponent extends Vue {
       imageIndex: newActiveFrame,
       image: id,
     });
-    this.$store.commit('project/incAction', 1);
     this.$emit('activeImageChange', newActiveFrame);
     const container = this.$refs.carrouselContainer as HTMLElement;
     const captureButtonComponent = this.$refs
