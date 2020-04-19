@@ -16,15 +16,16 @@ import org.reactivestreams.Publisher;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @Controller
 public class ImageController {
 
+    private final HistoryService historyService;
     private final ImageService imageService;
     private final PathService pathService;
 
-    public ImageController(ImageService imageService, PathService pathService) {
+    public ImageController(HistoryService historyService, ImageService imageService, PathService pathService) {
+        this.historyService = historyService;
         this.imageService = imageService;
         this.pathService = pathService;
     }
@@ -61,50 +62,41 @@ public class ImageController {
     }
 
     @Get(value = "/api/{projectId}/export.zip")
-    public HttpResponse<StreamedFile> export(@PathVariable String projectId) throws IOException {
-        PipedOutputStream outputStream = new PipedOutputStream();
-        InputStream inputStream = new PipedInputStream(outputStream);
-        Schedulers.io().scheduleDirect(() -> {
-            try {
-                imageService.export(projectId, null, outputStream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                try {
-                    outputStream.flush();
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
-                .attach(projectId + ".zip");
-        return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
-
+    public Single<HttpResponse<StreamedFile>> export(@PathVariable String projectId) {
+        return writeExportResponse(historyService.readHistory(projectId)
+                .flatMap(history -> historyService.interpretHistory(projectId, history, null)));
     }
 
     @Get(value = "/api/{projectId}/{shotId}/export.zip")
-    public HttpResponse<StreamedFile> exportShot(@PathVariable String projectId, @PathVariable String shotId) throws IOException {
-        PipedOutputStream outputStream = new PipedOutputStream();
-        InputStream inputStream = new PipedInputStream(outputStream);
-        Schedulers.io().scheduleDirect(() -> {
-            try {
-                imageService.export(projectId, shotId, outputStream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                try {
-                    outputStream.flush();
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
-                .attach(projectId + ".zip");
-        return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
+    public Single<HttpResponse<StreamedFile>> exportShot(@PathVariable String projectId, @PathVariable String shotId) {
+        return writeExportResponse(historyService.readHistory(projectId)
+                .flatMap(history -> historyService.interpretHistory(projectId, history, shotId)));
+    }
+
+    private Single<HttpResponse<StreamedFile>> writeExportResponse(Single<Movie> movieSingle) {
+        return movieSingle
+                .map(movie -> {
+                    PipedOutputStream outputStream = new PipedOutputStream();
+                    InputStream inputStream = new PipedInputStream(outputStream);
+                    Schedulers.io().scheduleDirect(() -> {
+                        try {
+                            imageService.export(movie, outputStream);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } finally {
+                            try {
+                                outputStream.flush();
+                                outputStream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
+                    StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
+                            .attach(movieName + ".zip");
+                    return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
+                });
     }
 
 }

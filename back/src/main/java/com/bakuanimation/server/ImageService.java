@@ -1,14 +1,10 @@
 package com.bakuanimation.server;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mortennobel.imagescaling.ResampleFilters;
 import com.mortennobel.imagescaling.ResampleOp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -17,13 +13,14 @@ import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.inject.Singleton;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -85,31 +82,29 @@ public class ImageService {
         }
     }
 
-    public void export(String projectId, @Nullable String shotId, OutputStream outputStream) throws IOException {
-        LOGGER.info("Export {}", projectId);
-        Map<String, List<Path>> shots = historyService.interpretHistory(projectId, this.historyService.readHistory(projectId), shotId);
-        writeMovie(shots, outputStream);
+    public void export(Movie movie, OutputStream outputStream) throws IOException {
+        LOGGER.info("Export {}", movie.getProjectId());
+        writeMovie(movie, outputStream);
     }
 
-    private void writeMovie(Map<String, List<Path>> shots, OutputStream outputStream) throws IOException {
-        if (shots.isEmpty()) {
-            return;
-        }
-        try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(outputStream))) {
-
-            int shotIndex = 0;
-            for (Map.Entry<String, List<Path>> e : shots.entrySet()) {
-                int imageIndex = 0;
-                for (Path image : e.getValue()) {
-                    String path = String.format("%03d/%03d_%04d.jpg", shotIndex, shotIndex, imageIndex);
-                    ZipEntry entry = new ZipEntry(path);
-                    entry.setLastModifiedTime(FileTime.fromMillis(Files.getLastModifiedTime(image).toMillis()));
-                    zip.putNextEntry(entry);
-                    Files.copy(image, zip);
-                    zip.closeEntry();
-                    imageIndex++;
+    private void writeMovie(Movie movie, OutputStream outputStream) throws IOException {
+        if (!movie.getImages().isEmpty()) {
+            try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(outputStream))) {
+                zip.setLevel(ZipOutputStream.STORED);
+                int shotIndex = 0;
+                for (Map.Entry<String, Collection<Path>> entry : movie.getImages().asMap().entrySet()) {
+                    int imageIndex = 0;
+                    for (Path image : entry.getValue()) {
+                        String path = String.format("%03d/%03d_%04d.jpg", shotIndex, shotIndex, imageIndex);
+                        ZipEntry zipEntry = new ZipEntry(path);
+                        zipEntry.setLastModifiedTime(FileTime.fromMillis(Files.getLastModifiedTime(image).toMillis()));
+                        zip.putNextEntry(zipEntry);
+                        Files.copy(image, zip);
+                        zip.closeEntry();
+                        imageIndex++;
+                    }
+                    shotIndex++;
                 }
-                shotIndex++;
             }
         }
     }

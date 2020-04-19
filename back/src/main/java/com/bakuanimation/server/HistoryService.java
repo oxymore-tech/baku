@@ -1,6 +1,8 @@
 package com.bakuanimation.server;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -8,6 +10,8 @@ import com.google.gson.JsonParser;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
@@ -15,20 +19,51 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
 @Singleton
 public class HistoryService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryService.class);
+
     private final Scheduler stackScheduler;
     private final PathService pathService;
 
     public HistoryService(PathService pathService) {
         this.stackScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
         this.pathService = pathService;
+    }
+
+    public Single<Boolean> addStack(String projectId, byte[] stack) {
+        return readHistory(projectId)
+                .flatMap(history ->
+                        Single.fromCallable(() -> {
+                            JsonElement jsonElement = JsonParser.parseString(new String(stack));
+                            if (jsonElement.isJsonArray()) {
+                                for (JsonElement element : jsonElement.getAsJsonArray()) {
+                                    history.add(element);
+                                }
+                            } else {
+                                history.add(jsonElement);
+                            }
+                            writeHistory(projectId, history);
+                            return true;
+                        }).subscribeOn(stackScheduler));
+    }
+
+    public Single<JsonArray> readHistory(String projectId) {
+        return Single.fromCallable(() -> {
+            Path stackFile = pathService.getStackFile(projectId);
+            if (!Files.exists(stackFile)) {
+                return new JsonArray();
+            }
+            try (Reader r = new InputStreamReader(new FileInputStream(stackFile.toFile()), StandardCharsets.UTF_8)) {
+                return JsonParser.parseReader(r).getAsJsonArray();
+            }
+        }).subscribeOn(Schedulers.io());
     }
 
     @VisibleForTesting
@@ -45,79 +80,81 @@ public class HistoryService {
         Files.move(temp, stackFile);
     }
 
-    public JsonArray readHistory(String projectId) throws IOException {
-        Path stackFile = pathService.getStackFile(projectId);
-        if (!Files.exists(stackFile)) {
-            return new JsonArray();
-        }
-        try (Reader r = new InputStreamReader(new FileInputStream(stackFile.toFile()), StandardCharsets.UTF_8)) {
-            return JsonParser.parseReader(r).getAsJsonArray();
-        }
-    }
-
-    public Single<Boolean> addStack(String projectId, byte[] stack) {
+    public Single<Movie> interpretHistory(String projectId, JsonArray history, @Nullable String shot) {
         return Single.fromCallable(() -> {
-            try {
-                JsonArray history = readHistory(projectId);
-                JsonElement jsonElement = JsonParser.parseString(new String(stack));
-                if (jsonElement.isJsonArray()) {
-                    for (JsonElement element : jsonElement.getAsJsonArray()) {
-                        history.add(element);
+            String name = "";
+            String synopsis = "";
+            int fps = 0;
+            Map<String, List<Path>> images = new LinkedHashMap<>();
+            for (JsonElement element : history) {
+                JsonObject object = element.getAsJsonObject();
+                int action = object.get("action").getAsInt();
+                switch (action) {
+                    case 0:
+                        // MOVIE_UPDATE_TITLE
+                        name = object.get("value").getAsString();
+                        break;
+                    case 1:
+                        // MOVIE_UPDATE_SYNOPSIS
+                        synopsis = object.get("value").getAsString();
+                        break;
+                    case 2:
+                        // MOVIE_UPDATE_POSTER
+                        break;
+                    case 3: {
+                        // add image
+                        JsonObject v = object.get("value").getAsJsonObject();
+                        String shotId = v.get("shotId").getAsString();
+                        if (shot == null || shot.equals(shotId)) {
+                            int imageIndex = v.get("imageIndex").getAsInt();
+                            String imageId = v.get("image").getAsString();
+                            Path imageFile = pathService.getImageFile(projectId, "original", imageId);
+                            images.computeIfAbsent(shotId, k -> new ArrayList<>()).add(imageIndex, imageFile);
+                        }
+                        break;
                     }
-                } else {
-                    history.add(jsonElement);
-                }
-                writeHistory(projectId, history);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return true;
-        }).subscribeOn(stackScheduler);
-    }
-
-    public Map<String, List<Path>> interpretHistory(String projectId, JsonArray history, @Nullable String shot) throws IOException {
-        Map<String, List<Path>> shots = new LinkedHashMap<>();
-        for (JsonElement e : history) {
-            JsonObject o = e.getAsJsonObject();
-            int action = o.get("action").getAsInt();
-            switch (action) {
-                case 4: {
-                            // new shot
-                            String shotId = o.get("value").getAsJsonObject().get("shotId").getAsString();
-                            if (shot == null || shot.equals(shotId)) {
-                                shots.put(shotId, new LinkedList<>());
-                            }
-                            break;
-                }
-                case 3: {
-                            // add image
-                            JsonObject v = o.get("value").getAsJsonObject();
-                            String shotId = v.get("shotId").getAsString();
-                            if (shot == null || shot.equals(shotId)) {
-                                int imageIndex = v.get("imageIndex").getAsInt();
-                                String imageId = v.get("image").getAsString();
-                                Path imageFile = pathService.getImageFile(projectId, "original", imageId);
-                                shots.computeIfAbsent(shotId, k -> new LinkedList<>()).add(imageIndex, imageFile);
-                            }
-                            break;
-                }
-                case 6: {
-                            // remove image
-                            JsonObject v = o.get("value").getAsJsonObject();
-                            String shotId = v.get("shotId").getAsString();
-                            if (shot == null || shot.equals(shotId)) {
-                                int imageIndex = v.get("imageIndex").getAsInt();
-                                shots.get(shotId).remove(imageIndex);
-                            }
-                            break;
-                }
-                default: {
-                             // Ignored
-                             break;
+                    case 4: {
+                        // new shot
+                        String shotId = object.get("value").getAsJsonObject().get("shotId").getAsString();
+                        if (shot == null || shot.equals(shotId)) {
+                            images.put(shotId, new ArrayList<>());
+                        }
+                        break;
+                    }
+                    case 5:
+                        fps = object.get("value").getAsInt();
+                        // CHANGE_FPS
+                        break;
+                    case 6: {
+                        // remove image
+                        JsonObject v = object.get("value").getAsJsonObject();
+                        String shotId = v.get("shotId").getAsString();
+                        if (shot == null || shot.equals(shotId)) {
+                            int imageIndex = v.get("imageIndex").getAsInt();
+                            images.get(shotId).remove(imageIndex);
+                        }
+                        break;
+                    }
+                    case 7: {
+                        // remove shot
+                        JsonObject v = object.get("value").getAsJsonObject();
+                        String shotId = v.get("shotId").getAsString();
+                        if (shot == null || shot.equals(shotId)) {
+                            images.remove(shotId);
+                        }
+                        break;
+                    }
+                    default: {
+                        // Ignored
+                        break;
+                    }
                 }
             }
-        }
 
-        return shots;
+            ImmutableList<String> shots = ImmutableList.copyOf(images.keySet());
+            ImmutableListMultimap.Builder<String, Path> imagesBuilder = ImmutableListMultimap.builder();
+            images.forEach(imagesBuilder::putAll);
+            return new Movie(projectId, name, synopsis, fps, shots, imagesBuilder.build());
+        }).subscribeOn(Schedulers.io());
     }
 }
