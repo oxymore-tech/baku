@@ -15,7 +15,7 @@ export function stack(projectId: string, event: BakuEvent): Promise<void> {
 }
 
 export function upload(projectId: string, blob: Blob, name: string): Promise<ImageRef> {
-  const url = router.resolve({ name: "stack", params: { "projectId": projectId }}).href
+  const url = router.resolve({ name: "upload", params: { "projectId": projectId }}).href
   const formData = new FormData();
   formData.set('file', blob, name);
   return axios
