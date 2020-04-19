@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ImageRef, UploadedImage } from './uploadedImage.class';
+import { ImageRef } from './uploadedImage.class';
 
 export enum BakuAction {
   MOVIE_UPDATE_TITLE,
@@ -33,7 +33,7 @@ export class BakuService {
             'Content-Type': 'multipart/form-data',
           },
         })
-      .then((r) => new UploadedImage(projectId, r.data[0]));
+      .then((r) => new ImageRef(projectId, r.data[0]));
   }
 
   public getHistory(projectId: string): Promise<BakuEvent[]> {

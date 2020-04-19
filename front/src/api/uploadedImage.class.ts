@@ -6,34 +6,19 @@ export enum Quality {
   Original = 'original'
 }
 
-export interface ImageRef {
+
+export class ImageRef {
   readonly id: string;
-  preloadedUrl: string;
-
-  getUrl(q: Quality): string;
-}
-
-export class UploadedImage implements ImageRef {
   readonly projectId: string;
 
-  readonly id: string;
-  private preloadedUrlValue: string;
+  preloadedUrl: string = Spinner;
 
   constructor(projectId: string, id: string) {
     this.projectId = projectId;
     this.id = id;
-    this.preloadedUrlValue = '@/assets/baku-balls-spinner.svg';
-    this.preloadedUrlValue = Spinner;
   }
 
   public getUrl(q: Quality): string {
     return `/images/${this.projectId}/${q}/${this.id}`;
-  }
-
-  set preloadedUrl(url: string) {
-    this.preloadedUrlValue = url;
-  }
-  get preloadedUrl(): string {
-    return this.preloadedUrlValue;
   }
 }

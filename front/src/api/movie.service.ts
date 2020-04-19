@@ -1,5 +1,5 @@
 import { BakuAction, BakuEvent } from '@/api/baku.service';
-import { ImageRef, UploadedImage } from './uploadedImage.class';
+import { ImageRef } from './uploadedImage.class';
 
 export enum KeyCodes {
   BACKSPACE = 8,
@@ -79,7 +79,7 @@ export class MovieService {
         case BakuAction.MOVIE_INSERT_IMAGE: {
           const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: string };
           updateShot(shotId, (shot: Shot) => {
-            shot.images.splice(imageIndex, 0, new UploadedImage(projectId, image));
+            shot.images.splice(imageIndex, 0, new ImageRef(projectId, image));
             return shot;
           });
 

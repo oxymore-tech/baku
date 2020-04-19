@@ -1,5 +1,5 @@
 
-import { ImageRef, Quality, UploadedImage } from './uploadedImage.class';
+import { ImageRef, Quality } from './uploadedImage.class';
 
 type ImgDict = { [id: string]: string };
 
@@ -142,7 +142,7 @@ export class ImageCacheServiceImpl {
     });
   }
 
-  public getImageUrl(image: UploadedImage, quality: Quality): string {
+  public getImageUrl(image: ImageRef, quality: Quality): string {
     return `/images/${image.projectId}/${quality}/${image.id}`;
   }
 
