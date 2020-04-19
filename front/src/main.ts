@@ -3,7 +3,7 @@ import Buefy from 'buefy';
 import VueQrcodeReader from 'vue-qrcode-reader';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
 import 'buefy/dist/buefy.css';
-import { ImageCacheService } from '@/api/imageCache.service';
+import { ImageCacheService } from './utils/imageCache.service';
 import App from './App.vue';
 import router from './router';
 import store from './store';

@@ -1,4 +1,4 @@
-import { Device } from '@/api/device.class';
+import { Device } from '@/utils/device.class';
 import { BakuModule, CaptureState } from '@/store/store.types';
 
 export const CaptureStore: BakuModule<CaptureState> = {

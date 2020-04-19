@@ -1,5 +1,5 @@
 <style lang="scss" scoped>
-  @import "../styles/shots.scss";
+  @import "@/styles/shots.scss";
 </style>
 
 <template>
@@ -62,9 +62,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Spinner } from '@/api/spinner.class';
-import { Quality } from '@/api/uploadedImage.class';
-import { BakuService } from '@/api/baku.service';
+import { Spinner } from '@/utils/spinner.class';
+import { Quality } from '@/utils/uploadedImage.class';
+import * as api from '@/api';
 
 type Shot = {
   id: string;
@@ -107,7 +107,7 @@ export default class Shots extends Vue {
   }
 
   public getExportUrl(shotId: string): string {
-    return BakuService.getExportUrl(this.projectId, shotId);
+    return api.getExportUrl(this.projectId, shotId);
   }
 
   public close() {

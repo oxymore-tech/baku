@@ -42,8 +42,8 @@ import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { Device } from '@/api/device.class';
-import { KeyCodes } from '@/api/movie.service';
+import { Device } from '@/utils/device.class';
+import { KeyCodes } from '@/utils/movie.service';
 
 const CaptureNS = namespace('capture');
 const WebRTCNS = namespace('webrtc');

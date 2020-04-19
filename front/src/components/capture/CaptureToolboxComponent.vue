@@ -47,7 +47,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneSynchroPopupComponent.vue';
-import { Device } from '@/api/device.class';
+import { Device } from '@/utils/device.class';
 
 const CaptureNS = namespace('capture');
 const WebRTCNS = namespace('webrtc');

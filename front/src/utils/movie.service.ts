@@ -1,5 +1,5 @@
-import { BakuAction, BakuEvent } from '@/api/baku.service';
-import { ImageRef, UploadedImage } from './uploadedImage.class';
+import { BakuAction, BakuEvent } from '@/utils/types';
+import { ImageRef, UploadedImage } from '@/utils/uploadedImage.class';
 
 export enum KeyCodes {
   BACKSPACE = 8,

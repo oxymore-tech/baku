@@ -1,6 +1,6 @@
 import { ActionContext, Module } from 'vuex';
-import { Device } from '@/api/device.class';
-import { BakuEvent } from '@/api/baku.service';
+import { Device } from '@/utils/device.class';
+import { BakuEvent } from '@/utils/types';
 
 export interface CaptureState {
   stream: MediaStream | null;
@@ -38,7 +38,6 @@ export interface WebrtcState {
   isConnected: boolean,
   socketStatus: SocketStatus,
 }
-
 
 export type BakuActionContext<TState> = ActionContext<TState, BakuRootState>;
 export type BakuModule<TState> = Module<TState, BakuRootState>;

@@ -102,7 +102,7 @@ import {
 } from 'vue-property-decorator';
 import ReadingSliderTickComponent from '@/components/image-selector/ReadingSliderTickComponent.vue';
 import ReadingSliderThumbComponent from '@/components/image-selector/ReadingSliderThumbComponent.vue';
-import { ReadingSliderValue } from '@/api/movie.service';
+import { ReadingSliderValue } from '@/utils/movie.service';
 
 @Component({
   components: {

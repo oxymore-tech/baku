@@ -13,9 +13,9 @@ import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { Shot } from '@/api/movie.service';
-import { Spinner } from '@/api/spinner.class';
-import { ImageCacheService } from '@/api/imageCache.service';
+import { Shot } from '@/utils/movie.service';
+import { Spinner } from '@/utils/spinner.class';
+import { ImageCacheService } from '@/utils/imageCache.service';
 
 const ProjectNS = namespace('project');
 const CaptureNS = namespace('capture');

@@ -1,4 +1,3 @@
-
 export enum Quality {
   Thumbnail = 'thumbnail',
   Lightweight = 'lightweight',

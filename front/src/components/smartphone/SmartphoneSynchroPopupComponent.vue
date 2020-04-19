@@ -30,7 +30,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { WSSocket } from '@/api/socket.class';
+import { WSSocket } from '@/utils/socket.class';
 import { SocketStatus } from '@/store/store.types';
 
 const WebrtcNS = namespace('webrtc');

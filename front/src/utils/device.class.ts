@@ -1,5 +1,5 @@
 import * as uuid from 'uuid';
-import { BakuService } from '@/api/baku.service';
+import * as api from '@/api';
 
 interface Scales {
   scaleX: number;
@@ -10,8 +10,6 @@ export class Device {
   public readonly id: string;
 
   public readonly label: string;
-
-  private readonly bakuService: BakuService = new BakuService();
 
   constructor(id: string, label: string) {
     this.id = id;
@@ -36,7 +34,7 @@ export class Device {
       const [blob, b64] = Device.captureOriginal(video, scales);
       const id = `${uuid.v4()}.jpg`;
       onCaptured(id, blob, b64);
-      this.bakuService.upload(projectId, blob, id)
+      api.upload(projectId, blob, id)
         .then(() => onUploaded(id))
         .catch(onError)
         .finally(onFinally);

@@ -1,5 +1,5 @@
-import { Spinner } from '@/api/spinner.class';
-import { ImageRef, Quality } from './uploadedImage.class';
+import { Spinner } from '@/utils/spinner.class';
+import { ImageRef, Quality } from '@/utils/uploadedImage.class';
 
 type ImgDict = { [id: string]: string };
 

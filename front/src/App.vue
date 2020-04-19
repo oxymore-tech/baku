@@ -60,7 +60,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
-import { Movie } from './api/movie.service';
+import { Movie } from '@/utils/movie.service';
 
 const ProjectNS = namespace('project');
 const UserNS = namespace('user');

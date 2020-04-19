@@ -1,9 +1,8 @@
-import { BakuAction, BakuEvent, BakuService } from '@/api/baku.service';
-import { Movie, MovieService, Shot } from '@/api/movie.service';
+import * as api from '@/api';
+import { BakuAction, BakuEvent } from '@/utils/types';
+import { Movie, MovieService, Shot } from '@/utils/movie.service';
 import { BakuActionContext, BakuModule, ProjectState } from '@/store/store.types';
 import uuid from 'uuid';
-
-const bakuService = new BakuService();
 
 interface ProjectGetters {
   movie: Movie;
@@ -16,7 +15,7 @@ const loadEvent = (context: BakuActionContext<ProjectState>, action: BakuAction,
   const event = {
     action, value, user, timestamp: new Date(),
   };
-  const promise = bakuService.stack(projectId, event);
+  const promise = api.stack(projectId, event);
   context.commit('addToLocalHistory', event);
   context.commit('incAction', 1);
   promise.catch(() => context.commit('removeFromLocalHistory', event))
@@ -52,7 +51,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
   },
   actions: {
     async loadProject(context, projectId: string): Promise<void> {
-      const movieHistory = await bakuService.getHistory(projectId);
+      const movieHistory = await api.getHistory(projectId);
       await context.commit('setMovie', { projectId, movieHistory });
     },
     async addImageToShot(context,

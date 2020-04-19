@@ -1,8 +1,7 @@
 <style lang="scss" scoped>
-  @import "../styles/movieHome.scss";
+  @import "@/styles/movieHome.scss";
 </style>
 
-import {Quality} from "@/api/baku.service";
 <template>
   <div class="movie-home-main">
     <div class="movie-card">
@@ -24,14 +23,14 @@ import {Quality} from "@/api/baku.service";
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { Movie } from '@/api/movie.service';
-import { Spinner } from '@/api/spinner.class';
-import { Quality } from '@/api/uploadedImage.class';
-import AbstractProjectView from './AbstractProjectView.vue';
+import { Movie } from '@/utils/movie.service';
+import { Spinner } from '@/utils/spinner.class';
+import { Quality } from '@/utils/uploadedImage.class';
+import AbstractProjectView from '@/views/AbstractProjectView.vue';
 
 const ProjectNS = namespace('project');
 
-  @Component
+@Component
 export default class MovieHomeView extends AbstractProjectView {
     @ProjectNS.State
     public id!: string;

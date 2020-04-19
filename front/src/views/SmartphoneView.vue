@@ -20,11 +20,11 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import store from '@/store';
-import { Device } from '@/api/device.class';
-import { WSSocket } from '@/api/socket.class';
 
-import { SocketStatus } from '../store/store.types';
+import store from '@/store';
+import { SocketStatus } from '@/store/store.types';
+import { Device } from '@/utils/device.class';
+import { WSSocket } from '@/utils/socket.class';
 
 const WebrtcNS = namespace('webrtc');
 

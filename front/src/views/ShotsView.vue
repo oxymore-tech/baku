@@ -14,8 +14,8 @@ import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import store from '@/store';
 import Shots from '@/components/Shots.vue';
-import { Movie } from '@/api/movie.service';
-import AbstractProjectView from './AbstractProjectView.vue';
+import { Movie } from '@/utils/movie.service';
+import AbstractProjectView from '@/views/AbstractProjectView.vue';
 
 const ProjectNS = namespace('project');
 @Component({

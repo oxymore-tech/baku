@@ -52,8 +52,8 @@ input, textarea {
 
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { Movie } from '@/api/movie.service';
-import { BakuService } from '@/api/baku.service';
+import { Movie } from '@/utils/movie.service';
+import * as api from '@/api';
 
 const ProjectNS = namespace('project');
 
@@ -71,7 +71,7 @@ export default class ProjectSettingsPopup extends Vue {
 
 
   public getMovieExportUrl() {
-    return BakuService.getExportUrl(this.id);
+    return api.getExportUrl(this.id);
   }
 
   public setTitle(event: any) {

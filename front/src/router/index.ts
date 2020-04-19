@@ -1,14 +1,13 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-import CollaborationView from '../views/CollaborationView.vue';
-import CaptureView from '../views/CaptureView.vue';
-import MovieHomeView from '../views/MovieHomeView.vue';
-import ShotsView from '../views/ShotsView.vue';
-import TodoView from '../views/TodoView.vue';
-import SmartphoneView from '../views/SmartphoneView.vue';
 
-Vue.use(VueRouter);
+import HomeView from '@/views/HomeView.vue';
+import TodoView from '@/views/TodoView.vue';
+import ShotsView from '@/views/ShotsView.vue';
+import CaptureView from '@/views/CaptureView.vue';
+import MovieHomeView from '@/views/MovieHomeView.vue';
+import SmartphoneView from '@/views/SmartphoneView.vue';
+import CollaborationView from '@/views/CollaborationView.vue';
 
 const routes = [
   {
@@ -57,11 +56,36 @@ const routes = [
     path: '/movies/:projectId/collaboration',
     component: CollaborationView,
   },
+  { 
+    path: '/api',
+    children: [
+      {
+        name: 'stack',
+        path: ':projectId/stack',
+      },
+      {
+        name: 'history',
+        path: ':projectId/history',
+      },
+      {
+        name: 'upload',
+        path: ':projectId/upload',
+      },
+      {
+        name: 'exportProject',
+        path: ':projectId/export.zip',
+      },
+      {
+        name: 'exportShot',
+        path: ':projectId/:shotId/export.zip',
+      },
+    ]
+  }
 ];
 
+Vue.use(VueRouter);
 const router = new VueRouter({
   mode: 'history',
   routes,
 });
-
 export default router;

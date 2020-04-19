@@ -20,12 +20,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ImageRef } from '@/api/uploadedImage.class';
+import { ImageRef } from '@/utils/uploadedImage.class';
 import ReadingSliderComponent from '@/components/image-selector/ReadingSliderComponent.vue';
-import {
-  ReadingSliderBoundaries,
-  ReadingSliderValue,
-} from '@/api/movie.service';
+import { ReadingSliderBoundaries, ReadingSliderValue } from '@/utils/movie.service';
 
 @Component({
   components: {

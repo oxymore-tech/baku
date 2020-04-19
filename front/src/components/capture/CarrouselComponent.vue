@@ -1,5 +1,5 @@
 <style lang="scss" scoped>
-@import "../../styles/carrousel.scss";
+  @import "@/styles/carrousel.scss";
 </style>
 
 <template>
@@ -139,16 +139,14 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Vue, Watch,
-} from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import * as _ from 'lodash';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import { Device } from '@/api/device.class';
-import { ImageCacheService } from '@/api/imageCache.service';
-import { ImageRef, UploadedImage } from '@/api/uploadedImage.class';
-import { KeyCodes, ReadingSliderBoundaries } from '@/api/movie.service';
+import { Device } from '@/utils/device.class';
+import { ImageCacheService } from '@/utils/imageCache.service';
+import { ImageRef, UploadedImage } from '@/utils/uploadedImage.class';
+import { KeyCodes, ReadingSliderBoundaries } from '@/utils/movie.service';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');

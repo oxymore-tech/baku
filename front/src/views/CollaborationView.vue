@@ -1,5 +1,5 @@
 <style lang="scss" scoped>
-  @import "../styles/collaboration.scss";
+  @import "@/styles/collaboration.scss";
 </style>
 
 <template>
@@ -24,8 +24,8 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { BakuAction, BakuEvent } from '@/api/baku.service';
-import AbstractProjectView from './AbstractProjectView.vue';
+import AbstractProjectView from '@/views/AbstractProjectView.vue';
+import { BakuAction, BakuEvent } from '@/utils/types';
 
 const ProjectNS = namespace('project');
 
