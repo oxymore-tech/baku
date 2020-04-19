@@ -56,6 +56,9 @@ export default class HomeView extends Vue {
   @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
+  @ProjectNS.Action('changeFps')
+  protected changeFps!: (fps: number) => Promise<void>;
+
   public description1 = 'Baku est une rencontre entre instituteurs, artistes et développeurs.';
 
   public description2 = 'C’est une plateforme de création de films d’animation collaborative destinée aux enfants.';
@@ -88,6 +91,7 @@ export default class HomeView extends Vue {
     const projectId = uuid.v4();
     await this.loadProjectAction(projectId);
     const shotId = await this.createShotAction('Nouveau plan');
+    await this.changeFps(12);
     await this.$router.push({
       name: 'captureShot',
       params: {
