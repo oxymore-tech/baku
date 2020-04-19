@@ -36,12 +36,12 @@ export const WebrtcStore: BakuModule<WebrtcState> = {
       state.stream = undefined as undefined | MediaStream;
       state.isConnected = false;
       state.socketStatus = 'closed' as SocketStatus;
-    }
+    },
   },
   actions: {
     resetState(context) {
       context.commit('reset');
-    }
+    },
   },
   getters: {},
   modules: {},

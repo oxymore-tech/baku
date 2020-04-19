@@ -142,7 +142,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
         setTimeout(() => (this.$parent as any).close(), 500);
       }
       if (this.peerConnection.connectionState === 'disconnected') {
-        if(this.activeCapture) {
+        if (this.activeCapture) {
           this.setActiveCapture(false);
         }
         this.resetRTC();

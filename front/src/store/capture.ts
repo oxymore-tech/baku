@@ -39,13 +39,13 @@ export const CaptureStore: BakuModule<CaptureState> = {
       state.onionSkin = val;
     },
     reset(state) {
-      state.stream= null;
-      state.activeDevice=null;
-      state.activeCapture=false;
-      state.scaleX=1;
-      state.scaleY=1;
-      state.onionSkin=0;
-    }
+      state.stream = null;
+      state.activeDevice = null;
+      state.activeCapture = false;
+      state.scaleX = 1;
+      state.scaleY = 1;
+      state.onionSkin = 0;
+    },
   },
   actions: {
     resetState(context) {
@@ -70,7 +70,7 @@ export const CaptureStore: BakuModule<CaptureState> = {
 
     setOnionSkin(context, val: number) {
       context.commit('setOnionSkin', val);
-    }
+    },
   },
   getters: {
   },
