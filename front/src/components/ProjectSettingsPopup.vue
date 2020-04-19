@@ -17,13 +17,19 @@
            @click="copyLink()">
         </i>
       </div>
-      <br>
+
+      <hr>
       <span>Titre du film</span><br>
       <input type="text" :value="movie.title" @blur="setTitle($event)"/><br>
       <span>Synopsis</span><br>
       <textarea v-model="movie.synopsis" @blur="setSynopsis($event)" rows="4"></textarea><br>
       <span>Frequence</span><br>
       <input type="number" :value="movie.fps" @blur="setFps($event)"/><br>
+      <hr>
+      <a
+        :href="getMovieExportUrl()"
+        target="_blank"
+      >Exporter le film</a>
     </section>
   </div>
 </template>
@@ -46,7 +52,8 @@ input, textarea {
 
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { Movie } from '@/api/movie.service';
+import { Movie, Shot } from '@/api/movie.service';
+import { BakuService } from '@/api/baku.service';
 
 const ProjectNS = namespace('project');
 
@@ -61,6 +68,11 @@ export default class ProjectSettingsPopup extends Vue {
   public url = window.location.origin;
 
   public copied: boolean = false;
+
+
+  public getMovieExportUrl() {
+    return BakuService.getExportUrl(this.id);
+  }
 
   public setTitle(event: any) {
     const newTitle = event.target.value;
