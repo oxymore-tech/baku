@@ -89,10 +89,14 @@ export default class CaptureToolboxComponent extends Vue {
   private resetRTC!: () => Promise<void>;
 
   public async mounted() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    stream.getTracks().forEach((track: MediaStreamTrack) => {
-      track.stop();
-    });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach((track: MediaStreamTrack) => {
+        track.stop();
+      });
+    }catch(e){
+      console.info(e);
+    }
     const devices = (await navigator.mediaDevices.enumerateDevices()) || [];
     const videoDevices = devices
       .filter(
