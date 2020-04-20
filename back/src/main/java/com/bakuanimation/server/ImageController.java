@@ -84,7 +84,7 @@ public class ImageController {
                         return HttpResponse.badRequest();
                     } else {
                         String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
-                        movieName = movieName + "_" +shotIndex;
+                        movieName = movieName + "_" +(shotIndex+1);
                         return writeExportResponse(movie, movieName, shotId);
                     }
                 });
