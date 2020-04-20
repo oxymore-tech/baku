@@ -24,7 +24,9 @@ public class NoCacheFilter implements HttpServerFilter {
         return Flowable.fromPublisher(chain.proceed(request))
                 .doOnNext(res -> {
                     if (disableCache(res)) {
-                        res.getHeaders().add(HttpHeaderNames.CACHE_CONTROL, "no-cache");
+                        res.getHeaders().add(HttpHeaderNames.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+                        res.getHeaders().add(HttpHeaderNames.PRAGMA, "no-cache");
+                        res.getHeaders().add(HttpHeaderNames.EXPIRES, "0");
                     }
                 });
     }
