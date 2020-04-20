@@ -183,6 +183,7 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   private captureSmartphone() {
+    this.$store.commit('project/incAction', 1);
     this.dataChannel.send(
       JSON.stringify({
         message: 'capture',
@@ -195,6 +196,7 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   private captureWebcam() {
+    this.$store.commit('project/incAction', 1);
     this.device.capture(
       'video-capture',
       { scaleX: this.scaleX, scaleY: this.scaleY },

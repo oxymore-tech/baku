@@ -251,6 +251,7 @@ export default class CarrouselComponent extends Vue {
       new UploadedImage(this.projectId, id),
       () => this.$forceUpdate(),
     );
+    console.log('onUploaded -1');
     this.$store.commit('project/incAction', -1);
   }
 
