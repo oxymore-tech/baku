@@ -46,7 +46,9 @@ export const ProjectStore: BakuModule<ProjectState> = {
       state.activeShotId = shotId;
     },
     incAction(state, count: number) {
-      state.pendingActions += count;
+      if (state.pendingActions > 0) {
+        state.pendingActions += count;
+      }
     },
   },
   actions: {
