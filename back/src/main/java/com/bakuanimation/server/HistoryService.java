@@ -18,10 +18,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 @Singleton
@@ -155,7 +152,20 @@ public class HistoryService {
 
             ImmutableList<String> shots = ImmutableList.copyOf(images.keySet());
             ImmutableListMultimap.Builder<String, Path> imagesBuilder = ImmutableListMultimap.builder();
-            images.forEach(imagesBuilder::putAll);
+            for (Map.Entry<String, List<Path>> imagesEntry : images.entrySet()) {
+                String shotId = imagesEntry.getKey();
+                Iterator<Path> iterator = imagesEntry.getValue().iterator();
+                int index = 0;
+                while (iterator.hasNext()) {
+                    Path value = iterator.next();
+                    if (value == null) {
+                        iterator.remove();
+                        LOGGER.warn("Missing image at index {} in movie : '{}', shot : '{}' (image is ignored)", index, projectId, shotId);
+                    }
+                    index++;
+                }
+                imagesBuilder.putAll(shotId, imagesEntry.getValue());
+            }
             return new Movie(projectId, name, synopsis, fps, shots, imagesBuilder.build());
         });
     }
