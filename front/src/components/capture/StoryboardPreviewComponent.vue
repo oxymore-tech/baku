@@ -2,7 +2,7 @@
   <div class="box-container storyboard-preview-container">
     <div class="storyboard-preview-header" @click="onDisplayShots()">
       <i class="icon-grid baku-button"/>
-      <h4 class="baku-button">Plans - Plan {{ shotIndex }}</h4>
+      <h4 class="baku-button">Plan {{ shotIndex }}</h4>
     </div>
     <img class="shot-preview" alt="preview" ref="preview"/>
   </div>
@@ -43,7 +43,7 @@
       if (this.shots) {
         return this.shots.findIndex(s => s.id === this.activeShot?.id) + 1;
       } else {
-        return 0;
+        return "";
       }
     }
 
