@@ -1,5 +1,6 @@
-package com.bakuanimation.server;
+package com.bakuanimation.service;
 
+import com.bakuanimation.api.Movie;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -81,7 +82,6 @@ public class HistoryService {
                     String synopsis = "";
                     int fps = 0;
                     Map<String, List<Path>> images = new LinkedHashMap<>();
-                    LOGGER.info(history.toString());
                     for (JsonElement element : history) {
                         JsonObject object = element.getAsJsonObject();
                         int action = object.get("action").getAsInt();

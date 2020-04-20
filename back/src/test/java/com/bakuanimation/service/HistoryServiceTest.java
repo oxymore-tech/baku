@@ -1,5 +1,6 @@
-package com.bakuanimation.server;
+package com.bakuanimation.service;
 
+import com.bakuanimation.api.Movie;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 import org.assertj.core.api.Assertions;

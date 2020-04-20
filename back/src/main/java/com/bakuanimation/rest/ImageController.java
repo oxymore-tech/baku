@@ -1,5 +1,9 @@
 package com.bakuanimation.server;
 
+import com.bakuanimation.api.Movie;
+import com.bakuanimation.service.HistoryService;
+import com.bakuanimation.service.ImageService;
+import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -62,7 +66,7 @@ public class ImageController {
         if (Files.exists(imagePath)) {
             return HttpResponse.ok(new SystemFile(imagePath.toFile()).attach(imageName));
         } else {
-            return HttpResponse.notFound(imageName + "not found");
+            return HttpResponse.notFound(imageName + " not found");
         }
     }
 

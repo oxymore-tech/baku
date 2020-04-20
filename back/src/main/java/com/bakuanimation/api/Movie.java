@@ -1,4 +1,4 @@
-package com.bakuanimation.server;
+package com.bakuanimation.api;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;

@@ -1,13 +1,13 @@
-package com.bakuanimation.server;
+package com.bakuanimation.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.Files;
 
 @Singleton
 public class PathService {
@@ -38,6 +38,18 @@ public class PathService {
         return this
             .projectDir(projectId)
             .resolve("stack.json");
+    }
+
+    public Path getMovieFile(String projectId) {
+        return this
+            .projectDir(projectId)
+            .resolve("movie.mp4");
+    }
+
+    public Path getMovieTempFile(String projectId) {
+        return this
+            .projectDir(projectId)
+            .resolve("movie.tmp.mp4");
     }
 
     public Path getStackTempFile(String projectId) {

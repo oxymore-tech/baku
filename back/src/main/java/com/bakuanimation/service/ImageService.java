@@ -1,5 +1,6 @@
-package com.bakuanimation.server;
+package com.bakuanimation.service;
 
+import com.bakuanimation.api.Movie;
 import com.google.common.collect.ImmutableListMultimap;
 import com.mortennobel.imagescaling.ResampleFilters;
 import com.mortennobel.imagescaling.ResampleOp;
@@ -33,11 +34,9 @@ public class ImageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageService.class);
 
     private final PathService pathService;
-    private final HistoryService historyService;
 
-    public ImageService(PathService pathService, HistoryService historyService) {
+    public ImageService(PathService pathService) {
         this.pathService = pathService;
-        this.historyService = historyService;
     }
 
     private BufferedImage reduce(BufferedImage sourceImage, int width) throws IOException {
