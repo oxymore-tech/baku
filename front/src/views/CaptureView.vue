@@ -80,10 +80,9 @@
             />
             <i
               class="toolbar-button toolbar-button-big icon-play"
-              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': activeCapture}"
+              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': (activeCapture)}"
               @click="playAnimation()"
               v-if="isPlaying !== 'animation'"
-              v-bind:disabled="true"
             />
             <i
               class="toolbar-button toolbar-button-big icon-pause baku-button"
@@ -308,7 +307,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public playAnimation() {
-    if (!this.isPlaying && !this.activeCapture) {
+    if (!this.isPlaying && !this.activeCapture && this.getActiveShot.images.length > 0) {
       this.initPlay('animation');
       this.animationBoundaries = {
         left: 0,
@@ -319,7 +318,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public playSelection() {
-    if (!this.isPlaying && !this.activeCapture) {
+    if (!this.isPlaying && !this.activeCapture && this.getActiveShot.images.length > 0) {
       if (
         this.currentCarrousselFrame < this.selectedImages.left
         || this.currentCarrousselFrame > this.selectedImages.right
