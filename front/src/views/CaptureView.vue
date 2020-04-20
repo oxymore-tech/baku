@@ -384,7 +384,7 @@ export default class CaptureView extends AbstractProjectView {
 
   @Watch('getActiveShot')
   public async onActiveShotChange(shot: Shot) {
-    this.imagesQuickAccess = this.getActiveShot.images.reduce((acc, img) => {
+    this.imagesQuickAccess = this.getActiveShot.images.reduce((acc: any, img) => {
       acc[img.id] = img;
       return acc;
     }, {});
