@@ -13,7 +13,6 @@ import io.reactivex.schedulers.Schedulers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -80,8 +79,8 @@ public class HistoryService {
         Files.move(temp, stackFile);
     }
 
-    public Single<Movie> interpretHistory(String projectId, JsonArray history, @Nullable String shot) {
-        return Single.fromCallable(() -> {
+    public Single<Movie> interpretHistory(String projectId) {
+        return readHistory(projectId).map(history -> {
             String name = "";
             String synopsis = "";
             int fps = 0;
@@ -105,31 +104,27 @@ public class HistoryService {
                         // add image
                         JsonObject v = object.get("value").getAsJsonObject();
                         String shotId = v.get("shotId").getAsString();
-                        if (shot == null || shot.equals(shotId)) {
-                            int imageIndex = v.get("imageIndex").getAsInt();
-                            String imageId = v.get("image").getAsString();
-                            Path imageFile = pathService.getImageFile(projectId, "original", imageId);
-                            List<Path> imageList = images.computeIfAbsent(shotId, k -> new ArrayList<>());
-                            int imageListSize = imageList.size();
-                            if (imageIndex > imageListSize) {
-                                for (int i = 0; i < (imageIndex - imageListSize); i++) {
-                                    imageList.add(null);
-                                }
+                        int imageIndex = v.get("imageIndex").getAsInt();
+                        String imageId = v.get("image").getAsString();
+                        Path imageFile = pathService.getImageFile(projectId, "original", imageId);
+                        List<Path> imageList = images.computeIfAbsent(shotId, k -> new ArrayList<>());
+                        int imageListSize = imageList.size();
+                        if (imageIndex > imageListSize) {
+                            for (int i = 0; i < (imageIndex - imageListSize); i++) {
+                                imageList.add(null);
                             }
-                            if (imageIndex < imageList.size() && imageList.get(imageIndex) == null) {
-                                imageList.set(imageIndex, imageFile);
-                            } else {
-                                imageList.add(imageIndex, imageFile);
-                            }
+                        }
+                        if (imageIndex < imageList.size() && imageList.get(imageIndex) == null) {
+                            imageList.set(imageIndex, imageFile);
+                        } else {
+                            imageList.add(imageIndex, imageFile);
                         }
                         break;
                     }
                     case 4: {
                         // new shot
                         String shotId = object.get("value").getAsJsonObject().get("shotId").getAsString();
-                        if (shot == null || shot.equals(shotId)) {
-                            images.put(shotId, new ArrayList<>());
-                        }
+                        images.put(shotId, new ArrayList<>());
                         break;
                     }
                     case 5:
@@ -140,19 +135,15 @@ public class HistoryService {
                         // remove image
                         JsonObject v = object.get("value").getAsJsonObject();
                         String shotId = v.get("shotId").getAsString();
-                        if (shot == null || shot.equals(shotId)) {
-                            int imageIndex = v.get("imageIndex").getAsInt();
-                            images.get(shotId).remove(imageIndex);
-                        }
+                        int imageIndex = v.get("imageIndex").getAsInt();
+                        images.get(shotId).remove(imageIndex);
                         break;
                     }
                     case 7: {
                         // remove shot
                         JsonObject v = object.get("value").getAsJsonObject();
                         String shotId = v.get("shotId").getAsString();
-                        if (shot == null || shot.equals(shotId)) {
-                            images.remove(shotId);
-                        }
+                        images.remove(shotId);
                         break;
                     }
                     default: {
@@ -166,6 +157,6 @@ public class HistoryService {
             ImmutableListMultimap.Builder<String, Path> imagesBuilder = ImmutableListMultimap.builder();
             images.forEach(imagesBuilder::putAll);
             return new Movie(projectId, name, synopsis, fps, shots, imagesBuilder.build());
-        }).subscribeOn(Schedulers.io());
+        });
     }
 }

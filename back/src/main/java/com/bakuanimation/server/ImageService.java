@@ -1,10 +1,12 @@
 package com.bakuanimation.server;
 
+import com.google.common.collect.ImmutableListMultimap;
 import com.mortennobel.imagescaling.ResampleFilters;
 import com.mortennobel.imagescaling.ResampleOp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -82,17 +84,22 @@ public class ImageService {
         }
     }
 
-    public void export(Movie movie, OutputStream outputStream) throws IOException {
-        LOGGER.info("Export {}", movie.getProjectId());
-        writeMovie(movie, outputStream);
-    }
-
-    private void writeMovie(Movie movie, OutputStream outputStream) throws IOException {
-        if (!movie.getImages().isEmpty()) {
+    public void export(Movie movie, OutputStream outputStream, @Nullable String shotId) throws IOException {
+        if (shotId == null) {
+            LOGGER.info("Export {}", movie.getProjectId());
+        } else {
+            LOGGER.info("Export {} {}", movie.getProjectId(), shotId);
+        }
+        ImmutableListMultimap<String, Path> images = shotId == null ?
+                movie.getImages() :
+                ImmutableListMultimap.<String, Path>builder()
+                        .putAll(shotId, movie.getImages().get(shotId))
+                        .build();
+        if (!images.isEmpty()) {
             try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(outputStream))) {
                 zip.setLevel(ZipOutputStream.STORED);
                 int shotIndex = 0;
-                for (Map.Entry<String, Collection<Path>> entry : movie.getImages().asMap().entrySet()) {
+                for (Map.Entry<String, Collection<Path>> entry : images.asMap().entrySet()) {
                     int imageIndex = 0;
                     for (Path image : entry.getValue()) {
                         String path = String.format("%03d/%03d_%04d.jpg", shotIndex, shotIndex, imageIndex);

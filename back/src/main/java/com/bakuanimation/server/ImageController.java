@@ -16,6 +16,7 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.file.Files;
 
@@ -67,42 +68,50 @@ public class ImageController {
 
     @Get(value = "/api/{projectId}/export.zip")
     public Single<HttpResponse<StreamedFile>> export(@PathVariable String projectId) {
-        return writeExportResponse(historyService.readHistory(projectId)
-                .flatMap(history -> historyService.interpretHistory(projectId, history, null)));
+        return historyService.interpretHistory(projectId)
+                .map(movie -> {
+                    String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
+                    return writeExportResponse(movie, movieName, null);
+                });
     }
 
     @Get(value = "/api/{projectId}/{shotId}/export.zip")
     public Single<HttpResponse<StreamedFile>> exportShot(@PathVariable String projectId, @PathVariable String shotId) {
-        return writeExportResponse(historyService.readHistory(projectId)
-                .flatMap(history -> historyService.interpretHistory(projectId, history, shotId)));
+        return historyService.interpretHistory(projectId)
+                .map(movie -> {
+                    int shotIndex = movie.getShots().indexOf(shotId);
+                    if (shotIndex == -1) {
+                        return HttpResponse.badRequest();
+                    } else {
+                        String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
+                        movieName = movieName + "_" +shotIndex;
+                        return writeExportResponse(movie, movieName, shotId);
+                    }
+                });
     }
 
-    private Single<HttpResponse<StreamedFile>> writeExportResponse(Single<Movie> movieSingle) {
-        return movieSingle
-                .map(movie -> {
-                    PipedOutputStream outputStream = new PipedOutputStream();
-                    InputStream inputStream = new PipedInputStream(outputStream);
-                    Schedulers.io().scheduleDirect(() -> {
-                        try {
-                            imageService.export(movie, outputStream);
-                        } catch (IOException e) {
-                            LOGGER.warn("Error while exporting {}", movie.getProjectId(), e);
-                            throw new RuntimeException(e);
-                        } finally {
-                            try {
-                                outputStream.flush();
-                                outputStream.close();
-                            } catch (IOException e) {
-                                LOGGER.warn("Error while closing {}", movie.getProjectId(), e);
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
-                    StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .attach(movieName + ".zip");
-                    return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
-                });
+    private HttpResponse<StreamedFile> writeExportResponse(Movie movie, String name, @Nullable String shotId) throws IOException {
+        PipedOutputStream outputStream = new PipedOutputStream();
+        InputStream inputStream = new PipedInputStream(outputStream);
+        Schedulers.io().scheduleDirect(() -> {
+            try {
+                imageService.export(movie, outputStream, shotId);
+            } catch (IOException e) {
+                LOGGER.warn("Error while exporting {}", movie.getProjectId(), e);
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    LOGGER.warn("Error while closing {}", movie.getProjectId(), e);
+                    e.printStackTrace();
+                }
+            }
+        });
+        StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
+                .attach(name + ".zip");
+        return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
     }
 
 }
