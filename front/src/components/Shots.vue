@@ -18,7 +18,7 @@
           <a slot="trigger">
             <b-icon custom-class="icon-cog"></b-icon>
           </a>
-          <b-dropdown-item aria-role="listitem">
+          <b-dropdown-item has-link aria-role="listitem">
             <a
               :href="getExportUrl(shot.id)"
               target="_blank"
