@@ -262,7 +262,6 @@ export default class CaptureView extends AbstractProjectView {
   public mounted() {
     this.$store.dispatch('project/changeActiveShot', this.$route.params.shotId);
     this.previewImg = this.$refs.previewImg as HTMLImageElement;
-    this.displayFrame(0);
   }
 
   public animate(timestamp: number) {
