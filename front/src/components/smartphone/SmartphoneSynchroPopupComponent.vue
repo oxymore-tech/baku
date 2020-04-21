@@ -74,7 +74,6 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   }
 
   public beforeDestroy() {
-    this.socket.close();
   }
 
   @Watch('socketStatus')
@@ -145,6 +144,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
         if (this.activeCapture) {
           this.setActiveCapture(false);
         }
+        this.socket.close();
         this.resetRTC();
       }
     };

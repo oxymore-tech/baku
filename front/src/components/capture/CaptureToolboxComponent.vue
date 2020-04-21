@@ -110,7 +110,7 @@ export default class CaptureToolboxComponent extends Vue {
     const deviceIds = [...new Set(videoDevices.map(d => d.id))];
     this.devices =
       deviceIds.map(id => videoDevices.find(d => d.id === id) as Device) || [];
-    // this.devices.push(new Device("smartphone", "Smartphone"));
+    this.devices.push(new Device("smartphone", "Smartphone"));
   }
 
   public onCaptureDeviceChange() {

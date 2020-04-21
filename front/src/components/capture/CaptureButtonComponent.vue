@@ -103,7 +103,8 @@ export default class CaptureButtonComponent extends Vue {
   public capture() {
     this.isCapturing = true;
     if (this.device.isSmartphone()) {
-      this.captureSmartphone();
+      // this.captureSmartphone();
+      this.captureWebcam();
     } else {
       this.captureWebcam();
     }
@@ -182,18 +183,18 @@ export default class CaptureButtonComponent extends Vue {
     await this.$store.commit('capture/attachMediaStream', stream);
   }
 
-  private captureSmartphone() {
-    this.$store.commit('project/incAction', 1);
-    this.dataChannel.send(
-      JSON.stringify({
-        message: 'capture',
-        projectId: this.projectId,
-        type: 'cmd',
-        scaleX: this.scaleX,
-        scaleY: this.scaleY,
-      }),
-    );
-  }
+  // private captureSmartphone() {
+  //   this.$store.commit('project/incAction', 1);
+  //   this.dataChannel.send(
+  //     JSON.stringify({
+  //       message: 'capture',
+  //       projectId: this.projectId,
+  //       type: 'cmd',
+  //       scaleX: this.scaleX,
+  //       scaleY: this.scaleY,
+  //     }),
+  //   );
+  // }
 
   private captureWebcam() {
     this.$store.commit('project/incAction', 1);
