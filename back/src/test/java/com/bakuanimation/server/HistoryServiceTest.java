@@ -14,13 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class HistoryServiceTest {
 
-    @TempDir
-    static Path sharedTempDir;
-
     private HistoryService tested;
 
     @BeforeEach
-    void setUp() {
+    void setUp(@TempDir Path sharedTempDir) {
         tested = new HistoryService(new PathService(sharedTempDir));
     }
 
@@ -32,7 +29,7 @@ class HistoryServiceTest {
             content.add(i);
         }
         tested.writeHistory(projectId, content);
-        JsonArray actual = tested.readHistory(projectId).blockingGet();
+        JsonArray actual = tested.readHistory(projectId);
         Assertions.assertThat(actual).isEqualTo(content);
     }
 
@@ -103,7 +100,7 @@ class HistoryServiceTest {
         tested.writeHistory(projectId, content);
         JsonPrimitive toAdd = new JsonPrimitive(11);
         tested.addStack(projectId, toAdd.toString().getBytes()).blockingGet();
-        JsonArray actual = tested.readHistory(projectId).blockingGet();
+        JsonArray actual = tested.readHistory(projectId);
         content.add(toAdd);
         assertThat(actual).isEqualTo(content);
     }
@@ -120,7 +117,7 @@ class HistoryServiceTest {
         toAdd.add("test");
         toAdd.add(11);
         tested.addStack(projectId, toAdd.toString().getBytes()).blockingGet();
-        JsonArray actual = tested.readHistory(projectId).blockingGet();
+        JsonArray actual = tested.readHistory(projectId);
         content.add(toAdd.get(0));
         content.add(toAdd.get(1));
         assertThat(actual).isEqualTo(content);
