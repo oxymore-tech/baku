@@ -23,7 +23,6 @@ const loadEvent = (context: BakuActionContext<ProjectState>, action: BakuAction,
     .finally(() => context.commit('incAction', -1));
 
   if (
-    action == BakuAction.MOVIE_UPDATE_TITLE ||
     action == BakuAction.MOVIE_INSERT_IMAGE ||
     action == BakuAction.MOVIE_REMOVE_IMAGE ||
     action == BakuAction.SHOT_REMOVE

@@ -1,7 +1,6 @@
 import store from "@/store";
 import { BakuModule, UserState, SeenProject } from './store.types';
 import { Quality } from '@/utils/uploadedImage.class';
-import { Spinner } from '@/utils/spinner.class';
 
 const yokaiList = [
   'Akuma', 'Asobibi', 'Bakebi', 'Bakeneko', 'Baku', 'Daki', 'Enkō', 'Fūbo', 'Genbu', 'Hakuba', 'Hinode',
@@ -68,11 +67,13 @@ export const UserStore: BakuModule<UserState> = {
       const projectId = store.state.project.id;
       if (projectId) {
         const movie = store.getters["project/movie"];
-        let posterUrl: string = Spinner;
+        let posterUrl = "";
         if (movie.poster) {
           posterUrl = movie.poster;
         } else if (movie && movie.shots && movie.shots.length > 0 && movie.shots[0].images && movie.shots[0].images.length > 0) {
           posterUrl = movie.shots[0].images[0].getUrl(Quality.Original);
+        } else {
+          return
         }
         const project: SeenProject = {
           id: projectId,
