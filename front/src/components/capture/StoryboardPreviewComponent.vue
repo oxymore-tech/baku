@@ -41,7 +41,12 @@
 
     get shotIndex() {
       if (this.shots) {
-        return this.shots.findIndex(s => s.id === this.activeShot?.id) + 1;
+        const index = this.shots.findIndex(s => s.id === this.activeShot?.id);
+        if (index != -1) {
+          return index + 1;
+        } else {
+          return "";
+        }
       } else {
         return "";
       }
