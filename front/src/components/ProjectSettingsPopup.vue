@@ -2,7 +2,7 @@
   <div
     class="modal-card"
     style="width: auto"
-    >
+  >
     <header class="modal-card-head">
       <p class="modal-card-title">Réglages du film</p>
       <i @click="$emit('close')" class="icon-close baku-button"></i>
@@ -19,101 +19,175 @@
       </div>
 
       <hr>
-      <span>Titre du film</span><br>
+      <p>Titre du film</p>
       <input type="text" :value="movie.title" @blur="setTitle($event)"/><br>
-      <span>Synopsis</span><br>
+      <p>Synopsis</p>
       <textarea v-model="movie.synopsis" @blur="setSynopsis($event)" rows="4"></textarea><br>
-      <span>Frequence</span><br>
+      <p>Frequence</p>
       <input type="number" :value="movie.fps" @blur="setFps($event)"/><br>
       <hr>
-      <a
-        :href="getMovieExportUrl()"
-        target="_blank"
-      >Exporter le film</a>
+      <p>Export du film :</p><br>
+      <div style="display:flex; justify-content: space-around;">
+        <a
+          :href="getMovieExportUrl()"
+          target="_blank"
+        >Séquence d'images</a>
+
+        <div v-if="isVideoAvailable" :title="videoTitle">
+          <a
+            :href="getVideoUrl()"
+            target="_blank"
+          >Vidéo (mp4)</a>
+          <i class="baku-button icon-check" :class="{ isWarning: true }">
+          </i>
+        </div>
+        <div v-else>
+          <div v-if="isVideoPending" title="Génération en cours...">
+            <span>Vidéo (mp4)</span>
+            <button :loading="true"/>
+          </div>
+          <div v-else title="Générer une vidéo">
+            <a
+              @click="generateVideo()"
+              target="_blank"
+            >Vidéo (mp4)</a>
+            <i class="baku-button icon-reapeat">
+            </i>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 </template>
 
 <style lang="scss">
-input, textarea {
-  width: 100%;
-}
-.baku-button {
-  margin-left: 5px;
-
-  &.icon-check {
-    color: #009600;
+  input, textarea {
+    width: 100%;
   }
-}
-</style>
 
+  .baku-button {
+    margin-left: 5px;
+
+    &.icon-check {
+      color: #009600;
+    }
+  }
+</style>
 
 <script lang="ts">
 
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { Movie } from '@/utils/movie.service';
-import * as api from '@/api';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
+  import { Movie } from '@/utils/movie.service';
+  import * as api from '@/api';
+  import { VideoStatus, VideoStatusEnum } from "@/utils/types";
 
-const ProjectNS = namespace('project');
+  const ProjectNS = namespace('project');
 
-@Component
-export default class ProjectSettingsPopup extends Vue {
-  @ProjectNS.State
-  public id!: string;
+  @Component
+  export default class ProjectSettingsPopup extends Vue {
+    @ProjectNS.State
+    public id!: string;
 
-  @ProjectNS.Getter
-  public movie!: Movie;
+    @ProjectNS.Getter
+    public movie!: Movie;
 
-  public url = window.location.origin;
+    public url = window.location.origin;
 
-  public copied: boolean = false;
+    public copied: boolean = false;
+
+    videoStatus: VideoStatus = {status: VideoStatusEnum.Pending};
+
+    private refreshVideoStatusTimer?: number;
+
+    async mounted() {
+      this.videoStatus = await api.getVideoStatus(this.id);
+      this.refreshVideoStatusTimer = setInterval(this.refreshVideoStatus, 1000);
+    }
+
+    beforeDestroy() {
+      if (this.refreshVideoStatusTimer) {
+        clearInterval(this.refreshVideoStatusTimer);
+      }
+    }
+
+    get isVideoAvailable() {
+      return this.videoStatus.status === VideoStatusEnum.UpToDate || this.videoStatus.status === VideoStatusEnum.NotUpToDate;
+    }
 
 
-  public getMovieExportUrl() {
-    return api.getExportUrl(this.id);
-  }
+    get isVideoPending() {
+      return this.videoStatus.status === VideoStatusEnum.Pending
+    }
 
-  public setTitle(event: any) {
-    const newTitle = event.target.value;
-    if (newTitle !== this.movie.title) {
-      this.$store.dispatch('project/updateTitle', newTitle);
+    get isVideoUpToDate() {
+      return this.videoStatus.status === VideoStatusEnum.UpToDate;
+    }
+
+    get videoTitle() {
+      if (this.isVideoUpToDate) {
+        return 'La dernière vidéo est disponible';
+      } else {
+        return `Dernière vidéo est disponible : ${new Date(this.videoStatus.lastModified).toDateString()}`;
+      }
+    }
+
+    generateVideo() {
+      return api.generateVideo(this.id);
+    }
+
+    getVideoUrl() {
+      return api.getVideoUrl(this.id);
+    }
+
+    getMovieExportUrl() {
+      return api.getExportUrl(this.id);
+    }
+
+    setTitle(event: any) {
+      const newTitle = event.target.value;
+      if (newTitle !== this.movie.title) {
+        this.$store.dispatch('project/updateTitle', newTitle);
+      }
+    }
+
+    setSynopsis(event: any) {
+      const newSynopsis = event.target.value;
+      if (newSynopsis !== this.movie.synopsis) {
+        this.$store.dispatch('project/updateSynopsis', newSynopsis);
+      }
+    }
+
+    setFps(event: any) {
+      const newFps = event.target.value;
+      if (newFps !== this.movie.fps) {
+        this.$store.dispatch('project/changeFps', newFps);
+      }
+    }
+
+    getLink(): string {
+      const path = this.$router.resolve({
+        name: 'movieHome',
+        params: {
+          projectId: this.id,
+        },
+      }).href;
+      return this.url + path;
+    }
+
+    copyLink(): void {
+      const input = document.createElement('input');
+      input.value = this.getLink();
+      document.body.appendChild(input);
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      this.copied = true;
+    }
+
+    private async refreshVideoStatus() {
+      this.videoStatus = await api.getVideoStatus(this.id)
     }
   }
-
-  public setSynopsis(event: any) {
-    const newSynopsis = event.target.value;
-    if (newSynopsis !== this.movie.synopsis) {
-      this.$store.dispatch('project/updateSynopsis', newSynopsis);
-    }
-  }
-
-  public setFps(event: any) {
-    const newFps = event.target.value;
-    if (newFps !== this.movie.fps) {
-      this.$store.dispatch('project/changeFps', newFps);
-    }
-  }
-
-  public getLink(): string {
-    const path = this.$router.resolve({
-      name: 'movieHome',
-      params: {
-        projectId: this.id,
-      },
-    }).href;
-    return this.url + path;
-  }
-
-  public copyLink(): void {
-    const input = document.createElement('input');
-    input.value = this.getLink();
-    document.body.appendChild(input);
-    input.select();
-    input.setSelectionRange(0, 99999);
-    document.execCommand('copy');
-    document.body.removeChild(input);
-    this.copied = true;
-  }
-}
 </script>

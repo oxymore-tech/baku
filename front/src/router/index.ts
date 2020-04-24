@@ -57,9 +57,17 @@ const routes = [
     path: '/movies/:projectId/collaboration',
     component: CollaborationView,
   },
-  { 
+  {
     path: '/api',
     children: [
+      {
+        name: 'video-status',
+        path: ':projectId/video/status',
+      },
+      {
+        name: 'video',
+        path: ':projectId/video',
+      },
       {
         name: 'stack',
         path: ':projectId/stack',

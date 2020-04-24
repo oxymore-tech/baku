@@ -15,3 +15,15 @@ export interface BakuEvent {
   readonly user: string;
   readonly timestamp: Date;
 }
+
+export enum VideoStatusEnum {
+  UpToDate = "UpToDate",
+  NotUpToDate = "NotUpToDate",
+  Pending = "Pending",
+  NotGenerated = "NotGenerated"
+}
+
+export interface VideoStatus {
+  readonly status: VideoStatusEnum;
+  readonly lastModified: number;
+}
