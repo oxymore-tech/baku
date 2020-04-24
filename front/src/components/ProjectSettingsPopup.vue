@@ -96,7 +96,7 @@
 
     public copied: boolean = false;
 
-    videoStatus: VideoStatus = {status: VideoStatusEnum.Pending};
+    videoStatus: VideoStatus = {status: VideoStatusEnum.Pending, lastModified: 0};
 
     private refreshVideoStatusTimer?: number;
 
