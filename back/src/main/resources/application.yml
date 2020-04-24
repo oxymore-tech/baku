@@ -20,6 +20,12 @@ micronaut:
       path: file:/app/ssl/server.pkcs12
       type: PKCS12
       password: GHsLvjmDiAYrpao9
+
+endpoints:
+  info:
+    enabled: true
+    sensitive: false
+
 netty:
   responses:
     file:

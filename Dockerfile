@@ -1,6 +1,7 @@
 FROM gradle:6.2.2-jdk11 AS back-compiler
 WORKDIR /app
 COPY back/build.gradle back/gradle.properties ./
+COPY .git/ ./.git/
 RUN gradle build --no-daemon
 COPY back/ .
 RUN gradle assemble --no-daemon
