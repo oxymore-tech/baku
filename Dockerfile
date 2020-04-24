@@ -24,6 +24,9 @@ FROM openjdk:11 AS app
 EXPOSE 80 443
 WORKDIR /app
 COPY ssl ssl
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y ffmpeg
 COPY --from=back-compiler /app/build/libs/app-all.jar .
 COPY --from=front-compiler /app/dist ./dist
 CMD ["java", "-jar", "app-all.jar"]

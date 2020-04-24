@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Disabled
 class MovieServiceTest {
     @TempDir
     static Path sharedTempDir;
@@ -26,7 +28,7 @@ class MovieServiceTest {
     }
 
     @Test
-    void shoudGenerateMovie() throws Exception {
+    void shoudGenerateMovie(){
         ImmutableListMultimap.Builder<String, Path> builder = ImmutableListMultimap.<String, Path>builder();
         for (int i = 0; i < 100; i++) {
             builder.put("a", Path.of("/home/simon/workspace-perso/data/68c1bdf4-66f6-4998-99db-a3df18986707/images/original/5f05cf5a-35e7-4221-ba31-758c42d3aa94.jpg"))
@@ -40,7 +42,7 @@ class MovieServiceTest {
     }
 
     @Test
-    void moviePremier() throws Exception {
+    void moviePremier() {
         String projectId = "premier";
         Movie movie = historyService.interpretHistory("ba6f85c2-32f0-4b41-a395-bbe913b042f3").blockingGet();
 

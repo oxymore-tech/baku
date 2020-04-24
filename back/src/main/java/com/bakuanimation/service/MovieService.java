@@ -80,7 +80,7 @@ public final class MovieService {
 
             Stopwatch timer = Stopwatch.createStarted();
 
-            String command = "/usr/bin/ffmpeg -r " +
+            String command = "ffmpeg -r " +
                     movie.getFps() +
                     " -f image2pipe -y -i - " +
                     moviePath;
