@@ -46,14 +46,10 @@
             <span>Vidéo (mp4)</span>
             <button :loading="true"/>
           </div>
-          <div v-else title="Générer une vidéo">
-            <a
-              @click="generateVideo()"
-              target="_blank"
-            >Vidéo (mp4)</a>
-            <i class="baku-button icon-reapeat">
-            </i>
-          </div>
+        </div>
+        <div v-if="!isVideoUpToDate" title="Générer une vidéo">
+          <i @click="generateVideo()" class="baku-button icon-reapeat">
+          </i>
         </div>
       </div>
     </section>
@@ -128,7 +124,7 @@
       if (this.isVideoUpToDate) {
         return 'La dernière vidéo est disponible';
       } else {
-        return `Dernière vidéo est disponible : ${new Date(this.videoStatus.lastModified).toDateString()}`;
+        return `Dernière vidéo est disponible : ${new Date(this.videoStatus.lastModified * 1000).toDateString()}`;
       }
     }
 
