@@ -10,26 +10,29 @@ interface ProjectGetters {
   getActiveShot: Shot;
 }
 
-const loadEvent = (context: BakuActionContext<ProjectState>, action: BakuAction, value: any): void => {
-  const user = context.rootState.user.username;
-  const projectId = context.state.id;
-  const event = {
-    action, value, user, timestamp: new Date(),
-  };
-  const promise = api.stack(projectId, event);
-  context.commit('addToLocalHistory', event);
-  context.commit('incAction', 1);
-  promise.catch(() => context.commit('removeFromLocalHistory', event))
-    .finally(() => context.commit('incAction', -1));
-
-  if (
-    action == BakuAction.MOVIE_INSERT_IMAGE ||
-    action == BakuAction.MOVIE_REMOVE_IMAGE ||
-    action == BakuAction.SHOT_REMOVE
-  ) {
-    store.dispatch('user/updateSeenProjects');
+const makeEvent = (context: BakuActionContext<ProjectState>, action: BakuAction, value: any) => {
+  return {
+    action,
+    value,
+    user: context.rootState.user.username,
+    timestamp: new Date(),
   }
-};
+}
+
+const loadEvents = (
+  context: BakuActionContext<ProjectState>, 
+  events: BakuEvent[]): void => {
+
+    console.log(events)
+    const promise = api.stack(context.state.id, events);
+
+    events.map(event => {
+      context.commit('addToLocalHistory', event);
+      context.commit('incAction', 1);
+      promise.catch(() => context.commit('removeFromLocalHistory', event))
+        .finally(() => context.commit('incAction', -1));
+    })
+  };
 
 export const ProjectStore: BakuModule<ProjectState> = {
   namespaced: true,
@@ -65,14 +68,15 @@ export const ProjectStore: BakuModule<ProjectState> = {
       const movieHistory = await api.getHistory(projectId);
       await context.commit('setMovie', { projectId, movieHistory });
     },
-    async addImageToShot(context,
-      payload: { shotId: string, imageIndex: number, image: string }): Promise<void> {
-      loadEvent(context, BakuAction.MOVIE_INSERT_IMAGE, payload);
-      store.dispatch('user/addSeenProject');
+    async addImagesToShot(context, values: any[]): Promise<void> {
+      const events = values.map(value => makeEvent(context, BakuAction.MOVIE_INSERT_IMAGE, value));
+      loadEvents(context, events);
+      store.dispatch('user/updateSeenProjects');
     },
-    async removeImageFromShot(context,
-      payload: { shotId: string, imageIndex: number }[]) {
-      loadEvent(context, BakuAction.MOVIE_REMOVE_IMAGE, payload);
+    async removeImagesFromShot(context, values: any[]) {
+      const events = values.map(value => makeEvent(context, BakuAction.MOVIE_REMOVE_IMAGE, value));
+      loadEvents(context, events);
+      store.dispatch('user/updateSeenProjects');
     },
 
     changeActiveShot(context, shotIndex: number) {
@@ -80,32 +84,46 @@ export const ProjectStore: BakuModule<ProjectState> = {
     },
 
     async updateTitle(context, title: string) {
-      loadEvent(context, BakuAction.MOVIE_UPDATE_TITLE, title);
+      const event = makeEvent(context, BakuAction.MOVIE_UPDATE_TITLE, title);
+      loadEvents(context, [event]);
     },
 
     async updateSynopsis(context, synopsis: string) {
-      loadEvent(context, BakuAction.MOVIE_UPDATE_SYNOPSIS, synopsis);
+      const event = makeEvent(context, BakuAction.MOVIE_UPDATE_SYNOPSIS, synopsis);
+      console.log("update syno")
+      loadEvents(context, [event]);
     },
 
     async createShot(context): Promise<string> {
       const shotId = uuid.v4();
-      loadEvent(context, BakuAction.SHOT_ADD, { shotId });
+      const event = makeEvent(context, BakuAction.SHOT_ADD, { shotId });
+      loadEvents(context, [event]);
       return shotId;
     },
 
     async removeShot(context, shotId: string) {
-      loadEvent(context, BakuAction.SHOT_REMOVE, { shotId });
+      const event = makeEvent(context, BakuAction.SHOT_REMOVE, { shotId });
+      loadEvents(context, [event]);
+      store.dispatch('user/updateSeenProjects');
     },
 
     async changeFps(context, fps: number): Promise<void> {
-      loadEvent(context, BakuAction.CHANGE_FPS, fps);
+      const event = makeEvent(context, BakuAction.CHANGE_FPS, fps);
+      loadEvents(context, [event]);
     },
   },
   getters: {
-    movie: (state): Movie => MovieService.merge(state.id, state.history),
-    getActiveShot: (state, getters: ProjectGetters): Shot | undefined => getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
-    getActiveShotImgCount: (state, getters: ProjectGetters): number | undefined => (getters.getActiveShot ? getters.getActiveShot.images.length : 0),
-    synchronizing: (state): boolean => state.pendingActions !== 0,
+    movie: (state): Movie =>
+    MovieService.merge(state.id, state.history),
+
+    getActiveShot: (state, getters: ProjectGetters): Shot | undefined =>
+    getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
+
+    getActiveShotImgCount: (state, getters: ProjectGetters): number | undefined =>
+    (getters.getActiveShot ? getters.getActiveShot.images.length : 0),
+
+    synchronizing: (state): boolean =>
+    state.pendingActions !== 0,
   },
   modules: {},
 };

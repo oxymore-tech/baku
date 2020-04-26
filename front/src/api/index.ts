@@ -8,9 +8,9 @@ export function getHistory(projectId: string): Promise<BakuEvent[]> {
   return axios.get(url).then((response) => response.data);
 }
 
-export function stack(projectId: string, event: BakuEvent): Promise<void> {
+export function stack(projectId: string, events: BakuEvent[]): Promise<void> {
   const url = router.resolve({name: "stack", params: {"projectId": projectId}}).href;
-  return axios.post(url, event);
+  return axios.post(url, events);
 }
 
 export function upload(projectId: string, blob: Blob, name: string): Promise<ImageRef> {
