@@ -25,6 +25,7 @@
   flex-wrap: nowrap;
   padding: 12px 21px;
   align-items: center;
+  justify-content: space-between;
 
   .framenumber-indicator {
     position: absolute;
@@ -39,27 +40,36 @@
   .image-container {
     border: 2px solid transparent;
     position: relative;
+    width: 8vw;
+    display: flex;
+    justify-content: center;
     // filter: grayscale(100%);
+    
+    .waiting-capture{
+      text-align: center;
+    }
 
+   
+    &.active {
+      border: 3px solid #ffbd72;
+      border-radius: 4px;
+      padding: 1px;
+      box-sizing: content-box;
+    }
+
+    &.active-capure{
+      border: 3px solid #FE676F;
+      color: #FE676F;
+      text-align: center;
+    }
+    
     .carrousel-thumb {
       height: 78px;
-      min-width: 140px;
-      margin: 0px 15px;
+      max-width: 100%;
       border: 2px solid #f2f2f2;
       display: flex;
       justify-content: center;
       align-items: center;
-
-      &.active {
-        border: 3px solid #ffbd72;
-        border-radius: 4px;
-        padding: 1px;
-        box-sizing: content-box;
-      }
-
-      &.previewed {
-        background-color: red;
-      }
     }
   }
 }

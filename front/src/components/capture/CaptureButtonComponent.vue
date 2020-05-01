@@ -1,9 +1,6 @@
 <template>
   <i class="icon-camera" v-if="canCapture" @click="capture()" style="color:#e66359;" />
-  <i class="icon-camera-off" v-else style="color:#455054;" @click="moveToCapture()">
-    <span class="path1"></span>
-    <span class="path2"></span>
-  </i>
+  <img v-else src="@/assets/camera-off-color.svg" style="height:32px;"  @click="moveToCapture()"/>
 </template>
 
 <style lang="scss">
