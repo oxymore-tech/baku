@@ -1,12 +1,11 @@
 <template>
   <div class="box-container">
     <div class="settings-header">
-      <i class="icon-cog" />
-      <h4>Caméra</h4>
+      <h4>Prise de vue</h4>
     </div>
 
     <b-field>
-      <i class="icon-webcam" />
+      <b-icon icon="video" size="is-large" />
       <b-select
         @input="onCaptureDeviceChange()"
         placeholder="Sélectionner une caméra"
@@ -18,27 +17,42 @@
       </b-select>
     </b-field>
 
-    <div @click="toggleScaleY()">
-      <i class="icon-check_box baku-button mirror-checkboxes" v-if="scaleY < 0" />
-      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else />
-      Miroir horizontal
+    <div class="field">
+      <b-switch :value="scaleY == -1"
+         type="is-info"
+         @input="toggleScaleY">
+        Miroir horizontal
+      </b-switch>
+    </div>
+    <div class="field">
+      <b-switch :value="scaleX != 1"
+         type="is-info"
+         @input="toggleScaleX">
+        Miroir vertical
+      </b-switch>
     </div>
 
-    <div @click="toggleScaleX()">
-      <i class="icon-check_box baku-button mirror-checkboxes" v-if="scaleX < 0" />
-      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else />
-      Miroir vertical
-    </div>
-    <div>
-      Pelure d'oignon
-      <input
-        type="number"
-        max="5"
-        min="0"
+    <div class="field">
+      <b-switch
+         :value="onionSkin > 0"
+         type="is-info"
+         @input="switchOnionSkin($event)"
+         >
+        <b-field>
+          <div>Pelure d'oignon</div>
+        </b-field>
+      </b-switch>
+      <b-numberinput
+        v-if="onionSkin > 0"
         :value="onionSkin"
-        @change="setOnionSkin($event.target.value)"
-      />
+        @input="setOnionSkin($event)"
+        size="is-small"
+        type="light"
+        controls-position="compact"
+        min="1" max="5">
+      </b-numberinput>
     </div>
+
   </div>
 </template>
 
@@ -134,6 +148,14 @@ export default class CaptureToolboxComponent extends Vue {
   public horizontalMirror() {
     this.toggleScaleY();
   }
+  
+  public switchOnionSkin(isOn: boolean) {
+    if (isOn) {
+      this.setOnionSkin(1)
+    } else {
+      this.setOnionSkin(0)
+    }
+  }
 }
 </script>
 
@@ -147,6 +169,7 @@ export default class CaptureToolboxComponent extends Vue {
   display: inline-flex;
   align-items: center;
   width: 100%;
+  margin-bottom: 10px;
 
   h4 {
     font-size: 28px;
@@ -160,6 +183,7 @@ export default class CaptureToolboxComponent extends Vue {
 }
 
 .field {
+  width:100%;
   i {
     font-size: 20px;
     color: #707070;
@@ -169,5 +193,21 @@ export default class CaptureToolboxComponent extends Vue {
 
 .mirror-checkboxes {
   margin-right: 5px;
+}
+
+span.select {
+  margin-top: 10px;
+}
+
+div.control select {
+  float: right;
+  width: 215px;
+}
+
+.b-numberinput {
+  float: right;
+  width: 215px;
+  margin-left: 10px;
+  width: 75px;
 }
 </style>

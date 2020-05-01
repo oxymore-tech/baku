@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
 
     <nav>
       <div class="left-nav">
