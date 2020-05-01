@@ -160,6 +160,10 @@ export default class CaptureToolboxComponent extends Vue {
 </script>
 
 <style lang="scss">
+.box-container {
+  width: 300px;
+}
+
 .collapse-content {
   background-color: white;
   padding: 6px;
@@ -183,7 +187,6 @@ export default class CaptureToolboxComponent extends Vue {
 }
 
 .field {
-  width:100%;
   i {
     font-size: 20px;
     color: #707070;
@@ -191,23 +194,12 @@ export default class CaptureToolboxComponent extends Vue {
   }
 }
 
-.mirror-checkboxes {
-  margin-right: 5px;
-}
-
 span.select {
   margin-top: 10px;
 }
 
-div.control select {
-  float: right;
-  width: 215px;
-}
-
 .b-numberinput {
   float: right;
-  width: 215px;
-  margin-left: 10px;
   width: 75px;
 }
 </style>
