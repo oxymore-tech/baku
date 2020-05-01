@@ -61,7 +61,6 @@ export default {
   },
   computed: {
     isLiveView() {
-      console.log(this.value, this.$parent.max);
       return this.value === this.$parent.max;
     },
     disabled() {

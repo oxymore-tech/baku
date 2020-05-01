@@ -78,15 +78,7 @@
       </template>
       <template v-else>
         <div ref="captureButtonComponent" class="image-container active" style="position:relative">
-          <CaptureButtonComponent
-            v-if="activeDevice"
-            :device="activeDevice"
-            :projectId="projectId"
-            :activeShot="activeShot"
-            :activeIndex="activeImage+1"
-            @captured="onCaptured"
-            @uploaded="onUploaded"
-          />
+          En attente de capture
         </div>
       </template>
 
@@ -129,8 +121,7 @@ import { namespace } from 'vuex-class';
 import * as _ from 'lodash';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { Device } from '@/utils/device.class';
-import { ImageCacheService } from '@/utils/imageCache.service';
-import { ImageRef, UploadedImage } from '@/utils/uploadedImage.class';
+import { ImageRef } from '@/utils/uploadedImage.class';
 import { KeyCodes, ReadingSliderBoundaries } from '@/utils/movie.service';
 
 const CaptureNS = namespace('capture');
@@ -231,26 +222,6 @@ export default class CarrouselComponent extends Vue {
     if (this.images.find((i) => i.id === imageId)) {
       this.$forceUpdate();
     }
-  }
-
-  public onUploaded(id: string) {
-    ImageCacheService.startPreloadingImage(
-      new UploadedImage(this.projectId, id),
-      () => this.$forceUpdate(),
-    );
-    console.log('onUploaded -1');
-    this.$store.commit('project/incAction', -1);
-  }
-
-  public async onCaptured(id: string, thumb: Blob, b64: string) {
-    ImageCacheService.putImageBlobInCache(id, b64);
-    const newActiveFrame = this.activeImage + 1;
-    await this.addImagesToShot([{
-      shotId: this.activeShot,
-      imageIndex: newActiveFrame,
-      image: id,
-    }]);
-    this.$emit('activeImageChange', newActiveFrame);
   }
 
   public async deleteFrame() {

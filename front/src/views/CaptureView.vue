@@ -1,5 +1,5 @@
 <style lang="scss" scoped>
-  @import "@/styles/capture.scss";
+@import "@/styles/capture.scss";
 </style>
 
 <template>
@@ -99,6 +99,16 @@
               @click="pauseAnimation()"
               v-else
             />
+            <CaptureButtonComponent
+              class="baku-button toolbar-button toolbar-button-big"
+              v-if="activeDevice"
+              :device="activeDevice"
+              :projectId="id"
+              :canCapture="currentDisplayedFrame === getActiveShotImgCount"
+              @captured="onCaptured"
+              @uploaded="onUploaded"
+              @moveToCapture="moveToCapture()"
+            />
             <i
               class="toolbar-button icon-forward baku-button"
               style="color:#455054;"
@@ -123,7 +133,7 @@
               class="baku-button toolbar-button toolbar-capture-button"
               :class="{'active-capture': activeDevice, 'disabled' : !!isPlaying}"
               @click="setactiveDevice(activeDevice)"
-            >Mode Capture</div> -->
+            >Mode Capture</div>-->
             <div class="toolbar-button">
               <img
                 style="height: 28px; width:28px"
@@ -168,10 +178,12 @@ import AbstractProjectView from '@/views/AbstractProjectView.vue';
 import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
 import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
 import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import { Device } from '@/utils/device.class';
 import { ImageCacheService } from '@/utils/imageCache.service';
 import { Movie, ReadingSliderBoundaries, Shot } from '@/utils/movie.service';
+import { UploadedImage } from '../utils/uploadedImage.class';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -181,6 +193,7 @@ const WebRTCNS = namespace('webrtc');
   components: {
     CaptureToolboxComponent,
     CarrouselComponent,
+    CaptureButtonComponent,
     ImagesSelectorComponent,
     StoryboardPreviewComponent,
   },
@@ -200,7 +213,7 @@ export default class CaptureView extends AbstractProjectView {
   public getActiveShot!: Shot;
 
   @ProjectNS.Getter
-  public getActiveShotImgCount!: Shot;
+  public getActiveShotImgCount!: number;
 
   // Carroussel Frame
   public currentCarrousselFrame: number = 0;
@@ -222,6 +235,9 @@ export default class CaptureView extends AbstractProjectView {
 
   @CaptureNS.State('onionSkin')
   protected onionSkin!: number;
+
+  @ProjectNS.Action('addImagesToShot')
+  protected addImagesToShot!: ({}) => Promise<void>;
 
   @WebRTCNS.State
   protected dataChannel!: RTCDataChannel;
@@ -363,7 +379,6 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
-
   @Watch('getActiveShotImgCount')
   public async onActiveShotImgCountChange(nb: number) {
     if (nb) {
@@ -396,6 +411,10 @@ export default class CaptureView extends AbstractProjectView {
 
   public moveHome() {
     this.onActiveFrameChange(0);
+  }
+
+  public moveToCapture() {
+    this.onActiveFrameChange(this.getActiveShot.images.length);
   }
 
   public moveEnd() {
@@ -448,6 +467,25 @@ export default class CaptureView extends AbstractProjectView {
 
   public frameNb(frame: number): string {
     return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
+  }
+
+  public onUploaded(id: string) {
+    ImageCacheService.startPreloadingImage(new UploadedImage(this.id, id), () => this.$forceUpdate());
+    console.log('onUploaded -1');
+    this.$store.commit('project/incAction', -1);
+  }
+
+  public async onCaptured(id: string, thumb: Blob, b64: string) {
+    ImageCacheService.putImageBlobInCache(id, b64);
+    const newActiveFrame = this.getActiveShotImgCount;
+    await this.addImagesToShot([
+      {
+        shotId: this.getActiveShot.id,
+        imageIndex: newActiveFrame,
+        image: id,
+      },
+    ]);
+    this.onActiveFrameChange(newActiveFrame + 1);
   }
 }
 </script>

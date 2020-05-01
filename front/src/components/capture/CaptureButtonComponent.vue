@@ -1,39 +1,15 @@
 <template>
-  <div class="webcamCapture">
-    <div
-      id="capture-button"
-      class="capture-button"
-      @click="capture()"
-      :class="{ capturing: isCapturing, hidden: !mediaOk }"
-    >
-      <img alt="camera" class="capture-icon" src="@/assets/camera-solid-orange.svg" />
-    </div>
-  </div>
+  <i class="icon-camera" v-if="canCapture" @click="capture()" style="color:#e66359;" />
+  <i class="icon-camera-off" v-else style="color:#455054;" @click="moveToCapture()">
+    <span class="path1"></span>
+    <span class="path2"></span>
+  </i>
 </template>
 
 <style lang="scss">
-.capture-button {
-  width: 144px;
-  height: 82px;
-  font-size: 30px;
-  cursor: pointer;
-  color: #e66359;
-  text-align: center;
-}
-
-.hidden {
-  display: none;
-}
-
 .capturing {
   color: grey;
   cursor: progress;
-}
-
-.capture-icon {
-  margin-top: 18px;
-  width: 48px;
-  height: 43px;
 }
 </style>
 
@@ -55,6 +31,9 @@ export default class CaptureButtonComponent extends Vue {
 
   @Prop(Device)
   public readonly device!: Device;
+
+  @Prop()
+  public readonly canCapture!: boolean;
 
   @CaptureNS.State
   public scaleX!: number | 1;
@@ -110,6 +89,10 @@ export default class CaptureButtonComponent extends Vue {
     }
   }
 
+  public moveToCapture() {
+    this.$emit('moveToCapture');
+  }
+
   @Watch('device')
   public onDeviceIdChanged() {
     this.isCapturing = false;
@@ -140,8 +123,13 @@ export default class CaptureButtonComponent extends Vue {
       const data = JSON.parse(event.data);
       switch (data.type) {
         case 'capture':
-          const video = document.getElementById('video-capture') as HTMLVideoElement;
-          const [blob, b64] = this.captureOriginal(video, { scaleX: this.scaleX, scaleY: this.scaleY });
+          const video = document.getElementById(
+            'video-capture',
+          ) as HTMLVideoElement;
+          const [blob, b64] = this.captureOriginal(video, {
+            scaleX: this.scaleX,
+            scaleY: this.scaleY,
+          });
           this.onCaptured(data.message, blob, b64);
           break;
         case 'upload':
@@ -217,13 +205,22 @@ export default class CaptureButtonComponent extends Vue {
     this.isCapturing = false;
   }
 
-  private captureOriginal(video: HTMLVideoElement, scales: {scaleX: number, scaleY: number}): [Blob, string] {
+  private captureOriginal(
+    video: HTMLVideoElement,
+    scales: { scaleX: number; scaleY: number },
+  ): [Blob, string] {
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
     context2d.scale(scales.scaleX, scales.scaleY);
-    context2d.drawImage(video, 0, 0, canvas.width * scales.scaleX, canvas.height * scales.scaleY);
+    context2d.drawImage(
+      video,
+      0,
+      0,
+      canvas.width * scales.scaleX,
+      canvas.height * scales.scaleY,
+    );
     const base64 = canvas.toDataURL('image/jpeg');
     return [this.imagetoblob(base64), base64];
   }
