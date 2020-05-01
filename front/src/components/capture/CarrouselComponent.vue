@@ -166,8 +166,8 @@ export default class CarrouselComponent extends Vue {
   @CaptureNS.State
   public activeDevice!: Device;
 
-  @ProjectNS.Action('addImageToShot')
-  protected addImageToShot!: ({}) => Promise<void>;
+  @ProjectNS.Action('addImagesToShot')
+  protected addImagesToShot!: ({}) => Promise<void>;
 
   @ProjectNS.Action('removeImageFromShot')
   protected removeImageFromShot!: ({}) => Promise<void>;
@@ -245,11 +245,11 @@ export default class CarrouselComponent extends Vue {
   public async onCaptured(id: string, thumb: Blob, b64: string) {
     ImageCacheService.putImageBlobInCache(id, b64);
     const newActiveFrame = this.activeImage + 1;
-    await this.addImageToShot({
+    await this.addImagesToShot([{
       shotId: this.activeShot,
       imageIndex: newActiveFrame,
       image: id,
-    });
+    }]);
     this.$emit('activeImageChange', newActiveFrame);
   }
 
@@ -358,11 +358,11 @@ export default class CarrouselComponent extends Vue {
 
   public async onPaste() {
     if (!this.activeCapture && !this.isPlaying) {
-      await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImageToShot({
+      await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImagesToShot([{
         shotId: this.activeShot,
         imageIndex: this.activeImage + 1 + index,
         image: imgref,
-      }));
+      }]));
       this.selectedImagesForReal = _.range(
         this.activeImage + 1,
         this.activeImage + 1 + this.imagesToCopy.length,
@@ -373,11 +373,11 @@ export default class CarrouselComponent extends Vue {
   public async onReverse() {
     if (!this.activeCapture && !this.isPlaying) {
       const reverted = [...this.imagesToCopy].reverse();
-      await asyncForEach(reverted, (imgref: string, index: number) => this.addImageToShot({
+      await asyncForEach(reverted, (imgref: string, index: number) => this.addImagesToShot([{
         shotId: this.activeShot,
         imageIndex: this.activeImage + 1 + index,
         image: imgref,
-      }));
+      }]));
       this.selectedImagesForReal = _.range(
         this.activeImage + 1,
         this.activeImage + 1 + this.imagesToCopy.length,
