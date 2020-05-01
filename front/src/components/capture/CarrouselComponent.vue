@@ -262,7 +262,7 @@ export default class CarrouselComponent extends Vue {
     const sliceIndex = this.activeImage + 1;
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, count);
     if (rightImagesAvaible.length < count && this.activeImage !== this.images.length) {
-      rightImagesAvaible.push("liveview");
+      rightImagesAvaible.push("liveview" as unknown as ImageRef);
     }
     return rightImagesAvaible.concat(
       new Array(count - rightImagesAvaible.length).fill(null)
