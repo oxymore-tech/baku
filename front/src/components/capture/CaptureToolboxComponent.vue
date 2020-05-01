@@ -103,7 +103,7 @@ export default class CaptureToolboxComponent extends Vue {
         (input: MediaDeviceInfo) => input.kind === 'videoinput' && input.deviceId !== '',
       )
       .map(
-        (input: MediaDeviceInfo, idx: integer) => new Device(input.deviceId, input.label || 'Caméra ' + (idx+1)),
+        (input: MediaDeviceInfo, idx: number) => new Device(input.deviceId, input.label || `Caméra ${idx + 1}`),
       );
     const deviceIds = [...new Set(videoDevices.map((d) => d.id))];
     this.devices = deviceIds.map((id) => videoDevices.find((d) => d.id === id) as Device) || [];
