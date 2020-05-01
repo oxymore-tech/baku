@@ -1,7 +1,8 @@
 package com.bakuanimation.service;
 
+import com.bakuanimation.api.HistoryService;
 import com.bakuanimation.api.Movie;
-import com.bakuanimation.api.MovieStatus;
+import com.bakuanimation.api.MovieService;
 import com.bakuanimation.api.VideoState;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Stopwatch;
@@ -25,16 +26,16 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
-public final class MovieService {
+public final class MovieServiceImpl implements MovieService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MovieService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieServiceImpl.class);
 
     private final HistoryService historyService;
     private final PathService pathService;
 
     private final Set<String> pendingMovieGeneration = Sets.newConcurrentHashSet();
 
-    public MovieService(HistoryService historyService, PathService pathService) {
+    public MovieServiceImpl(HistoryService historyService, PathService pathService) {
         this.historyService = historyService;
         this.pathService = pathService;
     }
@@ -42,6 +43,7 @@ public final class MovieService {
     // Check last modified time of movie and stack file
     // if not the same -> will generate a movie & lock in memory the generation
     // The goal is for this method to be called many time on the same project id, and the movie will only be generated once
+    @Override
     public Single<VideoState> generateMovie(String projectId) {
         return historyService.interpretHistory(projectId)
                 .map(movie -> {
@@ -73,7 +75,7 @@ public final class MovieService {
     }
 
     @VisibleForTesting
-    public Single<Boolean> generateMovie_ffmpeg(Movie movie, Path moviePath) {
+    Single<Boolean> generateMovie_ffmpeg(Movie movie, Path moviePath) {
         return Single.fromCallable(() -> {
             LOGGER.info("Generating movie '{}'", moviePath.toAbsolutePath());
             Files.createDirectories(moviePath.getParent());
@@ -118,22 +120,23 @@ public final class MovieService {
         }).subscribeOn(Schedulers.io());
     }
 
-    public Single<MovieStatus> status(String projectId) {
+    @Override
+    public Single<com.bakuanimation.api.MovieStatus> status(String projectId) {
         return Single.fromCallable(() -> {
             if (pendingMovieGeneration.contains(projectId)) {
-                return new MovieStatus(VideoState.Pending, Instant.EPOCH);
+                return new com.bakuanimation.api.MovieStatus(VideoState.Pending, Instant.EPOCH);
             }
             Path movieFile = pathService.getMovieFile(projectId);
             if (Files.exists(movieFile)) {
                 Instant lastModifiedMovie = Files.getLastModifiedTime(movieFile).toInstant();
                 Instant lastModifiedStack = Files.getLastModifiedTime(pathService.getStackFile(projectId)).toInstant();
                 if (lastModifiedMovie.isBefore(lastModifiedStack)) {
-                    return new MovieStatus(VideoState.NotUpToDate, lastModifiedMovie);
+                    return new com.bakuanimation.api.MovieStatus(VideoState.NotUpToDate, lastModifiedMovie);
                 } else {
-                    return new MovieStatus(VideoState.UpToDate, lastModifiedMovie);
+                    return new com.bakuanimation.api.MovieStatus(VideoState.UpToDate, lastModifiedMovie);
                 }
             } else {
-                return new MovieStatus(VideoState.NotGenerated, Instant.EPOCH);
+                return new com.bakuanimation.api.MovieStatus(VideoState.NotGenerated, Instant.EPOCH);
             }
         }).subscribeOn(Schedulers.io());
     }

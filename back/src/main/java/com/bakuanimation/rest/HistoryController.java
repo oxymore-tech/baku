@@ -1,6 +1,6 @@
-package com.bakuanimation.server;
+package com.bakuanimation.rest;
 
-import com.bakuanimation.service.HistoryService;
+import com.bakuanimation.service.HistoryServiceImpl;
 import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
@@ -13,10 +13,10 @@ import java.nio.file.Path;
 @Controller
 public class HistoryController {
 
-    private final HistoryService historyService;
+    private final HistoryServiceImpl historyService;
     private final PathService pathService;
 
-    public HistoryController(HistoryService historyService, PathService pathService) {
+    public HistoryController(HistoryServiceImpl historyService, PathService pathService) {
         this.historyService = historyService;
         this.pathService = pathService;
     }

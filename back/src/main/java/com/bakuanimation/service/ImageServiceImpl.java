@@ -1,5 +1,6 @@
 package com.bakuanimation.service;
 
+import com.bakuanimation.api.ImageService;
 import com.bakuanimation.api.Movie;
 import com.google.common.collect.ImmutableListMultimap;
 import com.mortennobel.imagescaling.ResampleFilters;
@@ -29,13 +30,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Singleton
-public class ImageService {
+public class ImageServiceImpl implements ImageService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageServiceImpl.class);
 
     private final PathService pathService;
 
-    public ImageService(PathService pathService) {
+    public ImageServiceImpl(PathService pathService) {
         this.pathService = pathService;
     }
 
@@ -64,6 +65,7 @@ public class ImageService {
         }
     }
 
+    @Override
     public void writeSmallerImages(String projectId, InputStream inputStream, String filename) {
         try {
             BufferedImage image = ImageIO.read(inputStream);
@@ -83,6 +85,7 @@ public class ImageService {
         }
     }
 
+    @Override
     public void export(Movie movie, OutputStream outputStream, @Nullable String shotId) throws IOException {
         if (shotId == null) {
             LOGGER.info("Export {}", movie.getProjectId());

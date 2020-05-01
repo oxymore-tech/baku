@@ -1,8 +1,8 @@
-package com.bakuanimation.server;
+package com.bakuanimation.rest;
 
 import com.bakuanimation.api.Movie;
-import com.bakuanimation.service.HistoryService;
-import com.bakuanimation.service.ImageService;
+import com.bakuanimation.service.HistoryServiceImpl;
+import com.bakuanimation.service.ImageServiceImpl;
 import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
@@ -29,11 +29,11 @@ public class ImageController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
-    private final HistoryService historyService;
-    private final ImageService imageService;
+    private final HistoryServiceImpl historyService;
+    private final ImageServiceImpl imageService;
     private final PathService pathService;
 
-    public ImageController(HistoryService historyService, ImageService imageService, PathService pathService) {
+    public ImageController(HistoryServiceImpl historyService, ImageServiceImpl imageService, PathService pathService) {
         this.historyService = historyService;
         this.imageService = imageService;
         this.pathService = pathService;

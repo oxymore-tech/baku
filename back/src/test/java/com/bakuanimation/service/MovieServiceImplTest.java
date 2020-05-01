@@ -13,18 +13,24 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @Disabled
-class MovieServiceTest {
+class MovieServiceImplTest {
     @TempDir
     static Path sharedTempDir;
 
-    private MovieService tested;
-    private HistoryService historyService;
+    private MovieServiceImpl tested;
+    private HistoryServiceImpl historyService;
 
     @BeforeEach
     void setUp() {
-        historyService = new HistoryService(new PathService(Path.of("/home/simon/workspace-perso/data")));
-        tested = new MovieService(historyService, new PathService(sharedTempDir));
+        PermissionServiceImpl permissionService = mock(PermissionServiceImpl.class);
+        when(permissionService.hasRight(any(), any())).thenReturn(true);
+        historyService = new HistoryServiceImpl(new PathService(Path.of("/home/simon/workspace-perso/data")), permissionService);
+        tested = new MovieServiceImpl(historyService, new PathService(sharedTempDir));
     }
 
     @Test

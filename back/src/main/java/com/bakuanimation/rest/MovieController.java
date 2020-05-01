@@ -1,9 +1,9 @@
-package com.bakuanimation.server;
+package com.bakuanimation.rest;
 
 import com.bakuanimation.api.MovieStatus;
 import com.bakuanimation.api.VideoState;
-import com.bakuanimation.service.HistoryService;
-import com.bakuanimation.service.MovieService;
+import com.bakuanimation.service.HistoryServiceImpl;
+import com.bakuanimation.service.MovieServiceImpl;
 import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
@@ -19,10 +19,10 @@ import java.nio.file.Files;
 public final class MovieController {
 
     private final PathService pathService;
-    private final MovieService movieService;
-    private final HistoryService historyService;
+    private final MovieServiceImpl movieService;
+    private final HistoryServiceImpl historyService;
 
-    public MovieController(PathService pathService, MovieService movieService, HistoryService historyService) {
+    public MovieController(PathService pathService, MovieServiceImpl movieService, HistoryServiceImpl historyService) {
         this.pathService = pathService;
         this.movieService = movieService;
         this.historyService = historyService;

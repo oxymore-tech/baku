@@ -1,37 +1,48 @@
 package com.bakuanimation.service;
 
+import com.bakuanimation.api.BakuEvent;
 import com.bakuanimation.api.Movie;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonPrimitive;
-import org.assertj.core.api.Assertions;
+import com.bakuanimation.api.PermissionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.google.api.client.util.Lists;
+import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class HistoryServiceTest {
+class HistoryServiceImplTest {
 
-    private HistoryService tested;
+    private HistoryServiceImpl tested;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp(@TempDir Path sharedTempDir) {
-        tested = new HistoryService(new PathService(sharedTempDir));
+        PermissionService permissionService = mock(PermissionService.class);
+        when(permissionService.hasRight(any(), any())).thenReturn(true);
+        tested = new HistoryServiceImpl(new PathService(sharedTempDir), permissionService);
     }
 
     @Test
     void shouldWriteAndReadHistory() throws IOException {
         String projectId = "my-project";
-        JsonArray content = new JsonArray();
+        List<BakuEvent> content = Lists.newArrayList();
         for (int i = 0; i < 10; i++) {
-            content.add(i);
+            content.add(new BakuEvent(0, JsonNodeFactory.instance.numberNode(10), "user", "Instant.EPOCH"));
         }
+
         tested.writeHistory(projectId, content);
-        JsonArray actual = tested.readHistory(projectId);
-        Assertions.assertThat(actual).isEqualTo(content);
+        List<BakuEvent> actual = tested.readHistory(projectId);
+        assertThat(actual).isEqualTo(content);
     }
 
     @Test
@@ -94,14 +105,14 @@ class HistoryServiceTest {
     @Test
     void shouldAddStack() throws IOException {
         String projectId = "my-project";
-        JsonArray content = new JsonArray();
+        List<BakuEvent> content = Lists.newArrayList();
         for (int i = 0; i < 10; i++) {
-            content.add(i);
+            content.add(new BakuEvent(0, JsonNodeFactory.instance.numberNode(10), "user", "Instant.EPOCH"));
         }
         tested.writeHistory(projectId, content);
-        JsonPrimitive toAdd = new JsonPrimitive(11);
-        tested.addStack(projectId, toAdd.toString().getBytes()).blockingGet();
-        JsonArray actual = tested.readHistory(projectId);
+        BakuEvent toAdd = new BakuEvent(0, JsonNodeFactory.instance.numberNode(11), "user", "Instant.EPOCH");
+        tested.addStack(projectId, objectMapper.valueToTree(toAdd).toString().getBytes()).blockingGet();
+        List<BakuEvent> actual = tested.readHistory(projectId);
         content.add(toAdd);
         assertThat(actual).isEqualTo(content);
     }
@@ -109,18 +120,17 @@ class HistoryServiceTest {
     @Test
     void shouldAddStackArray() throws IOException {
         String projectId = "my-project";
-        JsonArray content = new JsonArray();
+        List<BakuEvent> content = Lists.newArrayList();
         for (int i = 0; i < 10; i++) {
-            content.add(i);
+            content.add(new BakuEvent(0, JsonNodeFactory.instance.numberNode(10), "user", "Instant.EPOCH"));
         }
         tested.writeHistory(projectId, content);
-        JsonArray toAdd = new JsonArray();
-        toAdd.add("test");
-        toAdd.add(11);
-        tested.addStack(projectId, toAdd.toString().getBytes()).blockingGet();
-        JsonArray actual = tested.readHistory(projectId);
-        content.add(toAdd.get(0));
-        content.add(toAdd.get(1));
+        BakuEvent toAdd1 = new BakuEvent(0, JsonNodeFactory.instance.numberNode(11), "user", "Instant.EPOCH");
+        BakuEvent toAdd2 = new BakuEvent(0, JsonNodeFactory.instance.numberNode(11), "user", "Instant.EPOCH");
+        tested.addStack(projectId, objectMapper.valueToTree(ImmutableList.of(toAdd1, toAdd2)).toString().getBytes()).blockingGet();
+        List<BakuEvent> actual = tested.readHistory(projectId);
+        content.add(toAdd1);
+        content.add(toAdd2);
         assertThat(actual).isEqualTo(content);
     }
 }
