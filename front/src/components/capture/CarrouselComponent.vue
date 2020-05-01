@@ -59,6 +59,7 @@
             <div
               @click="moveToImage($event, index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
               class="carrousel-thumb"
+              style="width:100%; border:none"
             />
           </div>
         </template>
@@ -92,7 +93,7 @@
               :src="ImageCacheService.getThumbnail(image.id)"
               @click="moveToImage($event,index + 1)"
             />
-            <div v-else class="carrousel-thumb active waiting-capture">En attente de capture</div>
+            <div v-else @click="moveToImage($event,index + 1)" class="carrousel-thumb active waiting-capture">En attente de capture</div>
           </div>
         </template>
         <template v-if="image === null">
@@ -170,8 +171,6 @@ export default class CarrouselComponent extends Vue {
 
   private imagesToCopy: string[] = [];
 
-  private totalCarrouselThumbnails = 10;
-
   mounted() {
     window.addEventListener("keydown", (e: KeyboardEvent) => {
       switch (e.keyCode) {
@@ -247,7 +246,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   get computedLeftCarrousel(): ImageRef[] {
-    const count = this.totalCarrouselThumbnails / 2;
+    const count = 5;
     const sliceIndex = this.activeCapture
       ? this.activeImage + 1
       : this.activeImage;
@@ -258,7 +257,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   get computedRightCarrousel(): ImageRef[] {
-    const count = this.totalCarrouselThumbnails / 2 + 1;
+    const count = 5;
     const sliceIndex = this.activeImage + 1;
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, count);
     if (rightImagesAvaible.length < count && this.activeImage !== this.images.length) {
