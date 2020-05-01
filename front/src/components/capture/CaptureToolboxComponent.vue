@@ -44,18 +44,18 @@
 
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import SmartphoneSynchroPopupComponent from "@/components/smartphone/SmartphoneSynchroPopupComponent.vue";
-import { Device } from "@/utils/device.class";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneSynchroPopupComponent.vue';
+import { Device } from '@/utils/device.class';
 
-const CaptureNS = namespace("capture");
-const WebRTCNS = namespace("webrtc");
+const CaptureNS = namespace('capture');
+const WebRTCNS = namespace('webrtc');
 
 @Component({
   components: {
-    SmartphoneSynchroPopupComponent
-  }
+    SmartphoneSynchroPopupComponent,
+  },
 })
 export default class CaptureToolboxComponent extends Vue {
   public devices: Device[] = [];
@@ -64,28 +64,28 @@ export default class CaptureToolboxComponent extends Vue {
 
   public selectedDevice: Device | null = null;
 
-  @CaptureNS.Action("selectDevice")
+  @CaptureNS.Action('selectDevice')
   protected selectDeviceAction!: (device: Device | null) => Promise<void>;
 
-  @CaptureNS.Action("toggleScaleX")
+  @CaptureNS.Action('toggleScaleX')
   protected toggleScaleX!: () => Promise<void>;
 
-  @CaptureNS.Action("toggleScaleY")
+  @CaptureNS.Action('toggleScaleY')
   protected toggleScaleY!: () => Promise<void>;
 
-  @CaptureNS.Action("setOnionSkin")
+  @CaptureNS.Action('setOnionSkin')
   protected setOnionSkin!: (val: number) => Promise<void>;
 
-  @CaptureNS.State("scaleX")
+  @CaptureNS.State('scaleX')
   protected scaleX!: number;
 
-  @CaptureNS.State("scaleY")
+  @CaptureNS.State('scaleY')
   protected scaleY!: number;
 
-  @CaptureNS.State("onionSkin")
+  @CaptureNS.State('onionSkin')
   protected onionSkin!: number;
 
-  @WebRTCNS.Action("resetState")
+  @WebRTCNS.Action('resetState')
   private resetRTC!: () => Promise<void>;
 
   public async mounted() {
@@ -94,30 +94,34 @@ export default class CaptureToolboxComponent extends Vue {
       stream.getTracks().forEach((track: MediaStreamTrack) => {
         track.stop();
       });
-    }catch(e){
+    } catch (e) {
       console.info(e);
     }
     const devices = (await navigator.mediaDevices.enumerateDevices()) || [];
     const videoDevices = devices
       .filter(
-        (input: MediaDeviceInfo) =>
-          input.kind === "videoinput" && input.deviceId !== ""
+        (input: MediaDeviceInfo) => input.kind === 'videoinput' && input.deviceId !== '',
       )
       .map(
-        (input: MediaDeviceInfo) =>
-          new Device(input.deviceId, input.label || "Caméra non reconnue")
+        (input: MediaDeviceInfo) => new Device(input.deviceId, input.label || 'Caméra non reconnue'),
       );
-    const deviceIds = [...new Set(videoDevices.map(d => d.id))];
-    this.devices =
-      deviceIds.map(id => videoDevices.find(d => d.id === id) as Device) || [];
-    this.devices.push(new Device("smartphone", "Smartphone"));
+    const deviceIds = [...new Set(videoDevices.map((d) => d.id))];
+    this.devices = deviceIds.map((id) => videoDevices.find((d) => d.id === id) as Device) || [];
+    this.devices.push(new Device('smartphone', 'Smartphone'));
+    this.selectedDeviceId = this.devices[0].id ?? undefined;
+    this.selectDeviceAction(this.devices[0] ?? null);
   }
 
   public onCaptureDeviceChange() {
-    this.selectedDevice =
-      this.devices.find(d => d.id === this.selectedDeviceId) || null;
+    this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
     this.selectDeviceAction(this.selectedDevice);
-
+    if (this.selectedDevice && this.selectedDevice.id === 'smartphone') {
+      this.$buefy.modal.open({
+        parent: this,
+        component: SmartphoneSynchroPopupComponent,
+        hasModalCard: true,
+      });
+    }
     if (this.selectedDevice && !this.selectedDevice.isSmartphone()) {
       this.resetRTC();
     }

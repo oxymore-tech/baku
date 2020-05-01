@@ -9,18 +9,20 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue, Watch, } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import { Shot } from '@/utils/movie.service';
-  import { Spinner } from '@/utils/spinner.class';
-  import { ImageCacheService } from '@/utils/imageCache.service';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Shot } from '@/utils/movie.service';
+import { Spinner } from '@/utils/spinner.class';
+import { ImageCacheService } from '@/utils/imageCache.service';
 
-  const ProjectNS = namespace('project');
-  const CaptureNS = namespace('capture');
-  const WebRTCNS = namespace('webrtc');
+const ProjectNS = namespace('project');
+const CaptureNS = namespace('capture');
+const WebRTCNS = namespace('webrtc');
 
   @Component
-  export default class StoryboardPreviewComponent extends Vue {
+export default class StoryboardPreviewComponent extends Vue {
     @Prop()
     public activeShot!: Shot;
 
@@ -41,15 +43,13 @@
 
     get shotIndex() {
       if (this.shots) {
-        const index = this.shots.findIndex(s => s.id === this.activeShot?.id);
+        const index = this.shots.findIndex((s) => s.id === this.activeShot?.id);
         if (index != -1) {
           return index + 1;
-        } else {
-          return "";
         }
-      } else {
-        return "";
+        return '';
       }
+      return '';
     }
 
     public onDisplayShots() {
@@ -89,7 +89,7 @@
       }
       return Spinner;
     }
-  }
+}
 </script>
 
 <style lang="scss">

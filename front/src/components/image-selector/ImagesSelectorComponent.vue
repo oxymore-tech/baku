@@ -4,7 +4,7 @@
       :value="sliderValue"
       @input="onSliderValueChange"
       :min="0"
-      :max="images.length - 1"
+      :max="images.length"
       :step="1"
       :customFormatter="val => (parseInt(val,10) + 1).toString()"
       class="reading-slider-component"

@@ -94,6 +94,11 @@ div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
   background-color: #ffbd72;
   width: 0.7rem;
 }
+
+
+div.b-slider-thumb-wrapper.active-thumb .liveview {
+  background-color: #e66359;
+}
 </style>
 
 <script lang="ts">

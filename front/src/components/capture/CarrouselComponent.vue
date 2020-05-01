@@ -5,14 +5,14 @@
 <template>
   <div>
     <div class="toolbar">
-      <div class="toolbar-button" @click="onCopy()" :class="{disabled : activeCapture || isPlaying}">
+      <div class="toolbar-button" @click="onCopy()" :class="{disabled : activeDevice || isPlaying}">
         <i class="icon-copy baku-button" />
         <span>Copier</span>
       </div>
       <div
         class="toolbar-button"
         @click="onPaste()"
-        :class="{disabled: activeCapture || !imagesToCopy.length || isPlaying}"
+        :class="{disabled: activeDevice || !imagesToCopy.length || isPlaying}"
       >
         <i class="icon-paste baku-button" />
         <span>Coller</span>
@@ -20,12 +20,12 @@
       <div
         class="toolbar-button"
         @click="onReverse()"
-        :class="{disabled: activeCapture || !imagesToCopy.length || isPlaying}"
+        :class="{disabled: activeDevice || !imagesToCopy.length || isPlaying}"
       >
         <i class="icon-reverse baku-button" />
         <span>Coller & Inverser</span>
       </div>
-      <div class="toolbar-button" @click="deleteFrame()" :class="{disabled: activeCapture || isPlaying}">
+      <div class="toolbar-button" @click="deleteFrame()" :class="{disabled: activeDevice || isPlaying}">
         <i class="icon-trash-alt baku-button" />
         <span>Supprimer</span>
       </div>
@@ -33,16 +33,16 @@
     <div ref="carrouselContainer" class="carrousel-container">
       <!-- LEFT PART OF THE CARROUSEL -->
       <!-- Five divs to center capture button -->
-      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeDevice? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeDevice? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeDevice? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeDevice? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
       <template v-for="(image, index) in computedLeftCarrousel">
@@ -54,14 +54,14 @@
               :alt="image"
               :class="{active : selectedImagesForReal.includes(index)}"
               :src="ImageCacheService.getThumbnail(image.id)"
-              @click="moveToImage($event, index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+              @click="moveToImage($event, index - computedLeftCarrousel.length + (activeDevice ? 1 : 0))"
             />
           </div>
         </template>
         <template v-else>
           <div :key="'left'+index" class="image-container">
             <div
-              @click="moveToImage($event, index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+              @click="moveToImage($event, index - computedLeftCarrousel.length + (activeDevice ? 1 : 0))"
               class="carrousel-thumb"
             />
           </div>
@@ -114,16 +114,16 @@
       </template>
 
       <!-- Five divs to center capture button -->
-      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeDevice? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeDevice? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeDevice? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
-      <div class="image-container" :style="{ display: activeCapture? 'block':'none'}">
+      <div class="image-container" :style="{ display: activeDevice? 'block':'none'}">
         <div class="carrousel-thumb" />
       </div>
       <template v-if="computedNextImages">
@@ -139,7 +139,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import * as _ from 'lodash';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
@@ -168,9 +170,6 @@ export default class CarrouselComponent extends Vue {
 
   @Prop()
   public activeImage!: number;
-
-  @Prop()
-  public activeCapture!: boolean;
 
   @Prop()
   public selectedImages!: ReadingSliderBoundaries;
@@ -279,27 +278,25 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async deleteFrame() {
-    if (!this.activeCapture && !this.isPlaying) {
+    if (!this.activeDevice && !this.isPlaying) {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
       imagesToDelete.sort((a: any, b: any) => b - a);
-      const events = imagesToDelete.map((imgId: number) => {
-        return {
-          shotId: this.activeShot,
-          imageIndex: imgId,
-        }
-      });
+      const events = imagesToDelete.map((imgId: number) => ({
+        shotId: this.activeShot,
+        imageIndex: imgId,
+      }));
       this.removeImagesFromShot(events);
       this.selectedImagesForReal = [];
     }
   }
 
   get computedActiveImage(): ImageRef | null {
-    return this.activeCapture ? null : this.images[this.activeImage];
+    return this.activeDevice ? null : this.images[this.activeImage];
   }
 
   get computedLeftCarrousel(): ImageRef[] {
-    const sliceIndex = this.activeCapture
+    const sliceIndex = this.activeDevice
       ? this.activeImage + 1
       : this.activeImage;
     const leftImagesAvaible = this.images.slice(0, sliceIndex);
@@ -332,7 +329,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public moveToImage(e: MouseEvent, indexToMove: number) {
-    if (!this.activeCapture && !this.isPlaying) {
+    if (!this.activeDevice && !this.isPlaying) {
       if (e.ctrlKey) {
         // add to selection
         if (
@@ -370,7 +367,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public onCopy() {
-    if (!this.activeCapture && !this.isPlaying) {
+    if (!this.activeDevice && !this.isPlaying) {
       const tmpImgsToCopy = this.selectedImagesForReal;
       tmpImgsToCopy.push(this.activeImage);
       tmpImgsToCopy.sort((a: any, b: any) => a - b);
@@ -381,14 +378,12 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async onPaste() {
-    if (!this.activeCapture && !this.isPlaying) {
-      const events = this.imagesToCopy.map((imgref: string, index: number) => {
-        return {
-          shotId: this.activeShot,
-          imageIndex: this.activeImage + 1 + index,
-          image: imgref,
-        }
-      });
+    if (!this.activeDevice && !this.isPlaying) {
+      const events = this.imagesToCopy.map((imgref: string, index: number) => ({
+        shotId: this.activeShot,
+        imageIndex: this.activeImage + 1 + index,
+        image: imgref,
+      }));
       this.addImagesToShot(events);
       this.selectedImagesForReal = _.range(
         this.activeImage + 1,
@@ -398,14 +393,12 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async onReverse() {
-    if (!this.activeCapture && !this.isPlaying) {
-      const events = [...this.imagesToCopy].reverse().map((imgref: string, index: number) => {
-        return {
-          shotId: this.activeShot,
-          imageIndex: this.activeImage + 1 + index,
-          image: imgref,
-        }
-      });
+    if (!this.activeDevice && !this.isPlaying) {
+      const events = [...this.imagesToCopy].reverse().map((imgref: string, index: number) => ({
+        shotId: this.activeShot,
+        imageIndex: this.activeImage + 1 + index,
+        image: imgref,
+      }));
       this.addImagesToShot(events);
       this.selectedImagesForReal = _.range(
         this.activeImage + 1,
@@ -416,7 +409,7 @@ export default class CarrouselComponent extends Vue {
 
   @Watch('activeImage')
   public moveToActiveImageOnPause() {
-    if (!this.activeCapture) {
+    if (!this.activeDevice) {
       // trick to start after vue change detection
       setTimeout(() => {
         const carrouselActiveImg = this.$refs.carrouselActiveImg as HTMLElement;

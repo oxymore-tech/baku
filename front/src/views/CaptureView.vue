@@ -15,7 +15,7 @@
           <div class="preview-content">
             <template v-if="onionSkin">
               <img
-                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkin +1] && activeCapture && onionSkin > 0"
+                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkin +1] && activeDevice && IsFrameLiveView && onionSkin > 0"
                 alt="ghostImg"
                 id="ghost-img"
                 :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkin +1].id)"
@@ -23,7 +23,7 @@
               <template v-for="ghostIndex in onionSkinAsArray">
                 <img
                   :key="ghostIndex"
-                  v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeCapture"
+                  v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeDevice && IsFrameLiveView"
                   alt="ghostImg"
                   class="onion-skin"
                   :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - ghostIndex].id)"
@@ -31,7 +31,8 @@
               </template>
             </template>
             <video
-              v-if="activeCapture"
+              v-if="activeDevice"
+              :class="{hidden: !IsFrameLiveView}"
               id="video-capture"
               ref="videoCapture"
               :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkin > 0 ? 0.4 : 1}"
@@ -43,7 +44,7 @@
               id="preview-img"
               ref="previewImg"
               src="@/assets/baku-cloud-spinner.svg"
-              :class="{hidden: activeCapture}"
+              :class="{hidden: IsFrameLiveView}"
             />
           </div>
           <ImagesSelectorComponent
@@ -53,7 +54,7 @@
             :images="getActiveShot.images"
             :activeImage="currentDisplayedFrame"
             @activeImageChange="onActiveFrameChange"
-            :activeCapture="activeCapture"
+            :activeDevice="activeDevice"
             v-model="selectedImages"
           />
           <div class="media-controls">
@@ -69,18 +70,16 @@
             <i
               class="toolbar-button icon-step-backward baku-button"
               style="color:#455054;"
-              :class="{disabled : activeCapture}"
               @click="moveHome()"
             />
             <i
               class="toolbar-button icon-backward baku-button"
               style="color:#455054;"
-              :class="{disabled : activeCapture}"
-              @click="activeCapture ? () => {} : moveFrame(- 1)"
+              @click="moveFrame(- 1)"
             />
             <i
               class="toolbar-button toolbar-button-big icon-play"
-              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': (activeCapture)}"
+              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
               @click="playAnimation()"
               v-if="isPlaying !== 'animation'"
             />
@@ -91,7 +90,7 @@
             />
             <i
               class="toolbar-button toolbar-button-big icon-play_loop"
-              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection', 'disabled': activeCapture}"
+              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
               @click="playSelection()"
               v-if="isPlaying !== 'selection'"
             />
@@ -103,32 +102,28 @@
             <i
               class="toolbar-button icon-forward baku-button"
               style="color:#455054;"
-              :class="{disabled : activeCapture}"
-              @click="activeCapture ? () => {} :  moveFrame(1)"
+              @click="moveFrame(1)"
             />
             <i
               class="toolbar-button icon-step-forward baku-button"
               style="color:#455054;"
-              :class="{disabled : activeCapture}"
               @click="moveEnd()"
             />
             <i
               class="toolbar-button icon-set_begin baku-button"
               style="color:#455054;"
-              :class="{disabled : activeCapture}"
               @click="moveLeftBoundary()"
             />
             <i
               class="toolbar-button icon-set_end baku-button"
               style="color:#455054;"
-              :class="{disabled : activeCapture}"
               @click="moveRightBoundary()"
             />
-            <div
+            <!-- <div
               class="baku-button toolbar-button toolbar-capture-button"
-              :class="{'active-capture': activeCapture, 'disabled' : !!isPlaying}"
-              @click="setActiveCapture(activeCapture)"
-            >Mode Capture</div>
+              :class="{'active-capture': activeDevice, 'disabled' : !!isPlaying}"
+              @click="setactiveDevice(activeDevice)"
+            >Mode Capture</div> -->
             <div class="toolbar-button">
               <img
                 style="height: 28px; width:28px"
@@ -157,41 +152,30 @@
         @moveEnd="moveEnd"
         @stopMovingFrame="syncActiveFrame"
         @togglePlay="togglePlay"
-        :activeCapture="activeCapture"
         :selectedImages="selectedImages"
       />
     </template>
-    <video
-      v-if="activeCapture"
-      id="video-capture-fullscreen"
-      ref="videoCaptureFullscreen"
-      :style="{transform: 'scale(' + scaleX +', ' +scaleY +')'}"
-      autoplay
-      muted
-      playsinline
-    />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Watch } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import * as _ from "lodash";
+import { Component, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import * as _ from 'lodash';
 
-import store from "@/store";
-import AbstractProjectView from "@/views/AbstractProjectView.vue";
-import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
-import ImagesSelectorComponent from "@/components/image-selector/ImagesSelectorComponent.vue";
-import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
-import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
-import SmartphoneSynchroPopupComponent from "@/components/smartphone/SmartphoneSynchroPopupComponent.vue";
-import { Device } from "@/utils/device.class";
-import { ImageCacheService } from "@/utils/imageCache.service";
-import { Movie, ReadingSliderBoundaries, Shot } from "@/utils/movie.service";
+import store from '@/store';
+import AbstractProjectView from '@/views/AbstractProjectView.vue';
+import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
+import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
+import { Device } from '@/utils/device.class';
+import { ImageCacheService } from '@/utils/imageCache.service';
+import { Movie, ReadingSliderBoundaries, Shot } from '@/utils/movie.service';
 
-const CaptureNS = namespace("capture");
-const ProjectNS = namespace("project");
-const WebRTCNS = namespace("webrtc");
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
+const WebRTCNS = namespace('webrtc');
 
 @Component({
   components: {
@@ -223,9 +207,6 @@ export default class CaptureView extends AbstractProjectView {
 
   // Displayed Frame (previewImg + imageSelector)
   public currentDisplayedFrame: number = 0;
-
-  @CaptureNS.State
-  public activeCapture!: boolean;
 
   @CaptureNS.State
   public activeDevice!: Device;
@@ -275,7 +256,7 @@ export default class CaptureView extends AbstractProjectView {
     const nextFrame = this.getNextFrame(timestamp);
     if (nextFrame !== this.currentDisplayedFrame) {
       this.currentDisplayedFrame = nextFrame;
-        this.displayFrame(nextFrame);
+      this.displayFrame(nextFrame);
     }
     this.animationFrame = requestAnimationFrame(this.animate);
   }
@@ -307,7 +288,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public playAnimation() {
-    if (!this.isPlaying && !this.activeCapture && this.getActiveShot.images.length > 0) {
+    if (!this.isPlaying && this.getActiveShot.images.length > 0) {
       this.initPlay('animation');
       this.animationBoundaries = {
         left: 0,
@@ -318,7 +299,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public playSelection() {
-    if (!this.isPlaying && !this.activeCapture && this.getActiveShot.images.length > 0) {
+    if (!this.isPlaying && this.getActiveShot.images.length > 0) {
       if (
         this.currentCarrousselFrame < this.selectedImages.left
         || this.currentCarrousselFrame > this.selectedImages.right
@@ -339,7 +320,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public pauseAnimation() {
-    if (this.isPlaying && !this.activeCapture) {
+    if (this.isPlaying) {
       this.isPlaying = null;
       delete this.animationStart;
       delete this.animationStartFrame;
@@ -382,19 +363,6 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
-  @Watch('activeCapture')
-  public async onActiveCaptureChange(activeCapture: boolean) {
-    const msg = activeCapture
-      ? 'Vous entrez en mode Capture'
-      : 'Vous sortez du mode Capture';
-    this.$buefy.toast.open({
-      duration: 2000,
-      message: msg,
-      position: 'is-bottom',
-      type: 'is-success',
-    });
-    setTimeout(() => this.onActiveFrameChange(this.currentDisplayedFrame));
-  }
 
   @Watch('getActiveShotImgCount')
   public async onActiveShotImgCountChange(nb: number) {
@@ -405,6 +373,10 @@ export default class CaptureView extends AbstractProjectView {
 
   get onionSkinAsArray() {
     return _.range(this.onionSkin - 2, -1, -1);
+  }
+
+  get IsFrameLiveView() {
+    return this.currentDisplayedFrame === this.getActiveShot?.images.length;
   }
 
   private onImagePreloaded(imageId: string): void {
@@ -423,24 +395,20 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public moveHome() {
-    if (!this.activeCapture) {
-      this.onActiveFrameChange(0);
-    }
+    this.onActiveFrameChange(0);
   }
 
   public moveEnd() {
-    if (!this.activeCapture) {
-      this.onActiveFrameChange(this.getActiveShot.images.length - 1);
-    }
+    this.onActiveFrameChange(this.getActiveShot.images.length - 1);
   }
 
   private moveFrameAbsolute(frame: number): number {
     if (!this.isPlaying) {
-      const minFrame = this.activeCapture ? -1 : 0;
+      const minFrame = 0;
       if (frame < minFrame) {
         this.currentDisplayedFrame = minFrame;
-      } else if (frame > this.getActiveShot.images.length - 1) {
-        this.currentDisplayedFrame = this.getActiveShot.images.length - 1;
+      } else if (frame > this.getActiveShot.images.length) {
+        this.currentDisplayedFrame = this.getActiveShot.images.length;
       } else {
         this.currentDisplayedFrame = frame;
       }
@@ -455,45 +423,11 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public moveLeftBoundary() {
-    if (!this.activeCapture) {
-      this.onActiveFrameChange(this.selectedImages.left);
-    }
+    this.onActiveFrameChange(this.selectedImages.left);
   }
 
   public moveRightBoundary() {
-    if (!this.activeCapture) {
-      this.onActiveFrameChange(this.selectedImages.right);
-    }
-  }
-
-  public setActiveCapture() {
-    if (!this.isPlaying) {
-      if (this.activeDevice) {
-        this.currentCarrousselFrame = this.getActiveShot.images.length - 1;
-        this.$store.dispatch('capture/setActiveCapture', !this.activeCapture);
-        if (
-          this.activeDevice.isSmartphone()
-          && this.activeCapture
-          && !this.dataChannel
-        ) {
-          this.$buefy.modal.open({
-            parent: this,
-            component: SmartphoneSynchroPopupComponent,
-            hasModalCard: true,
-          });
-        }
-      } else {
-        this.$buefy.dialog.alert({
-          message: 'Veuillez sélectionner une caméra',
-          type: 'is-danger',
-          hasIcon: true,
-          icon: 'times-circle',
-          iconPack: 'fa',
-          ariaRole: 'alertdialog',
-          ariaModal: true,
-        });
-      }
-    }
+    this.onActiveFrameChange(this.selectedImages.right);
   }
 
   public nbHours(frame: number): string {

@@ -6,7 +6,6 @@ export const CaptureStore: BakuModule<CaptureState> = {
   state: {
     stream: null,
     activeDevice: null,
-    activeCapture: false,
     scaleX: 1,
     scaleY: 1,
     onionSkin: 0,
@@ -23,9 +22,6 @@ export const CaptureStore: BakuModule<CaptureState> = {
       }
       state.stream = null;
     },
-    setActiveCapture(state, activeCapture: boolean) {
-      state.activeCapture = activeCapture;
-    },
     setDevice(state, device: Device | null) {
       state.activeDevice = device;
     },
@@ -41,7 +37,6 @@ export const CaptureStore: BakuModule<CaptureState> = {
     reset(state) {
       state.stream = null;
       state.activeDevice = null;
-      state.activeCapture = false;
       state.scaleX = 1;
       state.scaleY = 1;
       state.onionSkin = 0;
@@ -54,10 +49,6 @@ export const CaptureStore: BakuModule<CaptureState> = {
     },
     selectDevice(context, device: Device | null) {
       context.commit('setDevice', device);
-    },
-
-    setActiveCapture(context, activeCapture: boolean) {
-      context.commit('setActiveCapture', activeCapture);
     },
 
     toggleScaleX(context) {

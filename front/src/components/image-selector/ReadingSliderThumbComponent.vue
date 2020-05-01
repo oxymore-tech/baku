@@ -12,6 +12,7 @@
     >
       <div
         class="b-slider-thumb"
+        :class="{liveview: isLiveView}"
         :tabindex="disabled ? false : 0"
         v-bind="$attrs"
         @mousedown="onButtonDown"
@@ -59,6 +60,10 @@ export default {
     };
   },
   computed: {
+    isLiveView() {
+      console.log(this.value, this.$parent.max);
+      return this.value === this.$parent.max;
+    },
     disabled() {
       return this.$parent.disabled;
     },

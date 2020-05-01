@@ -5,7 +5,6 @@ import { BakuEvent } from '@/utils/types';
 export interface CaptureState {
   stream: MediaStream | null;
   activeDevice: Device | null,
-  activeCapture: boolean;
   scaleX: number;
   scaleY: number;
   onionSkin: number;

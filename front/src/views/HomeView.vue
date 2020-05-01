@@ -85,10 +85,9 @@ export default class HomeView extends Vue {
 
   public bottomPanelTitle() {
     if (this.seenProjects.length == 0) {
-      return "Quelques films de démonstration"
-    } else {
-      return "Mes films"
+      return 'Quelques films de démonstration';
     }
+    return 'Mes films';
   }
 
   public isMobile() {

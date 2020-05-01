@@ -72,16 +72,16 @@
 
 <script lang="ts">
 
-  import { Component, Vue } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import { Movie } from '@/utils/movie.service';
-  import * as api from '@/api';
-  import { VideoStatus, VideoStatusEnum } from "@/utils/types";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Movie } from '@/utils/movie.service';
+import * as api from '@/api';
+import { VideoStatus, VideoStatusEnum } from '@/utils/types';
 
-  const ProjectNS = namespace('project');
+const ProjectNS = namespace('project');
 
   @Component
-  export default class ProjectSettingsPopup extends Vue {
+export default class ProjectSettingsPopup extends Vue {
     @ProjectNS.State
     public id!: string;
 
@@ -92,7 +92,7 @@
 
     public copied: boolean = false;
 
-    videoStatus: VideoStatus = {status: VideoStatusEnum.Pending, lastModified: 0};
+    videoStatus: VideoStatus = { status: VideoStatusEnum.Pending, lastModified: 0 };
 
     private refreshVideoStatusTimer?: number;
 
@@ -113,7 +113,7 @@
 
 
     get isVideoPending() {
-      return this.videoStatus.status === VideoStatusEnum.Pending
+      return this.videoStatus.status === VideoStatusEnum.Pending;
     }
 
     get isVideoUpToDate() {
@@ -123,9 +123,8 @@
     get videoTitle() {
       if (this.isVideoUpToDate) {
         return 'La dernière vidéo est disponible';
-      } else {
-        return `Dernière vidéo est disponible : ${new Date(this.videoStatus.lastModified * 1000).toDateString()}`;
       }
+      return `Dernière vidéo est disponible : ${new Date(this.videoStatus.lastModified * 1000).toDateString()}`;
     }
 
     generateVideo() {
@@ -183,7 +182,7 @@
     }
 
     private async refreshVideoStatus() {
-      this.videoStatus = await api.getVideoStatus(this.id)
+      this.videoStatus = await api.getVideoStatus(this.id);
     }
-  }
+}
 </script>
