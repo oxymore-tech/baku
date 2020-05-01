@@ -12,18 +12,22 @@
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
       <div class="routerlinks" v-if="id">
-        <router-link :to="{ name: 'scenario', params: { projectId: id } }">
+        <!--
+          <router-link :to="{ name: 'scenario', params: { projectId: id } }">
           Scenario
-        </router-link>
-        <router-link :to="{ name: 'storyboard', params: { projectId: id } }">
+          </router-link>
+          <router-link :to="{ name: 'storyboard', params: { projectId: id } }">
           Storyboard
-        </router-link>
+          </router-link>
+        -->
         <router-link :to="{ name: 'captureShots', params: { projectId: id } }">
           Capture
         </router-link>
-        <router-link :to="{ name: 'movieEditing', params: { projectId: id } }">
+        <!--
+          <router-link :to="{ name: 'movieEditing', params: { projectId: id } }">
           Montage
-        </router-link>
+          </router-link>
+        -->
         <router-link :to="{ name: 'collaboration', params: { projectId: id } }">
           Collaboratif
         </router-link>
