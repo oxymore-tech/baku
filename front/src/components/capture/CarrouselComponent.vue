@@ -8,7 +8,7 @@
       <div
         class="toolbar-button"
         @click="onCopy()"
-        :class="{disabled : activeCapture || isPlaying}"
+        :class="{disabled : isFrameLiveView || isPlaying}"
       >
         <i class="icon-copy baku-button" />
         <span>Copier</span>
@@ -16,7 +16,7 @@
       <div
         class="toolbar-button"
         @click="onPaste()"
-        :class="{disabled: activeCapture || !imagesToCopy.length || isPlaying}"
+        :class="{disabled: isFrameLiveView || !imagesToCopy.length || isPlaying}"
       >
         <i class="icon-paste baku-button" />
         <span>Coller</span>
@@ -24,7 +24,7 @@
       <div
         class="toolbar-button"
         @click="onPasteAndReverse()"
-        :class="{disabled: activeCapture || imagesToCopy.length < 2 || isPlaying}"
+        :class="{disabled: isFrameLiveView || imagesToCopy.length < 2 || isPlaying}"
       >
         <i class="icon-reverse baku-button" />
         <span>Coller & Inverser</span>
@@ -32,7 +32,7 @@
       <div
         class="toolbar-button"
         @click="deleteFrame()"
-        :class="{disabled: activeCapture || isPlaying}"
+        :class="{disabled: isFrameLiveView || isPlaying}"
       >
         <i class="icon-trash-alt baku-button" />
         <span>Supprimer</span>
@@ -50,14 +50,14 @@
               :alt="image"
               :class="{active : selectedImagesForReal.includes(index)}"
               :src="ImageCacheService.getThumbnail(image.id)"
-              @click="moveToImage($event, index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+              @click="moveToImage($event, index - computedLeftCarrousel.length + (isFrameLiveView ? 1 : 0))"
             />
           </div>
         </template>
         <template v-else>
           <div :key="'left'+index" class="image-container">
             <div
-              @click="moveToImage($event, index - computedLeftCarrousel.length + (activeCapture ? 1 : 0))"
+              @click="moveToImage($event, index - computedLeftCarrousel.length + (isFrameLiveView ? 1 : 0))"
               class="carrousel-thumb"
               style="width:100%; border:none"
             />
@@ -150,7 +150,7 @@ export default class CarrouselComponent extends Vue {
   public activeImage!: number;
 
   @Prop()
-  public activeCapture!: boolean;
+  public isFrameLiveView: boolean = false;
 
   @Prop()
   public selectedImages!: ReadingSliderBoundaries;
@@ -227,7 +227,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async deleteFrame() {
-    if (!this.activeCapture && !this.isPlaying) {
+    if (!this.isFrameLiveView && !this.isPlaying) {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
       imagesToDelete.sort((a: any, b: any) => b - a);
@@ -247,7 +247,7 @@ export default class CarrouselComponent extends Vue {
 
   get computedLeftCarrousel(): ImageRef[] {
     const count = 5;
-    const sliceIndex = this.activeCapture
+    const sliceIndex = this.isFrameLiveView
       ? this.activeImage + 1
       : this.activeImage;
     const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-count);
@@ -288,7 +288,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public moveToImage(e: MouseEvent, indexToMove: number) {
-    if (!this.activeCapture && !this.isPlaying) {
+    if (!this.isFrameLiveView && !this.isPlaying) {
       if (e.ctrlKey) {
         // add to selection
         if (
@@ -326,7 +326,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public onCopy() {
-    if (!this.activeCapture && !this.isPlaying) {
+    if (!this.isFrameLiveView && !this.isPlaying) {
       const tmpImgsToCopy = this.selectedImagesForReal;
       tmpImgsToCopy.push(this.activeImage);
       tmpImgsToCopy.sort((a: any, b: any) => a - b);
@@ -337,7 +337,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async onPaste() {
-    if (!this.activeCapture && !this.isPlaying) {
+    if (!this.isFrameLiveView && !this.isPlaying) {
       await asyncForEach(this.imagesToCopy, (imgref: string, index: number) =>
         this.addImagesToShot([
           {
@@ -355,7 +355,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async onPasteAndReverse() {
-    if (!this.activeCapture && !this.isPlaying) {
+    if (!this.isFrameLiveView && !this.isPlaying) {
       const reverted = [...this.imagesToCopy].reverse();
       await asyncForEach(reverted, (imgref: string, index: number) =>
         this.addImagesToShot([

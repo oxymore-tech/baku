@@ -159,6 +159,7 @@
         :images="getActiveShot.images"
         :activeImage="currentCarrousselFrame"
         :isPlaying="isPlaying"
+        :isFrameLiveView="IsFrameLiveView"
         @activeImageChange="onActiveFrameChange"
         @moveFrame="moveFrame"
         @moveHome="moveHome"
