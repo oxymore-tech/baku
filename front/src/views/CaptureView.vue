@@ -13,12 +13,12 @@
         />
         <div class="preview-container">
           <div class="preview-content">
-            <template v-if="onionSkin">
+            <template v-if="onionSkinDisplay">
               <img
-                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkin +1] && activeDevice && IsFrameLiveView && onionSkin > 0"
+                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue +1] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
                 alt="ghostImg"
                 id="ghost-img"
-                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkin +1].id)"
+                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue +1].id)"
               />
               <template v-for="ghostIndex in onionSkinAsArray">
                 <img
@@ -35,7 +35,7 @@
               :class="{hidden: !IsFrameLiveView}"
               id="video-capture"
               ref="videoCapture"
-              :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkin > 0 ? 0.4 : 1}"
+              :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkinDisplay ? 0.4 : 1}"
               autoplay
               muted
               playsinline
@@ -145,7 +145,10 @@
             </div>
           </div>
         </div>
-        <CaptureToolboxComponent v-if="getActiveShot" />
+        <CaptureToolboxComponent 
+          v-if="getActiveShot" 
+          :isCapturing="IsFrameLiveView"
+          />
       </div>
 
       <CarrouselComponent
@@ -233,8 +236,11 @@ export default class CaptureView extends AbstractProjectView {
   @CaptureNS.State
   public scaleY!: number | 1;
 
-  @CaptureNS.State('onionSkin')
-  protected onionSkin!: number;
+  @CaptureNS.State('onionSkinDisplay')
+  protected onionSkinDisplay!: number;
+
+  @CaptureNS.State('onionSkinValue')
+  protected onionSkinValue!: number;
 
   @ProjectNS.Action('addImagesToShot')
   protected addImagesToShot!: ({}) => Promise<void>;
@@ -387,7 +393,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   get onionSkinAsArray() {
-    return _.range(this.onionSkin - 2, -1, -1);
+    return _.range(this.onionSkinValue - 2, -1, -1);
   }
 
   get IsFrameLiveView() {

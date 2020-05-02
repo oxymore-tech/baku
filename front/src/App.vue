@@ -44,6 +44,7 @@
 
 <style lang="scss" >
 @import "styles/style.scss";
+@import "styles/buefy.scss";
 @import "assets/style.css";
 
 .left-nav {

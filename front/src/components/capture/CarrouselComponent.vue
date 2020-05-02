@@ -23,8 +23,8 @@
       </div>
       <div
         class="toolbar-button"
-        @click="onReverse()"
-        :class="{disabled: activeCapture || !imagesToCopy.length || isPlaying}"
+        @click="onPasteAndReverse()"
+        :class="{disabled: activeCapture || imagesToCopy.length < 2 || isPlaying}"
       >
         <i class="icon-reverse baku-button" />
         <span>Coller & Inverser</span>
@@ -354,7 +354,7 @@ export default class CarrouselComponent extends Vue {
     }
   }
 
-  public async onReverse() {
+  public async onPasteAndReverse() {
     if (!this.activeCapture && !this.isPlaying) {
       const reverted = [...this.imagesToCopy].reverse();
       await asyncForEach(reverted, (imgref: string, index: number) =>

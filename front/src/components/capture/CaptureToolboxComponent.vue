@@ -5,28 +5,30 @@
     </div>
 
     <b-field>
-      <b-icon icon="video" size="is-large" />
       <b-select
-        @input="onCaptureDeviceChange()"
-        placeholder="Sélectionner une caméra"
+        icon="video"
+        :disabled="!isCapturing"
         :loading="!devices.length"
+        @input="onCaptureDeviceChange()"
         v-model="selectedDeviceId"
-        size="is-small"
+        placeholder="Sélectionner une caméra"
       >
         <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
       </b-select>
     </b-field>
 
     <div class="field">
-      <b-switch :value="scaleY == -1"
-         type="is-info"
+      <b-switch 
+         :disabled="!isCapturing"
+         :value="scaleY == -1"
          @input="toggleScaleY">
         Miroir horizontal
       </b-switch>
     </div>
     <div class="field">
-      <b-switch :value="scaleX != 1"
-         type="is-info"
+      <b-switch 
+         :disabled="!isCapturing"
+         :value="scaleX != 1"
          @input="toggleScaleX">
         Miroir vertical
       </b-switch>
@@ -34,21 +36,23 @@
 
     <div class="field">
       <b-switch
-         :value="onionSkin > 0"
-         type="is-info"
-         @input="switchOnionSkin($event)"
+         :disabled="!isCapturing"
+         :value="onionSkinDisplay"
+         @input="setOnionSkinDisplay($event)"
          >
         <b-field>
           <div>Pelure d'oignon</div>
         </b-field>
       </b-switch>
       <b-numberinput
-        v-if="onionSkin > 0"
-        :value="onionSkin"
-        @input="setOnionSkin($event)"
-        size="is-small"
+        v-if="onionSkinDisplay"
         type="light"
+        :disabled="!isCapturing"
+        :value="onionSkinValue"
+        @input="setOnionSkinValue($event)"
+        size="is-small"
         controls-position="compact"
+        editable="false"
         min="1" max="5">
       </b-numberinput>
     </div>
@@ -58,7 +62,7 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneSynchroPopupComponent.vue';
 import { Device } from '@/utils/device.class';
@@ -78,6 +82,9 @@ export default class CaptureToolboxComponent extends Vue {
 
   public selectedDevice: Device | null = null;
 
+  @Prop()
+  public isCapturing: boolean = false;
+
   @CaptureNS.Action('selectDevice')
   protected selectDeviceAction!: (device: Device | null) => Promise<void>;
 
@@ -87,8 +94,11 @@ export default class CaptureToolboxComponent extends Vue {
   @CaptureNS.Action('toggleScaleY')
   protected toggleScaleY!: () => Promise<void>;
 
-  @CaptureNS.Action('setOnionSkin')
-  protected setOnionSkin!: (val: number) => Promise<void>;
+  @CaptureNS.Action('setOnionSkinDisplay')
+  protected setOnionSkinDisplay!: (val: boolean) => Promise<void>;
+
+  @CaptureNS.Action('setOnionSkinValue')
+  protected setOnionSkinValue!: (val: number) => Promise<void>;
 
   @CaptureNS.State('scaleX')
   protected scaleX!: number;
@@ -96,8 +106,11 @@ export default class CaptureToolboxComponent extends Vue {
   @CaptureNS.State('scaleY')
   protected scaleY!: number;
 
-  @CaptureNS.State('onionSkin')
-  protected onionSkin!: number;
+  @CaptureNS.State('onionSkinDisplay')
+  protected onionSkinDisplay!: number;
+
+  @CaptureNS.State('onionSkinValue')
+  protected onionSkinValue!: number;
 
   @WebRTCNS.Action('resetState')
   private resetRTC!: () => Promise<void>;
@@ -148,14 +161,6 @@ export default class CaptureToolboxComponent extends Vue {
   public horizontalMirror() {
     this.toggleScaleY();
   }
-  
-  public switchOnionSkin(isOn: boolean) {
-    if (isOn) {
-      this.setOnionSkin(1)
-    } else {
-      this.setOnionSkin(0)
-    }
-  }
 }
 </script>
 
@@ -192,10 +197,6 @@ export default class CaptureToolboxComponent extends Vue {
     color: #707070;
     margin: 3px 5px 3px 0px;
   }
-}
-
-span.select {
-  margin-top: 10px;
 }
 
 .b-numberinput {

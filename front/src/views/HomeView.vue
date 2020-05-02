@@ -63,6 +63,9 @@ export default class HomeView extends Vue {
   @UserNS.State('seenProjects')
   public seenProjects!: string[];
 
+  @UserNS.Getter('getPersonalisedProjectTitle')
+  public getPersonalisedProjectTitle!: string;
+
   @ProjectNS.Action('createShot')
   private createShotAction!: (name?: string) => Promise<string>;
 
@@ -117,7 +120,7 @@ export default class HomeView extends Vue {
     await this.loadProjectAction(projectId);
     const shotId = await this.createShotAction('Nouveau plan');
     await this.changeFps(12);
-    await this.updateTitle('Projet sans nom');
+    await this.updateTitle(this.getPersonalisedProjectTitle);
     await this.$router.push({
       name: 'captureShot',
       params: {

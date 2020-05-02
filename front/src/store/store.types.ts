@@ -7,7 +7,8 @@ export interface CaptureState {
   activeDevice: Device | null,
   scaleX: number;
   scaleY: number;
-  onionSkin: number;
+  onionSkinDisplay: boolean;
+  onionSkinValue: number;
 }
 
 export interface ProjectState {

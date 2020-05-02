@@ -2,6 +2,10 @@ import store from "@/store";
 import { BakuModule, UserState, SeenProject } from './store.types';
 import { Quality } from '@/utils/uploadedImage.class';
 
+// local storage keys
+const lsUsernameKey = 'username'
+const lsSeenProjectsKey = 'seenProjects'
+
 const yokaiList = [
   'Akuma', 'Asobibi', 'Bakebi', 'Bakeneko', 'Baku', 'Daki', 'Enkō', 'Fūbo', 'Genbu', 'Hakuba', 'Hinode',
   'Ikuchi', 'Jashin', 'Kappa', 'Kirin', 'Kitsune', 'Kodama', 'Kowai', 'Mononoke', 'Ninko', 'Ōgama', 'Ōkami',
@@ -9,9 +13,15 @@ const yokaiList = [
   'Sōjōbō', 'Son Gokū', 'Taiba', 'Tanuki', 'Tatsu', 'Tengubi', 'Tenji', 'Tenko', 'Tōtetsu', 'Uba Ga Hi', 'Ubume',
   'Uryû', 'Uwan', 'Waira', 'Yōko', 'Yōsei', 'Yosuzume', 'Yukinko', 'Yurei', 'Zan', 'Zorigami', 'Zuijin'];
 
+const defaultProject = {
+  id: 'premier_montage',
+  title: 'Mes premières fois',
+  posterUrl: '/img/PremFois.81be95db.jpg',
+}
+
 const initializeUsername = () => {
   // retrieve last username if exists
-  const username = localStorage.getItem('username');
+  const username = localStorage.getItem(lsUsernameKey);
   if (username) {
     return username;
   }
@@ -19,18 +29,12 @@ const initializeUsername = () => {
   // generate username
   const randIdx = Math.floor(Math.random() * yokaiList.length);
   const generatedUsername = yokaiList[randIdx];
-  localStorage.setItem('username', generatedUsername);
+  localStorage.setItem(lsUsernameKey, generatedUsername);
   return generatedUsername;
 };
 
-const defaultProject = {
-  id: 'premier_montage',
-  title: 'Mes premières fois',
-  posterUrl: '/img/PremFois.81be95db.jpg',
-}
-
 const initializeSeenProjects = () => {
-  const seenProjectsJson = localStorage.getItem('seenProjects')
+  const seenProjectsJson = localStorage.getItem(lsSeenProjectsKey)
   if (seenProjectsJson) {
     return JSON.parse(seenProjectsJson);
   }
@@ -81,10 +85,25 @@ export const UserStore: BakuModule<UserState> = {
           posterUrl: posterUrl,
         }
         context.commit('addSeenProject', project);
-        localStorage.setItem('seenProjects', JSON.stringify(context.state.seenProjects));
+        localStorage.setItem(lsSeenProjectsKey, JSON.stringify(context.state.seenProjects));
       }
 
     },
   },
-  getters: {},
+  getters: {
+    getPersonalisedProjectTitle: (state) => {
+      const prefix = "Film de " + state.username
+      let suffixNumber = 0
+      let suffix = ""
+      const titles = state.seenProjects.map((p) => p.title).sort()
+      for (const i in titles) {
+        const seenTitle = titles[i]
+        if (prefix + suffix === seenTitle) {
+          suffixNumber += 1
+          suffix = " (" + suffixNumber + ")"
+        }
+      }
+      return prefix + suffix
+    },
+  },
 };

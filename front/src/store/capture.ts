@@ -1,15 +1,18 @@
 import { Device } from '@/utils/device.class';
 import { BakuModule, CaptureState } from '@/store/store.types';
 
-export const CaptureStore: BakuModule<CaptureState> = {
-  namespaced: true,
-  state: {
+const defaultState = {
     stream: null,
     activeDevice: null,
     scaleX: 1,
     scaleY: 1,
-    onionSkin: 0,
-  },
+    onionSkinDisplay: false,
+    onionSkinValue: 1,
+  }
+
+export const CaptureStore: BakuModule<CaptureState> = {
+  namespaced: true,
+  state: defaultState,
   mutations: {
     attachMediaStream(state, stream: MediaStream) {
       state.stream = stream;
@@ -31,15 +34,14 @@ export const CaptureStore: BakuModule<CaptureState> = {
     toggleScaleY(state) {
       state.scaleY *= -1;
     },
-    setOnionSkin(state, val: number) {
-      state.onionSkin = val;
+    setOnionSkinDisplay(state, val: boolean) {
+      state.onionSkinDisplay = val;
+    },
+    setOnionSkinValue(state, val: number) {
+      state.onionSkinValue = val;
     },
     reset(state) {
-      state.stream = null;
-      state.activeDevice = null;
-      state.scaleX = 1;
-      state.scaleY = 1;
-      state.onionSkin = 0;
+      state = defaultState;
     },
   },
   actions: {
@@ -59,8 +61,11 @@ export const CaptureStore: BakuModule<CaptureState> = {
       context.commit('toggleScaleY');
     },
 
-    setOnionSkin(context, val: number) {
-      context.commit('setOnionSkin', val);
+    setOnionSkinDisplay(context, val: boolean) {
+      context.commit('setOnionSkinDisplay', val);
+    },
+    setOnionSkinValue(context, val: number) {
+      context.commit('setOnionSkinValue', val);
     },
   },
   getters: {
