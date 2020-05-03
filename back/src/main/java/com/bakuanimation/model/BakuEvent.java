@@ -1,4 +1,4 @@
-package com.bakuanimation.api;
+package com.bakuanimation.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,6 +1,6 @@
 package com.bakuanimation.rest;
 
-import com.bakuanimation.api.Movie;
+import com.bakuanimation.model.Movie;
 import com.bakuanimation.service.HistoryServiceImpl;
 import com.bakuanimation.service.ImageServiceImpl;
 import com.bakuanimation.service.PathService;

@@ -1,7 +1,7 @@
 package com.bakuanimation.service;
 
 import com.bakuanimation.api.ImageService;
-import com.bakuanimation.api.Movie;
+import com.bakuanimation.model.Movie;
 import com.google.common.collect.ImmutableListMultimap;
 import com.mortennobel.imagescaling.ResampleFilters;
 import com.mortennobel.imagescaling.ResampleOp;

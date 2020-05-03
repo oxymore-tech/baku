@@ -1,8 +1,8 @@
 package com.bakuanimation.service;
 
-import com.bakuanimation.api.BakuEvent;
-import com.bakuanimation.api.Movie;
 import com.bakuanimation.api.PermissionService;
+import com.bakuanimation.model.BakuEvent;
+import com.bakuanimation.model.Movie;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.api.client.util.Lists;
@@ -16,9 +16,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class HistoryServiceImplTest {
 
@@ -28,7 +26,6 @@ class HistoryServiceImplTest {
     @BeforeEach
     void setUp(@TempDir Path sharedTempDir) {
         PermissionService permissionService = mock(PermissionService.class);
-        when(permissionService.hasRight(any(), any())).thenReturn(true);
         tested = new HistoryServiceImpl(new PathService(sharedTempDir), permissionService);
     }
 

@@ -1,7 +1,7 @@
 package com.bakuanimation.rest;
 
-import com.bakuanimation.api.MovieStatus;
-import com.bakuanimation.api.VideoState;
+import com.bakuanimation.model.MovieStatus;
+import com.bakuanimation.model.VideoState;
 import com.bakuanimation.service.HistoryServiceImpl;
 import com.bakuanimation.service.MovieServiceImpl;
 import com.bakuanimation.service.PathService;

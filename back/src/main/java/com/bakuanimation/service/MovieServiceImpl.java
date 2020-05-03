@@ -1,9 +1,10 @@
 package com.bakuanimation.service;
 
 import com.bakuanimation.api.HistoryService;
-import com.bakuanimation.api.Movie;
 import com.bakuanimation.api.MovieService;
-import com.bakuanimation.api.VideoState;
+import com.bakuanimation.model.Movie;
+import com.bakuanimation.model.MovieStatus;
+import com.bakuanimation.model.VideoState;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
@@ -121,22 +122,22 @@ public final class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Single<com.bakuanimation.api.MovieStatus> status(String projectId) {
+    public Single<MovieStatus> status(String projectId) {
         return Single.fromCallable(() -> {
             if (pendingMovieGeneration.contains(projectId)) {
-                return new com.bakuanimation.api.MovieStatus(VideoState.Pending, Instant.EPOCH);
+                return new MovieStatus(VideoState.Pending, Instant.EPOCH);
             }
             Path movieFile = pathService.getMovieFile(projectId);
             if (Files.exists(movieFile)) {
                 Instant lastModifiedMovie = Files.getLastModifiedTime(movieFile).toInstant();
                 Instant lastModifiedStack = Files.getLastModifiedTime(pathService.getStackFile(projectId)).toInstant();
                 if (lastModifiedMovie.isBefore(lastModifiedStack)) {
-                    return new com.bakuanimation.api.MovieStatus(VideoState.NotUpToDate, lastModifiedMovie);
+                    return new MovieStatus(VideoState.NotUpToDate, lastModifiedMovie);
                 } else {
-                    return new com.bakuanimation.api.MovieStatus(VideoState.UpToDate, lastModifiedMovie);
+                    return new MovieStatus(VideoState.UpToDate, lastModifiedMovie);
                 }
             } else {
-                return new com.bakuanimation.api.MovieStatus(VideoState.NotGenerated, Instant.EPOCH);
+                return new MovieStatus(VideoState.NotGenerated, Instant.EPOCH);
             }
         }).subscribeOn(Schedulers.io());
     }

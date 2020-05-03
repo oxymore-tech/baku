@@ -1,4 +1,4 @@
-package com.bakuanimation.api;
+package com.bakuanimation.model;
 
 public enum BakuAction {
     MOVIE_UPDATE_TITLE,

@@ -1,9 +1,11 @@
 package com.bakuanimation.service;
 
-import com.bakuanimation.api.BakuEvent;
 import com.bakuanimation.api.HistoryService;
-import com.bakuanimation.api.Movie;
 import com.bakuanimation.api.PermissionService;
+import com.bakuanimation.model.BakuAction;
+import com.bakuanimation.model.BakuEvent;
+import com.bakuanimation.model.Movie;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,13 +61,10 @@ public class HistoryServiceImpl implements HistoryService {
         }).subscribeOn(stackScheduler);
     }
 
-    private void addEvent(Movie movie, List<BakuEvent> history, JsonNode node) throws com.fasterxml.jackson.core.JsonProcessingException {
+    private void addEvent(Movie movie, List<BakuEvent> history, JsonNode node) throws JsonProcessingException {
         BakuEvent bakuEvent = objectMapper.treeToValue(node, BakuEvent.class);
-        if (permissionService.hasRight(movie, bakuEvent)) {
-            history.add(bakuEvent);
-        } else {
-            LOGGER.warn("event {} is not authorized", bakuEvent);
-        }
+        permissionService.hasRight(movie, bakuEvent);
+        history.add(bakuEvent);
     }
 
     @VisibleForTesting
@@ -107,7 +106,7 @@ public class HistoryServiceImpl implements HistoryService {
         int fps = 0;
         Map<String, List<Path>> images = new LinkedHashMap<>();
         for (BakuEvent element : history) {
-            switch (com.bakuanimation.api.BakuAction.action(element.getAction())) {
+            switch (BakuAction.action(element.getAction())) {
                 case MOVIE_UPDATE_TITLE:
                     name = element.getValue().asText();
                     break;

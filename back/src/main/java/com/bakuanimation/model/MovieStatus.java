@@ -1,4 +1,4 @@
-package com.bakuanimation.api;
+package com.bakuanimation.model;
 
 import java.time.Instant;
 

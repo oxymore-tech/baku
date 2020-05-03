@@ -1,6 +1,6 @@
 package com.bakuanimation.service;
 
-import com.bakuanimation.api.Movie;
+import com.bakuanimation.model.Movie;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -13,9 +13,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @Disabled
 class MovieServiceImplTest {
@@ -28,7 +26,6 @@ class MovieServiceImplTest {
     @BeforeEach
     void setUp() {
         PermissionServiceImpl permissionService = mock(PermissionServiceImpl.class);
-        when(permissionService.hasRight(any(), any())).thenReturn(true);
         historyService = new HistoryServiceImpl(new PathService(Path.of("/home/simon/workspace-perso/data")), permissionService);
         tested = new MovieServiceImpl(historyService, new PathService(sharedTempDir));
     }
