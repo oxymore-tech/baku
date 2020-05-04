@@ -18,7 +18,7 @@
     </b-field>
 
     <div class="field">
-      <b-switch 
+      <b-switch
          :disabled="!isCapturing"
          :value="scaleY == -1"
          @input="toggleScaleY">
@@ -26,7 +26,7 @@
       </b-switch>
     </div>
     <div class="field">
-      <b-switch 
+      <b-switch
          :disabled="!isCapturing"
          :value="scaleX != 1"
          @input="toggleScaleX">
@@ -137,6 +137,13 @@ export default class CaptureToolboxComponent extends Vue {
     this.devices.push(new Device('smartphone', 'Smartphone'));
     this.selectedDeviceId = this.devices[0].id ?? undefined;
     this.selectDeviceAction(this.devices[0] ?? null);
+    if (this.selectedDevice && this.selectedDevice.id === 'smartphone') {
+      this.$buefy.modal.open({
+        parent: this,
+        component: SmartphoneSynchroPopupComponent,
+        hasModalCard: true,
+      });
+    }
   }
 
   public onCaptureDeviceChange() {
