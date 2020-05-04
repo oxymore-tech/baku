@@ -61,7 +61,7 @@ public final class PermissionServiceController {
                 .subscribeOn(Schedulers.io());
     }
 
-    @Get("/api/{projectId}/lock")
+    @Get("/api/{projectId}/lock/shots")
     public Single<List<String>> getShotLock(@PathVariable String projectId) {
         return Single.fromCallable(() -> permissionService.lockShots(projectId))
                 .subscribeOn(Schedulers.io());
