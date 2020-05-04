@@ -164,7 +164,7 @@ export default class CaptureToolboxComponent extends Vue {
   }
 
   @Watch("activeDevice")
-  onActiveDevice(device) {
+  onActiveDevice(device: Device) {
     if (device && device.id === "smartphone") {
       this.$buefy.modal.open({
         parent: this,
