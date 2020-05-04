@@ -26,25 +26,24 @@ public class HistoryController {
     }
 
     @Get(value = "/api/movie")
-    public Single<HttpResponse<String>> newProject() {
+    public Single<String> newProject() {
         return Single.fromCallable(() -> {
             String movieId = UUID.randomUUID().toString();
-            String adminId = permissionService.adminId(movieId);
-            return (HttpResponse<String>) HttpResponse.ok(movieId)
-                    .header("Admin-Id", adminId);
-        })
-                .subscribeOn(Schedulers.computation());
+            String adminId = permissionService.sign(movieId);
+            String fullMovieId = movieId + "-" + adminId;
+            return fullMovieId;
+        }).subscribeOn(Schedulers.computation());
     }
 
     @Post("/api/{projectId}/stack")
     public Single<HttpResponse<Void>> stack(@PathVariable String projectId, @Body byte[] stack) {
-        return historyService.addStack(projectId, stack)
+        return historyService.addStack(permissionService.getProjectId(projectId).getId(), stack)
                 .map(v -> HttpResponse.ok());
     }
 
     @Get("/api/{projectId}/history")
     public Single<byte[]> stack(@PathVariable String projectId) {
-        Path imagePath = pathService.getStackFile(projectId);
+        Path imagePath = pathService.getStackFile(permissionService.getProjectId(projectId).getId());
         return Single.fromCallable(() -> {
             if (!Files.exists(imagePath)) {
                 return "[]".getBytes();

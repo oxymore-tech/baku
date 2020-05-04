@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,8 +21,13 @@ class PermissionServiceImplTest {
     @Test
     void shouldEncryptAndValidate() throws Exception {
         String projectId = "5d204046-53a6-42c6-b4ef-9a94d5169c1f";
-        String adminId = tested.adminId(projectId);
+        String adminId = tested.sign(projectId);
         System.out.println(adminId);
-        assertThat(tested.validateAdminId(projectId, adminId)).isTrue();
+        assertThat(tested.verify(projectId, adminId)).isTrue();
+    }
+
+    @Test
+    void name() {
+        System.out.println(UUID.randomUUID());
     }
 }

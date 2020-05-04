@@ -1,24 +1,17 @@
 package com.bakuanimation.service;
 
 import com.bakuanimation.api.PermissionService;
-import com.bakuanimation.model.AuthorizationException;
-import com.bakuanimation.model.BakuEvent;
-import com.bakuanimation.model.ForbiddenOperationException;
-import com.bakuanimation.model.Movie;
+import com.bakuanimation.model.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.Key;
 import java.util.Base64;
 import java.util.List;
 
@@ -26,44 +19,40 @@ import java.util.List;
 public final class PermissionServiceImpl implements PermissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PermissionServiceImpl.class);
-    private static final String ENCRYPTION_ALGORITHM = "AES";
-    private static final byte[] SECRET = "my-secret-passwo".getBytes();
 
     private final PathService pathService;
-    private final Key secretKeySpec;
 
     public PermissionServiceImpl(PathService pathService) {
         this.pathService = pathService;
-        secretKeySpec = new SecretKeySpec(SECRET, ENCRYPTION_ALGORITHM);
     }
 
     @Override
-    public void lockMovie(String projectId, @Nullable String adminId) throws IOException {
-        authorizeOperation(projectId, adminId);
-        Path movieLockFile = pathService.getMovieLockFile(projectId);
+    public void lockMovie(Project project) throws IOException {
+        authorizeOperation(project);
+        Path movieLockFile = pathService.getMovieLockFile(project.getId());
         if (!Files.exists(movieLockFile)) {
             Files.createFile(movieLockFile);
         }
     }
 
     @Override
-    public void lockShot(String projectId, String shotId, @Nullable String adminId) throws IOException {
-        Path shotLockFile = pathService.getShotLockFile(projectId, shotId);
+    public void lockShot(Project project, String shotId) throws IOException {
+        Path shotLockFile = pathService.getShotLockFile(project.getId(), shotId);
         if (!Files.exists(shotLockFile)) {
             Files.createFile(shotLockFile);
         }
     }
 
     @Override
-    public void unlockMovie(String projectId, @Nullable String adminId) throws IOException {
-        authorizeOperation(projectId, adminId);
-        Files.deleteIfExists(pathService.getMovieLockFile(projectId));
+    public void unlockMovie(Project project) throws IOException {
+        authorizeOperation(project);
+        Files.deleteIfExists(pathService.getMovieLockFile(project.getId()));
     }
 
     @Override
-    public void unlockShot(String projectId, String shotId, @Nullable String adminId) throws IOException {
-        authorizeOperation(projectId, adminId);
-        Files.deleteIfExists(pathService.getShotLockFile(projectId, shotId));
+    public void unlockShot(Project project, String shotId) throws IOException {
+        authorizeOperation(project);
+        Files.deleteIfExists(pathService.getShotLockFile(project.getId(), shotId));
     }
 
     @Override
@@ -84,13 +73,23 @@ public final class PermissionServiceImpl implements PermissionService {
                 .collect(ImmutableList.toImmutableList());
     }
 
-    private void authorizeOperation(String projectId, @Nullable String adminId) {
-        if (adminId == null) {
+    private void authorizeOperation(Project project) {
+        if (project.getAdminId() == null) {
             throw new AuthorizationException("Must be admin for this operation");
         }
-        boolean validAdminId = validateAdminId(projectId, adminId);
+        boolean validAdminId = verify(project.getId(), project.getAdminId());
         if (!validAdminId) {
             throw new AuthorizationException("invalid adminId");
+        }
+    }
+
+    @Override
+    public Project getProjectId(String projectId) {
+        // UUID size is 32
+        if (projectId.length() <= 32) {
+            return new Project(projectId);
+        } else {
+            return new Project(projectId.substring(0, 32), projectId.substring(33));
         }
     }
 
@@ -109,30 +108,19 @@ public final class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public String adminId(String projectId) {
-        try {
-            Cipher c = Cipher.getInstance(ENCRYPTION_ALGORITHM);
-            c.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-            byte[] encVal = c.doFinal(projectId.getBytes());
-            return Base64.getEncoder().encodeToString(encVal);
-        } catch (Exception e) {
-            LOGGER.warn("Error while generating adminId", e);
-            throw new RuntimeException(e);
-        }
+    public String sign(String projectId) {
+        int value = projectId.hashCode();
+        byte[] bytes = {
+                (byte) (value >>> 24),
+                (byte) (value >>> 16),
+                (byte) (value >>> 8),
+                (byte) value};
+            return Base64.getEncoder().encodeToString(bytes);
     }
 
     @VisibleForTesting
-    boolean validateAdminId(String projectId, String adminId) {
-        try {
-            Cipher c = Cipher.getInstance(ENCRYPTION_ALGORITHM);
-            c.init(Cipher.DECRYPT_MODE, secretKeySpec);
-            byte[] decordedValue = Base64.getDecoder().decode(adminId);
-            byte[] decValue = c.doFinal(decordedValue);
-            return new String(decValue).equals(projectId);
-        } catch (Exception e) {
-            LOGGER.warn("Error while validating admin id", e);
-            return false;
-        }
+    boolean verify(String projectId, String adminId) {
+        return sign(projectId).equals(adminId);
     }
 
 }

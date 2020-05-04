@@ -6,7 +6,6 @@ import io.micronaut.http.annotation.*;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 @Controller
@@ -19,10 +18,9 @@ public final class PermissionServiceController {
     }
 
     @Post("/api/{projectId}/lock")
-    public Single<HttpResponse<Void>> createMovieLock(@PathVariable String projectId,
-                                                @Nullable @Header("Admin-Id") String adminId) {
+    public Single<HttpResponse<Void>> createMovieLock(@PathVariable String projectId) {
         return Single.fromCallable(() -> {
-            permissionService.lockMovie(projectId, adminId);
+            permissionService.lockMovie(permissionService.getProjectId(projectId));
             return true;
         }).subscribeOn(Schedulers.io())
                 .map(v -> HttpResponse.ok());
@@ -30,20 +28,18 @@ public final class PermissionServiceController {
 
     @Post("/api/{projectId}/{shotId}/lock")
     public Single<HttpResponse<Void>> createShotLock(@PathVariable String projectId,
-                                                @PathVariable String shotId,
-                                                @Nullable @Header("Admin-Id") String adminId) {
+                                                @PathVariable String shotId) {
         return Single.fromCallable(() -> {
-            permissionService.lockShot(projectId, shotId, adminId);
+            permissionService.lockShot(permissionService.getProjectId(projectId), shotId);
             return true;
         }).subscribeOn(Schedulers.io())
                 .map(v -> HttpResponse.ok());
     }
 
     @Delete("/api/{projectId}/lock")
-    public Single<HttpResponse<Void>> deleteMovieLock(@PathVariable String projectId,
-                                                @Nullable @Header("Admin-Id") String adminId) {
+    public Single<HttpResponse<Void>> deleteMovieLock(@PathVariable String projectId) {
         return Single.fromCallable(() -> {
-            permissionService.unlockMovie(projectId, adminId);
+            permissionService.unlockMovie(permissionService.getProjectId(projectId));
             return true;
         }).subscribeOn(Schedulers.io())
                 .map(v -> HttpResponse.ok());
@@ -51,10 +47,9 @@ public final class PermissionServiceController {
 
     @Delete("/api/{projectId}/{shotId}/lock")
     public Single<HttpResponse<Void>> deleteShotLock(@PathVariable String projectId,
-                                                @PathVariable String shotId,
-                                                @Nullable @Header("Admin-Id") String adminId) {
+                                                @PathVariable String shotId) {
         return Single.fromCallable(() -> {
-            permissionService.unlockShot(projectId, shotId, adminId);
+            permissionService.unlockShot(permissionService.getProjectId(projectId), shotId);
             return true;
         }).subscribeOn(Schedulers.io())
                 .map(v -> HttpResponse.ok());

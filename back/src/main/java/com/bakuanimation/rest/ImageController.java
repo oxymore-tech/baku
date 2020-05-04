@@ -1,5 +1,6 @@
 package com.bakuanimation.rest;
 
+import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.Movie;
 import com.bakuanimation.service.HistoryServiceImpl;
 import com.bakuanimation.service.ImageServiceImpl;
@@ -32,11 +33,14 @@ public class ImageController {
     private final HistoryServiceImpl historyService;
     private final ImageServiceImpl imageService;
     private final PathService pathService;
+    private final PermissionService permissionService;
 
-    public ImageController(HistoryServiceImpl historyService, ImageServiceImpl imageService, PathService pathService) {
+    public ImageController(HistoryServiceImpl historyService, ImageServiceImpl imageService,
+                           PathService pathService, PermissionService permissionService) {
         this.historyService = historyService;
         this.imageService = imageService;
         this.pathService = pathService;
+        this.permissionService = permissionService;
     }
 
     @Post(value = "/api/{projectId}/upload", consumes = MediaType.MULTIPART_FORM_DATA)
@@ -51,7 +55,7 @@ public class ImageController {
         return Single.fromPublisher(uploadPublisher)
                 .subscribeOn(Schedulers.io())
                 .map(upload -> {
-                    imageService.writeSmallerImages(projectId, new FileInputStream(tempFile), file.getFilename());
+                    imageService.writeSmallerImages(permissionService.getProjectId(projectId).getId(), new FileInputStream(tempFile), file.getFilename());
                     Files.delete(tempFile.toPath());
                     return file.getFilename();
                 });
@@ -62,7 +66,7 @@ public class ImageController {
     public HttpResponse<Object> getImage(@PathVariable String projectId,
                                          @PathVariable String quality,
                                          @PathVariable String imageName) {
-        var imagePath = pathService.getImageFile(projectId, quality, imageName);
+        var imagePath = pathService.getImageFile(permissionService.getProjectId(projectId).getId(), quality, imageName);
         if (Files.exists(imagePath)) {
             return HttpResponse.ok(new SystemFile(imagePath.toFile()).attach(imageName));
         } else {
@@ -72,7 +76,7 @@ public class ImageController {
 
     @Get(value = "/api/{projectId}/export.zip")
     public Single<HttpResponse<StreamedFile>> export(@PathVariable String projectId) {
-        return historyService.interpretHistory(projectId)
+        return historyService.interpretHistory(permissionService.getProjectId(projectId).getId())
                 .map(movie -> {
                     String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
                     return writeExportResponse(movie, movieName, null);
@@ -81,7 +85,7 @@ public class ImageController {
 
     @Get(value = "/api/{projectId}/{shotId}/export.zip")
     public Single<HttpResponse<StreamedFile>> exportShot(@PathVariable String projectId, @PathVariable String shotId) {
-        return historyService.interpretHistory(projectId)
+        return historyService.interpretHistory(permissionService.getProjectId(projectId).getId())
                 .map(movie -> {
                     int shotIndex = movie.getShots().indexOf(shotId);
                     if (shotIndex == -1) {
