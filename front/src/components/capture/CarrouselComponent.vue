@@ -15,6 +15,14 @@
       </div>
       <div
         class="toolbar-button"
+        @click="onCut()"
+        :class="{disabled : isFrameLiveView || isPlaying || !canEdit}"
+      >
+        <i class="icon-copy baku-button" />
+        <span>Couper</span>
+      </div>
+      <div
+        class="toolbar-button"
         @click="onPaste()"
         :class="{disabled: isFrameLiveView || !imagesToCopy.length || isPlaying || !canEdit}"
       >
@@ -237,7 +245,6 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async deleteFrame() {
-    console.log('coucou');
     if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
@@ -348,6 +355,11 @@ export default class CarrouselComponent extends Vue {
     }
   }
 
+  public async onCut() {
+    this.onCopy();
+    await this.deleteFrame();
+  }
+
   public async onPaste() {
     if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImagesToShot([
@@ -365,7 +377,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async onPasteAndReverse() {
-    if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
+    if (!this.isFrameLiveView && !this.isPlaying && this.imagesToCopy.length < 2 && this.canEdit) {
       const reverted = [...this.imagesToCopy].reverse();
       await asyncForEach(reverted, (imgref: string, index: number) => this.addImagesToShot([
         {
