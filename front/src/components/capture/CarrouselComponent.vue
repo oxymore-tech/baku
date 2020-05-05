@@ -150,7 +150,7 @@ export default class CarrouselComponent extends Vue {
   public activeImage!: number;
 
   @Prop()
-  public isFrameLiveView: boolean = false;
+  public isFrameLiveView: boolean;
 
   @Prop()
   public selectedImages!: ReadingSliderBoundaries;

@@ -53,8 +53,6 @@ export default class StoryboardPreviewComponent extends Vue {
     }
 
     public onDisplayShots() {
-      this.resetCapture();
-      this.resetRTC();
       this.$router.push({
         name: 'captureShots',
         params: {
