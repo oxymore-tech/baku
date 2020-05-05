@@ -132,7 +132,7 @@ export default class HomeView extends Vue {
 
   public async open(projectId: string) {
     await this.$router.push({
-      name: 'movieHome',
+      name: 'captureShots',
       params: { projectId },
     });
   }
