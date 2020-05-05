@@ -1,7 +1,7 @@
 plugins {
     id "net.ltgt.apt-eclipse" version "0.21"
     id "com.github.johnrengelman.shadow" version "5.2.0"
-    id "com.gorylenko.gradle-git-properties" version "2.0.0"
+    id "com.gorylenko.gradle-git-properties" version "2.2.2"
     id "application"
 }
 
@@ -60,6 +60,13 @@ dependencies {
     testImplementation "org.assertj:assertj-core"
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+}
+
+gitProperties {
+    // using any tags (not limited to annotated tags) for "git.commit.id.describe" property
+    // see http://ajoberstar.org/grgit/grgit-describe.html for more info about the describe method and available parameters
+    // 'it' is an instance of org.ajoberstar.grgit.Grgit
+    customProperty 'git.commit.describe', { it.describe(tags:true) } 
 }
 
 test.classpath += configurations.developmentOnly
