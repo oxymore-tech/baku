@@ -88,6 +88,21 @@
 .icon-movie-start-01:before {
   content: "\e914";
 }
+.icon-youtube:before {
+  content: "\e915";
+}
+.icon-instagram:before {
+  content: "\e916";
+}
+.icon-twitter:before {
+  content: "\e917";
+}
+.icon-mail:before {
+  content: "\e918";
+}
+.icon-film:before {
+  content: "\e919";
+}
 .icon-oignon .path1:before {
   content: "\e915";
   color: rgb(0, 0, 0);
