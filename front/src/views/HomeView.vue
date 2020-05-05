@@ -21,32 +21,27 @@
         </div>
         <div>
           <button class="create-button" @click="onCreateProject">Créer un film</button>
+          <div class="create-button-top-right"></div>
         </div>
-      </div>
-    </div>
-
-    <div class="bottom-panel panel">
-      <div class="title">
-        <span>{{ bottomPanelTitle() }}</span>
-      </div>
-
-      <div class="movie-gallery">
-        <div
-          v-for="project in seenProjects"
-          :key="project.id"
-          class="movie-card"
-          @click="open(project.id)"
-        >
-          <img :src="project.posterUrl" />
-          <div class="card-footer">
-            <p>{{ project.title }}</p>
+        <div>
+          <div class="option-home" @click="onClickMyLibrary">
+              <i class="icon-film baku-button"/>
+              <span>Ma librairie</span>
+          </div>
+          <div class="option-home">
+            <a href="https://www.youtube.com">
+              <i class="icon-youtube baku-button"/>
+              <span>Tutoriels et films</span>
+            </a>
           </div>
         </div>
+        <div class="option-home">
+          <a href="https://www.twitter.com"><i class="icon-twitter baku-button"/></a>
+          <a href="https://www.instagram.com"><i class="icon-instagram baku-button"/></a>
+          <a href="mailto:hello@bakuanimation.com"><i class="icon-mail baku-button"/></a>
+        </div>
       </div>
-
-
     </div>
-
   </div>
 </template>
 
@@ -114,6 +109,23 @@ export default class HomeView extends Vue {
       });
     }
   }
+
+  public async onClickMyLibrary() {
+    const projectId = uuid.v4();
+    await this.loadProjectAction(projectId);
+    const shotId = await this.createShotAction('Nouveau plan');
+    await this.changeFps(12);
+    await this.updateTitle(this.getPersonalisedProjectTitle);
+    await this.$router.push({
+      name: 'captureShot',
+      params: {
+        projectId,
+        shotId,
+      },
+    });
+  }
+
+
 
   public async onCreateProject() {
     const projectId = await createProject();
