@@ -107,7 +107,7 @@
               @click="moveToImage($event,index + 1)"
               class="carrousel-thumb active waiting-capture"
             >
-             'En attente de capture' : ''
+             En attente de capture
             </div>
           </div>
         </template>
