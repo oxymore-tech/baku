@@ -5,10 +5,6 @@
       <b-icon icon="menu-down"></b-icon>
     </a>
     <b-dropdown-item class="box-container">
-      <div class="settings-header">
-        <h4>Prise de vue</h4>
-      </div>
-
       <b-field>
         <b-select
           icon="video"
