@@ -20,7 +20,9 @@ public interface PermissionService {
 
     List<String> lockShots(String projectId) throws IOException;
 
-    Project getProjectId(String projectId);
+    String getNewProjectId();
+
+    Project getProject(String projectId);
 
     void hasRight(Movie movie, BakuEvent event);
 

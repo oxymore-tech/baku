@@ -34,17 +34,17 @@ public final class MovieController {
 
     @Get(value = "/api/{projectId}/video/status")
     public Single<MovieStatus> status(@PathVariable String projectId) {
-        return movieService.status(permissionService.getProjectId(projectId).getId());
+        return movieService.status(permissionService.getProject(projectId).getId());
     }
 
     @Post(value = "/api/{projectId}/video")
     public Single<VideoState> generateMovie(@PathVariable String projectId) {
-        return movieService.generateMovie(permissionService.getProjectId(projectId).getId());
+        return movieService.generateMovie(permissionService.getProject(projectId).getId());
     }
 
     @Get(value = "/api/{projectId}/video")
     public Single<HttpResponse<Object>> download(@PathVariable String projectId) {
-        String id = permissionService.getProjectId(projectId).getId();
+        String id = permissionService.getProject(projectId).getId();
         var moviePath = pathService.getMovieFile(id);
         if (Files.exists(moviePath)) {
             return historyService.interpretHistory(id)

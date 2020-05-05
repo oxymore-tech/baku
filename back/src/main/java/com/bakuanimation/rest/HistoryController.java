@@ -10,7 +10,6 @@ import io.reactivex.schedulers.Schedulers;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 
 @Controller
 public class HistoryController {
@@ -27,23 +26,19 @@ public class HistoryController {
 
     @Get(value = "/api/movie")
     public Single<String> newProject() {
-        return Single.fromCallable(() -> {
-            String movieId = UUID.randomUUID().toString();
-            String adminId = permissionService.sign(movieId);
-            String fullMovieId = movieId + "-" + adminId;
-            return fullMovieId;
-        }).subscribeOn(Schedulers.computation());
+        return Single.fromCallable(permissionService::getNewProjectId)
+                .subscribeOn(Schedulers.computation());
     }
 
     @Post("/api/{projectId}/stack")
     public Single<HttpResponse<Void>> stack(@PathVariable String projectId, @Body byte[] stack) {
-        return historyService.addStack(permissionService.getProjectId(projectId).getId(), stack)
+        return historyService.addStack(permissionService.getProject(projectId).getId(), stack)
                 .map(v -> HttpResponse.ok());
     }
 
     @Get("/api/{projectId}/history")
     public Single<byte[]> stack(@PathVariable String projectId) {
-        Path imagePath = pathService.getStackFile(permissionService.getProjectId(projectId).getId());
+        Path imagePath = pathService.getStackFile(permissionService.getProject(projectId).getId());
         return Single.fromCallable(() -> {
             if (!Files.exists(imagePath)) {
                 return "[]".getBytes();

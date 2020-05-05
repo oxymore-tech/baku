@@ -55,7 +55,7 @@ public class ImageController {
         return Single.fromPublisher(uploadPublisher)
                 .subscribeOn(Schedulers.io())
                 .map(upload -> {
-                    imageService.writeSmallerImages(permissionService.getProjectId(projectId).getId(), new FileInputStream(tempFile), file.getFilename());
+                    imageService.writeSmallerImages(permissionService.getProject(projectId).getId(), new FileInputStream(tempFile), file.getFilename());
                     Files.delete(tempFile.toPath());
                     return file.getFilename();
                 });
@@ -66,7 +66,7 @@ public class ImageController {
     public HttpResponse<Object> getImage(@PathVariable String projectId,
                                          @PathVariable String quality,
                                          @PathVariable String imageName) {
-        var imagePath = pathService.getImageFile(permissionService.getProjectId(projectId).getId(), quality, imageName);
+        var imagePath = pathService.getImageFile(permissionService.getProject(projectId).getId(), quality, imageName);
         if (Files.exists(imagePath)) {
             return HttpResponse.ok(new SystemFile(imagePath.toFile()).attach(imageName));
         } else {
@@ -76,7 +76,7 @@ public class ImageController {
 
     @Get(value = "/api/{projectId}/export.zip")
     public Single<HttpResponse<StreamedFile>> export(@PathVariable String projectId) {
-        return historyService.interpretHistory(permissionService.getProjectId(projectId).getId())
+        return historyService.interpretHistory(permissionService.getProject(projectId).getId())
                 .map(movie -> {
                     String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
                     return writeExportResponse(movie, movieName, null);
@@ -85,7 +85,7 @@ public class ImageController {
 
     @Get(value = "/api/{projectId}/{shotId}/export.zip")
     public Single<HttpResponse<StreamedFile>> exportShot(@PathVariable String projectId, @PathVariable String shotId) {
-        return historyService.interpretHistory(permissionService.getProjectId(projectId).getId())
+        return historyService.interpretHistory(permissionService.getProject(projectId).getId())
                 .map(movie -> {
                     int shotIndex = movie.getShots().indexOf(shotId);
                     if (shotIndex == -1) {

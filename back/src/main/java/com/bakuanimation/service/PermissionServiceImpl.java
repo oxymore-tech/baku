@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 @Singleton
 public final class PermissionServiceImpl implements PermissionService {
@@ -84,12 +85,19 @@ public final class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public Project getProjectId(String projectId) {
-        // UUID size is 32
-        if (projectId.length() <= 32) {
+    public String getNewProjectId() {
+        String movieId = UUID.randomUUID().toString();
+        String adminId = sign(movieId);
+        return movieId + "-" + adminId;
+    }
+
+    @Override
+    public Project getProject(String projectId) {
+        // UUID size is 36
+        if (projectId.length() <= 36) {
             return new Project(projectId);
         } else {
-            return new Project(projectId.substring(0, 32), projectId.substring(33));
+            return new Project(projectId.substring(0, 36), projectId.substring(37));
         }
     }
 

@@ -20,7 +20,7 @@ public final class PermissionServiceController {
     @Post("/api/{projectId}/lock")
     public Single<HttpResponse<Void>> createMovieLock(@PathVariable String projectId) {
         return Single.fromCallable(() -> {
-            permissionService.lockMovie(permissionService.getProjectId(projectId));
+            permissionService.lockMovie(permissionService.getProject(projectId));
             return true;
         }).subscribeOn(Schedulers.io())
                 .map(v -> HttpResponse.ok());
@@ -30,7 +30,7 @@ public final class PermissionServiceController {
     public Single<HttpResponse<Void>> createShotLock(@PathVariable String projectId,
                                                 @PathVariable String shotId) {
         return Single.fromCallable(() -> {
-            permissionService.lockShot(permissionService.getProjectId(projectId), shotId);
+            permissionService.lockShot(permissionService.getProject(projectId), shotId);
             return true;
         }).subscribeOn(Schedulers.io())
                 .map(v -> HttpResponse.ok());
@@ -39,7 +39,7 @@ public final class PermissionServiceController {
     @Delete("/api/{projectId}/lock")
     public Single<HttpResponse<Void>> deleteMovieLock(@PathVariable String projectId) {
         return Single.fromCallable(() -> {
-            permissionService.unlockMovie(permissionService.getProjectId(projectId));
+            permissionService.unlockMovie(permissionService.getProject(projectId));
             return true;
         }).subscribeOn(Schedulers.io())
                 .map(v -> HttpResponse.ok());
@@ -49,7 +49,7 @@ public final class PermissionServiceController {
     public Single<HttpResponse<Void>> deleteShotLock(@PathVariable String projectId,
                                                 @PathVariable String shotId) {
         return Single.fromCallable(() -> {
-            permissionService.unlockShot(permissionService.getProjectId(projectId), shotId);
+            permissionService.unlockShot(permissionService.getProject(projectId), shotId);
             return true;
         }).subscribeOn(Schedulers.io())
                 .map(v -> HttpResponse.ok());
