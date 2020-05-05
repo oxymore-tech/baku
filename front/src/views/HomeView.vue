@@ -53,7 +53,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import * as uuid from 'uuid';
+import { createProject } from '../api';
 
 const ProjectNS = namespace('project');
 const UserNS = namespace('user');
@@ -116,7 +116,7 @@ export default class HomeView extends Vue {
   }
 
   public async onCreateProject() {
-    const projectId = uuid.v4();
+    const projectId = await createProject();
     await this.loadProjectAction(projectId);
     const shotId = await this.createShotAction('Nouveau plan');
     await this.changeFps(12);

@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import {
-  Component, Vue, Prop, Watch,
+  Component, Vue, Watch,
 } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneSynchroPopupComponent.vue';
@@ -147,7 +147,7 @@ export default class CaptureToolboxComponent extends Vue {
   }
 
   @Watch('isRTCConnected')
-  onRTCConnectedChange(status) {
+  onRTCConnectedChange(status: boolean) {
     if (!status) {
       this.selectedDevice = null;
       this.selectedDeviceId = null;

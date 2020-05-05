@@ -53,6 +53,7 @@
             :activeShot="getActiveShot.id"
             :images="getActiveShot.images"
             :activeImage="currentDisplayedFrame"
+            :canEdit="canEdit"
             @activeImageChange="onActiveFrameChange"
             :activeDevice="activeDevice"
             v-model="selectedImages"
@@ -99,7 +100,7 @@
             />
             <CaptureButtonComponent
               class="baku-button toolbar-button toolbar-button-big"
-              v-if="activeDevice"
+              v-if="activeDevice && canEdit"
               :device="activeDevice"
               :projectId="id"
               :canCapture="currentDisplayedFrame === getActiveShotImgCount"
@@ -140,7 +141,7 @@
                 id="synchronization"
                 src="@/assets/baku-balls-spinner.svg"
               />
-              <CaptureToolboxComponent v-if="getActiveShot" :isCapturing="IsFrameLiveView" />
+              <CaptureToolboxComponent v-if="getActiveShot && canEdit" :isCapturing="IsFrameLiveView" />
             </div>
           </div>
         </div>
@@ -214,6 +215,9 @@ export default class CaptureView extends AbstractProjectView {
 
   @ProjectNS.Getter
   public getActiveShotImgCount!: number;
+
+  @ProjectNS.Getter
+  public canEdit!: number;
 
   // Carroussel Frame
   public currentCarrousselFrame: number = 0;

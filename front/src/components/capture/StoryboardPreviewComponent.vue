@@ -18,8 +18,6 @@ import { Spinner } from '@/utils/spinner.class';
 import { ImageCacheService } from '@/utils/imageCache.service';
 
 const ProjectNS = namespace('project');
-const CaptureNS = namespace('capture');
-const WebRTCNS = namespace('webrtc');
 
   @Component
 export default class StoryboardPreviewComponent extends Vue {
@@ -34,12 +32,6 @@ export default class StoryboardPreviewComponent extends Vue {
 
     @ProjectNS.Getter
     public getActiveShotImgCount!: Shot;
-
-    @CaptureNS.Action('resetState')
-    private resetCapture!: () => Promise<void>;
-
-    @WebRTCNS.Action('resetState')
-    private resetRTC!: () => Promise<void>;
 
     get shotIndex() {
       if (this.shots) {

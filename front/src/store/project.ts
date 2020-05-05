@@ -8,6 +8,7 @@ import uuid from 'uuid';
 interface ProjectGetters {
   movie: Movie;
   getActiveShot: Shot;
+  canEdit: boolean;
 }
 
 const makeEvent = (context: BakuActionContext<ProjectState>, action: BakuAction, value: any) => {
@@ -20,7 +21,7 @@ const makeEvent = (context: BakuActionContext<ProjectState>, action: BakuAction,
 }
 
 const loadEvents = (
-  context: BakuActionContext<ProjectState>, 
+  context: BakuActionContext<ProjectState>,
   events: BakuEvent[]): void => {
 
     console.log(events)
@@ -124,6 +125,11 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     synchronizing: (state): boolean =>
     state.pendingActions !== 0,
+
+    canEdit: (state): boolean =>
+    (state.id).length > 36,
+
+    getNoEditId: (state, getters: ProjectGetters): string => getters.canEdit ? state.id.slice(0,36) : state.id
   },
   modules: {},
 };

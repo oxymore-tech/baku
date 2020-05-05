@@ -114,6 +114,17 @@ export default class CaptureButtonComponent extends Vue {
     }
   }
 
+  @Watch('canCapture')
+  onCanCaptureChange(canCapture: boolean) {
+    if (!this.device.isSmartphone()) {
+      if (canCapture) {
+        this.setupWebCam();
+      } else {
+        this.$store.commit('capture/detachMediaStream');
+      }
+    }
+  }
+
   private setChannelEvents(channel: RTCDataChannel) {
     // eslint-disable-next-line no-param-reassign
     channel.onmessage = (event) => {

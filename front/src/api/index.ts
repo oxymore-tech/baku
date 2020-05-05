@@ -3,6 +3,12 @@ import router from '@/router';
 import { ImageRef, UploadedImage } from '@/utils/uploadedImage.class';
 import { BakuEvent, VideoStatus } from '@/utils/types';
 
+
+export function createProject(): Promise<string> {
+  const url = router.resolve({name: "movie"}).href;
+  return axios.get(url).then((response) => response.data);
+}
+
 export function getHistory(projectId: string): Promise<BakuEvent[]> {
   const url = router.resolve({name: "history", params: {"projectId": projectId}}).href;
   return axios.get(url).then((response) => response.data);

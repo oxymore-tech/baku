@@ -8,7 +8,7 @@
       <div
         class="toolbar-button"
         @click="onCopy()"
-        :class="{disabled : isFrameLiveView || isPlaying}"
+        :class="{disabled : isFrameLiveView || isPlaying || !canEdit}"
       >
         <i class="icon-copy baku-button" />
         <span>Copier</span>
@@ -16,7 +16,7 @@
       <div
         class="toolbar-button"
         @click="onPaste()"
-        :class="{disabled: isFrameLiveView || !imagesToCopy.length || isPlaying}"
+        :class="{disabled: isFrameLiveView || !imagesToCopy.length || isPlaying || !canEdit}"
       >
         <i class="icon-paste baku-button" />
         <span>Coller</span>
@@ -24,7 +24,7 @@
       <div
         class="toolbar-button"
         @click="onPasteAndReverse()"
-        :class="{disabled: isFrameLiveView || imagesToCopy.length < 2 || isPlaying}"
+        :class="{disabled: isFrameLiveView || imagesToCopy.length < 2 || isPlaying || !canEdit}"
       >
         <i class="icon-reverse baku-button" />
         <span>Coller & Inverser</span>
@@ -32,7 +32,7 @@
       <div
         class="toolbar-button"
         @click="deleteFrame()"
-        :class="{disabled: isFrameLiveView || isPlaying}"
+        :class="{disabled: isFrameLiveView || isPlaying || !canEdit}"
       >
         <i class="icon-trash-alt baku-button" />
         <span>Supprimer</span>
@@ -78,22 +78,29 @@
         </div>
       </template>
       <div class="image-container active active-capure" style="position:relative" v-else>
-        <div class="carrousel-thumb active">En attente de capture</div>
+        <div class="carrousel-thumb active" :v-if="canEdit">En attente de capture</div>
       </div>
 
       <!-- RIGHT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedRightCarrousel">
         <template v-if="image !== null">
           <div :key="'right'+index" class="image-container">
-            <span class="framenumber-indicator">{{ activeImage + index + 2 }}</span>
-            <img v-if="image !== 'liveview'"
+            <span v-if="image !== 'liveview' || canEdit" class="framenumber-indicator">{{ activeImage + index + 2 }}</span>
+            <img
+              v-if="image !== 'liveview'"
               class="carrousel-thumb"
               :alt="image"
               :class="{active : selectedImagesForReal.includes(activeImage + index +1)}"
               :src="ImageCacheService.getThumbnail(image.id)"
               @click="moveToImage($event,index + 1)"
             />
-            <div v-else @click="moveToImage($event,index + 1)" class="carrousel-thumb active waiting-capture">En attente de capture</div>
+            <div
+              v-else-if="canEdit"
+              @click="moveToImage($event,index + 1)"
+              class="carrousel-thumb active waiting-capture"
+            >
+             'En attente de capture' : ''
+            </div>
           </div>
         </template>
         <template v-if="image === null">
@@ -150,7 +157,7 @@ export default class CarrouselComponent extends Vue {
   public activeImage!: number;
 
   @Prop()
-  public isFrameLiveView: boolean;
+  public isFrameLiveView!: boolean;
 
   @Prop()
   public selectedImages!: ReadingSliderBoundaries;
@@ -164,8 +171,11 @@ export default class CarrouselComponent extends Vue {
   @ProjectNS.Action('addImagesToShot')
   protected addImagesToShot!: ({}) => Promise<void>;
 
-  @ProjectNS.Action('removeImageFromShot')
-  protected removeImageFromShot!: ({}) => Promise<void>;
+  @ProjectNS.Action('removeImagesFromShot')
+  protected removeImagesFromShot!: ({}) => Promise<void>;
+
+  @ProjectNS.Getter
+  protected canEdit!: boolean;
 
   protected selectedImagesForReal: number[] = [];
 
@@ -227,14 +237,15 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async deleteFrame() {
-    if (!this.isFrameLiveView && !this.isPlaying) {
+    console.log('coucou');
+    if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
       imagesToDelete.sort((a: any, b: any) => b - a);
-      await asyncForEach(imagesToDelete, (imgId: number) => this.removeImageFromShot({
+      await asyncForEach(imagesToDelete, (imgId: number) => this.removeImagesFromShot([{
         shotId: this.activeShot,
         imageIndex: imgId,
-      }));
+      }]));
       this.selectedImagesForReal = [];
     }
   }
@@ -258,8 +269,11 @@ export default class CarrouselComponent extends Vue {
     const count = 5;
     const sliceIndex = this.activeImage + 1;
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, count);
-    if (rightImagesAvaible.length < count && this.activeImage !== this.images.length) {
-      rightImagesAvaible.push('liveview' as unknown as ImageRef);
+    if (
+      rightImagesAvaible.length < count
+      && this.activeImage !== this.images.length
+    ) {
+      rightImagesAvaible.push(('liveview' as unknown) as ImageRef);
     }
     return rightImagesAvaible.concat(
       new Array(count - rightImagesAvaible.length).fill(null),
@@ -324,7 +338,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public onCopy() {
-    if (!this.isFrameLiveView && !this.isPlaying) {
+    if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       const tmpImgsToCopy = this.selectedImagesForReal;
       tmpImgsToCopy.push(this.activeImage);
       tmpImgsToCopy.sort((a: any, b: any) => a - b);
@@ -335,7 +349,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async onPaste() {
-    if (!this.isFrameLiveView && !this.isPlaying) {
+    if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImagesToShot([
         {
           shotId: this.activeShot,
@@ -351,7 +365,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public async onPasteAndReverse() {
-    if (!this.isFrameLiveView && !this.isPlaying) {
+    if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       const reverted = [...this.imagesToCopy].reverse();
       await asyncForEach(reverted, (imgref: string, index: number) => this.addImagesToShot([
         {

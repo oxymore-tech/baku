@@ -88,6 +88,10 @@ const routes = [
         name: 'exportShot',
         path: ':projectId/:shotId/export.zip',
       },
+      {
+        name: 'movie',
+        path: 'movie',
+      }
     ]
   }
 ];
