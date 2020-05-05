@@ -120,21 +120,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import * as _ from "lodash";
-import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
-import { Device } from "@/utils/device.class";
-import { ImageRef } from "@/utils/uploadedImage.class";
-import { KeyCodes, ReadingSliderBoundaries } from "@/utils/movie.service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import * as _ from 'lodash';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+import { Device } from '@/utils/device.class';
+import { ImageRef } from '@/utils/uploadedImage.class';
+import { KeyCodes, ReadingSliderBoundaries } from '@/utils/movie.service';
 
-const CaptureNS = namespace("capture");
-const ProjectNS = namespace("project");
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
 
 @Component({
   components: {
-    CaptureButtonComponent
-  }
+    CaptureButtonComponent,
+  },
 })
 export default class CarrouselComponent extends Vue {
   @Prop()
@@ -161,10 +161,10 @@ export default class CarrouselComponent extends Vue {
   @CaptureNS.State
   public activeDevice!: Device;
 
-  @ProjectNS.Action("addImagesToShot")
+  @ProjectNS.Action('addImagesToShot')
   protected addImagesToShot!: ({}) => Promise<void>;
 
-  @ProjectNS.Action("removeImageFromShot")
+  @ProjectNS.Action('removeImageFromShot')
   protected removeImageFromShot!: ({}) => Promise<void>;
 
   protected selectedImagesForReal: number[] = [];
@@ -172,24 +172,24 @@ export default class CarrouselComponent extends Vue {
   private imagesToCopy: string[] = [];
 
   mounted() {
-    window.addEventListener("keydown", (e: KeyboardEvent) => {
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
       switch (e.keyCode) {
         case KeyCodes.HOME:
         case KeyCodes.PAGE_UP:
-          this.$emit("moveHome", e);
+          this.$emit('moveHome', e);
           break;
         case KeyCodes.END:
         case KeyCodes.PAGE_DOWN:
-          this.$emit("moveEnd", e);
+          this.$emit('moveEnd', e);
           break;
         case KeyCodes.LEFT_ARROW:
-          this.$emit("moveFrame", -1);
+          this.$emit('moveFrame', -1);
           break;
         case KeyCodes.RIGHT_ARROW:
-          this.$emit("moveFrame", 1);
+          this.$emit('moveFrame', 1);
           break;
         case KeyCodes.SPACE:
-          this.$emit("togglePlay", e);
+          this.$emit('togglePlay', e);
           break;
         case KeyCodes.DELETE:
           this.deleteFrame();
@@ -208,11 +208,11 @@ export default class CarrouselComponent extends Vue {
           break;
       }
     });
-    window.addEventListener("keyup", (e: KeyboardEvent) => {
+    window.addEventListener('keyup', (e: KeyboardEvent) => {
       switch (e.keyCode) {
         case KeyCodes.LEFT_ARROW:
         case KeyCodes.RIGHT_ARROW:
-          this.$emit("stopMovingFrame", e);
+          this.$emit('stopMovingFrame', e);
           break;
         default:
           break;
@@ -221,7 +221,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public imageReady(imageId: string) {
-    if (this.images.find(i => i.id === imageId)) {
+    if (this.images.find((i) => i.id === imageId)) {
       this.$forceUpdate();
     }
   }
@@ -231,12 +231,10 @@ export default class CarrouselComponent extends Vue {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.push(this.activeImage);
       imagesToDelete.sort((a: any, b: any) => b - a);
-      await asyncForEach(imagesToDelete, (imgId: number) =>
-        this.removeImageFromShot({
-          shotId: this.activeShot,
-          imageIndex: imgId
-        })
-      );
+      await asyncForEach(imagesToDelete, (imgId: number) => this.removeImageFromShot({
+        shotId: this.activeShot,
+        imageIndex: imgId,
+      }));
       this.selectedImagesForReal = [];
     }
   }
@@ -261,10 +259,10 @@ export default class CarrouselComponent extends Vue {
     const sliceIndex = this.activeImage + 1;
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, count);
     if (rightImagesAvaible.length < count && this.activeImage !== this.images.length) {
-      rightImagesAvaible.push("liveview" as unknown as ImageRef);
+      rightImagesAvaible.push('liveview' as unknown as ImageRef);
     }
     return rightImagesAvaible.concat(
-      new Array(count - rightImagesAvaible.length).fill(null)
+      new Array(count - rightImagesAvaible.length).fill(null),
     );
   }
 
@@ -275,10 +273,10 @@ export default class CarrouselComponent extends Vue {
 
   public isInSelection(index: number, position: string) {
     let cindex = index;
-    if (position === "right") {
+    if (position === 'right') {
       cindex = this.activeImage + index + 1;
     }
-    if (position === "left") {
+    if (position === 'left') {
       const leftSelectionSize = 5;
       cindex = this.activeImage - (leftSelectionSize - index);
     }
@@ -296,7 +294,7 @@ export default class CarrouselComponent extends Vue {
         ) {
           this.selectedImagesForReal.splice(
             this.selectedImagesForReal.indexOf(this.activeImage + indexToMove),
-            1
+            1,
           );
         } else {
           this.selectedImagesForReal.push(this.activeImage + indexToMove);
@@ -307,20 +305,20 @@ export default class CarrouselComponent extends Vue {
         if (indexToMove > 0) {
           this.selectedImagesForReal = _.uniq(
             this.selectedImagesForReal.concat(
-              _.range(this.activeImage + 1, this.activeImage + indexToMove + 1)
-            )
+              _.range(this.activeImage + 1, this.activeImage + indexToMove + 1),
+            ),
           );
         } else {
           this.selectedImagesForReal = _.uniq(
             this.selectedImagesForReal.concat(
-              _.range(this.activeImage + indexToMove, this.activeImage)
-            )
+              _.range(this.activeImage + indexToMove, this.activeImage),
+            ),
           );
         }
       }
     }
     if (!e.shiftKey && !e.ctrlKey) {
-      this.$emit("activeImageChange", this.activeImage + indexToMove);
+      this.$emit('activeImageChange', this.activeImage + indexToMove);
       this.selectedImagesForReal = [];
     }
   }
@@ -331,25 +329,23 @@ export default class CarrouselComponent extends Vue {
       tmpImgsToCopy.push(this.activeImage);
       tmpImgsToCopy.sort((a: any, b: any) => a - b);
       this.imagesToCopy = tmpImgsToCopy.map(
-        index => this.images[index].id as string
+        (index) => this.images[index].id as string,
       );
     }
   }
 
   public async onPaste() {
     if (!this.isFrameLiveView && !this.isPlaying) {
-      await asyncForEach(this.imagesToCopy, (imgref: string, index: number) =>
-        this.addImagesToShot([
-          {
-            shotId: this.activeShot,
-            imageIndex: this.activeImage + 1 + index,
-            image: imgref
-          }
-        ])
-      );
+      await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImagesToShot([
+        {
+          shotId: this.activeShot,
+          imageIndex: this.activeImage + 1 + index,
+          image: imgref,
+        },
+      ]));
       this.selectedImagesForReal = _.range(
         this.activeImage + 1,
-        this.activeImage + 1 + this.imagesToCopy.length
+        this.activeImage + 1 + this.imagesToCopy.length,
       );
     }
   }
@@ -357,18 +353,16 @@ export default class CarrouselComponent extends Vue {
   public async onPasteAndReverse() {
     if (!this.isFrameLiveView && !this.isPlaying) {
       const reverted = [...this.imagesToCopy].reverse();
-      await asyncForEach(reverted, (imgref: string, index: number) =>
-        this.addImagesToShot([
-          {
-            shotId: this.activeShot,
-            imageIndex: this.activeImage + 1 + index,
-            image: imgref
-          }
-        ])
-      );
+      await asyncForEach(reverted, (imgref: string, index: number) => this.addImagesToShot([
+        {
+          shotId: this.activeShot,
+          imageIndex: this.activeImage + 1 + index,
+          image: imgref,
+        },
+      ]));
       this.selectedImagesForReal = _.range(
         this.activeImage + 1,
-        this.activeImage + 1 + this.imagesToCopy.length
+        this.activeImage + 1 + this.imagesToCopy.length,
       );
     }
   }

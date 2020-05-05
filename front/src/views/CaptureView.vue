@@ -64,8 +64,6 @@
               <span>{{ nbMins(this.currentDisplayedFrame) }}</span>
               <span class="clock-small">:</span>
               <span>{{ nbSecs(this.currentDisplayedFrame) }}</span>
-              <span class="clock-small">:</span>
-              <span class="clock-small">{{ frameNb(this.currentDisplayedFrame) }}</span>
             </div>
             <i
               class="toolbar-button icon-step-backward baku-button"
@@ -142,13 +140,11 @@
                 id="synchronization"
                 src="@/assets/baku-balls-spinner.svg"
               />
+              <CaptureToolboxComponent v-if="getActiveShot" :isCapturing="IsFrameLiveView" />
             </div>
           </div>
         </div>
-        <CaptureToolboxComponent 
-          v-if="getActiveShot" 
-          :isCapturing="IsFrameLiveView"
-          />
+        <div>L'historique sera ici</div>
       </div>
 
       <CarrouselComponent

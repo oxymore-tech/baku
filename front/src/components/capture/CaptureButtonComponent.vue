@@ -104,12 +104,12 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   @Watch('dataChannel')
-  public onDataChannelChanged() {
-    if (this.dataChannel) {
+  public onDataChannelChanged(dataChannel: RTCDataChannel) {
+    if (dataChannel !== null) {
       this.mediaOk = true;
       this.setChannelEvents(this.dataChannel);
     }
-    if (this.device.isSmartphone()) {
+    if (this.device.isSmartphone() && dataChannel !== null) {
       this.setupSmarphone();
     }
   }
