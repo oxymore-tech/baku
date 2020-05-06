@@ -8,23 +8,13 @@
       <i @click="$emit('close')" class="icon-close baku-button"></i>
     </header>
     <section class="modal-card-body">
-      <span v-if="canEdit">Votre film est automatiquement installé à l'adresse suivante :</span><br>
+      <span>Votre film est automatiquement installé à l'adresse suivante :</span><br>
       <div class="link-container">
         <a :href="getLink()">{{getLink()}}</a>
         <i class="baku-button"
            v-bind:class="{ 'icon-copy': !copied, 'icon-check': copied }"
            v-bind:title="copied ? 'Lien copié' : 'Copier dans le presse-papier'"
-           @click="copyLink(getLink)">
-        </i>
-      </div>
-
-      <span>Lien de partage :</span><br>
-      <div class="link-container">
-        <a :href="getNoEditLink()">{{getNoEditLink()}}</a>
-        <i class="baku-button"
-           v-bind:class="{ 'icon-copy': !copied, 'icon-check': copied }"
-           v-bind:title="copied ? 'Lien copié' : 'Copier dans le presse-papier'"
-           @click="copyLink(getNoEditLink)">
+           @click="copyLink()">
         </i>
       </div>
 
@@ -97,12 +87,6 @@ export default class ProjectSettingsPopup extends Vue {
 
     @ProjectNS.Getter
     public movie!: Movie;
-
-    @ProjectNS.Getter
-    public canEdit!: Movie;
-
-    @ProjectNS.Getter
-    public getNoEditId!: string;
 
     public url = window.location.origin;
 
@@ -186,19 +170,9 @@ export default class ProjectSettingsPopup extends Vue {
       return this.url + path;
     }
 
-    getNoEditLink(): string {
-      const path = this.$router.resolve({
-        name: 'movieHome',
-        params: {
-          projectId: this.getNoEditId,
-        },
-      }).href;
-      return this.url + path;
-    }
-
-    copyLink(linkFn: Function): void {
+    copyLink(): void {
       const input = document.createElement('input');
-      input.value = linkFn();
+      input.value = this.getLink();
       document.body.appendChild(input);
       input.select();
       input.setSelectionRange(0, 99999);
