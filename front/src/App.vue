@@ -46,7 +46,7 @@
             </b-dropdown-item>
         </b-dropdown>
 
-        <span class="movie-title" v-if="id && movie !==undefined">{{movie.title}}</span>
+        <span class="movie-title" v-if="$route.name !== 'home' && id && movie !==undefined">{{movie.title}}</span>
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
 
