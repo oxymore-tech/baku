@@ -129,7 +129,42 @@ export const ProjectStore: BakuModule<ProjectState> = {
     canEdit: (state): boolean =>
     (state.id).length > 36,
 
-    getNoEditId: (state, getters: ProjectGetters): string => getters.canEdit ? state.id.slice(0,36) : state.id
+    getNoEditId: (state, getters: ProjectGetters): string => getters.canEdit ? state.id.slice(0,36) : state.id,
+
+    getPreviousShotId: (state, getters: ProjectGetters): string | undefined => {
+      console.log(getters.movie.shots);
+      let activeShotId = getters.getActiveShot.id;
+      let previousShotId = getters.movie.shots[getters.movie.shots.length - 1].id;
+
+      for(let i = 0, i_len = getters.movie.shots.length; i < i_len; i++) {
+        if(getters.movie.shots[i].id == activeShotId) {
+          break;
+        }
+        previousShotId  = getters.movie.shots[i].id;
+      }
+
+      return previousShotId;
+    },
+
+    getNextShotId: (state, getters: ProjectGetters): string | undefined => {
+      let activeShotId = getters.getActiveShot.id;
+      let nextShotId = getters.movie.shots[0].id;
+
+      for(let i = getters.movie.shots.length -1; i >= 0; i--) {
+        if(getters.movie.shots[i].id == activeShotId) {
+          break;
+        }
+        nextShotId  = getters.movie.shots[i].id;
+      }
+
+      return nextShotId;
+    },
+
+
+
+    getActiveShotIndex: (state, getters: ProjectGetters): number | undefined => {
+      return getters.movie.shots.findIndex((shot: Shot) => shot.id === getters.getActiveShot.id);
+    },
   },
   modules: {},
 };
