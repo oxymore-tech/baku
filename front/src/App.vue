@@ -58,7 +58,7 @@
         {{ username }}
       </div>
     </nav>
-    <router-view />
+    <router-view :key="$route.fullPath"/>
   </div>
 </template>
 
@@ -184,7 +184,7 @@ export default class App extends Vue {
   }
 
   private async moveToShot(shotId: string){
-    await this.$router.push({
+    return await this.$router.push({
       name: 'captureShot',
       params: {
         projectId: this.id,
