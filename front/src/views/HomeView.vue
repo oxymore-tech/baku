@@ -50,38 +50,38 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import { createProject } from "../api";
+import { Vue, Component } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { createProject } from '../api';
 
-const ProjectNS = namespace("project");
-const UserNS = namespace("user");
+const ProjectNS = namespace('project');
+const UserNS = namespace('user');
 
 @Component
 export default class HomeView extends Vue {
-  @UserNS.State("seenProjects")
+  @UserNS.State('seenProjects')
   public seenProjects!: string[];
 
-  @UserNS.Getter("getPersonalisedProjectTitle")
+  @UserNS.Getter('getPersonalisedProjectTitle')
   public getPersonalisedProjectTitle!: string;
 
-  @ProjectNS.Action("createShot")
+  @ProjectNS.Action('createShot')
   private createShotAction!: (name?: string) => Promise<string>;
 
-  @ProjectNS.Action("loadProject")
+  @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
-  @ProjectNS.Action("changeFps")
+  @ProjectNS.Action('changeFps')
   protected changeFps!: (fps: number) => Promise<void>;
 
-  @ProjectNS.Action("updateTitle")
+  @ProjectNS.Action('updateTitle')
   protected updateTitle!: (title: string) => Promise<void>;
 
   public description1 =
-    "Baku est une rencontre entre instituteurs, artistes et développeurs.";
+    'Baku est une rencontre entre instituteurs, artistes et développeurs.';
 
   public description2 =
-    "C’est une plateforme de création de films d’animation collaborative destinée aux enfants.";
+    'C’est une plateforme de création de films d’animation collaborative destinée aux enfants.';
 
   // public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
   //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
@@ -89,14 +89,14 @@ export default class HomeView extends Vue {
 
   public bottomPanelTitle() {
     if (this.seenProjects.length == 0) {
-      return "Quelques films de démonstration";
+      return 'Quelques films de démonstration';
     }
-    return "Mes films";
+    return 'Mes films';
   }
 
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
+      navigator.userAgent,
     );
   }
 
@@ -104,14 +104,14 @@ export default class HomeView extends Vue {
     if (!this.seenProjects) {
     }
     if (this.isMobile()) {
-      this.$router.push({ name: "smartphone" });
+      this.$router.push({ name: 'smartphone' });
     }
     const { projectId } = this.$route.params;
     if (projectId) {
       await this.loadProjectAction(projectId);
       await this.$router.push({
-        name: "captureShots",
-        params: { projectId }
+        name: 'captureShots',
+        params: { projectId },
       });
     }
   }
@@ -121,22 +121,22 @@ export default class HomeView extends Vue {
   public async onCreateProject() {
     const projectId = await createProject();
     await this.loadProjectAction(projectId);
-    const shotId = await this.createShotAction("Nouveau plan");
+    const shotId = await this.createShotAction('Nouveau plan');
     await this.changeFps(12);
     await this.updateTitle(this.getPersonalisedProjectTitle);
     await this.$router.push({
-      name: "captureShot",
+      name: 'captureShot',
       params: {
         projectId,
-        shotId
-      }
+        shotId,
+      },
     });
   }
 
   public async open(projectId: string) {
     await this.$router.push({
-      name: "captureShots",
-      params: { projectId }
+      name: 'captureShots',
+      params: { projectId },
     });
   }
 }

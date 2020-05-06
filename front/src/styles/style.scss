@@ -10,7 +10,7 @@ body {
   flex-direction: column;
 }
 
-#app {
+.app {
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
   color: #455054;
   width: 100%;
@@ -20,6 +20,10 @@ body {
   -webkit-backdrop-filter: blur(30px);
 }
 
+.app-home {
+  background: transparent url('assets/baku_home_bg.png') 100% 0% no-repeat padding-box;
+}
+
 nav {
   width: 100%;
   height: 48px;
@@ -27,7 +31,7 @@ nav {
   align-items: center;
   padding: 0px 24px;
   justify-content: space-between;
-  background: #FEFEFE 0% 0% no-repeat padding-box;
+  background: transparent;
   filter: drop-shadow(0px 0px 7px #0000004D);
   backdrop-filter: blur(30px);
 }

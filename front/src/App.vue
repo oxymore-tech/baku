@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="app" :class="{'app-home': $route.name === 'home'}">
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
 
