@@ -111,18 +111,6 @@ export default class HomeView extends Vue {
   }
 
   public async onClickMyLibrary() {
-    const projectId = uuid.v4();
-    await this.loadProjectAction(projectId);
-    const shotId = await this.createShotAction('Nouveau plan');
-    await this.changeFps(12);
-    await this.updateTitle(this.getPersonalisedProjectTitle);
-    await this.$router.push({
-      name: 'captureShot',
-      params: {
-        projectId,
-        shotId,
-      },
-    });
   }
 
 
