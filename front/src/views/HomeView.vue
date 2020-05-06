@@ -25,7 +25,7 @@
         </div>
         <div>
           <div class="option-home" @click="onClickMyLibrary">
-              <i class="icon-film baku-button"/>
+              <i class="icon-movie baku-button"/>
               <span>Ma librairie</span>
           </div>
           <div class="option-home">
