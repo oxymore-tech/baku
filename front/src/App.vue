@@ -28,9 +28,6 @@
           Montage
           </router-link>
         -->
-        <router-link :to="{ name: 'collaboration', params: { projectId: id } }">
-          Collaboratif
-        </router-link>
       </div>
       <div
         v-if="this.$route.path != '/'"
