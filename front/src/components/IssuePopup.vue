@@ -1,4 +1,4 @@
-<style lang="scss">
+<style lang="scss" scoped>
     @import "@/styles/issue.scss";
 </style>
 
@@ -67,7 +67,7 @@ export default class IssuePopup extends Vue {
       email: {
         text: '',
       },
-      errors: []
+      errors: [] as string[]
     }
 
   public async onSendIssue() {
