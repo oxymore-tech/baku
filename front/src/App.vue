@@ -11,7 +11,7 @@
                 slot="trigger"
                 role="button"
                 >
-                <img src="@/assets/baku_logo.svg" class="baku-logo" alt="bakuanimation" />
+                <img src="@/assets/baku_logo_horizontal_beta.svg" class="baku-logo" alt="bakuanimation" />
             </div>
 
             <b-dropdown-item class="" aria-role="listitem">
@@ -47,7 +47,7 @@
         </b-dropdown>
 
         <span class="movie-title" v-if="$route.name !== 'home' && id && movie !==undefined">{{movie.title}}</span>
-        <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
+        <i v-if="$route.name !== 'home' && id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
 
       <div class="planSelector" v-if="$route.name === 'captureShot' && activeShotIndex">
