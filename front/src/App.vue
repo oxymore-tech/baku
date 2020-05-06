@@ -50,27 +50,10 @@
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
 
-      <div class="routerlinks" v-if="id">
-        <!--
-          <router-link :to="{ name: 'scenario', params: { projectId: id } }">
-          Scenario
-          </router-link>
-          <router-link :to="{ name: 'storyboard', params: { projectId: id } }">
-          Storyboard
-          </router-link>
-        -->
-        <router-link :to="{ name: 'captureShots', params: { projectId: id } }">
-          Capture
-        </router-link>
-        <!--
-          <router-link :to="{ name: 'movieEditing', params: { projectId: id } }">
-          Montage
-          </router-link>
-        -->
-        <router-link :to="{ name: 'collaboration', params: { projectId: id } }">
-          Collaboratif
-        </router-link>
+      <div class="planSelector" v-if="$route.name === 'captureShot' && activeShotIndex">
+        Plan {{ activeShotIndex + 1 }}
       </div>
+      
       <div
         v-if="this.$route.path != '/'"
         class="right-nav">
@@ -137,6 +120,15 @@ export default class App extends Vue {
   @ProjectNS.Action('updateTitle')
   protected updateTitle!: (title: string) => Promise<void>;
 
+  @ProjectNS.Getter('getPreviousShotId')
+  protected previousShotId!: string;
+
+  @ProjectNS.Getter('getNextShotId')
+  protected nextShotId!: string;
+
+  @ProjectNS.Getter('getActiveShotIndex')
+  public activeShotIndex!: Number;
+
   public openProjectSettings() {
     this.$buefy.modal.open({
       parent: this,
@@ -178,6 +170,20 @@ export default class App extends Vue {
 
   public async onCreatePlan() {
     const shotId = await this.createShotAction('Nouveau plan');
+    await this.moveToShot(shotId);
+  }
+
+  public async goToPreviousPlan() {
+    const shotId = this.previousShotId;
+    await this.moveToShot(shotId);
+  }
+
+  public async goToNextPlan() {
+    const shotId = this.nextShotId;
+    await this.moveToShot(shotId);
+  }
+
+  private async moveToShot(shotId: string){
     await this.$router.push({
       name: 'captureShot',
       params: {
