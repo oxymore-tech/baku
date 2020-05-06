@@ -50,8 +50,10 @@
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
 
-      <div class="planSelector" v-if="$route.name === 'captureShot' && activeShotIndex">
-        Plan {{ activeShotIndex + 1 }}
+      <div class="planSelector" v-if="$route.name === 'captureShot' && activeShotIndex >= 0">
+        <div class="previous-plan" @click="goToPreviousPlan()" title="Plan précédent">&lt;</div>
+        <div>Plan {{ activeShotIndex + 1 }}</div>
+        <div class="next-plan" @click="goToNextPlan()" title="Plan suivant">&gt;</div>
       </div>
       <div class="right-nav" :class="{'right-nav-home': $route.name === 'home'}">
         <i class="icon-user-dragon"/>
