@@ -105,6 +105,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
 import { Movie } from '@/utils/movie.service';
+import IssuePopup from '@/components/IssuePopup.vue';
 
 const ProjectNS = namespace('project');
 const UserNS = namespace('user');
@@ -157,6 +158,7 @@ export default class App extends Vue {
     });
   }
 
+
   public async onPersoFilm() {
     await this.$router.push({
       name: 'movieEditing'
@@ -186,5 +188,13 @@ export default class App extends Vue {
     });
   }
 
+  public openIssue() {
+    this.$buefy.modal.open({
+      parent: this,
+      component: IssuePopup,
+      hasModalCard: true,
+      canCancel: ['escape', 'outside'],
+    });
+  }
 }
 </script>
