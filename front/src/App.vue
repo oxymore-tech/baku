@@ -5,36 +5,56 @@
 
     <nav>
       <div class="left-nav">
-        <a style="height:auto" href="/">
-          <img src="@/assets/baku_logo.svg" class="baku-logo" alt="bakuanimation" />
-        </a>
+        <b-dropdown append-to-body aria-role="list"  v-if="$route.name !== 'home'">
+            <div
+                class="logo is-success"
+                slot="trigger"
+                role="button"
+                >
+                <img src="@/assets/baku_logo.svg" class="baku-logo" alt="bakuanimation" />
+            </div>
+
+            <b-dropdown-item class="" aria-role="listitem">
+              <div class="option-logo" @click="onPageAccueil()">
+                <i class="icon-movie-start-01 baku-button"/>
+                <span>Aller à la page d'accueil</span>
+              </div>
+            </b-dropdown-item>
+            <b-dropdown-item aria-role="listitem">
+              <div class="option-logo" @click="onPersoFilm()">
+                <i class="icon-cog baku-button"/>
+                <span>Personnaliser votre film</span>
+              </div>
+            </b-dropdown-item>
+            <b-dropdown-item aria-role="listitem">
+              <div class="option-logo" @click="onOpenLibrary()">
+                <i class="icon-cloud baku-button"/>
+                <span>Ouvrir ma librairie</span>
+              </div>
+            </b-dropdown-item>
+            <b-dropdown-item aria-role="listitem">
+               <div class="option-logo" @click="onOpenPlan()">
+                <i class="icon-grid baku-button"/>
+                <span>Accéder aux plans</span>
+              </div>
+            </b-dropdown-item>
+            <b-dropdown-item v-if="this.id" aria-role="listitem">
+              <div class="option-logo" @click="onCreatePlan()">
+                <i class="icon-plus baku-button"/>
+                <span>Créer un nouveau plan</span>
+              </div>
+            </b-dropdown-item>
+        </b-dropdown>
+
         <span class="movie-title" v-if="id && movie !==undefined">{{movie.title}}</span>
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
-      <div class="routerlinks" v-if="id">
-        <!--
-          <router-link :to="{ name: 'scenario', params: { projectId: id } }">
-          Scenario
-          </router-link>
-          <router-link :to="{ name: 'storyboard', params: { projectId: id } }">
-          Storyboard
-          </router-link>
-        -->
-        <router-link :to="{ name: 'captureShots', params: { projectId: id } }">
-          Capture
-        </router-link>
-        <!--
-          <router-link :to="{ name: 'movieEditing', params: { projectId: id } }">
-          Montage
-          </router-link>
-        -->
-        <router-link :to="{ name: 'collaboration', params: { projectId: id } }">
-          Collaboratif
-        </router-link>
+
+      <div class="planSelector" v-if="$route.name === 'captureShot' && activeShotIndex">
+        Plan {{ activeShotIndex + 1 }}
       </div>
-      <div
-        v-if="this.$route.path != '/'"
-        class="right-nav">
+      <div class="right-nav" :class="{'right-nav-home': $route.name === 'home'}">
+        <i class="icon-user-dragon"/>
         {{ username }}
       </div>
     </nav>
@@ -87,12 +107,89 @@ export default class App extends Vue {
   @UserNS.State
   public username!: string;
 
+  @UserNS.Getter('getPersonalisedProjectTitle')
+  public getPersonalisedProjectTitle!: string;
+
+  @ProjectNS.Action('createShot')
+  private createShotAction!: (name?: string) => Promise<string>;
+
+  @ProjectNS.Action('changeFps')
+  protected changeFps!: (fps: number) => Promise<void>;
+
+  @ProjectNS.Action('updateTitle')
+  protected updateTitle!: (title: string) => Promise<void>;
+
+  @ProjectNS.Getter('getPreviousShotId')
+  protected previousShotId!: string;
+
+  @ProjectNS.Getter('getNextShotId')
+  protected nextShotId!: string;
+
+  @ProjectNS.Getter('getActiveShotIndex')
+  public activeShotIndex!: Number;
+
   public openProjectSettings() {
     this.$buefy.modal.open({
       parent: this,
       component: ProjectSettingsPopup,
       hasModalCard: true,
       canCancel: ['escape', 'outside'],
+    });
+  }
+
+  public pageName!: string;
+
+  public mounted () {
+    this.pageName = this.$route.name as string;
+  }
+
+  public async onPageAccueil() {
+    await this.$router.push({
+      name: 'home'
+    });
+  }
+
+
+  public async onPersoFilm() {
+    await this.$router.push({
+      name: 'movieEditing'
+    });
+  }
+
+  public async onOpenLibrary() {
+    await this.$router.push({
+      name: 'captureShots' //a changer quand page my library dispo
+    });
+  }
+
+  public async onOpenPlan() {
+    await this.$router.push({
+      name: 'captureShots'
+    });
+  }
+
+  public async onCreatePlan() {
+    const shotId = await this.createShotAction('Nouveau plan');
+    await this.moveToShot(shotId);
+  }
+
+  public async goToPreviousPlan() {
+    const shotId = this.previousShotId;
+    await this.moveToShot(shotId);
+  }
+
+  public async goToNextPlan() {
+    const shotId = this.nextShotId;
+    await this.moveToShot(shotId);
+  }
+
+  private async moveToShot(shotId: string){
+    await this.$router.push({
+      name: 'captureShot',
+      params: {
+        projectId: this.id,
+        shotId,
+      },
     });
   }
 

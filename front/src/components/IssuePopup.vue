@@ -67,7 +67,7 @@ export default class IssuePopup extends Vue {
       email: {
         text: '',
       },
-      errors: [{}],
+      errors: [] as string[]
     }
 
     public async onSendIssue() {
