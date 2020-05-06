@@ -46,23 +46,6 @@
             </b-dropdown-item>
         </b-dropdown>
 
-        <!-- pour test sur hover item-->
-      <div>
-        <b-dropdown aria-role="list">
-            <p
-                class="tag is-success"
-                slot="trigger"
-                role="button">
-                Custom trigger
-            </p>
-
-            <b-dropdown-item aria-role="listitem">Action</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem">Another action</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem">Something else</b-dropdown-item>
-        </b-dropdown>
-      </div>
-
-
         <span class="movie-title" v-if="id && movie !==undefined">{{movie.title}}</span>
         <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
@@ -169,20 +152,28 @@ export default class App extends Vue {
     this.pageName = this.$route.name as string;
   }
 
-  public onPageAccueil() {
-    alert('click onPageAccueil');
+  public async onPageAccueil() {
+    await this.$router.push({
+      name: 'home'
+    });
   }
 
   public async onPersoFilm() {
-    alert('click onPersoFilm');
+    await this.$router.push({
+      name: 'movieEditing'
+    });
   }
 
   public async onOpenLibrary() {
-    alert('click onOpenLibrary');
+    await this.$router.push({
+      name: 'captureShots' //a changer quand page my library dispo
+    });
   }
 
   public async onOpenPlan() {
-    alert('click onOpenPlan');
+    await this.$router.push({
+      name: 'captureShots'
+    });
   }
 
   public async onCreatePlan() {
