@@ -5,7 +5,7 @@
 
     <nav>
       <div class="left-nav">
-        <b-dropdown append-to-body aria-role="list" >
+        <b-dropdown append-to-body aria-role="list"  v-if="$route.name !== 'home'">
             <div
                 class="logo is-success"
                 slot="trigger"
@@ -38,7 +38,7 @@
                 <span>Accéder aux plans</span>
               </div>
             </b-dropdown-item>
-            <b-dropdown-item aria-role="listitem">
+            <b-dropdown-item v-if="this.id" aria-role="listitem">
               <div class="option-logo" @click="onCreatePlan()">
                 <i class="icon-plus baku-button"/>
                 <span>Créer un nouveau plan</span>
@@ -123,8 +123,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
 import { Movie } from '@/utils/movie.service';
-import * as api from '@/api';
-import { VideoStatus, VideoStatusEnum } from '@/utils/types';
 
 const ProjectNS = namespace('project');
 const UserNS = namespace('user');
@@ -168,7 +166,7 @@ export default class App extends Vue {
   public pageName!: string;
 
   public mounted () {
-    this.pageName = this.$router.name;    
+    this.pageName = this.$route.name as string;
   }
 
   public onPageAccueil() {
@@ -188,12 +186,11 @@ export default class App extends Vue {
   }
 
   public async onCreatePlan() {
-    const projectId = this.$route.params;
     const shotId = await this.createShotAction('Nouveau plan');
     await this.$router.push({
       name: 'captureShot',
       params: {
-        projectId,
+        projectId: this.id,
         shotId,
       },
     });
