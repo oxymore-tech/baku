@@ -53,11 +53,6 @@ const routes = [
     component: TodoView,
   },
   {
-    name: 'collaboration',
-    path: '/movies/:projectId/collaboration',
-    component: CollaborationView,
-  },
-  {
     path: '/api',
     children: [
       {

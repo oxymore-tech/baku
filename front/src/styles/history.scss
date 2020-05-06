@@ -8,7 +8,16 @@
 }
 
 .history {
-  margin: 24px 24px;
+  background: white;
+  display: inline-flex;
+  flex-direction: column;
+  margin: 0px 0px 0px 24px;
+  padding: 18px;
+  width: 320px;
+
+  ul {
+    overflow: auto;
+  }
 }
 
 .title {
@@ -21,20 +30,28 @@
 
 .action {
   text-align: left;
-  font-size: 18px;
-  font-weight: lighter;
+  font-size: 14px;
+  font-weight: bold;
   color: #455054;
-  border-bottom: 1px solid #f2f2f2;
   margin: 5px;
+  display: flex;
+
+  i {
+    font-size: 24px;
+    margin-top: 3px;
+    margin-right: 3px;
+    color: #455054;
+  }
+
 }
 
 .action-highlight {
-  color: #27a2bb;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: normal;
+  color: #455054;
 }
 
 .action-date {
-  font-weight: lighter;
-  font-size: 14px;
+  font-size: 12px;
   color: #7f7f7f;
 }
