@@ -11,9 +11,9 @@
   background: white;
   display: inline-flex;
   flex-direction: column;
-  margin: 0px 24px 24px;
+  margin: 0px 0px 0px 24px;
   padding: 18px;
-  width: 292px;
+  width: 320px;
 
   ul {
     overflow: auto;
@@ -30,7 +30,7 @@
 
 .action {
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   color: #455054;
   margin: 5px;
@@ -46,11 +46,12 @@
 }
 
 .action-highlight {
-  font-size: 10px;
+  font-size: 14px;
+  font-weight: normal;
   color: #455054;
 }
 
 .action-date {
-  font-size: 8px;
+  font-size: 12px;
   color: #7f7f7f;
 }
