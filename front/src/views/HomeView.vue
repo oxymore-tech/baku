@@ -37,7 +37,7 @@
           <a href="https://twitter.com/bakuanimation">
             <i class="icon-twitter-brands baku-button" />
           </a>
-          <a href="https://www.instagram.com">
+          <a href="https://www.instagram.com/bakuanim/">
             <i class="icon-instagram-brands baku-button" />
           </a>
           <a href="mailto:support@bakuanimation.com">
