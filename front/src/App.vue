@@ -71,7 +71,7 @@
           Collaboratif
         </router-link>
       </div>
-      <div v-if="$route.name === 'home'" class="right-nav">
+      <div class="right-nav" :class="{'right-nav-home': $route.name === 'home'}">
         <i class="icon-user-dragon"/>
         {{ username }}
       </div>
