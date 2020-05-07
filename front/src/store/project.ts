@@ -24,7 +24,6 @@ const loadEvents = (
   context: BakuActionContext<ProjectState>,
   events: BakuEvent[]): void => {
 
-    console.log(events)
     const promise = api.stack(context.state.id, events);
 
     events.map(event => {
@@ -119,7 +118,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
     },
 
     async lockShot(context, params: { shotId: string, locked: boolean }): Promise<void> {
-      const event = makeEvent(context, BakuAction.MOVIE_LOCK, params);
+      const event = makeEvent(context, BakuAction.SHOT_LOCK, params);
       loadEvents(context, [event]);
     },
 
@@ -185,7 +184,9 @@ export const ProjectStore: BakuModule<ProjectState> = {
       return nextShotId;
     },
 
-
+    getShotCount: (state, getters: ProjectGetters): number | undefined => {
+      return getters.movie.shots.length;
+    },
 
     getActiveShotIndex: (state, getters: ProjectGetters): number | undefined => {
       return getters.movie.shots.findIndex((shot: Shot) => shot.id === getters.getActiveShot?.id);

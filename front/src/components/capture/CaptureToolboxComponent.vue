@@ -48,9 +48,7 @@
 
 
 <script lang="ts">
-import {
-  Component, Vue, Watch,
-} from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneSynchroPopupComponent.vue';
 import { Device } from '@/utils/device.class';
@@ -81,6 +79,9 @@ export default class CaptureToolboxComponent extends Vue {
 
   @CaptureNS.Action('toggleScaleY')
   protected toggleScaleY!: () => Promise<void>;
+
+  @CaptureNS.Action('detachMediaStream')
+  public detachMediaStream!: () => void;
 
   @CaptureNS.Action('setOnionSkinDisplay')
   protected setOnionSkinDisplay!: (val: boolean) => Promise<void>;
@@ -130,12 +131,13 @@ export default class CaptureToolboxComponent extends Vue {
     this.selectDeviceAction(this.devices[0] ?? null);
   }
 
-  public onCaptureDeviceChange() {
-    this.selectedDevice = this.devices.find((d) => d.id === this.selectedDeviceId) || null;
-    this.selectDeviceAction(this.selectedDevice);
+  public async onCaptureDeviceChange() {
+    this.selectedDevice = this.devices.find((d) => d.id == this.selectedDeviceId) || null;
+    await this.detachMediaStream();
     if (this.selectedDevice && !this.selectedDevice.isSmartphone()) {
-      this.resetRTC();
+      await this.resetRTC();
     }
+    this.selectDeviceAction(this.selectedDevice);
   }
 
   public verticalMirror() {
@@ -148,7 +150,7 @@ export default class CaptureToolboxComponent extends Vue {
 
   @Watch('isRTCConnected')
   onRTCConnectedChange(status: boolean) {
-    if (!status) {
+    if (!status && this.selectedDevice && this.selectedDevice.isSmartphone()) {
       this.selectedDevice = null;
       this.selectedDeviceId = null;
       this.selectDeviceAction(null);

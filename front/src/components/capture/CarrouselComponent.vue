@@ -47,6 +47,7 @@
       </div>
     </div>
     <div ref="carrouselContainer" class="carrousel-container">
+      <!-- LEFT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedLeftCarrousel">
         <template v-if="image !== null">
           <div :key="'left'+index" class="image-container">
@@ -58,7 +59,7 @@
               :alt="image"
               :class="{active : selectedImagesForReal.includes(index)}"
               :src="ImageCacheService.getThumbnail(image.id)"
-              @click="moveToImage($event, index - computedLeftCarrousel.length + (isFrameLiveView ? 1 : 0))"
+              @click="moveToImage($event, index - computedLeftCarrousel.length)"
             />
           </div>
         </template>

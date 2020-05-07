@@ -67,6 +67,7 @@ nav {
 }
 
 .logo {
+  margin-top: 5px;
   height: auto;
   cursor: pointer;
 }
@@ -84,9 +85,10 @@ nav {
   font-size: 16px;
   text-align: center;
   padding: 2px 10px 0;
+  background-color: white;
 }
 
-.right-nav-home {
+.right-nav-home, .bug-home {
   background: white;
   color: #fe676f;
 }
@@ -105,5 +107,14 @@ nav {
 }
 
 .bug{
+  border-radius: 16px;
+  font-size: 16px;
+  text-align: center;
+  padding: 2px 2px 0;
   margin-right: 10px;
+  background-color: white;
+}
+
+.pseudo {
+  padding-left: 5px;
 }

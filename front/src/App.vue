@@ -11,7 +11,7 @@
                 slot="trigger"
                 role="button"
                 >
-                <img src="@/assets/baku_logo_horizontal_beta.svg" class="baku-logo" alt="bakuanimation" />
+                <img src="@/assets/baku_logo_horizontal_menu_beta.svg" class="baku-logo" alt="bakuanimation" />
             </div>
 
             <b-dropdown-item class="" aria-role="listitem">
@@ -48,14 +48,19 @@
       </div>
 
       <div class="flex-container" v-if="$route.name === 'captureShot' && activeShotIndex >= 0">
-        <div class="previous-plan" @click="goToPreviousPlan()" title="Plan précédent">&lt;</div>
+        <div v-if="nbShot > 1" class="previous-plan" @click="goToPreviousPlan()" title="Plan précédent">&lt;</div>
         <div class="baku-button" @click="onOpenPlan()">{{movie.title}} - Plan {{ activeShotIndex + 1 }}</div>
-        <div class="next-plan" @click="goToNextPlan()" title="Plan suivant">&gt;</div>
+        <div v-if="nbShot > 1" class="next-plan" @click="goToNextPlan()" title="Plan suivant">&gt;</div>
       </div>
-      <div class="right-nav flex-container" :class="{'right-nav-home': $route.name === 'home'}">
-        <div class="bug"><i class="icon-bullhorn-solid baku-button" @click="openIssue()" title="Reporter un bug"/></div>
-        <div><i class="icon-user-dragon"/></div>
-        {{ username }}
+
+      <div class="flex-container">
+        <div class="flex-container bug" :class="{'bug-home': $route.name === 'home'}">
+          <div><i class="icon-bullhorn-solid baku-button" @click="openIssue()" title="Reporter un bug"/></div>
+        </div>
+        <div class="flex-container right-nav" :class="{'right-nav-home': $route.name === 'home'}">
+          <div><i class="icon-user-dragon"/></div>
+          <div class="pseudo">{{ username }}</div>
+        </div>
       </div>
     </nav>
     <router-view :key="$route.fullPath"/>
@@ -127,6 +132,9 @@ export default class App extends Vue {
 
   @ProjectNS.Getter('getActiveShotIndex')
   public activeShotIndex!: Number;
+
+  @ProjectNS.Getter('getShotCount')
+  public nbShot!: Number;
 
   public openProjectSettings() {
     this.$buefy.modal.open({
