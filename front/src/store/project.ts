@@ -119,7 +119,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
     },
 
     async lockShot(context, params: { shotId: string, locked: boolean }): Promise<void> {
-      const event = makeEvent(context, BakuAction.MOVIE_LOCK, params);
+      const event = makeEvent(context, BakuAction.SHOT_LOCK, params);
       loadEvents(context, [event]);
     },
 
