@@ -15,13 +15,13 @@ body {
   color: #455054;
   width: 100%;
   height: 100%;
-  background: #F2F2F2;
+  background: #f2f2f2;
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
 }
 
 .app-home {
-  background: transparent url('assets/baku_home_bg.png') 100% 0% no-repeat padding-box;
+  background: transparent url("assets/baku_home_bg.png") 100% 0% no-repeat padding-box;
 }
 
 nav {
@@ -48,7 +48,7 @@ nav {
 
 .routerlinks a.router-link-active {
   color: white;
-  background: #FFBD72;
+  background: #ffbd72;
   border-radius: 17px;
 }
 
@@ -75,19 +75,35 @@ nav {
   cursor: pointer;
 }
 
-.option-logo>i {
+.option-logo > i {
   margin-right: 10px;
 }
 
 .right-nav {
   border-radius: 16px;
-  font-size:16px; 
+  font-size: 16px;
   text-align: center;
   padding: 2px 10px 0;
 }
 
-
 .right-nav-home {
   background: white;
-  color:#FE676F;
+  color: #fe676f;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.previous-plan,
+.next-plan {
+  font-size: 16px;
+  font-weight: 1000;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+.bug{
+  margin-right: 10px;
 }
