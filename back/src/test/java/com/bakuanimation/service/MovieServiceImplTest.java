@@ -1,7 +1,6 @@
 package com.bakuanimation.service;
 
 import com.bakuanimation.model.Movie;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
@@ -39,7 +39,7 @@ class MovieServiceImplTest {
         }
         ListMultimap<String, Path> images = builder
                 .build();
-        Movie movie = new Movie("", "", "", 12, ImmutableList.of("a"),
+        Movie movie = new Movie("", "", "", 12, false, Set.of(), List.of("a"),
                 images);
         tested.generateMovie_ffmpeg(movie, Path.of("/tmp/test-movie/test_movie.mp4")).blockingGet();
     }
@@ -53,7 +53,7 @@ class MovieServiceImplTest {
         List<String> shots = movie.getShots().stream()
                 .limit(nbShots)
                 .collect(Collectors.toList());
-        Movie newMovie = new Movie(movie.getProjectId(), movie.getName(), movie.getSynopsis(), movie.getFps(), shots, movie.getImages());
+        Movie newMovie = new Movie(movie.getProjectId(), movie.getName(), movie.getSynopsis(), movie.getFps(), false, Set.of(), shots, movie.getImages());
 
         tested.generateMovie_ffmpeg(newMovie, Path.of("/tmp/test-movie/test_premier.mp4")).blockingGet();
     }

@@ -32,7 +32,7 @@ public class HistoryController {
 
     @Post("/api/{projectId}/stack")
     public Single<HttpResponse<Void>> stack(@PathVariable String projectId, @Body byte[] stack) {
-        return historyService.addStack(permissionService.getProject(projectId).getId(), stack)
+        return historyService.addStack(permissionService.getProject(projectId), stack)
                 .map(v -> HttpResponse.ok());
     }
 

@@ -5,6 +5,7 @@ import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.BakuAction;
 import com.bakuanimation.model.BakuEvent;
 import com.bakuanimation.model.Movie;
+import com.bakuanimation.model.Project;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,26 +45,26 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public Single<Boolean> addStack(String projectId, byte[] stack) {
+    public Single<Boolean> addStack(Project project, byte[] stack) {
         return Single.fromCallable(() -> {
-            List<BakuEvent> history = readHistory(projectId);
-            Movie movie = composeMovie(projectId, history);
+            List<BakuEvent> history = readHistory(project.getId());
+            Movie movie = composeMovie(project.getId(), history);
             JsonNode jsonNode = objectMapper.readTree(stack);
             if (jsonNode.isArray()) {
                 for (JsonNode node : jsonNode) {
-                    addEvent(movie, history, node);
+                    addEvent(project, movie, history, node);
                 }
             } else {
-                addEvent(movie, history, jsonNode);
+                addEvent(project, movie, history, jsonNode);
             }
-            writeHistory(projectId, history);
+            writeHistory(project.getId(), history);
             return true;
         }).subscribeOn(stackScheduler);
     }
 
-    private void addEvent(Movie movie, List<BakuEvent> history, JsonNode node) throws JsonProcessingException {
+    private void addEvent(Project project, Movie movie, List<BakuEvent> history, JsonNode node) throws JsonProcessingException {
         BakuEvent bakuEvent = objectMapper.treeToValue(node, BakuEvent.class);
-        permissionService.hasRight(movie, bakuEvent);
+        permissionService.hasRight(project, movie, bakuEvent);
         history.add(bakuEvent);
     }
 
@@ -104,7 +105,9 @@ public class HistoryServiceImpl implements HistoryService {
         String name = "";
         String synopsis = "";
         int fps = 0;
+        boolean movieLocked = false;
         Map<String, List<Path>> images = new LinkedHashMap<>();
+        Set<String> lockedShots = new HashSet<>();
         for (BakuEvent element : history) {
             switch (BakuAction.action(element.getAction())) {
                 case MOVIE_UPDATE_TITLE:
@@ -153,6 +156,16 @@ public class HistoryServiceImpl implements HistoryService {
                     images.remove(shotId);
                     break;
                 }
+                case MOVIE_LOCK:
+                    movieLocked = element.getValue().asBoolean();
+                case SHOT_LOCK:
+                    String shotId = element.getValue().get("shotId").asText();
+                    if (element.getValue().get("locked").asBoolean()) {
+                        lockedShots.add(shotId);
+                    } else {
+                        lockedShots.remove(shotId);
+                    }
+
                 default: {
                     // Ignored
                     break;
@@ -176,6 +189,6 @@ public class HistoryServiceImpl implements HistoryService {
             }
             imagesBuilder.putAll(shotId, imagesEntry.getValue());
         }
-        return new Movie(projectId, name, synopsis, fps, shots, imagesBuilder.build());
+        return new Movie(projectId, name, synopsis, fps, movieLocked, lockedShots, shots, imagesBuilder.build());
     }
 }
