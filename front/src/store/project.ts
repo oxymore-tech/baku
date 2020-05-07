@@ -123,7 +123,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
       loadEvents(context, [event]);
     },
 
-    async changeShotSynposis(context,  params: { shotId: string, synopsis: string }){
+    async changeShotSynopsis(context,  params: { shotId: string, synopsis: string }){
       const event = makeEvent(context, BakuAction.SHOT_UPDATE_SYNOPSIS, params);
       loadEvents(context, [event]);
     },
@@ -158,7 +158,6 @@ export const ProjectStore: BakuModule<ProjectState> = {
     getNoEditId: (state, getters: ProjectGetters): string => getters.canEdit ? state.id.slice(0,36) : state.id,
 
     getPreviousShotId: (state, getters: ProjectGetters): string | undefined => {
-      console.log(getters.movie.shots);
       let activeShotId = getters.getActiveShot.id;
       let previousShotId = getters.movie.shots[getters.movie.shots.length - 1].id;
 

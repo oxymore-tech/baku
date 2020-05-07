@@ -1,110 +1,77 @@
 <template>
-  <div class="box-container storyboard-preview-container">
-    <div class="storyboard-preview-header" @click="onDisplayShots()">
-      <i class="icon-grid baku-button"/>
-      <h4 class="baku-button">Plan {{ shotIndex }}</h4>
-    </div>
-    <img class="shot-preview" alt="preview" ref="preview"/>
+  <div v-if="activeShot" class="box-container storyboard-preview-container">
+    <textarea
+      ref="shotSynopsis"
+      rows="4"
+      cols="50"
+      :value="activeShot.synopsis"
+      placeholder="Présenter votre plan avec un résumé"
+      @blur="changeShotSynopsis()"
+    ></textarea>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Vue, Watch,
-} from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { Shot } from '@/utils/movie.service';
-import { Spinner } from '@/utils/spinner.class';
-import { ImageCacheService } from '@/utils/imageCache.service';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import { Shot } from "@/utils/movie.service";
+//import { Spinner } from "@/utils/spinner.class";
+//import { ImageCacheService } from "@/utils/imageCache.service";
 
-const ProjectNS = namespace('project');
+const ProjectNS = namespace("project");
 
-  @Component
+@Component
 export default class StoryboardPreviewComponent extends Vue {
-    @Prop()
-    public activeShot!: Shot;
+  @Prop()
+  public activeShot!: Shot;
 
-    @Prop()
-    public shots!: Shot[];
+  @Prop()
+  public shots!: Shot[];
 
-    @ProjectNS.State
-    public id!: string;
+  @ProjectNS.State
+  public id!: string;
 
-    @ProjectNS.Getter
-    public getActiveShotImgCount!: Shot;
 
-    get shotIndex() {
-      if (this.shots) {
-        const index = this.shots.findIndex((s) => s.id === this.activeShot?.id);
-        if (index != -1) {
-          return index + 1;
-        }
-        return '';
-      }
-      return '';
-    }
+  mounted() {  
+  }
 
-    public onDisplayShots() {
-      this.$router.push({
-        name: 'captureShots',
-        params: {
-          projectId: this.id,
-        },
-      });
-    }
+  
+  public async changeShotSynopsis() {
 
-    mounted() {
-      (this.$refs.preview as HTMLImageElement).src = this.getPreview();
-    }
+    let shotId = this.activeShot?.id;
+    let synopsis = (this.$refs.shotSynopsis as any).value;
 
-    @Watch('getActiveShotImgCount')
-    public async onActiveShotImgCountChange(nb: number) {
-      if (nb) {
-        this.imageReady(this.activeShot.images[0].id);
-      }
-    }
-
-    public imageReady(imageId: string) {
-      if (this.activeShot && this.activeShot.images.length > 0) {
-        if (this.activeShot.images[0].id === imageId) {
-          (this.$refs.preview as HTMLImageElement).src = this.getPreview();
-        }
-      }
-    }
-
-    private getPreview() {
-      if (this.activeShot && this.activeShot.images.length > 0) {
-        const imageId = this.activeShot.images[0].id;
-        return ImageCacheService.getImage(imageId);
-      }
-      return Spinner;
-    }
+    await this.$store.dispatch("project/changeShotSynopsis", {
+      shotId: shotId,
+      synopsis: synopsis,
+    });
+  }
 }
 </script>
 
 <style lang="scss">
-  .storyboard-preview-container {
-    max-width: 292px;
+.storyboard-preview-container {
+  max-width: 292px;
 
-    .storyboard-preview-header {
-      display: inline-flex;
-      align-items: center;
-      width: 100%;
+  .storyboard-preview-header {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
 
-      h4 {
-        font-size: 28px;
-        font-weight: lighter;
-      }
+    h4 {
+      font-size: 28px;
+      font-weight: lighter;
+    }
 
-      i {
-        font-size: 28px;
-        padding-right: 10px;
-      }
+    i {
+      font-size: 28px;
+      padding-right: 10px;
     }
   }
+}
 
-  .shot-preview {
-    width: 292px;
-    height: 164px;
-  }
+.shot-preview {
+  width: 292px;
+  height: 164px;
+}
 </style>
