@@ -4,12 +4,24 @@
       id="shotSynopsis"
       ref="shotSynopsis"
       rows="4"
-      cols="50"
       :value="activeShot.synopsis"
       placeholder="Présenter votre plan avec un résumé"
       @blur="changeShotSynopsis()"
     ></textarea>
+
+    <div class="ajout-storyboard">
+      <div>
+        <div>
+          <i class="icon-camera baku-button storyboard-icon"/>
+          <i class="icon-attachment baku-button storyboard-icon"/>
+        </div>
+        <div>
+          Ajouter votre storyboard
+        </div>
+      </div>
+    </div>
   </div>
+  
 </template>
 
 <script lang="ts">
@@ -50,28 +62,29 @@ export default class StoryboardPreviewComponent extends Vue {
 </script>
 
 <style lang="scss">
-.storyboard-preview-container {
-  max-width: 292px;
-
-  .storyboard-preview-header {
-    display: inline-flex;
-    align-items: center;
-    width: 100%;
-
-    h4 {
-      font-size: 28px;
-      font-weight: lighter;
-    }
-
-    i {
-      font-size: 28px;
-      padding-right: 10px;
-    }
-  }
+#shotSynopsis {
+  width: 300px;
 }
 
-.shot-preview {
-  width: 292px;
-  height: 164px;
+.ajout-storyboard {
+  border: 1px solid lightgray;
+  border-radius: 15px;
+  width: 300px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+}
+
+.ajout-storyboard>div {
+  line-height: 1.5;
+  display: inline-block;
+  vertical-align: middle;
+  color: gray;
+  size: 30px;
+}
+
+.storyboard-icon {
+  margin-left: 30px;
+  margin-right: 30px;
 }
 </style>
