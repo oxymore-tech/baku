@@ -67,6 +67,10 @@ export const CaptureStore: BakuModule<CaptureState> = {
     setOnionSkinValue(context, val: number) {
       context.commit('setOnionSkinValue', val);
     },
+
+    detachMediaStream(context) {
+      context.commit('detachMediaStream');
+    }
   },
   getters: {
   },

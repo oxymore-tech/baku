@@ -38,6 +38,9 @@ export default class CaptureButtonComponent extends Vue {
   @CaptureNS.State
   public scaleY!: number | 1;
 
+  @CaptureNS.Action('detachMediaStream')
+  public detachMediaStream!: () => void;
+
   @WebRTCNS.State
   public dataChannel!: RTCDataChannel;
 
@@ -52,6 +55,7 @@ export default class CaptureButtonComponent extends Vue {
   public isCapturing = false;
 
   public async mounted() {
+    this.detachMediaStream();
     this.onDeviceIdChanged();
     window.addEventListener('keyup', (e: KeyboardEvent) => {
       switch (e.keyCode) {
@@ -91,7 +95,7 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   @Watch('device')
-  public onDeviceIdChanged() {
+  async onDeviceIdChanged() {
     this.isCapturing = false;
     if (!this.device.isSmartphone()) {
       this.setupWebCam();
@@ -99,7 +103,7 @@ export default class CaptureButtonComponent extends Vue {
       this.mediaOk = true;
       this.setupSmarphone();
     } else {
-      this.$store.commit('capture/detachMediaStream');
+      await this.detachMediaStream();
     }
   }
 
@@ -115,12 +119,12 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   @Watch('canCapture')
-  onCanCaptureChange(canCapture: boolean) {
+  async onCanCaptureChange(canCapture: boolean) {
     if (!this.device.isSmartphone()) {
       if (canCapture) {
         this.setupWebCam();
       } else {
-        this.$store.commit('capture/detachMediaStream');
+        await this.detachMediaStream();
       }
     }
   }

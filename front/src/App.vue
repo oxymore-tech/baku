@@ -142,32 +142,32 @@ export default class App extends Vue {
 
   public pageName!: string;
 
-  public mounted () {
+  public mounted() {
     this.pageName = this.$route.name as string;
   }
 
   public async onPageAccueil() {
     await this.$router.push({
-      name: 'home'
+      name: 'home',
     });
   }
 
 
   public async onPersoFilm() {
     await this.$router.push({
-      name: 'movieEditing'
+      name: 'movieEditing',
     });
   }
 
   public async onOpenLibrary() {
     await this.$router.push({
-      name: 'captureShots' //a changer quand page my library dispo
+      name: 'captureShots', // a changer quand page my library dispo
     });
   }
 
   public async onOpenPlan() {
     await this.$router.push({
-      name: 'captureShots'
+      name: 'captureShots',
     });
   }
 
@@ -186,7 +186,7 @@ export default class App extends Vue {
     await this.moveToShot(shotId);
   }
 
-  private async moveToShot(shotId: string){
+  private async moveToShot(shotId: string) {
     return await this.$router.push({
       name: 'captureShot',
       params: {

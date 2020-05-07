@@ -182,7 +182,7 @@ export default class CarrouselComponent extends Vue {
   @ProjectNS.Action('removeImagesFromShot')
   protected removeImagesFromShot!: ({}) => Promise<void>;
 
-  @ProjectNS.Getter
+  @ProjectNS.Getter('canEditActiveShot')
   protected canEdit!: boolean;
 
   protected selectedImagesForReal: number[] = [];
