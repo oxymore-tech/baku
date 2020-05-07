@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import store from "@/store";
 import HomeView from '@/views/HomeView.vue';
 import TodoView from '@/views/TodoView.vue';
+import LibraryView from '@/views/LibraryView.vue';
 import ShotsView from '@/views/ShotsView.vue';
 import CaptureView from '@/views/CaptureView.vue';
 import MovieHomeView from '@/views/MovieHomeView.vue';
@@ -15,7 +16,11 @@ const routes = [
     path: '/',
     component: HomeView,
   },
-
+  {
+    name: 'library',
+    path: '/library',
+    component: LibraryView,
+  },
   {
     name: 'smartphone',
     path: '/smartphone/:socketId',
