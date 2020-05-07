@@ -65,12 +65,4 @@ public class PathService {
             .resolve(imageType)
             .resolve(imageId);
     }
-
-    public Path getMovieLockFile(String projectId) {
-        return this.projectDir(projectId).resolve("project.lock");
-    }
-
-    public Path getShotLockFile(String projectId, String planId) {
-        return this.projectDir(projectId).resolve(planId + ".lock");
-    }
 }
