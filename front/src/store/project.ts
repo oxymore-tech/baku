@@ -185,7 +185,9 @@ export const ProjectStore: BakuModule<ProjectState> = {
       return nextShotId;
     },
 
-
+    getShotCount: (state, getters: ProjectGetters): number | undefined => {
+      return getters.movie.shots.length;
+    },
 
     getActiveShotIndex: (state, getters: ProjectGetters): number | undefined => {
       return getters.movie.shots.findIndex((shot: Shot) => shot.id === getters.getActiveShot?.id);
