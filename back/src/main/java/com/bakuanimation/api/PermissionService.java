@@ -4,27 +4,12 @@ import com.bakuanimation.model.BakuEvent;
 import com.bakuanimation.model.Movie;
 import com.bakuanimation.model.Project;
 
-import java.io.IOException;
-import java.util.List;
-
 public interface PermissionService {
-    void lockMovie(Project project) throws IOException;
-
-    void lockShot(Project project, String shotId) throws IOException;
-
-    void unlockMovie(Project project) throws IOException;
-
-    void unlockShot(Project project, String shotId) throws IOException;
-
-    boolean isMovieLocked(String projectId);
-
-    List<String> lockShots(String projectId) throws IOException;
-
     String getNewProjectId();
 
     Project getProject(String projectId);
 
-    void hasRight(Movie movie, BakuEvent event);
+    void hasRight(Project project, Movie movie, BakuEvent event);
 
     String sign(String projectId) throws Exception;
 }

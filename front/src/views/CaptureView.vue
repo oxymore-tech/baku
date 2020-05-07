@@ -218,7 +218,7 @@ export default class CaptureView extends AbstractProjectView {
   @ProjectNS.Getter
   public getActiveShotImgCount!: number;
 
-  @ProjectNS.Getter
+  @ProjectNS.Getter('canEditActiveShot')
   public canEdit!: number;
 
   // Carroussel Frame

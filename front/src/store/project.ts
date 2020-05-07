@@ -112,6 +112,26 @@ export const ProjectStore: BakuModule<ProjectState> = {
       const event = makeEvent(context, BakuAction.CHANGE_FPS, fps);
       loadEvents(context, [event]);
     },
+
+    async lockMovie(context): Promise<void> {
+      const event = makeEvent(context, BakuAction.MOVIE_LOCK, context.getters.movie.locked);
+      loadEvents(context, [event]);
+    },
+
+    async lockShot(context, params: { shotId: string, locked: boolean }): Promise<void> {
+      const event = makeEvent(context, BakuAction.MOVIE_LOCK, params);
+      loadEvents(context, [event]);
+    },
+
+    async changeShotSynposis(context,  params: { shotId: string, synopsis: string }){
+      const event = makeEvent(context, BakuAction.SHOT_UPDATE_SYNOPSIS, params);
+      loadEvents(context, [event]);
+    },
+
+    async changeShotStoryboard(context,  params: { shotId: string, storyboard: string }){
+      const event = makeEvent(context, BakuAction.SHOT_UPDATE_STORYBOARD, params);
+      loadEvents(context, [event]);
+    }
   },
   getters: {
     movie: (state): Movie =>
@@ -126,7 +146,13 @@ export const ProjectStore: BakuModule<ProjectState> = {
     synchronizing: (state): boolean =>
     state.pendingActions !== 0,
 
-    canEdit: (state): boolean =>
+    canEditMovie: (state, getters: ProjectGetters): boolean =>
+    !getters.movie.locked,
+
+    canEditActiveShot: (state, getters: ProjectGetters): boolean =>
+    !getters.movie.locked && !getters.getActiveShot.locked,
+
+    canLock: (state): boolean =>
     (state.id).length > 36,
 
     getNoEditId: (state, getters: ProjectGetters): string => getters.canEdit ? state.id.slice(0,36) : state.id,

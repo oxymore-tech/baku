@@ -8,7 +8,9 @@ public enum BakuAction {
     SHOT_ADD,
     CHANGE_FPS,
     MOVIE_REMOVE_IMAGE,
-    SHOT_REMOVE;
+    SHOT_REMOVE,
+    MOVIE_LOCK,
+    SHOT_LOCK;
 
     public static BakuAction action(int value) {
         switch (value) {
@@ -28,6 +30,10 @@ public enum BakuAction {
                 return MOVIE_REMOVE_IMAGE;
             case 7:
                 return SHOT_REMOVE;
+            case 8:
+                return MOVIE_LOCK;
+            case 9:
+                return SHOT_LOCK;
             default:
                 throw new IllegalArgumentException();
         }

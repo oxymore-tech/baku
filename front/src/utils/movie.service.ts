@@ -32,11 +32,15 @@ export interface Movie {
   readonly poster?: ImageRef;
   readonly shots: Shot[];
   readonly fps: number;
+  readonly locked: boolean;
 }
 
 export interface Shot {
   readonly id: string;
   readonly images: ImageRef[];
+  readonly locked: boolean;
+  readonly synopsis: string;
+  readonly storyboard?: ImageRef;
 }
 
 export interface ReadingSliderBoundaries {
@@ -54,6 +58,7 @@ export class MovieService {
     let synopsis = 'Synopsis vide';
     let poster;
     let fps = 12;
+    let locked = false;
     const shots: Shot[] = [];
 
     const updateShot = (shotId: string, updateFn: (shot: Shot) => Shot) => {
@@ -89,6 +94,8 @@ export class MovieService {
           shots.push({
             id: event.value.shotId,
             images: [],
+            locked: false,
+            synopsis: '',
           });
           break;
         }
@@ -109,12 +116,31 @@ export class MovieService {
           fps = event.value;
           break;
         }
+        case BakuAction.SHOT_LOCK: {
+          updateShot(event.value.shotId, (shot: Shot) =>
+            ({...shot, locked: event.value.locked})
+          );
+          break;
+        }
+        case BakuAction.MOVIE_LOCK: {
+          locked = event.value;
+        }
+        case BakuAction.SHOT_UPDATE_SYNOPSIS: {
+          updateShot(event.value.shotId, (shot: Shot) =>
+            ({...shot, synospsis: event.value.synopsis})
+          )
+        }
+        case BakuAction.SHOT_UPDATE_STORYBOARD: {
+          updateShot(event.value.shotId, (shot: Shot) =>
+            ({...shot, storyboard: event.value.storyboard})
+          )
+        }
         default:
           break;
       }
     });
     return {
-      title, synopsis, poster, shots, fps,
+      title, synopsis, poster, shots, fps, locked
     };
   }
 }
