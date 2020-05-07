@@ -1,6 +1,6 @@
 <template>
   <i class="icon-camera" v-if="canCapture" @click="capture()" style="color:#e66359;" />
-  <img v-else src="@/assets/camera-off-color.svg" style="height:32px;"  @click="moveToCapture()"/>
+  <img v-else src="@/assets/camera-off-color.svg" style="height:32px;" @click="moveToCapture()" />
 </template>
 
 <style lang="scss">
@@ -17,6 +17,7 @@ import {
 import { namespace } from 'vuex-class';
 import { Device } from '@/utils/device.class';
 import { KeyCodes } from '@/utils/movie.service';
+import * as _ from 'lodash';
 
 const CaptureNS = namespace('capture');
 const WebRTCNS = namespace('webrtc');
@@ -38,6 +39,9 @@ export default class CaptureButtonComponent extends Vue {
   @CaptureNS.State
   public scaleY!: number | 1;
 
+  @CaptureNS.State
+  public stream!: MediaStream;
+
   @CaptureNS.Action('detachMediaStream')
   public detachMediaStream!: () => void;
 
@@ -55,8 +59,6 @@ export default class CaptureButtonComponent extends Vue {
   public isCapturing = false;
 
   public async mounted() {
-    this.detachMediaStream();
-    this.onDeviceIdChanged();
     window.addEventListener('keyup', (e: KeyboardEvent) => {
       switch (e.keyCode) {
         case KeyCodes.ENTER:
@@ -95,15 +97,13 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   @Watch('device')
-  async onDeviceIdChanged() {
+  async onDeviceIdChanged(newDevice: Device, oldDevice: Device) {
     this.isCapturing = false;
-    if (!this.device.isSmartphone()) {
+    if (!this.device.isSmartphone() && this.canCapture) {
       this.setupWebCam();
-    } else if (this.peerConnected) {
+    } else if (this.peerConnected && this.canCapture) {
       this.mediaOk = true;
       this.setupSmarphone();
-    } else {
-      await this.detachMediaStream();
     }
   }
 
@@ -119,12 +119,16 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   @Watch('canCapture')
-  async onCanCaptureChange(canCapture: boolean) {
+  onCanCaptureChange(canCapture: boolean) {
     if (!this.device.isSmartphone()) {
-      if (canCapture) {
+      if (canCapture && this.stream === null) {
         this.setupWebCam();
       } else {
-        await this.detachMediaStream();
+        setTimeout(() => {
+          if (!this.canCapture) {
+            this.detachMediaStream();
+          }
+        }, 3000);
       }
     }
   }
@@ -173,6 +177,7 @@ export default class CaptureButtonComponent extends Vue {
 
   private async setupWebCam() {
     this.mediaOk = true;
+    console.log('queryUserMedia');
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         width: { min: 640, ideal: 1280 },

@@ -369,7 +369,6 @@ export default class CaptureView extends AbstractProjectView {
 
   @Watch('stream')
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
-    console.log(newValue);
     if (newValue) {
       (this.$refs.videoCapture as HTMLVideoElement).srcObject = newValue;
       // (this.$refs.videoCaptureFullscreen as HTMLVideoElement).srcObject = newValue;
@@ -378,7 +377,6 @@ export default class CaptureView extends AbstractProjectView {
 
   @Watch('getActiveShot')
   public async onActiveShotChange(shot: Shot) {
-    console.log('[Capture] onActiveShotChange()');
     if (shot) {
       ImageCacheService.startPreloading(
         shot.images,
@@ -480,7 +478,6 @@ export default class CaptureView extends AbstractProjectView {
 
   public onUploaded(id: string) {
     ImageCacheService.startPreloadingImage(new UploadedImage(this.id, id), () => this.$forceUpdate());
-    console.log('onUploaded -1');
     this.$store.commit('project/incAction', -1);
   }
 

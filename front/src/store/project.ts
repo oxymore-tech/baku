@@ -24,7 +24,6 @@ const loadEvents = (
   context: BakuActionContext<ProjectState>,
   events: BakuEvent[]): void => {
 
-    console.log(events)
     const promise = api.stack(context.state.id, events);
 
     events.map(event => {
