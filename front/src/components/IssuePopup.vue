@@ -86,7 +86,7 @@ export default class IssuePopup extends Vue {
 
       if (this.data.title.value && this.data.message.text) {
         const auth = {
-          headers: { Authorization: 'token ' + '559c06c95c08954dfac31c41bb94c1445908dbb5' }, // put token in a store
+          headers: { Authorization: 'token ' + 'bc92ede44c759d5816a1fc9b85abe91410ab6155' }, // put token in a store
         };
         this.data.message.sending = `__Sur quel écran étiez-vous :__ ${this.data.screen.value}\n__Description :__ ${this.data.message.text}`;
         if (this.data.email.text) {
