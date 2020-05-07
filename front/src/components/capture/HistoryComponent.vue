@@ -1,36 +1,38 @@
 <style lang="scss" scoped>
-  @import "@/styles/collaboration.scss";
+  @import "@/styles/history.scss";
 </style>
 
 <template>
-  <div class="main-frame">
-    <div class="history">
-      <h4 class="title">Historique des actions :</h4>
-      <ul>
-        <li
-          v-for="(event, index) in history.slice().reverse()"
-          :key="`action_${index}`"
-          class="action"
-        >
-          {{user(event) +" "}}
-          <span class="action-highlight">{{action(event)}}</span>
-          <span class="action-date">{{" " + date(event)}}</span>
-        </li>
-      </ul>
-    </div>
+  <div class="history">
+    <h4 class="title">Historique</h4>
+    <ul>
+      <li
+        v-for="(event, index) in history.slice().reverse()"
+        :key="`action_${index}`"
+        class="action"
+      >
+        <i class="icon-user-circle"/>
+        <div>
+          <div>
+            {{user(event) +" "}}
+            <span class="action-highlight">{{action(event)}}</span>
+          </div>
+          <div class="action-date">{{" " + date(event)}}</div>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import AbstractProjectView from '@/views/AbstractProjectView.vue';
 import { BakuAction, BakuEvent } from '@/utils/types';
 
 const ProjectNS = namespace('project');
 
 @Component
-export default class CollaborationView extends AbstractProjectView {
+export default class HistoryComponent extends Vue {
   @ProjectNS.State
   public history!: BakuEvent[];
 

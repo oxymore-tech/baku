@@ -48,21 +48,21 @@ export default class IssuePopup extends Vue {
       message: {
         text: '',
         maxlength: 255,
-          sending: ''
+        sending: '',
       },
       title: {
-        value: 'Titre 1'
+        value: 'Titre 1',
       },
       titles: [
-        {text: 'Titre 1', value: 'Titre 1'},
-        {text: 'Titre 2', value: 'Titre 2'}
+        { text: 'Titre 1', value: 'Titre 1' },
+        { text: 'Titre 2', value: 'Titre 2' },
       ],
       screen: {
-        value: 'Ecran de capture'
+        value: 'Ecran de capture',
       },
       screens: [
-        {text: 'Ecran de capture', value: 'Ecran de capture'},
-        {text: 'Ecran de', value: 'Ecran de'}
+        { text: 'Ecran de capture', value: 'Ecran de capture' },
+        { text: 'Ecran de', value: 'Ecran de' },
       ],
       email: {
         text: '',
@@ -70,30 +70,30 @@ export default class IssuePopup extends Vue {
       errors: [] as string[]
     }
 
-  public async onSendIssue() {
-    this.data.errors = [];
-    if (!this.data.message.text) {
-      this.data.errors.push('La description est obligatoire.')
-    }
-    if (!this.data.title.value) {
-      this.data.errors.push('Le titre est obligatoire.')
-    }
-
-    if (this.data.title.value && this.data.message.text) {
-      const auth = {
-        headers: {Authorization: 'token ' + '559c06c95c08954dfac31c41bb94c1445908dbb5'} // put token in a store
+    public async onSendIssue() {
+      this.data.errors = [];
+      if (!this.data.message.text) {
+        this.data.errors.push('La description est obligatoire.');
       }
-      this.data.message.sending = '__Sur quel écran étiez-vous :__ ' + this.data.screen.value + '\n' + '__Description :__ ' + this.data.message.text
+      if (!this.data.title.value) {
+        this.data.errors.push('Le titre est obligatoire.');
+      }
+
+      if (this.data.title.value && this.data.message.text) {
+        const auth = {
+          headers: { Authorization: 'token ' + '559c06c95c08954dfac31c41bb94c1445908dbb5' }, // put token in a store
+        };
+        this.data.message.sending = `__Sur quel écran étiez-vous :__ ${this.data.screen.value}\n__Description :__ ${this.data.message.text}`;
         if (this.data.email.text) {
-            this.data.message.text += '\n__Email :__ ' + this.data.email.text
+          this.data.message.text += `\n__Email :__ ${this.data.email.text}`;
         }
-        axios.post(`https://api.github.com/repos/BakuAnimation/baku/issues`, {title: this.data.title.value, body: this.data.message.sending}, auth)
-              .catch(e => {
-                console.log(e)
-              })
+        axios.post('https://api.github.com/repos/BakuAnimation/baku/issues', { title: this.data.title.value, body: this.data.message.sending }, auth)
+          .catch((e) => {
+            console.log(e);
+          });
         this.$emit('close');
+      }
     }
-  }
 }
 
 </script>

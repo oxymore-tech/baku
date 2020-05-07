@@ -163,7 +163,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
 
     getActiveShotIndex: (state, getters: ProjectGetters): number | undefined => {
-      return getters.movie.shots.findIndex((shot: Shot) => shot.id === getters.getActiveShot.id);
+      return getters.movie.shots.findIndex((shot: Shot) => shot.id === getters.getActiveShot?.id);
     },
   },
   modules: {},

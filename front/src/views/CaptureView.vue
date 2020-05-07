@@ -145,7 +145,7 @@
             </div>
           </div>
         </div>
-        <div>L'historique sera ici</div>
+        <HistoryComponent/>
       </div>
 
       <CarrouselComponent
@@ -179,6 +179,7 @@ import AbstractProjectView from '@/views/AbstractProjectView.vue';
 import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
 import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
 import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import HistoryComponent from '@/components/capture/HistoryComponent.vue';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
 import { Device } from '@/utils/device.class';
@@ -193,6 +194,7 @@ const WebRTCNS = namespace('webrtc');
 @Component({
   components: {
     CaptureToolboxComponent,
+    HistoryComponent,
     CarrouselComponent,
     CaptureButtonComponent,
     ImagesSelectorComponent,

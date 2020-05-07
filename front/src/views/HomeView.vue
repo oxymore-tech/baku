@@ -9,7 +9,7 @@
         <img src="@/assets/baku_solo.svg" />
       </div>
       <div class="welcome-div">
-        <h3>Bienvenue sur Baku</h3>
+        <h3>Libérez votre imagination</h3>
         <div class="description">
           <div>
             <span>{{ description1 }}</span>
@@ -27,7 +27,7 @@
             <i class="icon-movie baku-button" />
             <span class="baku-button">Ma librairie</span>
           </div>
-          <a class="option-home" href="https://www.youtube.com">
+          <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
             <i class="icon-youtube-brands baku-button" />
             <span>Tutoriels et films</span>
           </a>
@@ -78,10 +78,10 @@ export default class HomeView extends Vue {
   protected updateTitle!: (title: string) => Promise<void>;
 
   public description1 =
-    'Baku est une rencontre entre instituteurs, artistes et développeurs.';
+    'Sortez vos crayons, pinceaux et couleurs, et racontez une histoire.';
 
   public description2 =
-    'C’est une plateforme de création de films d’animation collaborative destinée aux enfants.';
+    'Baku est une plateforme collaborative de création de film d\'animation.';
 
   // public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
   //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous

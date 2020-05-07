@@ -8,7 +8,6 @@ import ShotsView from '@/views/ShotsView.vue';
 import CaptureView from '@/views/CaptureView.vue';
 import MovieHomeView from '@/views/MovieHomeView.vue';
 import SmartphoneView from '@/views/SmartphoneView.vue';
-import CollaborationView from '@/views/CollaborationView.vue';
 
 const routes = [
   {
@@ -51,11 +50,6 @@ const routes = [
     name: 'movieEditing',
     path: '/movies/:projectId/movieEditing',
     component: TodoView,
-  },
-  {
-    name: 'collaboration',
-    path: '/movies/:projectId/collaboration',
-    component: CollaborationView,
   },
   {
     path: '/api',

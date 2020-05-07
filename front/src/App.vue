@@ -11,7 +11,7 @@
                 slot="trigger"
                 role="button"
                 >
-                <img src="@/assets/baku_logo.svg" class="baku-logo" alt="bakuanimation" />
+                <img src="@/assets/baku_logo_horizontal_beta.svg" class="baku-logo" alt="bakuanimation" />
             </div>
 
             <b-dropdown-item class="" aria-role="listitem">
@@ -46,8 +46,8 @@
             </b-dropdown-item>
         </b-dropdown>
 
-        <span class="movie-title" v-if="id && movie !==undefined">{{movie.title}}</span>
-        <i v-if="id" class="icon-cog baku-button" @click="openProjectSettings()" />
+        <span class="movie-title" v-if="$route.name !== 'home' && id && movie !==undefined">{{movie.title}}</span>
+        <i v-if="$route.name !== 'home' && id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
 
       <div class="planSelector" v-if="$route.name === 'captureShot' && activeShotIndex >= 0">
@@ -60,7 +60,7 @@
         {{ username }}
       </div>
     </nav>
-    <router-view />
+    <router-view :key="$route.fullPath"/>
   </div>
 </template>
 
@@ -186,7 +186,7 @@ export default class App extends Vue {
   }
 
   private async moveToShot(shotId: string){
-    await this.$router.push({
+    return await this.$router.push({
       name: 'captureShot',
       params: {
         projectId: this.id,
