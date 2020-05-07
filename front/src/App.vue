@@ -45,14 +45,11 @@
               </div>
             </b-dropdown-item>
         </b-dropdown>
-
-        <span class="movie-title" v-if="$route.name !== 'home' && id && movie !==undefined">{{movie.title}}</span>
-        <i v-if="$route.name !== 'home' && id" class="icon-cog baku-button" @click="openProjectSettings()" />
       </div>
 
       <div class="flex-container" v-if="$route.name === 'captureShot' && activeShotIndex >= 0">
         <div class="previous-plan" @click="goToPreviousPlan()" title="Plan précédent">&lt;</div>
-        <div>Plan {{ activeShotIndex + 1 }}</div>
+        <div class="baku-button" @click="onOpenPlan()">Plan {{ activeShotIndex + 1 }}</div>
         <div class="next-plan" @click="goToNextPlan()" title="Plan suivant">&gt;</div>
       </div>
       <div class="right-nav flex-container" :class="{'right-nav-home': $route.name === 'home'}">
