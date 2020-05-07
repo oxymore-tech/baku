@@ -149,7 +149,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
     !getters.movie.locked,
 
     canEditActiveShot: (state, getters: ProjectGetters): boolean =>
-    !getters.movie.locked && !getters.getActiveShot.locked,
+    !getters.movie.locked && (!getters.getActiveShot?.locked || true),
 
     canLock: (state): boolean =>
     (state.id).length > 36,

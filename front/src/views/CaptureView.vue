@@ -102,7 +102,7 @@
 
               <CaptureButtonComponent
                 class="baku-button toolbar-button toolbar-button-big"
-                v-if="activeDevice && canEdit"
+                v-if="canEdit"
                 :device="activeDevice"
                 :projectId="id"
                 :canCapture="currentDisplayedFrame === getActiveShotImgCount"
