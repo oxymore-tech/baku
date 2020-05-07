@@ -158,7 +158,7 @@ export default class App extends Vue {
 
   public async onOpenLibrary() {
     await this.$router.push({
-      name: 'captureShots', // a changer quand page my library dispo
+      name: 'library'
     });
   }
 

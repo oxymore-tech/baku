@@ -87,13 +87,6 @@ export default class HomeView extends Vue {
   //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
   //   souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées.`;
 
-  public bottomPanelTitle() {
-    if (this.seenProjects.length == 0) {
-      return 'Quelques films de démonstration';
-    }
-    return 'Mes films';
-  }
-
   public isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent,
@@ -116,7 +109,11 @@ export default class HomeView extends Vue {
     }
   }
 
-  public async onClickMyLibrary() {}
+  public async onClickMyLibrary() {
+    await this.$router.push({
+      name: 'library'
+    });
+  }
 
   public async onCreateProject() {
     const projectId = await createProject();

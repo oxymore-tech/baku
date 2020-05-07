@@ -62,13 +62,12 @@ export const UserStore: BakuModule<UserState> = {
           result.push(item);
         }
       }
-      state.seenProjects = result
+      state.seenProjects = result;
     },
   },
   actions: {
     updateSeenProjects(context, project: SeenProject) {
-
-      const projectId = store.state.project.id;
+      let projectId = store.state.project.id;
       if (projectId) {
         const movie = store.getters["project/movie"];
         let posterUrl = "";
@@ -77,13 +76,28 @@ export const UserStore: BakuModule<UserState> = {
         } else if (movie && movie.shots && movie.shots.length > 0 && movie.shots[0].images && movie.shots[0].images.length > 0) {
           posterUrl = movie.shots[0].images[0].getUrl(Quality.Original);
         } else {
-          return
+
         }
+
+        let adminId = null;
+        if (projectId.length > 36) {
+          // Admin link
+          adminId = projectId;
+          projectId = projectId.slice(0,36);
+        }
+
         const project: SeenProject = {
           id: projectId,
           title: movie.title,
           posterUrl: posterUrl,
+          synopsis: movie.synopsis,
+          locked: movie.locked,
         }
+
+        if (adminId) {
+          project.adminId = adminId;
+        }
+
         context.commit('addSeenProject', project);
         localStorage.setItem(lsSeenProjectsKey, JSON.stringify(context.state.seenProjects));
       }

@@ -67,6 +67,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
   actions: {
     async loadProject(context, projectId: string): Promise<void> {
       const movieHistory = await api.getHistory(projectId);
+      store.dispatch('user/updateSeenProjects');
       await context.commit('setMovie', { projectId, movieHistory });
     },
     async addImagesToShot(context, values: any[]): Promise<void> {
@@ -99,6 +100,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
       const shotId = uuid.v4();
       const event = makeEvent(context, BakuAction.SHOT_ADD, { shotId });
       loadEvents(context, [event]);
+      store.dispatch('user/updateSeenProjects');
       return shotId;
     },
 

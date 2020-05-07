@@ -19,9 +19,12 @@ export interface ProjectState {
 }
 
 export interface SeenProject {
-  id: string,
-  title: string,
-  posterUrl: string,
+  id: string;
+  adminId?: string;
+  title: string;
+  posterUrl: string;
+  synopsis?: string;
+  locked?: boolean;
 }
 
 export interface UserState {
