@@ -4,10 +4,14 @@
 
 <template>
   <div class="modal-card" style="width: auto">
-    <header class="modal-card-head">
-      <p class="modal-card-title">Image</p>
-      <i @click="$emit('close')" class="icon-close baku-button"></i>
-    </header>
+      <div class="close"><i @click="$emit('close')" class="icon-close baku-button"></i></div>
+      <header class="modal-card-head">
+          <div class="card-head">
+              <p class="modal-card-title">
+                  <i class="icon-bullhorn-solid baku-button"></i><img src="@/assets/message.png"/>
+              </p>
+          </div>
+      </header>
     <section class="modal-card-body">
         <p v-if="data.errors.length">
             <b class="error">Le formulaire est invalide :</b>
@@ -25,7 +29,7 @@
         <select name="screen" id="screen" v-model="data.screen.value">
           <option v-for="s in data.screens" v-bind:value="s.value">{{s.text}}</option>
         </select>
-        <span>Vous pouvez tous nous dire (encouragements appréciés ^.^)</span>
+        <span>Que s'est-il passé exactement ?</span>
         <div class="form-group">
           <textarea class="message" name="textarea" id="textarea" required=""
                     v-model="data.message.text"
@@ -51,18 +55,19 @@ export default class IssuePopup extends Vue {
         sending: '',
       },
       title: {
-        value: 'Titre 1',
+        value: 'Nous remonter un comportement inattendu',
       },
       titles: [
-        { text: 'Titre 1', value: 'Titre 1' },
-        { text: 'Titre 2', value: 'Titre 2' },
+        { text: 'Nous remonter un comportement inattendu', value: 'Nous remonter un comportement inattendu' },
       ],
       screen: {
-        value: 'Ecran de capture',
+        value: 'écran d\'accueil Baku',
       },
       screens: [
-        { text: 'Ecran de capture', value: 'Ecran de capture' },
-        { text: 'Ecran de', value: 'Ecran de' },
+        { text: 'écran d\'accueil Baku', value: 'écran d\'accueil Baku' },
+        { text: 'écran de capture d\'images', value: 'écran de capture d\'images' },
+        { text: 'écran de ma librairie de films', value: 'écran de ma librairie de films' },
+        { text: 'écran de gestion des plans', value: 'écran de gestion des plans' },
       ],
       email: {
         text: '',
