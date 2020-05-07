@@ -1,6 +1,7 @@
 <template>
   <div v-if="activeShot" class="box-container storyboard-preview-container">
     <textarea
+      id="shotSynopsis"
       ref="shotSynopsis"
       rows="4"
       cols="50"
@@ -37,7 +38,6 @@ export default class StoryboardPreviewComponent extends Vue {
 
   
   public async changeShotSynopsis() {
-
     let shotId = this.activeShot?.id;
     let synopsis = (this.$refs.shotSynopsis as any).value;
 

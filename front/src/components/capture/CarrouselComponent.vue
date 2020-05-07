@@ -192,49 +192,54 @@ export default class CarrouselComponent extends Vue {
 
   mounted() {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
-      switch (e.keyCode) {
-        case KeyCodes.HOME:
-        case KeyCodes.PAGE_UP:
-          this.$emit('moveHome', e);
-          break;
-        case KeyCodes.END:
-        case KeyCodes.PAGE_DOWN:
-          this.$emit('moveEnd', e);
-          break;
-        case KeyCodes.LEFT_ARROW:
-          this.$emit('moveFrame', -1);
-          break;
-        case KeyCodes.RIGHT_ARROW:
-          this.$emit('moveFrame', 1);
-          break;
-        case KeyCodes.SPACE:
-          this.$emit('togglePlay', e);
-          break;
-        case KeyCodes.DELETE:
-          this.deleteFrame();
-          break;
-        case KeyCodes.C:
-          if (e.ctrlKey || e.metaKey) {
-            this.onCopy();
-          }
-          break;
-        case KeyCodes.V:
-          if (e.ctrlKey || e.metaKey) {
-            this.onPaste();
-          }
-          break;
-        default:
-          break;
-      }
+      if ((e as any).target.id != 'shotSynopsis') {
+        switch (e.keyCode) {
+          case KeyCodes.HOME:
+          case KeyCodes.PAGE_UP:
+            this.$emit('moveHome', e);
+            break;
+          case KeyCodes.END:
+          case KeyCodes.PAGE_DOWN:
+            this.$emit('moveEnd', e);
+            break;
+          case KeyCodes.LEFT_ARROW:
+            this.$emit('moveFrame', -1);
+            break;
+          case KeyCodes.RIGHT_ARROW:
+            this.$emit('moveFrame', 1);
+            break;
+          case KeyCodes.SPACE:
+            this.$emit('togglePlay', e);
+            break;
+          case KeyCodes.DELETE:
+            this.deleteFrame();
+            break;
+          case KeyCodes.C:
+            if (e.ctrlKey || e.metaKey) {
+              this.onCopy();
+            }
+            break;
+          case KeyCodes.V:
+            if (e.ctrlKey || e.metaKey) {
+              this.onPaste();
+            }
+            break;
+          default:
+            break;
+        }
+      }      
     });
+
     window.addEventListener('keyup', (e: KeyboardEvent) => {
-      switch (e.keyCode) {
-        case KeyCodes.LEFT_ARROW:
-        case KeyCodes.RIGHT_ARROW:
-          this.$emit('stopMovingFrame', e);
-          break;
-        default:
-          break;
+      if ((e as any).target.id != 'shotSynopsis') {
+        switch (e.keyCode) {
+          case KeyCodes.LEFT_ARROW:
+          case KeyCodes.RIGHT_ARROW:
+            this.$emit('stopMovingFrame', e);
+            break;
+          default:
+            break;
+        }
       }
     });
   }
