@@ -91,7 +91,7 @@ nav {
   color: #fe676f;
 }
 
-.planSelector {
+.flex-container {
   display: flex;
 }
 
@@ -102,4 +102,8 @@ nav {
   padding-left: 10px;
   padding-right: 10px;
   cursor: pointer;
+}
+
+.bug{
+  margin-right: 10px;
 }
