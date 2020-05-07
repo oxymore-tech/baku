@@ -157,9 +157,9 @@ export default {
         this.setPosition(this.newPosition);
       }
     },
-    onDragEnd() {
+    onDragEnd(event) {
       this.dragging = false;
-      this.$emit('dragend');
+      this.$emit('dragend', { oldValue: this.oldValue, shiftKey: event.shiftKey });
       if (this.value !== this.oldValue) {
         this.$parent.emitValue('change');
       }

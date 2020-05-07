@@ -8,7 +8,7 @@ import uuid from 'uuid';
 interface ProjectGetters {
   movie: Movie;
   getActiveShot: Shot;
-  canEdit: boolean;
+  canLock: boolean;
 }
 
 const makeEvent = (context: BakuActionContext<ProjectState>, action: BakuAction, value: any) => {
@@ -113,7 +113,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
     },
 
     async lockMovie(context): Promise<void> {
-      const event = makeEvent(context, BakuAction.MOVIE_LOCK, context.getters.movie.locked);
+      const event = makeEvent(context, BakuAction.MOVIE_LOCK, !context.getters.movie.locked);
       loadEvents(context, [event]);
     },
 
@@ -154,7 +154,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
     canLock: (state): boolean =>
     (state.id).length > 36,
 
-    getNoEditId: (state, getters: ProjectGetters): string => getters.canEdit ? state.id.slice(0,36) : state.id,
+    getNoEditId: (state, getters: ProjectGetters): string => getters.canLock ? state.id.slice(0,36) : state.id,
 
     getPreviousShotId: (state, getters: ProjectGetters): string | undefined => {
       console.log(getters.movie.shots);

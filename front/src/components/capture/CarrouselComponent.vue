@@ -50,14 +50,13 @@
       <!-- LEFT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedLeftCarrousel">
         <template v-if="image !== null">
-          <div :key="'left'+index" class="image-container">
+          <div :key="'left'+index" class="image-container"  :class="{active : selectedImagesForReal.includes(activeImage - (computedLeftCarrousel.length - index))}">
             <span
               class="framenumber-indicator"
             >{{ activeImage +1 - (computedLeftCarrousel.length - index) }}</span>
             <img
               class="carrousel-thumb"
               :alt="image"
-              :class="{active : selectedImagesForReal.includes(index)}"
               :src="ImageCacheService.getThumbnail(image.id)"
               @click="moveToImage($event, index - computedLeftCarrousel.length)"
             />
@@ -93,13 +92,12 @@
       <!-- RIGHT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedRightCarrousel">
         <template v-if="image !== null">
-          <div :key="'right'+index" class="image-container">
+          <div :key="'right'+index" class="image-container" :class="{active : selectedImagesForReal.includes(activeImage + index +1)}">
             <span v-if="image !== 'liveview' || canEdit" class="framenumber-indicator">{{ activeImage + index + 2 }}</span>
             <img
               v-if="image !== 'liveview'"
               class="carrousel-thumb"
               :alt="image"
-              :class="{active : selectedImagesForReal.includes(activeImage + index +1)}"
               :src="ImageCacheService.getThumbnail(image.id)"
               @click="moveToImage($event,index + 1)"
             />
@@ -186,8 +184,6 @@ export default class CarrouselComponent extends Vue {
   @ProjectNS.Getter('canEditActiveShot')
   protected canEdit!: boolean;
 
-  protected selectedImagesForReal: number[] = [];
-
   private imagesToCopy: string[] = [];
 
   mounted() {
@@ -254,7 +250,6 @@ export default class CarrouselComponent extends Vue {
         shotId: this.activeShot,
         imageIndex: imgId,
       }]));
-      this.selectedImagesForReal = [];
     }
   }
 
@@ -288,6 +283,13 @@ export default class CarrouselComponent extends Vue {
     );
   }
 
+  get selectedImagesForReal() {
+    if (this.selectedImages.left === this.selectedImages.right) {
+      return [];
+    }
+    return _.range(this.selectedImages.left, this.selectedImages.right + 1);
+  }
+
   get computedNextImages(): ImageRef[] {
     const sliceIndex = this.activeImage + 7;
     return this.images.slice(sliceIndex, sliceIndex + 20);
@@ -309,39 +311,13 @@ export default class CarrouselComponent extends Vue {
 
   public moveToImage(e: MouseEvent, indexToMove: number) {
     if (!this.isFrameLiveView && !this.isPlaying) {
-      if (e.ctrlKey) {
-        // add to selection
-        if (
-          this.selectedImagesForReal.includes(this.activeImage + indexToMove)
-        ) {
-          this.selectedImagesForReal.splice(
-            this.selectedImagesForReal.indexOf(this.activeImage + indexToMove),
-            1,
-          );
-        } else {
-          this.selectedImagesForReal.push(this.activeImage + indexToMove);
-        }
-      }
       if (e.shiftKey) {
-        this.selectedImagesForReal = [];
-        if (indexToMove > 0) {
-          this.selectedImagesForReal = _.uniq(
-            this.selectedImagesForReal.concat(
-              _.range(this.activeImage + 1, this.activeImage + indexToMove + 1),
-            ),
-          );
-        } else {
-          this.selectedImagesForReal = _.uniq(
-            this.selectedImagesForReal.concat(
-              _.range(this.activeImage + indexToMove, this.activeImage),
-            ),
-          );
-        }
+        // add to selection
+        this.$emit('increaseSelection', this.activeImage + indexToMove);
       }
     }
     if (!e.shiftKey && !e.ctrlKey) {
       this.$emit('activeImageChange', this.activeImage + indexToMove);
-      this.selectedImagesForReal = [];
     }
   }
 
@@ -370,10 +346,6 @@ export default class CarrouselComponent extends Vue {
           image: imgref,
         },
       ]));
-      this.selectedImagesForReal = _.range(
-        this.activeImage + 1,
-        this.activeImage + 1 + this.imagesToCopy.length,
-      );
     }
   }
 
@@ -387,10 +359,6 @@ export default class CarrouselComponent extends Vue {
           image: imgref,
         },
       ]));
-      this.selectedImagesForReal = _.range(
-        this.activeImage + 1,
-        this.activeImage + 1 + this.imagesToCopy.length,
-      );
     }
   }
 }

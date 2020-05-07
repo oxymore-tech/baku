@@ -66,68 +66,57 @@
               <span class="clock-small">:</span>
               <span>{{ nbSecs(this.currentDisplayedFrame) }}</span>
             </div>
-            <i
-              class="toolbar-button icon-step-backward baku-button"
-              style="color:#455054;"
-              @click="moveHome()"
-            />
-            <i
-              class="toolbar-button icon-backward baku-button"
-              style="color:#455054;"
-              @click="moveFrame(- 1)"
-            />
-            <i
-              class="toolbar-button toolbar-button-big icon-play"
-              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
-              @click="playAnimation()"
-              v-if="isPlaying !== 'animation'"
-            />
-            <i
-              class="toolbar-button toolbar-button-big icon-pause baku-button"
-              @click="pauseAnimation()"
-              v-else
-            />
-            <i
-              class="toolbar-button toolbar-button-big icon-play_loop"
-              :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
-              @click="playSelection()"
-              v-if="isPlaying !== 'selection'"
-            />
-            <i
-              class="toolbar-button toolbar-button-big icon-pause baku-button"
-              @click="pauseAnimation()"
-              v-else
-            />
-            <CaptureButtonComponent
-              class="baku-button toolbar-button toolbar-button-big"
-              v-if="activeDevice && canEdit"
-              :device="activeDevice"
-              :projectId="id"
-              :canCapture="currentDisplayedFrame === getActiveShotImgCount"
-              @captured="onCaptured"
-              @uploaded="onUploaded"
-              @moveToCapture="moveToCapture()"
-            />
-            <i
-              class="toolbar-button icon-forward baku-button"
-              style="color:#455054;"
-              @click="moveFrame(1)"
-            />
-            <i
-              class="toolbar-button icon-step-forward baku-button"
-              style="color:#455054;"
-              @click="moveEnd()"
-            />
-            <i
-              class="toolbar-button icon-set_begin baku-button"
-              style="color:#455054;"
-              @click="moveLeftBoundary()"
-            />
-            <i
-              class="toolbar-button icon-set_end baku-button"
-              style="color:#455054;"
-              @click="moveRightBoundary()"
-            />
+
+            <div style="display:inline-flex; align-items:center;">
+              <i
+                class="toolbar-button icon-backward baku-button"
+                style="color:#455054;"
+                @click="moveFrame(- 1)"
+              />
+              <template v-if="!isMultiSelect">
+                <i
+                  class="toolbar-button toolbar-button-big icon-play"
+                  :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
+                  @click="playAnimation()"
+                  v-if="isPlaying !== 'animation'"
+                />
+                <i
+                  class="toolbar-button toolbar-button-big icon-pause baku-button"
+                  @click="pauseAnimation()"
+                  v-else
+                />
+              </template>
+              <template v-else>
+                <i
+                  class="toolbar-button toolbar-button-big icon-play_loop"
+                  :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
+                  @click="playSelection()"
+                  v-if="isPlaying !== 'selection'"
+                />
+                <i
+                  class="toolbar-button toolbar-button-big icon-pause baku-button"
+                  @click="pauseAnimation()"
+                  v-else
+                />
+              </template>
+
+              <CaptureButtonComponent
+                class="baku-button toolbar-button toolbar-button-big"
+                v-if="activeDevice && canEdit"
+                :device="activeDevice"
+                :projectId="id"
+                :canCapture="currentDisplayedFrame === getActiveShotImgCount"
+                @captured="onCaptured"
+                @uploaded="onUploaded"
+                @moveToCapture="moveToCapture()"
+              />
+              <i
+                class="toolbar-button icon-forward baku-button"
+                style="color:#455054;"
+                @click="moveFrame(1)"
+              />
+            </div>
+
             <!-- <div
               class="baku-button toolbar-button toolbar-capture-button"
               :class="{'active-capture': activeDevice, 'disabled' : !!isPlaying}"
@@ -141,11 +130,14 @@
                 id="synchronization"
                 src="@/assets/baku-balls-spinner.svg"
               />
-              <CaptureToolboxComponent v-if="getActiveShot && canEdit" :isCapturing="IsFrameLiveView" />
+              <CaptureToolboxComponent
+                v-if="getActiveShot && canEdit"
+                :isCapturing="IsFrameLiveView"
+              />
             </div>
           </div>
         </div>
-        <HistoryComponent/>
+        <HistoryComponent />
       </div>
 
       <CarrouselComponent
@@ -163,6 +155,7 @@
         @moveEnd="moveEnd"
         @stopMovingFrame="syncActiveFrame"
         @togglePlay="togglePlay"
+        @increaseSelection="increaseSelection($event)"
         :selectedImages="selectedImages"
       />
     </template>
@@ -251,7 +244,7 @@ export default class CaptureView extends AbstractProjectView {
   @WebRTCNS.State
   protected dataChannel!: RTCDataChannel;
 
-  public selectedImages: ReadingSliderBoundaries = { left: 0, right: 3 };
+  public selectedImages: ReadingSliderBoundaries = { left: 0, right: 0 };
 
   public animationFrame!: number;
 
@@ -279,9 +272,14 @@ export default class CaptureView extends AbstractProjectView {
     }
 
     const nextFrame = this.getNextFrame(timestamp);
+
     if (nextFrame !== this.currentDisplayedFrame) {
       this.currentDisplayedFrame = nextFrame;
       this.displayFrame(nextFrame);
+    }
+    if (this.isPlaying === 'animation' && nextFrame === this.getActiveShotImgCount - 1) {
+      this.pauseAnimation();
+      return;
     }
     this.animationFrame = requestAnimationFrame(this.animate);
   }
@@ -444,6 +442,12 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public onActiveFrameChange(newActiveFrame: number) {
+    if (
+      newActiveFrame < this.selectedImages.left
+      || newActiveFrame > this.selectedImages.right
+    ) {
+      this.selectedImages.left = this.selectedImages.right = 0;
+    }
     this.moveFrameAbsolute(newActiveFrame);
     this.syncActiveFrame();
   }
@@ -454,6 +458,29 @@ export default class CaptureView extends AbstractProjectView {
 
   public moveRightBoundary() {
     this.onActiveFrameChange(this.selectedImages.right);
+  }
+
+  public increaseSelection(newFrame: number) {
+    if (!this.isMultiSelect) {
+      this.selectedImages.left = Math.min(this.currentDisplayedFrame, newFrame);
+      this.selectedImages.right = Math.max(
+        this.currentDisplayedFrame,
+        newFrame,
+      );
+    } else if (
+      newFrame >= this.selectedImages.left
+      && newFrame <= this.selectedImages.right
+    ) {
+      this.selectedImages.left = newFrame;
+      this.moveFrameAbsolute(this.selectedImages.left);
+    } else {
+      this.selectedImages.left = Math.min(this.selectedImages.left, newFrame);
+      this.selectedImages.right = Math.max(this.selectedImages.right, newFrame);
+    }
+  }
+
+  get isMultiSelect() {
+    return this.selectedImages.left !== this.selectedImages.right;
   }
 
   public nbHours(frame: number): string {
