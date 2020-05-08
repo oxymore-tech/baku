@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'baku';
-  src:  url('fonts/baku.eot?f43f4t');
-  src:  url('fonts/baku.eot?f43f4t#iefix') format('embedded-opentype'),
-    url('fonts/baku.ttf?f43f4t') format('truetype'),
-    url('fonts/baku.woff?f43f4t') format('woff'),
-    url('fonts/baku.svg?f43f4t#baku') format('svg');
+  src:  url('fonts/baku.eot?m626l');
+  src:  url('fonts/baku.eot?m626l#iefix') format('embedded-opentype'),
+    url('fonts/baku.ttf?m626l') format('truetype'),
+    url('fonts/baku.woff?m626l') format('woff'),
+    url('fonts/baku.svg?m626l#baku') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -127,145 +127,151 @@
 .icon-instagram-brands:before {
   content: "\e921";
 }
-.icon-lock-solid:before {
+.icon-loading:before {
   content: "\e922";
 }
-.icon-movie:before {
+.icon-lock-solid:before {
   content: "\e923";
 }
-.icon-movie-start-01:before {
+.icon-movie:before {
   content: "\e924";
 }
-.icon-oignon .path1:before {
+.icon-movie-done:before {
   content: "\e925";
+}
+.icon-movie-start-01:before {
+  content: "\e926";
+}
+.icon-oignon .path1:before {
+  content: "\e927";
   color: rgb(0, 0, 0);
   opacity: 0.25;
 }
 .icon-oignon .path2:before {
-  content: "\e926";
+  content: "\e928";
   margin-left: -1em;
   color: rgb(0, 0, 0);
   opacity: 0.5;
 }
 .icon-oignon .path3:before {
-  content: "\e927";
+  content: "\e929";
   margin-left: -1em;
   color: rgb(0, 0, 0);
   opacity: 0.75;
 }
 .icon-oignon .path4:before {
-  content: "\e928";
+  content: "\e92a";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-paste:before {
-  content: "\e929";
-}
-.icon-pause:before {
-  content: "\e92a";
-}
-.icon-play:before {
   content: "\e92b";
 }
-.icon-play_loop:before {
+.icon-pause:before {
   content: "\e92c";
 }
-.icon-plus:before {
+.icon-play:before {
   content: "\e92d";
 }
-.icon-reapeat:before {
+.icon-play_loop:before {
   content: "\e92e";
 }
-.icon-recording:before {
+.icon-plus:before {
   content: "\e92f";
 }
-.icon-reverse:before {
+.icon-reapeat:before {
   content: "\e930";
 }
-.icon-set_begin:before {
+.icon-recording:before {
   content: "\e931";
 }
-.icon-set_end:before {
+.icon-reverse:before {
   content: "\e932";
 }
-.icon-signal:before {
+.icon-set_begin:before {
   content: "\e933";
 }
-.icon-start:before {
+.icon-set_end:before {
   content: "\e934";
 }
-.icon-step-backward:before {
+.icon-signal:before {
   content: "\e935";
 }
-.icon-step-forward:before {
+.icon-start:before {
   content: "\e936";
 }
-.icon-stop:before {
+.icon-step-backward:before {
   content: "\e937";
 }
-.icon-sync-alt:before {
+.icon-step-forward:before {
   content: "\e938";
 }
-.icon-trash-alt:before {
+.icon-stop:before {
   content: "\e939";
 }
-.icon-twitter-brands:before {
+.icon-sync-alt:before {
   content: "\e93a";
 }
-.icon-unlock-solid:before {
+.icon-trash-alt:before {
   content: "\e93b";
 }
-.icon-user-bird .path1:before {
+.icon-twitter-brands:before {
   content: "\e93c";
+}
+.icon-unlock-solid:before {
+  content: "\e93d";
+}
+.icon-user-bird .path1:before {
+  content: "\e93e";
   color: rgb(0, 0, 0);
 }
 .icon-user-bird .path2:before {
-  content: "\e93d";
+  content: "\e93f";
   margin-left: -1em;
   color: rgb(243, 243, 243);
 }
 .icon-user-bird .path3:before {
-  content: "\e93e";
+  content: "\e940";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-user-circle:before {
-  content: "\e93f";
+  content: "\e941";
 }
 .icon-user-dragon:before {
-  content: "\e940";
+  content: "\e942";
 }
 .icon-user-horse .path1:before {
-  content: "\e941";
+  content: "\e943";
   color: rgb(0, 0, 0);
 }
 .icon-user-horse .path2:before {
-  content: "\e942";
+  content: "\e944";
   margin-left: -1em;
   color: rgb(255, 255, 255);
 }
 .icon-user-horse .path3:before {
-  content: "\e943";
+  content: "\e945";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-user-kiwi .path1:before {
-  content: "\e944";
+  content: "\e946";
   color: rgb(0, 0, 0);
 }
 .icon-user-kiwi .path2:before {
-  content: "\e945";
+  content: "\e947";
   margin-left: -1em;
   color: rgb(255, 255, 255);
 }
 .icon-user-kiwi .path3:before {
-  content: "\e946";
+  content: "\e948";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-webcam:before {
-  content: "\e947";
+  content: "\e949";
 }
 .icon-youtube-brands:before {
-  content: "\e948";
+  content: "\e94a";
 }
