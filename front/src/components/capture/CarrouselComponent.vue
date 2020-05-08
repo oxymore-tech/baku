@@ -50,7 +50,11 @@
       <!-- LEFT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedLeftCarrousel">
         <template v-if="image !== null">
-          <div :key="'left'+index" class="image-container"  :class="{active : selectedImagesForReal.includes(activeImage - (computedLeftCarrousel.length - index))}">
+          <div
+            :key="'left'+index"
+            class="image-container"
+            :class="{active : selectedImagesForReal.includes(activeImage - (computedLeftCarrousel.length - index))}"
+          >
             <span
               class="framenumber-indicator"
             >{{ activeImage +1 - (computedLeftCarrousel.length - index) }}</span>
@@ -92,8 +96,15 @@
       <!-- RIGHT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedRightCarrousel">
         <template v-if="image !== null">
-          <div :key="'right'+index" class="image-container" :class="{active : selectedImagesForReal.includes(activeImage + index +1)}">
-            <span v-if="image !== 'liveview' || canEdit" class="framenumber-indicator">{{ activeImage + index + 2 }}</span>
+          <div
+            :key="'right'+index"
+            class="image-container"
+            :class="{active : selectedImagesForReal.includes(activeImage + index +1)}"
+          >
+            <span
+              v-if="image !== 'liveview' || canEdit"
+              class="framenumber-indicator"
+            >{{ activeImage + index + 2 }}</span>
             <img
               v-if="image !== 'liveview'"
               class="carrousel-thumb"
@@ -105,9 +116,7 @@
               v-else-if="canEdit"
               @click="moveToImage($event,index + 1)"
               class="carrousel-thumb active waiting-capture"
-            >
-             En attente de capture
-            </div>
+            >En attente de capture</div>
           </div>
         </template>
         <template v-if="image === null">
@@ -134,21 +143,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import * as _ from 'lodash';
-import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-import { Device } from '@/utils/device.class';
-import { ImageRef } from '@/utils/uploadedImage.class';
-import { KeyCodes, ReadingSliderBoundaries } from '@/utils/movie.service';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import * as _ from "lodash";
+import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
+import { Device } from "@/utils/device.class";
+import { ImageRef } from "@/utils/uploadedImage.class";
+import { KeyCodes, ReadingSliderBoundaries } from "@/utils/movie.service";
 
-const CaptureNS = namespace('capture');
-const ProjectNS = namespace('project');
+const CaptureNS = namespace("capture");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
-    CaptureButtonComponent,
-  },
+    CaptureButtonComponent
+  }
 })
 export default class CarrouselComponent extends Vue {
   @Prop()
@@ -175,37 +184,37 @@ export default class CarrouselComponent extends Vue {
   @CaptureNS.State
   public activeDevice!: Device;
 
-  @ProjectNS.Action('addImagesToShot')
+  @ProjectNS.Action("addImagesToShot")
   protected addImagesToShot!: ({}) => Promise<void>;
 
-  @ProjectNS.Action('removeImagesFromShot')
+  @ProjectNS.Action("removeImagesFromShot")
   protected removeImagesFromShot!: ({}) => Promise<void>;
 
-  @ProjectNS.Getter('canEditActiveShot')
+  @ProjectNS.Getter("canEditActiveShot")
   protected canEdit!: boolean;
 
   private imagesToCopy: string[] = [];
 
   mounted() {
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
-      if ((e as any).target.id != 'shotSynopsis') {
+    window.addEventListener("keydown", (e: KeyboardEvent) => {
+      if ((e as any).target.id != "shotSynopsis") {
         switch (e.keyCode) {
           case KeyCodes.HOME:
           case KeyCodes.PAGE_UP:
-            this.$emit('moveHome', e);
+            this.$emit("moveHome", e);
             break;
           case KeyCodes.END:
           case KeyCodes.PAGE_DOWN:
-            this.$emit('moveEnd', e);
+            this.$emit("moveEnd", e);
             break;
           case KeyCodes.LEFT_ARROW:
-            this.$emit('moveFrame', -1);
+            this.$emit("moveFrame", -1);
             break;
           case KeyCodes.RIGHT_ARROW:
-            this.$emit('moveFrame', 1);
+            this.$emit("moveFrame", 1);
             break;
           case KeyCodes.SPACE:
-            this.$emit('togglePlay', e);
+            this.$emit("togglePlay", e);
             break;
           case KeyCodes.DELETE:
             this.deleteFrame();
@@ -226,12 +235,12 @@ export default class CarrouselComponent extends Vue {
       }
     });
 
-    window.addEventListener('keyup', (e: KeyboardEvent) => {
-      if ((e as any).target.id != 'shotSynopsis') {
+    window.addEventListener("keyup", (e: KeyboardEvent) => {
+      if ((e as any).target.id != "shotSynopsis") {
         switch (e.keyCode) {
           case KeyCodes.LEFT_ARROW:
           case KeyCodes.RIGHT_ARROW:
-            this.$emit('stopMovingFrame', e);
+            this.$emit("stopMovingFrame", e);
             break;
           default:
             break;
@@ -241,7 +250,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   public imageReady(imageId: string) {
-    if (this.images.find((i) => i.id === imageId)) {
+    if (this.images.find(i => i.id === imageId)) {
       this.$forceUpdate();
     }
   }
@@ -249,13 +258,14 @@ export default class CarrouselComponent extends Vue {
   public async deleteFrame() {
     if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       const imagesToDelete = this.selectedImagesForReal;
-      imagesToDelete.push(this.activeImage);
       imagesToDelete.sort((a: any, b: any) => b - a);
-      await asyncForEach(imagesToDelete, (imgId: number) => this.removeImagesFromShot([{
-        shotId: this.activeShot,
-        imageIndex: imgId,
-      }]));
-      this.$emit('resetSelection');
+      this.removeImagesFromShot(
+        imagesToDelete.map((imgId: number) => ({
+          shotId: this.activeShot,
+          imageIndex: imgId
+        }))
+      );
+      this.$emit("resetSelection");
     }
   }
 
@@ -279,19 +289,19 @@ export default class CarrouselComponent extends Vue {
     const sliceIndex = this.activeImage + 1;
     const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, count);
     if (
-      rightImagesAvaible.length < count
-      && this.activeImage !== this.images.length
+      rightImagesAvaible.length < count &&
+      this.activeImage !== this.images.length
     ) {
-      rightImagesAvaible.push(('liveview' as unknown) as ImageRef);
+      rightImagesAvaible.push(("liveview" as unknown) as ImageRef);
     }
     return rightImagesAvaible.concat(
-      new Array(count - rightImagesAvaible.length).fill(null),
+      new Array(count - rightImagesAvaible.length).fill(null)
     );
   }
 
   get selectedImagesForReal() {
     if (this.selectedImages.left === this.selectedImages.right) {
-      return [];
+      return [this.activeImage];
     }
     return _.range(this.selectedImages.left, this.selectedImages.right + 1);
   }
@@ -303,10 +313,10 @@ export default class CarrouselComponent extends Vue {
 
   public isInSelection(index: number, position: string) {
     let cindex = index;
-    if (position === 'right') {
+    if (position === "right") {
       cindex = this.activeImage + index + 1;
     }
-    if (position === 'left') {
+    if (position === "left") {
       const leftSelectionSize = 5;
       cindex = this.activeImage - (leftSelectionSize - index);
     }
@@ -319,56 +329,60 @@ export default class CarrouselComponent extends Vue {
     if (!this.isFrameLiveView && !this.isPlaying) {
       if (e.shiftKey) {
         // add to selection
-        this.$emit('increaseSelection', this.activeImage + indexToMove);
+        this.$emit("increaseSelection", this.activeImage + indexToMove);
       }
     }
     if (!e.shiftKey && !e.ctrlKey) {
-      this.$emit('activeImageChange', this.activeImage + indexToMove);
+      this.$emit("activeImageChange", this.activeImage + indexToMove);
     }
   }
 
   public onCopy() {
     if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       const tmpImgsToCopy = this.selectedImagesForReal;
-      tmpImgsToCopy.push(this.activeImage);
       tmpImgsToCopy.sort((a: any, b: any) => a - b);
       this.imagesToCopy = tmpImgsToCopy.map(
-        (index) => this.images[index].id as string,
+        index => this.images[index].id as string
       );
-      this.$emit('resetSelection');
+      this.$emit("resetSelection");
     }
   }
 
   public async onCut() {
     this.onCopy();
     await this.deleteFrame();
-    this.$emit('resetSelection');
+    this.$emit("resetSelection");
   }
 
   public async onPaste() {
     if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
-      await asyncForEach(this.imagesToCopy, (imgref: string, index: number) => this.addImagesToShot([
-        {
+      this.addImagesToShot(
+        this.imagesToCopy.map((imgref: string, index: number) => ({
           shotId: this.activeShot,
           imageIndex: this.activeImage + 1 + index,
-          image: imgref,
-        },
-      ]));
-      this.$emit('resetSelection');
+          image: imgref
+        }))
+      );
+      this.$emit("resetSelection");
     }
   }
 
   public async onPasteAndReverse() {
-    if (!this.isFrameLiveView && !this.isPlaying && this.imagesToCopy.length < 2 && this.canEdit) {
+    if (
+      !this.isFrameLiveView &&
+      !this.isPlaying &&
+      this.imagesToCopy.length > 2 &&
+      this.canEdit
+    ) {
       const reverted = [...this.imagesToCopy].reverse();
-      await asyncForEach(reverted, (imgref: string, index: number) => this.addImagesToShot([
-        {
+      this.addImagesToShot(
+        reverted.map((imgref: string, index: number) => ({
           shotId: this.activeShot,
           imageIndex: this.activeImage + 1 + index,
-          image: imgref,
-        },
-      ]));
-      this.$emit('resetSelection');
+          image: imgref
+        }))
+      );
+      this.$emit("resetSelection");
     }
   }
 }
