@@ -117,9 +117,12 @@ public class ImageController {
                 }
             }
         });
+        long estimatedSize = imageService.estimatedExportSize(movie, shotId);
         StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
                 .attach(name + ".zip");
-        return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
+        return HttpResponse.ok(streamedFile)
+                .header(HttpHeaderNames.CONTENT_LENGTH, Long.toString(estimatedSize))
+                .header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
     }
 
 }
