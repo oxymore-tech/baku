@@ -15,10 +15,10 @@
           <div class="preview-content">
             <template v-if="onionSkinDisplay">
               <img
-                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue +1] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
+                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
                 alt="ghostImg"
                 id="ghost-img"
-                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue +1].id)"
+                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue].id)"
               />
               <template v-for="ghostIndex in onionSkinAsArray">
                 <img
