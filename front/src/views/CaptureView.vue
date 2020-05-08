@@ -411,6 +411,7 @@ export default class CaptureView extends AbstractProjectView {
   public moveFrame(moveOffset: number) {
     const computedFrame = this.currentDisplayedFrame + moveOffset;
     this.moveFrameAbsolute(computedFrame);
+    this.syncActiveFrame();
   }
 
   public moveHome() {
