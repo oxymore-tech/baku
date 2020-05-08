@@ -265,6 +265,7 @@ export default class CarrouselComponent extends Vue {
           imageIndex: imgId
         }))
       );
+      this.$emit("activeImageChange", imagesToDelete[0] - 1);
       this.$emit("resetSelection");
     }
   }
