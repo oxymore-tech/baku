@@ -223,7 +223,7 @@ export default class CarrouselComponent extends Vue {
           default:
             break;
         }
-      }      
+      }
     });
 
     window.addEventListener('keyup', (e: KeyboardEvent) => {
@@ -255,6 +255,7 @@ export default class CarrouselComponent extends Vue {
         shotId: this.activeShot,
         imageIndex: imgId,
       }]));
+      this.$emit('resetSelection');
     }
   }
 
@@ -334,12 +335,14 @@ export default class CarrouselComponent extends Vue {
       this.imagesToCopy = tmpImgsToCopy.map(
         (index) => this.images[index].id as string,
       );
+      this.$emit('resetSelection');
     }
   }
 
   public async onCut() {
     this.onCopy();
     await this.deleteFrame();
+    this.$emit('resetSelection');
   }
 
   public async onPaste() {
@@ -351,6 +354,7 @@ export default class CarrouselComponent extends Vue {
           image: imgref,
         },
       ]));
+      this.$emit('resetSelection');
     }
   }
 
@@ -364,6 +368,7 @@ export default class CarrouselComponent extends Vue {
           image: imgref,
         },
       ]));
+      this.$emit('resetSelection');
     }
   }
 }

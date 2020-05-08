@@ -156,6 +156,7 @@
         @stopMovingFrame="syncActiveFrame"
         @togglePlay="togglePlay"
         @increaseSelection="increaseSelection($event)"
+        @resetSelection="resetSelection()"
         :selectedImages="selectedImages"
       />
     </template>
@@ -474,6 +475,10 @@ export default class CaptureView extends AbstractProjectView {
       this.selectedImages.left = Math.min(this.selectedImages.left, newFrame);
       this.selectedImages.right = Math.max(this.selectedImages.right, newFrame);
     }
+  }
+
+  resetSelection() {
+    this.selectedImages.left = this.selectedImages.right = 0;
   }
 
   get isMultiSelect() {
