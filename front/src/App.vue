@@ -172,7 +172,7 @@ export default class App extends Vue {
 
   public async onOpenPlan() {
     await this.$router.push({
-      name: 'captureShots',
+      name: 'movie',
     });
   }
 

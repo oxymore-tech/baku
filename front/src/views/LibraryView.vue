@@ -140,7 +140,7 @@ export default class LibraryView extends Vue {
 
   getLink(projectId: string, mode: string): string {
     let path = this.url + this.$router.resolve({
-      name: 'movieHome',
+      name: 'movie',
       params: {
         projectId: projectId,
       },
@@ -169,7 +169,7 @@ export default class LibraryView extends Vue {
 
   public onOpen(projectId: string) {
     this.$router.push({
-      name: 'captureShots',
+      name: 'movie',
       params: {
         projectId: projectId,
       },

@@ -52,7 +52,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { createProject } from '../api';
+import { createProject } from '@/api';
 
 const ProjectNS = namespace('project');
 const UserNS = namespace('user');
@@ -103,7 +103,7 @@ export default class HomeView extends Vue {
     if (projectId) {
       await this.loadProjectAction(projectId);
       await this.$router.push({
-        name: 'captureShots',
+        name: 'movie',
         params: { projectId },
       });
     }
@@ -133,7 +133,7 @@ export default class HomeView extends Vue {
 
   public async open(projectId: string) {
     await this.$router.push({
-      name: 'captureShots',
+      name: 'movie',
       params: { projectId },
     });
   }
