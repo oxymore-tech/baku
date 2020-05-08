@@ -80,6 +80,12 @@ export const ProjectStore: BakuModule<ProjectState> = {
       store.dispatch('user/updateSeenProjects');
     },
 
+    async reverseImages(context, values: { shotId: string, imageIndexLeft: number, imageIndexRight: number}) {
+      const events = makeEvent(context, BakuAction.MOVIE_REVERSE_IMAGES, values);
+      loadEvents(context, [events]);
+      store.dispatch('user/updateSeenProjects');
+    },
+
     changeActiveShot(context, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },

@@ -1,5 +1,6 @@
 import { BakuAction, BakuEvent } from '@/utils/types';
 import { ImageRef, UploadedImage } from '@/utils/uploadedImage.class';
+import * as _ from 'lodash';
 
 export enum KeyCodes {
   BACKSPACE = 8,
@@ -134,6 +135,15 @@ export class MovieService {
           updateShot(event.value.shotId, (shot: Shot) =>
             ({...shot, storyboard: event.value.storyboard})
           )
+        }
+        case BakuAction.MOVIE_REVERSE_IMAGES: {
+          const { shotId, imageIndexLeft, imageIndexRight } = event.value as { shotId: string, imageIndexLeft: number, imageIndexRight: number };
+          updateShot(shotId, (shot: Shot) => {
+            const leftPart = shot.images.slice(0, imageIndexLeft) || [];
+            const reversed = _.reverse(shot.images.slice(imageIndexLeft, imageIndexRight + 1));
+            const rightPart = shot.images.slice(imageIndexRight + 1);
+            return {...shot, images: leftPart.concat(reversed, rightPart)};
+          })
         }
         default:
           break;

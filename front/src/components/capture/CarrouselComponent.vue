@@ -32,10 +32,10 @@
       <div
         class="toolbar-button"
         @click="onPasteAndReverse()"
-        :class="{disabled: isFrameLiveView || imagesToCopy.length < 2 || isPlaying || !canEdit}"
+        :class="{disabled: isFrameLiveView || !isMultiSelect || isPlaying || !canEdit}"
       >
         <i class="icon-reverse baku-button" />
-        <span>Coller & Inverser</span>
+        <span>Inverser</span>
       </div>
       <div
         class="toolbar-button"
@@ -189,6 +189,9 @@ export default class CarrouselComponent extends Vue {
 
   @ProjectNS.Action('removeImagesFromShot')
   protected removeImagesFromShot!: ({}) => Promise<void>;
+
+  @ProjectNS.Action('reverseImages')
+  protected reverseImages!: ({}) => Promise<void>;
 
   @ProjectNS.Getter('canEditActiveShot')
   protected canEdit!: boolean;
@@ -397,18 +400,23 @@ export default class CarrouselComponent extends Vue {
     if (
       !this.isFrameLiveView
       && !this.isPlaying
-      && this.imagesToCopy.length > 2
+      && this.isMultiSelect
       && this.canEdit
     ) {
-      const reverted = [...this.imagesToCopy].reverse();
-      this.addImagesToShot(
-        reverted.map((imgref: string, index: number) => ({
-          shotId: this.activeShot,
-          imageIndex: this.activeImage + 1 + index,
-          image: imgref,
-        })),
-      );
-      this.$emit('resetSelection');
+      this.reverseImages({
+        shotId: this.activeShot,
+        imageIndexLeft: this.selectedImages.left,
+        imageIndexRight: this.selectedImages.right,
+      })
+      // const reverted = [...this.imagesToCopy].reverse();
+      // this.addImagesToShot(
+      //   reverted.map((imgref: string, index: number) => ({
+      //     shotId: this.activeShot,
+      //     imageIndex: this.activeImage + 1 + index,
+      //     image: imgref,
+      //   })),
+      // );
+      // this.$emit('resetSelection');
     }
   }
 }
