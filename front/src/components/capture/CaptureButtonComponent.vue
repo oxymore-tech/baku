@@ -86,7 +86,7 @@ export default class CaptureButtonComponent extends Vue {
   }
 
   public capture() {
-    this.$refs.audio.play();
+    (this.$refs.audio as HTMLAudioElement).play();
     this.isCapturing = true;
     if (this.device.isSmartphone()) {
       // this.captureSmartphone();
