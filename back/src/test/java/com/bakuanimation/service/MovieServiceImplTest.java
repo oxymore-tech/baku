@@ -1,5 +1,6 @@
 package com.bakuanimation.service;
 
+import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.Movie;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -25,7 +26,7 @@ class MovieServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        PermissionServiceImpl permissionService = mock(PermissionServiceImpl.class);
+        PermissionService permissionService = mock(PermissionService.class);
         historyService = new HistoryServiceImpl(new PathService(Path.of("/home/simon/workspace-perso/data")), permissionService);
         tested = new MovieServiceImpl(historyService, new PathService(sharedTempDir));
     }

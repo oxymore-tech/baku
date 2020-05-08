@@ -36,7 +36,7 @@ public final class Movie {
     }
 
     public String getName() {
-        return name;
+        return name.isBlank() ? projectId : name;
     }
 
     public String getSynopsis() {

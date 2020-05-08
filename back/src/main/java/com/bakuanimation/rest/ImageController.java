@@ -78,7 +78,7 @@ public class ImageController {
     public Single<HttpResponse<StreamedFile>> export(@PathVariable String projectId) {
         return historyService.interpretHistory(permissionService.getProject(projectId).getId())
                 .map(movie -> {
-                    String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
+                    String movieName = movie.getName();
                     return writeExportResponse(movie, movieName, null);
                 });
     }
@@ -91,7 +91,7 @@ public class ImageController {
                     if (shotIndex == -1) {
                         return HttpResponse.badRequest();
                     } else {
-                        String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
+                        String movieName = movie.getName();
                         movieName = movieName + "_" +(shotIndex+1);
                         return writeExportResponse(movie, movieName, shotId);
                     }

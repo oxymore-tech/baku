@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -72,6 +73,28 @@ public final class MovieServiceImpl implements MovieService {
                         LOGGER.debug("Movie {} ({}) exist and is up-to-date, it can be downloaded", movie.getName(), moviePath);
                         return VideoState.UpToDate;
                     }
+                });
+    }
+
+    @Override
+    public Single<Path> generatePlan(String projectId, String shotId) {
+        return historyService.interpretHistory(projectId)
+                .flatMap(movie -> {
+                    int shotIdx = movie.getShots().indexOf(shotId);
+                    if (shotIdx == -1) {
+                        return Single.error(new IllegalArgumentException("Shot " + shotId + " not found"));
+                    }
+                    Movie movieShot = new Movie(movie.getProjectId(), movie.getName(), movie.getSynopsis(), movie.getFps(), movie.isLocked(),
+                            movie.getLockedShots(), List.of(shotId), movie.getImages());
+                    Path destMovie = pathService.getMovieFile(projectId).getParent().resolve(movieShot.getName() + "_" + shotIdx + ".mp4");
+                    return Single.using(() -> destMovie,
+                            path -> generateMovie_ffmpeg(movieShot, destMovie),
+                            path1 -> {
+                                LOGGER.info("delete file");
+                                Files.deleteIfExists(path1);
+                            },
+                            false)
+                            .map(v -> destMovie);
                 });
     }
 
