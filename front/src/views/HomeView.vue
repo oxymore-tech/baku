@@ -111,7 +111,7 @@ export default class HomeView extends Vue {
 
   public async onClickMyLibrary() {
     await this.$router.push({
-      name: 'library'
+      name: 'library',
     });
   }
 

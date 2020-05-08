@@ -122,10 +122,9 @@ export default class LibraryView extends Vue {
 
   public title() {
     if (this.seenProjects.length == 0) {
-      return "Quelques films de démonstration"
-    } else {
-      return "Mes films"
+      return 'Quelques films de démonstration';
     }
+    return 'Mes films';
   }
 
   public onCopy(projectId: string, mode: string = 'share') {
@@ -139,10 +138,10 @@ export default class LibraryView extends Vue {
   }
 
   getLink(projectId: string, mode: string): string {
-    let path = this.url + this.$router.resolve({
+    const path = this.url + this.$router.resolve({
       name: 'movieHome',
       params: {
-        projectId: projectId,
+        projectId,
       },
     }).href;
 
@@ -152,7 +151,7 @@ export default class LibraryView extends Vue {
   }
 
   public onDuplicate(projectId: string) {
-    console.log('DUPLICATE MOVIE', projectId); //TODO
+    console.log('DUPLICATE MOVIE', projectId); // TODO
   }
 
   public onExportImage(projectId: string) {
@@ -164,14 +163,14 @@ export default class LibraryView extends Vue {
   }
 
   public onDelete(projectId: string) {
-    console.log('DELETE MOVIE', projectId); //TODO
+    console.log('DELETE MOVIE', projectId); // TODO
   }
 
   public onOpen(projectId: string) {
     this.$router.push({
       name: 'captureShots',
       params: {
-        projectId: projectId,
+        projectId,
       },
     });
   }
@@ -187,8 +186,7 @@ export default class LibraryView extends Vue {
   }
 
   getVideoUrl(id: string) {
-      return api.getVideoUrl(id);
-    }
-
+    return api.getVideoUrl(id);
+  }
 }
 </script>

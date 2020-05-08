@@ -166,7 +166,7 @@ export default class App extends Vue {
 
   public async onOpenLibrary() {
     await this.$router.push({
-      name: 'library'
+      name: 'library',
     });
   }
 

@@ -21,17 +21,17 @@
       </div>
     </div>
   </div>
-  
+
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import { Shot } from "@/utils/movie.service";
-//import { Spinner } from "@/utils/spinner.class";
-//import { ImageCacheService } from "@/utils/imageCache.service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Shot } from '@/utils/movie.service';
+// import { Spinner } from "@/utils/spinner.class";
+// import { ImageCacheService } from "@/utils/imageCache.service";
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component
 export default class StoryboardPreviewComponent extends Vue {
@@ -45,17 +45,17 @@ export default class StoryboardPreviewComponent extends Vue {
   public id!: string;
 
 
-  mounted() {  
+  mounted() {
   }
 
-  
-  public async changeShotSynopsis() {
-    let shotId = this.activeShot?.id;
-    let synopsis = (this.$refs.shotSynopsis as any).value;
 
-    await this.$store.dispatch("project/changeShotSynopsis", {
-      shotId: shotId,
-      synopsis: synopsis,
+  public async changeShotSynopsis() {
+    const shotId = this.activeShot?.id;
+    const synopsis = (this.$refs.shotSynopsis as any).value;
+
+    await this.$store.dispatch('project/changeShotSynopsis', {
+      shotId,
+      synopsis,
     });
   }
 }
