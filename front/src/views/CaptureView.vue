@@ -60,8 +60,6 @@
           />
           <div class="media-controls">
             <div class="clock">
-              <span>{{nbHours(this.currentDisplayedFrame)}}</span>
-              <span class="clock-small">:</span>
               <span>{{ nbMins(this.currentDisplayedFrame) }}</span>
               <span class="clock-small">:</span>
               <span>{{ nbSecs(this.currentDisplayedFrame) }}</span>
