@@ -10,5 +10,7 @@ import java.io.OutputStream;
 public interface ImageService {
     void writeSmallerImages(String projectId, InputStream inputStream, String filename);
 
+    long estimatedExportSize(Movie movie, @Nullable String shotId);
+
     void export(Movie movie, OutputStream outputStream, @Nullable String shotId) throws IOException;
 }
