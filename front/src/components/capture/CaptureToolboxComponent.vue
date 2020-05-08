@@ -1,5 +1,5 @@
 <template>
-  <b-dropdown position="is-top-right" :close-on-click="false" append-to-body aria-role="menu" trap-focus>
+  <b-dropdown position="is-top-left" :close-on-click="false" append-to-body aria-role="menu" trap-focus>
     <a class="navbar-item" slot="trigger" role="button">
       <span>Reglages</span>
       <b-icon icon="menu-down"></b-icon>
