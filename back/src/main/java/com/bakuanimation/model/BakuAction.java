@@ -12,7 +12,8 @@ public enum BakuAction {
     MOVIE_LOCK,
     SHOT_LOCK,
     SHOT_UPDATE_SYNOPSIS,
-    SHOT_UPDATE_STORYBOARD;
+    SHOT_UPDATE_STORYBOARD,
+    MOVIE_REVERSE_IMAGES;
 
     public static BakuAction action(int value) {
         switch (value) {
@@ -40,6 +41,8 @@ public enum BakuAction {
                 return SHOT_UPDATE_SYNOPSIS;
             case 11:
                 return SHOT_UPDATE_STORYBOARD;
+            case 12:
+                return MOVIE_REVERSE_IMAGES;
             default:
                 throw new IllegalArgumentException();
         }

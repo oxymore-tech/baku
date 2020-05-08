@@ -27,7 +27,7 @@ class ImageServiceImplTest {
     }
 
     @Test
-    void name() throws IOException {
+    void shouldEstimateExportSize() throws IOException {
         String projectId = "test-project";
         Path projectPath = tempDir.resolve(projectId);
         Files.createDirectory(projectPath);

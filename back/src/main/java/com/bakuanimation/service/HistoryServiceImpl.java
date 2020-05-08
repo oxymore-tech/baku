@@ -156,16 +156,27 @@ public class HistoryServiceImpl implements HistoryService {
                     images.remove(shotId);
                     break;
                 }
-                case MOVIE_LOCK:
+                case MOVIE_LOCK: {
                     movieLocked = element.getValue().asBoolean();
-                case SHOT_LOCK:
+                    break;
+                }
+                case SHOT_LOCK: {
                     String shotId = element.getValue().get("shotId").asText();
                     if (element.getValue().get("locked").asBoolean()) {
                         lockedShots.add(shotId);
                     } else {
                         lockedShots.remove(shotId);
                     }
-
+                    break;
+                }
+                case MOVIE_REVERSE_IMAGES: {
+                    String shotId = element.getValue().get("shotId").asText();
+                    int leftIdx = element.getValue().get("imageIndexLeft").asInt();
+                    int rightIdx = element.getValue().get("imageIndexRight").asInt();
+                    Collections.reverse(images.get(shotId)
+                            .subList(leftIdx, rightIdx + 1));
+                    break;
+                }
                 default: {
                     // Ignored
                     break;
