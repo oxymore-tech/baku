@@ -1,5 +1,5 @@
 <template>
-  <b-dropdown position="is-bottom-right" append-to-body aria-role="menu" trap-focus>
+  <b-dropdown position="is-top-right" :close-on-click="false" append-to-body aria-role="menu" trap-focus>
     <a class="navbar-item" slot="trigger" role="button">
       <span>Reglages</span>
       <b-icon icon="menu-down"></b-icon>
@@ -24,20 +24,19 @@
         <b-switch :value="scaleX != 1" @input="toggleScaleX">Miroir vertical</b-switch>
       </div>
 
-      <div class="field">
+      <div class="field" style="display:inline-flex;">
         <b-switch :value="onionSkinDisplay" @input="setOnionSkinDisplay($event)">
           <b-field>
             <div>Pelure d'oignon</div>
           </b-field>
         </b-switch>
         <b-numberinput
-          v-if="onionSkinDisplay"
+          style="margin-left:5px;"
           type="light"
           :value="onionSkinValue"
           @input="setOnionSkinValue($event)"
           size="is-small"
           controls-position="compact"
-          editable="false"
           min="1"
           max="5"
         ></b-numberinput>
@@ -164,6 +163,7 @@ export default class CaptureToolboxComponent extends Vue {
         parent: this,
         component: SmartphoneSynchroPopupComponent,
         hasModalCard: true,
+        canCancel: true,
         onCancel: () => {
           if (!this.isRTCConnected) {
             this.selectedDevice = null;
@@ -179,7 +179,7 @@ export default class CaptureToolboxComponent extends Vue {
 
 <style lang="scss">
 .box-container {
-  width: 300px;
+  padding: 3px 10px !important;
 }
 
 .collapse-content {

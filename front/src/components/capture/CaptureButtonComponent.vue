@@ -122,6 +122,9 @@ export default class CaptureButtonComponent extends Vue {
 
   @Watch('canCapture')
   onCanCaptureChange(canCapture: boolean) {
+    if(!this.device) {
+      return;
+    }
     if (!this.device.isSmartphone()) {
       if (canCapture) {
         clearInterval(this.stopWebcamInterval);
