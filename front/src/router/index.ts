@@ -64,6 +64,10 @@ const routes = [
         path: ':projectId/video/status',
       },
       {
+        name: 'info',
+        path: 'info',
+      },
+      {
         name: 'video',
         path: ':projectId/video',
       },
