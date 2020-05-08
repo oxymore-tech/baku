@@ -5,6 +5,22 @@
 <template>
   <div class="carrousel-root-div">
     <div class="toolbar">
+      <div v-if="!isMultiSelect"
+        class="toolbar-button"
+        @click="changeSelection(activeImage - computedLeftCarrousel.length, activeImage + computedRightCarrousel.length  )"
+        :class="{disabled : isFrameLiveView || isPlaying || !canEdit}"
+      >
+        <i class="icon-copy baku-button" />
+        <span>Tout sélectionner</span>
+      </div>
+      <div v-else
+        class="toolbar-button"
+        @click="$emit('resetSelection')"
+        :class="{disabled : isFrameLiveView || isPlaying || !canEdit}"
+      >
+        <i class="icon-copy baku-button" />
+        <span>Tout désélectionner</span>
+      </div>
       <div
         class="toolbar-button"
         @click="onCopy()"
@@ -389,11 +405,15 @@ export default class CarrouselComponent extends Vue {
         })),
       );
       this.$emit('activeImageChange', this.activeImage + 1);
-      this.$emit('changeSelection', {
-        left: this.activeImage + 1,
-        right: this.activeImage + this.imagesToCopy.length,
-      });
+      this.changeSelection(this.activeImage + 1,  this.activeImage + this.imagesToCopy.length);
     }
+  }
+
+  public changeSelection(left: number, right: number) {
+    this.$emit('changeSelection', {
+        left: left,
+        right: right,
+      });
   }
 
   public async onPasteAndReverse() {
