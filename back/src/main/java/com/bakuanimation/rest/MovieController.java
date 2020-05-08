@@ -1,10 +1,10 @@
 package com.bakuanimation.rest;
 
+import com.bakuanimation.api.HistoryService;
+import com.bakuanimation.api.MovieService;
 import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.MovieStatus;
 import com.bakuanimation.model.VideoState;
-import com.bakuanimation.service.HistoryServiceImpl;
-import com.bakuanimation.service.MovieServiceImpl;
 import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
@@ -13,19 +13,23 @@ import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.server.types.files.SystemFile;
 import io.reactivex.Single;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 
 @Controller
 public final class MovieController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieController.class);
+
     private final PathService pathService;
-    private final MovieServiceImpl movieService;
-    private final HistoryServiceImpl historyService;
+    private final MovieService movieService;
+    private final HistoryService historyService;
     private final PermissionService permissionService;
 
-    public MovieController(PathService pathService, MovieServiceImpl movieService,
-                           HistoryServiceImpl historyService, PermissionService permissionService) {
+    public MovieController(PathService pathService, MovieService movieService,
+                           HistoryService historyService, PermissionService permissionService) {
         this.pathService = pathService;
         this.movieService = movieService;
         this.historyService = historyService;
@@ -52,5 +56,13 @@ public final class MovieController {
         } else {
             return Single.just(HttpResponse.notFound(id + " not found"));
         }
+    }
+
+    @Get(value = "/api/{projectId}/{shotId}/video")
+    public Single<HttpResponse<Object>> download(@PathVariable String projectId,
+                                                 @PathVariable String shotId) {
+        return movieService.generatePlan(projectId, shotId)
+                .doOnError(v -> LOGGER.warn("Error", v))
+                .map(movie -> HttpResponse.ok(new SystemFile(movie.toFile()).attach(movie.getFileName().toString())));
     }
 }
