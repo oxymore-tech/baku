@@ -3,7 +3,7 @@
 </style>
 
 <template>
-  <div>
+  <div class="carrousel-root-div">
     <div class="toolbar">
       <div
         class="toolbar-button"
