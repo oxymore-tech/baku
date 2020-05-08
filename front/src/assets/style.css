@@ -275,3 +275,17 @@
 .icon-youtube-brands:before {
   content: "\e94a";
 }
+
+.spin {
+  animation: spin-animation 0.8s infinite linear;
+  display: inline-block;
+}
+
+@keyframes spin-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
