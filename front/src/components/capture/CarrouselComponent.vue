@@ -18,7 +18,7 @@
         @click="onCut()"
         :class="{disabled : isFrameLiveView || isPlaying || !canEdit}"
       >
-        <i class="icon-copy baku-button" />
+        <i class="icon-cut baku-button" />
         <span>Couper</span>
       </div>
       <div
@@ -344,7 +344,6 @@ export default class CarrouselComponent extends Vue {
       this.imagesToCopy = tmpImgsToCopy.map(
         index => this.images[index].id as string
       );
-      this.$emit("resetSelection");
     }
   }
 
@@ -363,7 +362,8 @@ export default class CarrouselComponent extends Vue {
           image: imgref
         }))
       );
-      this.$emit("resetSelection");
+      this.$emit("activeImageChange", this.activeImage + 1);
+      this.$emit("changeSelection", {left: this.activeImage + 1, right: this.activeImage + this.imagesToCopy.length });
     }
   }
 

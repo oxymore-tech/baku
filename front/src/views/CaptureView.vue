@@ -157,6 +157,7 @@
         @togglePlay="togglePlay"
         @increaseSelection="increaseSelection($event)"
         @resetSelection="resetSelection()"
+        @changeSelection="changeSelection($event)"
         :selectedImages="selectedImages"
       />
     </template>
@@ -479,6 +480,11 @@ export default class CaptureView extends AbstractProjectView {
 
   resetSelection() {
     this.selectedImages.left = this.selectedImages.right = 0;
+  }
+
+  changeSelection(params: {left: number, right:number}) {
+    this.selectedImages.left = params.left;
+    this.selectedImages.right = params.right;
   }
 
   get isMultiSelect() {
