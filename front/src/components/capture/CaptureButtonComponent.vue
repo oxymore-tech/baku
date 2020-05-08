@@ -1,7 +1,8 @@
 <template>
   <div style="display:flex;">
     <audio ref="audio" src="@/assets/camera_shutter.mp3"/>
-    <i class="icon-camera" v-if="canCapture" @click="capture()" style="color:#e66359;" />
+    <i class="icon-camera" v-if="canCapture && !protectCapture" @click="capture()" style="color:#e66359;" />
+    <i class="icon-camera" style="cursor:default" v-else-if="canCapture && protectCapture"/>
     <img v-else src="@/assets/camera-off-color.svg" style="height:32px;" @click="moveToCapture()" />
   </div>
 </template>
@@ -61,6 +62,8 @@ export default class CaptureButtonComponent extends Vue {
 
   public isCapturing = false;
 
+  public protectSpam = false;
+
   private stopWebcamInterval: number = 0;
 
   public async mounted() {
@@ -87,9 +90,17 @@ export default class CaptureButtonComponent extends Vue {
     }
   }
 
+  get protectCapture(): boolean {
+    return this.isCapturing || this.protectSpam;
+  }
+
   public capture() {
     (this.$refs.audio as HTMLAudioElement).play();
     this.isCapturing = true;
+    this.protectSpam = true;
+    setTimeout(() => {
+      this.protectSpam = false;
+    }, 750);
     if (this.device.isSmartphone()) {
       // this.captureSmartphone();
       this.captureWebcam();
@@ -227,11 +238,11 @@ export default class CaptureButtonComponent extends Vue {
 
   private onUploaded(id: string) {
     this.$emit('uploaded', id);
+    this.isCapturing = false;
   }
 
   private async onCaptured(id: string, thumb: Blob | undefined, b64: string) {
     this.$emit('captured', id, thumb, b64);
-    this.isCapturing = false;
   }
 
   private captureOriginal(
