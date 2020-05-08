@@ -3,7 +3,8 @@
     <textarea
       id="shotSynopsis"
       ref="shotSynopsis"
-      rows="4"
+      rows="5"
+      maxlength="255"
       :value="activeShot.synopsis"
       placeholder="Présenter votre plan avec un résumé"
       @blur="changeShotSynopsis()"
@@ -64,6 +65,7 @@ export default class StoryboardPreviewComponent extends Vue {
 <style lang="scss">
 #shotSynopsis {
   width: 300px;
+  resize: none;
 }
 
 .ajout-storyboard {
