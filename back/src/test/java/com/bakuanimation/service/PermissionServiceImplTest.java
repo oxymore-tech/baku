@@ -14,7 +14,7 @@ class PermissionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        tested = new PermissionServiceImpl();
+        tested = new PermissionServiceImpl(null);
     }
 
     @Test

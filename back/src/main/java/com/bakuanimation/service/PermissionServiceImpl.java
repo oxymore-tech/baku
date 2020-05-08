@@ -4,19 +4,35 @@ import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.annotations.VisibleForTesting;
+import io.micronaut.scheduling.annotation.Scheduled;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
 
-import static com.bakuanimation.model.BakuAction.*;
+import static com.bakuanimation.model.BakuAction.MOVIE_LOCK;
+import static com.bakuanimation.model.BakuAction.SHOT_LOCK;
 
 @Singleton
 public final class PermissionServiceImpl implements PermissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PermissionServiceImpl.class);
+
+    private final PathService pathService;
+    private final Duration timeBeforeDeletion = Duration.ofDays(7);
+
+    public PermissionServiceImpl(PathService pathService) {
+        this.pathService = pathService;
+    }
 
     private void authorizeOperation(Project project) {
         if (project.getAdminId() == null) {
@@ -25,6 +41,37 @@ public final class PermissionServiceImpl implements PermissionService {
         boolean validAdminId = verify(project.getId(), project.getAdminId());
         if (!validAdminId) {
             throw new AuthorizationException("invalid adminId");
+        }
+    }
+
+    @Scheduled(fixedDelay = "10m")
+    void deleteOldMovies() {
+        Instant limit = Instant.now().minus(timeBeforeDeletion);
+        LOGGER.debug("Will delete all marked to delete project older than {}", limit);
+        try {
+            for (Path projectPath : pathService.toDeleteProject()) {
+                Instant lastModifiedDate = Files.getLastModifiedTime(projectPath).toInstant();
+                LOGGER.debug("last modified time of {} -> {}", projectPath, lastModifiedDate);
+                if (lastModifiedDate.isBefore(limit)) {
+                    LOGGER.info("Will delete {}",projectPath);
+                    FileUtils.deleteDirectory(projectPath.toFile());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Error while trying to delete old projects", e);
+        }
+    }
+
+    @Override
+    public boolean deleteMovie(String projectId) {
+        try {
+            LOGGER.debug("Marked project {} to delete", projectId);
+            Path newPath = Files.move(pathService.projectDir(projectId), pathService.deletePath(projectId));
+            Files.setLastModifiedTime(newPath, FileTime.from(Instant.now()));
+            return true;
+        } catch (IOException e) {
+            LOGGER.warn("Error while marking file to delete", e);
+            return false;
         }
     }
 

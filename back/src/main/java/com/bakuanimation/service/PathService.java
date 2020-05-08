@@ -8,11 +8,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Singleton
 public class PathService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(PathService.class);
+    private static final String DELETE_PREFIX = "delete_";
 
     private final Path dataPath;
 
@@ -25,9 +28,20 @@ public class PathService {
         LOGGER.info("Data path : {}", dataPath);
     }
 
-    private Path projectDir(String projectId) {
+    public Path projectDir(String projectId) {
         return dataPath
             .resolve(projectId);
+    }
+
+    public Path deletePath(String projectId) {
+        Path path = projectDir(projectId);
+        return path.getParent().resolve(DELETE_PREFIX + path.getFileName().toString());
+    }
+
+    public List<Path> toDeleteProject() throws IOException {
+        return Files.list(dataPath)
+                .filter(p -> p.getFileName().startsWith(DELETE_PREFIX))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void createDirectory(String projectId) throws IOException {

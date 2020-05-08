@@ -5,6 +5,8 @@ import com.bakuanimation.model.Movie;
 import com.bakuanimation.model.Project;
 
 public interface PermissionService {
+    boolean deleteMovie(String projectId);
+
     String getNewProjectId();
 
     Project getProject(String projectId);
