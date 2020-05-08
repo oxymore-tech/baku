@@ -114,11 +114,6 @@ export const ProjectStore: BakuModule<ProjectState> = {
       loadEvents(context, [event]);
     },
 
-    async lockMovie(context): Promise<void> {
-      const event = makeEvent(context, BakuAction.MOVIE_LOCK, !context.getters.movie.locked);
-      loadEvents(context, [event]);
-    },
-
     async lockShot(context, params: { shotId: string, locked: boolean }): Promise<void> {
       const event = makeEvent(context, BakuAction.SHOT_LOCK, params);
       loadEvents(context, [event]);
@@ -151,7 +146,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
     !getters.movie.locked,
 
     canEditActiveShot: (state, getters: ProjectGetters): boolean =>
-    !getters.movie.locked && (!getters.getActiveShot?.locked || true),
+    !getters.movie.locked && (!getters.getActiveShot?.locked),
 
     canLock: (state): boolean =>
     (state.id).length > 36,
