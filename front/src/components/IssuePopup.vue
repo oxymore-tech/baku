@@ -88,8 +88,8 @@ export default class IssuePopup extends Vue {
       }
 
       if (this.data.title.value && this.data.message.text) {
-        const url = router.resolve({ name: 'info' }).href;
-        axios.get(url).then((response) => console.log(response.data)); // git.commit.describe
+        const url = router.resolve({name: "apiInfo"}).href;
+        axios.get(url).then((response) => console.log(response.data)); //git.commit.describe
         const auth = {
           headers: { Authorization: 'token ' + 'bc92ede44c759d5816a1fc9b85abe91410ab6155' }, // put token in a store
         };

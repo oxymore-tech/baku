@@ -5,9 +5,8 @@ import store from "@/store";
 import HomeView from '@/views/HomeView.vue';
 import TodoView from '@/views/TodoView.vue';
 import LibraryView from '@/views/LibraryView.vue';
-import ShotsView from '@/views/ShotsView.vue';
+import MovieView from '@/views/MovieView.vue';
 import CaptureView from '@/views/CaptureView.vue';
-import MovieHomeView from '@/views/MovieHomeView.vue';
 import SmartphoneView from '@/views/SmartphoneView.vue';
 
 const routes = [
@@ -27,28 +26,13 @@ const routes = [
     component: SmartphoneView,
   },
   {
-    name: 'movieHome',
+    name: 'movie',
     path: '/movies/:projectId',
-    component: MovieHomeView,
-  },
-  {
-    name: 'scenario',
-    path: '/movies/:projectId/scenario',
-    component: TodoView,
-  },
-  {
-    name: 'storyboard',
-    path: '/movies/:projectId/storyboard',
-    component: TodoView,
-  },
-  {
-    name: 'captureShots',
-    path: '/movies/:projectId/capture/shots',
-    component: ShotsView,
+    component: MovieView,
   },
   {
     name: 'captureShot',
-    path: '/movies/:projectId/capture/shots/:shotId',
+    path: '/movies/:projectId/shots/:shotId',
     component: CaptureView,
   },
   {
@@ -60,39 +44,39 @@ const routes = [
     path: '/api',
     children: [
       {
-        name: 'video-status',
+        name: 'apiVideoStatus',
         path: ':projectId/video/status',
       },
       {
-        name: 'info',
+        name: 'apiInfo',
         path: 'info',
       },
       {
-        name: 'video',
+        name: 'apiVideo',
         path: ':projectId/video',
       },
       {
-        name: 'stack',
+        name: 'apiStack',
         path: ':projectId/stack',
       },
       {
-        name: 'history',
+        name: 'apiHistory',
         path: ':projectId/history',
       },
       {
-        name: 'upload',
+        name: 'apiUpload',
         path: ':projectId/upload',
       },
       {
-        name: 'exportProject',
+        name: 'apiExportProject',
         path: ':projectId/export.zip',
       },
       {
-        name: 'exportShot',
+        name: 'apiExportShot',
         path: ':projectId/:shotId/export.zip',
       },
       {
-        name: 'movie',
+        name: 'apiMovie',
         path: 'movie',
       }
     ]

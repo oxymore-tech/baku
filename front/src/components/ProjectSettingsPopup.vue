@@ -162,7 +162,7 @@ export default class ProjectSettingsPopup extends Vue {
 
     getLink(): string {
       const path = this.$router.resolve({
-        name: 'movieHome',
+        name: 'movie',
         params: {
           projectId: this.id,
         },

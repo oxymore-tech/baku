@@ -1,10 +1,19 @@
 <template>
-  <b-dropdown position="is-top-left" :close-on-click="false" append-to-body aria-role="menu" trap-focus>
-    <a class="navbar-item" slot="trigger" role="button">
-      <span>Reglages</span>
-      <b-icon icon="menu-down"></b-icon>
+  <b-dropdown
+    position="is-top-left"
+    :disabled="!isCapturing"
+    :close-on-click="false"
+    append-to-body
+    aria-role="menu"
+    trap-focus>
+    <a class="navbar-item" slot="trigger" role="button" slot-scope="{ active }">
+      <span>Réglages vidéo</span>
+      <b-icon :icon="active ? 'menu-down' : 'menu-up'"></b-icon>
     </a>
-    <b-dropdown-item class="box-container">
+    <b-dropdown-item
+      custom
+      :focusable="false"
+      class="box-container">
       <b-field>
         <b-select
           icon="video"
@@ -24,14 +33,14 @@
         <b-switch :value="scaleX != 1" @input="toggleScaleX">Miroir vertical</b-switch>
       </div>
 
-      <div class="field" style="display:inline-flex;">
+      <div class="field onionSkinInput" style="display:inline-flex;">
         <b-switch :value="onionSkinDisplay" @input="setOnionSkinDisplay($event)">
           <b-field>
             <div>Pelure d'oignon</div>
           </b-field>
         </b-switch>
         <b-numberinput
-          style="margin-left:5px;"
+          v-if="onionSkinDisplay"
           type="light"
           :value="onionSkinValue"
           @input="setOnionSkinValue($event)"
@@ -47,7 +56,7 @@
 
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import SmartphoneSynchroPopupComponent from '@/components/smartphone/SmartphoneSynchroPopupComponent.vue';
 import { Device } from '@/utils/device.class';
@@ -66,6 +75,9 @@ export default class CaptureToolboxComponent extends Vue {
   public selectedDeviceId: string | null = null;
 
   public selectedDevice: Device | null = null;
+
+  @Prop()
+  public isCapturing: boolean = false;
 
   @CaptureNS.State('activeDevice')
   protected activeDevice!: Device | null;
@@ -204,6 +216,18 @@ export default class CaptureToolboxComponent extends Vue {
   }
 }
 
+.onionSkinInput {
+  height: 27px;
+  .switch {
+    float: left;
+  }
+  .b-numberinput {
+    margin-left: 20px;
+    float: right;
+    width: 75px;
+  }
+}
+
 .field {
   i {
     font-size: 20px;
@@ -212,8 +236,4 @@ export default class CaptureToolboxComponent extends Vue {
   }
 }
 
-.b-numberinput {
-  float: right;
-  width: 75px;
-}
 </style>
