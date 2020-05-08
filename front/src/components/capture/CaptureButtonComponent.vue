@@ -137,7 +137,7 @@ export default class CaptureButtonComponent extends Vue {
           if (!this.canCapture) {
             this.detachMediaStream();
           }
-        }, 5000);
+        }, 20000);
       }
     }
   }
