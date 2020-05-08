@@ -168,7 +168,7 @@ export default class LibraryView extends Vue {
 
   public onOpen(projectId: string) {
     this.$router.push({
-      name: 'captureShots',
+      name: 'movie',
       params: {
         projectId,
       },
