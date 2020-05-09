@@ -3,6 +3,10 @@ import router from '@/router';
 import { ImageRef, UploadedImage } from '@/utils/uploadedImage.class';
 import { BakuEvent, VideoStatus } from '@/utils/types';
 
+export function getVersion(): Promise<string> {
+  const url = router.resolve({name: "version"}).href;
+  return axios.get(url).then((response) => response.data.git?.commit?.describe);
+}
 
 export function createProject(): Promise<string> {
   const url = router.resolve({name: "apiMovie"}).href;

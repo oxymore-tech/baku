@@ -1,12 +1,12 @@
 <style lang="scss" scoped>
-@import "@/styles/home.scss";
+  @import "@/styles/home.scss";
 </style>
 
 <template>
   <div class="main">
     <div class="top-panel panel">
       <div style="position:absolute; left: 0">
-        <img src="@/assets/baku_solo.svg" />
+        <img src="@/assets/baku_solo.svg"/>
       </div>
       <div class="welcome-div">
         <h3>Libérez votre imagination</h3>
@@ -24,118 +24,125 @@
         </div>
         <div id="libandyt">
           <div class="option-home" @click="onClickMyLibrary">
-            <i class="icon-movie baku-button" />
+            <i class="icon-movie baku-button"/>
             <span class="baku-button">Ma librairie</span>
           </div>
           <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
-            <i class="icon-youtube-brands baku-button" />
+            <i class="icon-youtube-brands baku-button"/>
             <span>Tutoriels et films</span>
           </a>
         </div>
 
         <div class="option-home mini-icons-container">
           <a href="https://twitter.com/bakuanimation">
-            <i class="icon-twitter-brands baku-button" />
+            <i class="icon-twitter-brands baku-button"/>
           </a>
           <a href="https://www.instagram.com/bakuanim/">
-            <i class="icon-instagram-brands baku-button" />
+            <i class="icon-instagram-brands baku-button"/>
           </a>
           <a href="mailto:support@bakuanimation.com">
-            <i class="icon-envelope-regular baku-button" />
+            <i class="icon-envelope-regular baku-button"/>
           </a>
         </div>
       </div>
+    </div>
+    <div class="footer">
+      version {{ version }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { createProject } from '@/api';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
+  import { createProject, getVersion } from '@/api';
 
-const ProjectNS = namespace('project');
-const UserNS = namespace('user');
+  const ProjectNS = namespace('project');
+  const UserNS = namespace('user');
 
-@Component
-export default class HomeView extends Vue {
-  @UserNS.State('seenProjects')
-  public seenProjects!: string[];
+  @Component
+  export default class HomeView extends Vue {
+    @UserNS.State('seenProjects')
+    public seenProjects!: string[];
 
-  @UserNS.Getter('getPersonalisedProjectTitle')
-  public getPersonalisedProjectTitle!: string;
+    @UserNS.Getter('getPersonalisedProjectTitle')
+    public getPersonalisedProjectTitle!: string;
 
-  @ProjectNS.Action('createShot')
-  private createShotAction!: (name?: string) => Promise<string>;
+    @ProjectNS.Action('createShot')
+    private createShotAction!: (name?: string) => Promise<string>;
 
-  @ProjectNS.Action('loadProject')
-  protected loadProjectAction!: (projectId: string) => Promise<void>;
+    @ProjectNS.Action('loadProject')
+    protected loadProjectAction!: (projectId: string) => Promise<void>;
 
-  @ProjectNS.Action('changeFps')
-  protected changeFps!: (fps: number) => Promise<void>;
+    @ProjectNS.Action('changeFps')
+    protected changeFps!: (fps: number) => Promise<void>;
 
-  @ProjectNS.Action('updateTitle')
-  protected updateTitle!: (title: string) => Promise<void>;
+    @ProjectNS.Action('updateTitle')
+    protected updateTitle!: (title: string) => Promise<void>;
 
-  public description1 =
-    'Sortez vos crayons, pinceaux et couleurs, et racontez une histoire.';
+    public description1 =
+      'Sortez vos crayons, pinceaux et couleurs, et racontez une histoire.';
 
-  public description2 =
-    'Baku est une plateforme collaborative de création de film d\'animation.';
+    public description2 =
+      'Baku est une plateforme collaborative de création de film d\'animation.';
 
-  // public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
-  //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
-  //   souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées.`;
+    version = "";
 
-  public isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
-  }
+    // public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
+    //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
+    //   souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées.`;
 
-  public async created() {
-    if (!this.seenProjects) {
+    public isMobile() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
     }
-    if (this.isMobile()) {
-      this.$router.push({ name: 'smartphone' });
+
+    public async created() {
+      if (!this.seenProjects) {
+      }
+      if (this.isMobile()) {
+        this.$router.push({name: 'smartphone'});
+      }
+      const {projectId} = this.$route.params;
+      if (projectId) {
+        await this.loadProjectAction(projectId);
+        await this.$router.push({
+          name: 'movie',
+          params: {projectId},
+        });
+      }
+      this.version = await getVersion();
     }
-    const { projectId } = this.$route.params;
-    if (projectId) {
-      await this.loadProjectAction(projectId);
+
+    public async onClickMyLibrary() {
       await this.$router.push({
-        name: 'movie',
-        params: { projectId },
+        name: 'library',
       });
     }
-  }
 
-  public async onClickMyLibrary() {
-    await this.$router.push({
-      name: 'library',
-    });
-  }
+    public async onCreateProject() {
+      const projectId = await createProject();
+      await this.loadProjectAction(projectId);
+      const shotId = await this.createShotAction('Nouveau plan');
+      await this.changeFps(12);
+      await this.updateTitle(this.getPersonalisedProjectTitle);
+      this.$store.dispatch('project/changeActiveShot', shotId);
+      await this.$router.push({
+        name: 'captureShot',
+        params: {
+          projectId,
+          shotId,
+        },
+      });
+    }
 
-  public async onCreateProject() {
-    const projectId = await createProject();
-    await this.loadProjectAction(projectId);
-    const shotId = await this.createShotAction('Nouveau plan');
-    await this.changeFps(12);
-    await this.updateTitle(this.getPersonalisedProjectTitle);
-    this.$store.dispatch('project/changeActiveShot', shotId);
-    await this.$router.push({
-      name: 'captureShot',
-      params: {
-        projectId,
-        shotId,
-      },
-    });
-  }
+    public async open(projectId: string) {
+      await this.$router.push({
+        name: 'movie',
+        params: {projectId},
+      });
+    }
 
-  public async open(projectId: string) {
-    await this.$router.push({
-      name: 'movie',
-      params: { projectId },
-    });
   }
-}
 </script>
