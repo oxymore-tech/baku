@@ -74,11 +74,12 @@ export default class IssuePopup extends Vue {
         text: '',
       },
       errors: [] as string[],
-      version: '',
       browser: {},
     }
 
-    public async onSendIssue() {
+    public version = '';
+
+    public async onSendIssue() { // git.commit.describe
       this.data.errors = [];
       if (!this.data.message.text) {
         this.data.errors.push('La description est obligatoire.');
@@ -88,16 +89,19 @@ export default class IssuePopup extends Vue {
       }
 
       if (this.data.title.value && this.data.message.text) {
-        const url = router.resolve({name: "apiInfo"}).href;
-        axios.get(url).then((response) => console.log(response.data)); //git.commit.describe
+        const url = router.resolve({ name: 'apiInfo' }).href;
+        await axios.get(url)
+          .then((response) => {
+            this.version = response.data.git.commit.describe;
+          });
         const auth = {
-          headers: { Authorization: 'token ' + 'bc92ede44c759d5816a1fc9b85abe91410ab6155' }, // put token in a store
+          headers: { Authorization: 'token ' + ' 24c02a8d4c9609402b0470b6f55fb6ff4f0d7973' }, // put token in a store
         };
         this.data.message.sending = `__Sur quel écran étiez-vous :__ ${this.data.screen.value}\n__Description :__ ${this.data.message.text}`;
         if (this.data.email.text) {
           this.data.message.sending += `\n__Email :__ ${this.data.email.text}`;
         }
-        this.data.message.sending += `\n__Informations navigateur :__ ${navigator.userAgent}`;
+        this.data.message.sending += `\n__Informations navigateur :__ ${navigator.userAgent}\n__Baku version :__ ${this.version}`;
         axios.post('https://api.github.com/repos/BakuAnimation/baku/issues', { title: this.data.title.value, body: this.data.message.sending }, auth)
           .catch((e) => {
             console.log(e);
