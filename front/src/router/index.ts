@@ -56,6 +56,10 @@ const routes = [
         path: 'info',
       },
       {
+        name: 'apiIssue',
+        path: 'issue',
+      },
+      {
         name: 'apiVideo',
         path: ':projectId/video',
       },

@@ -39,6 +39,7 @@ dependencies {
 
     compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.kohsuke', name: 'github-api', version: '1.111'
     implementation "org.slf4j:slf4j-api:1.7.5"
     implementation "com.google.code.gson:gson:2.8.6"
     implementation "com.google.cloud:google-cloud-translate:1.53.0"
