@@ -30,3 +30,9 @@ netty:
   responses:
     file:
       cache-seconds: 604800
+
+application:
+  secret:
+    admin: "abcdefghijklmnopqrstuvwxyz123456"
+    github-token: "foo"
+

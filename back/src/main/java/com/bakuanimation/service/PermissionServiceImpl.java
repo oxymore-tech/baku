@@ -4,18 +4,24 @@ import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.annotations.VisibleForTesting;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.scheduling.annotation.Scheduled;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -26,13 +32,19 @@ import static com.bakuanimation.model.BakuAction.SHOT_LOCK;
 public final class PermissionServiceImpl implements PermissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PermissionServiceImpl.class);
+    private static final String ENCRYPTION_ALGORITHM = "AES";
 
     private final PathService pathService;
     private final Duration timeBeforeDeletion = Duration.ofDays(7);
 
-    public PermissionServiceImpl(PathService pathService) {
+    private final Key secretKeySpec;
+
+    public PermissionServiceImpl(PathService pathService,
+                                 @Value("${application.secret.admin}") String adminSecret) {
         this.pathService = pathService;
+        secretKeySpec = new SecretKeySpec(adminSecret.getBytes(), ENCRYPTION_ALGORITHM);
     }
+
 
     private void authorizeOperation(Project project) {
         if (project.getAdminId() == null) {
@@ -117,13 +129,15 @@ public final class PermissionServiceImpl implements PermissionService {
 
     @Override
     public String sign(String projectId) {
-        int value = projectId.hashCode();
-        byte[] bytes = {
-                (byte) (value >>> 24),
-                (byte) (value >>> 16),
-                (byte) (value >>> 8),
-                (byte) value};
-            return Base64.getEncoder().encodeToString(bytes);
+        try {
+            Cipher c = Cipher.getInstance(ENCRYPTION_ALGORITHM);
+            c.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            byte[] encVal = DigestUtils.getMd5Digest().digest(c.doFinal(projectId.getBytes()));
+            return Base64.getUrlEncoder().encodeToString(Arrays.copyOfRange(encVal, 0, 6));
+        } catch (Exception e) {
+            LOGGER.warn("Error while generating adminId", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @VisibleForTesting

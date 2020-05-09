@@ -32,7 +32,5 @@ public final class IssueServiceImpl implements IssueService {
                     .create();
             return true;
         }).subscribeOn(Schedulers.io());
-
-
     }
 }
