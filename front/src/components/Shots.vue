@@ -46,11 +46,14 @@
               :href="getExportUrl(shot.id)"
               target="_blank"
               ><i class="icon-movie baku-button"></i> Exporter en fichier vidéo</a></b-dropdown-item>
+					<!--
           <b-dropdown-item class="dropdown-item-bloc" has-link aria-role="listitem">
             <a
               :href="getExportUrl(shot.id)"
               target="_blank"
-              ><i class="icon-image-regular baku-button"></i> Attacher un storyboard</a></b-dropdown-item>
+              ><i class="icon-image-regular baku-button"></i> Attacher un storyboard</a>
+				  </b-dropdown-item>
+					-->
           <b-dropdown-item
             v-if="canLock"
 						class="dropdown-item-bloc"
