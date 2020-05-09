@@ -41,6 +41,10 @@ const routes = [
     component: TodoView,
   },
   {
+    name: 'apiInfo',
+    path: 'info',
+  },
+  {
     path: '/api',
     children: [
       {

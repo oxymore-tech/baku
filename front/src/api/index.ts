@@ -4,7 +4,7 @@ import { ImageRef, UploadedImage } from '@/utils/uploadedImage.class';
 import { BakuEvent, VideoStatus } from '@/utils/types';
 
 export function getVersion(): Promise<string> {
-  const url = router.resolve({name: "version"}).href;
+  const url = router.resolve({name: "apiInfo"}).href;
   return axios.get(url).then((response) => response.data.git?.commit?.describe);
 }
 
