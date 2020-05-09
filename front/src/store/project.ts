@@ -1,6 +1,6 @@
 import store from "@/store";
 import * as api from '@/api';
-import { BakuAction, BakuEvent } from '@/utils/types';
+import { BakuAction, BakuEvent, Duration } from '@/utils/types';
 import { Movie, MovieService, Shot } from '@/utils/movie.service';
 import { BakuActionContext, BakuModule, ProjectState } from '@/store/store.types';
 import uuid from 'uuid';
@@ -10,6 +10,15 @@ interface ProjectGetters {
   getActiveShot: Shot;
   canLock: boolean;
 }
+
+const computeSeconds = (imageNumber: number, fps: number): number =>
+  Math.floor(imageNumber / fps) % 60
+
+const computeMinutes = (imageNumber: number, fps: number): number =>
+  Math.floor(imageNumber / fps / 60) % 60
+
+const computeHours = (imageNumber: number, fps: number): number =>
+  Math.floor(imageNumber / fps / 60 / 60) % 60
 
 const makeEvent = (context: BakuActionContext<ProjectState>, action: BakuAction, value: any) => {
   return {
@@ -199,6 +208,56 @@ export const ProjectStore: BakuModule<ProjectState> = {
     getActiveShotIndex: (state, getters: ProjectGetters): number | undefined => {
       return getters.movie.shots.findIndex((shot: Shot) => shot.id === getters.getActiveShot?.id);
     },
+
+    getImageCount: (state, getters: ProjectGetters): number => {
+      let res = 0
+      for(let i = 0, i_len = getters.movie.shots.length; i < i_len; i++) {
+        res += getters.movie.shots[i].images.length
+      }
+      return res
+    },
+
+    getHours: (state, getters): any =>
+    (shotIndex: number | undefined): any => {
+      let imgNb: number
+      if (shotIndex != undefined) {
+        imgNb = getters.movie.shots[shotIndex].images.length
+      } else {
+        imgNb = getters.getImageCount
+      }
+      return computeHours(imgNb, getters.movie.fps)
+    },
+
+    getMinutes: (state, getters): any =>
+    (shotIndex: number | undefined): any => {
+      let imgNb: number
+      if (shotIndex != undefined) {
+        imgNb = getters.movie.shots[shotIndex].images.length
+      } else {
+        imgNb = getters.getImageCount
+      }
+      return computeMinutes(imgNb, getters.movie.fps)
+    },
+
+    getSeconds: (state, getters): any =>
+    (shotIndex: number | undefined): any => {
+      let imgNb: number
+      if (shotIndex != undefined) {
+        imgNb = getters.movie.shots[shotIndex].images.length
+      } else {
+        imgNb = getters.getImageCount
+      }
+      return computeSeconds(imgNb, getters.movie.fps)
+    },
+
+    movieDuration: (state, getters): Duration => {
+      return {
+        hours: getters.getHours(),
+        minutes: getters.getMinutes(),
+        seconds: getters.getSeconds(),
+      }
+    },
+
   },
   modules: {},
 };

@@ -32,3 +32,9 @@ export interface VideoStatus {
   readonly status: VideoStatusEnum;
   readonly lastModified: number;
 }
+
+export type Duration = {
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
