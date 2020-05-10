@@ -5,7 +5,7 @@
 <template>
   <div class="main">
     <div class="top-panel panel">
-      <div style="position:absolute; left: 0">
+      <div class="logo-home">
         <img src="@/assets/baku_solo.svg"/>
       </div>
       <div class="welcome-div">
@@ -15,7 +15,7 @@
             <span>{{ description1 }}</span>
           </div>
           <div>
-            <span>{{ description2 }}</span>
+            <span class="name">{{ name }}</span><span>{{ description2 }}</span>
           </div>
         </div>
         <div>
@@ -34,20 +34,20 @@
         </div>
 
         <div class="option-home mini-icons-container">
-          <a href="https://twitter.com/bakuanimation">
-            <i class="icon-twitter-brands baku-button"/>
-          </a>
           <a href="https://www.instagram.com/bakuanim/">
-            <i class="icon-instagram-brands baku-button"/>
+            <img src="@/assets/instagram_logo.svg"/>
           </a>
-          <a href="mailto:support@bakuanimation.com">
-            <i class="icon-envelope-regular baku-button"/>
+          <a href="https://twitter.com/bakuanimation">
+            <img src="@/assets/twitter_logo.svg"/>
+          </a>
+          <a href="https://bakuanimation.com/">
+            <img src="@/assets/baku_solo.svg"/>
           </a>
         </div>
       </div>
     </div>
-    <div class="footer">
-      version {{ version }}
+    <div class="footer-home">
+      ver {{ version }}
     </div>
   </div>
 </template>
@@ -83,8 +83,10 @@
     public description1 =
       'Sortez vos crayons, pinceaux et couleurs, et racontez une histoire.';
 
+    public name = 'Baku ';
+
     public description2 =
-      'Baku est une plateforme collaborative de création de film d\'animation.';
+      'est une plateforme collaborative de création de film d\'animation.';
 
     version = "";
 
