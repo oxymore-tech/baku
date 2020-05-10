@@ -35,13 +35,13 @@
 
         <div class="option-home mini-icons-container">
           <a href="https://www.instagram.com/bakuanim/">
-            <i class="icon-instagram-brands baku-button"/>
+            <img src="@/assets/instagram_logo.svg"/>
           </a>
           <a href="https://twitter.com/bakuanimation">
-            <i class="icon-twitter-brands baku-button"/>
+            <img src="@/assets/twitter_logo.svg"/>
           </a>
           <a href="https://bakuanimation.com/">
-            <img class="mini-icon-baku" src="@/assets/baku_solo.svg"/>
+            <img src="@/assets/baku_solo.svg"/>
           </a>
         </div>
       </div>

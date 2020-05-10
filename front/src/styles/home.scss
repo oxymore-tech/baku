@@ -98,30 +98,30 @@ a {
 
   i {
     margin-right: 10px;
+    font-size: 30px;
   }
 }
 
 #libandyt{
   display: flex;
   flex-direction: column;
-  width: 240px;
+  width: 280px;
 }
 
 .mini-icons-container {
   justify-content: left;
-  width: 250px;
+  width: 280px;
   a {
     margin-right: 50px;
   }
+  img {
+    width: 25px;
+  }
   position: relative;
-  left: 15px;
+  left: 30px
 }
 
 .name {
   color: #FE676F;
   font-weight: bold;
-}
-
-.mini-icon-baku {
-  width: 20px;
 }
