@@ -46,6 +46,7 @@
 import { Vue, Component } from 'vue-property-decorator';
 import axios from 'axios';
 import router from '@/router';
+import { getVersion } from '@/api';
 
 @Component
 export default class IssuePopup extends Vue {
@@ -89,11 +90,7 @@ export default class IssuePopup extends Vue {
       }
 
       if (this.data.title.value && this.data.message.text) {
-        const url = router.resolve({ name: 'apiInfo' }).href;
-        await axios.get(url)
-          .then((response) => {
-            this.version = response.data.git.commit.describe;
-          });
+        this.version = await getVersion();
         this.data.message.sending = `__Sur quel écran étiez-vous :__ ${this.data.screen.value}\n__Description :__ ${this.data.message.text}`;
         if (this.data.email.text) {
           this.data.message.sending += `\n__Email :__ ${this.data.email.text}`;

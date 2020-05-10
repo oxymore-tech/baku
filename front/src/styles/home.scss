@@ -1,6 +1,6 @@
 .main {
   width: 100%;
-  height: calc(100% - 48px);
+  height: calc(100% + 250px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,8 +23,8 @@
     align-items: center;
     text-align: center;
     z-index: 1;
-    background: rgba(255, 255, 255, 0.7);
     border-radius: 4px;
+    width: 100%;
 
     .description {
       margin: 0px 0px 15px;
@@ -32,17 +32,22 @@
   }
 
   h3 {
-    font-size: 96px;
-    font-weight: bold;
+    font-size: 65px;
   }
 
   span {
     font-size: 24px;
   }
 
-  img {
-    width: 364px;
-    display: inline-flex;
+  .logo-home {
+    position:absolute;
+    top: 150px;
+    left: 70px;
+
+    img {
+      width: 364px;
+      display: inline-flex;
+    }
   }
 
   .create-button {
@@ -74,9 +79,10 @@
   display: flex;
 }
 
-.footer {
+.footer-home {
   position: fixed;
-  bottom: 0;
+  bottom: 20px;
+  left: 20px;
 }
 
 a {
@@ -98,13 +104,24 @@ a {
 #libandyt{
   display: flex;
   flex-direction: column;
-  width: 320px;
+  width: 240px;
 }
 
 .mini-icons-container {
   justify-content: left;
-  width: 320px;
+  width: 250px;
   a {
     margin-right: 50px;
   }
+  position: relative;
+  left: 15px;
+}
+
+.name {
+  color: #FE676F;
+  font-weight: bold;
+}
+
+.mini-icon-baku {
+  width: 20px;
 }
