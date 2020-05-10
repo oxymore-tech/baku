@@ -42,7 +42,7 @@ const routes = [
   },
   {
     name: 'apiInfo',
-    path: 'info',
+    path: '/info',
   },
   {
     path: '/api',
@@ -50,10 +50,6 @@ const routes = [
       {
         name: 'apiVideoStatus',
         path: ':projectId/video/status',
-      },
-      {
-        name: 'apiInfo',
-        path: 'info',
       },
       {
         name: 'apiIssue',
