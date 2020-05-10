@@ -84,8 +84,11 @@ export class MovieService {
           break;
         case BakuAction.MOVIE_INSERT_IMAGE: {
           const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: string };
+          console.log(event.timestamp);
           updateShot(shotId, (shot: Shot) => {
+            console.log(imageIndex);
             shot.images.splice(imageIndex, 0, new UploadedImage(projectId, image));
+            console.log(shot.images.length);
             return shot;
           });
 
@@ -125,16 +128,19 @@ export class MovieService {
         }
         case BakuAction.MOVIE_LOCK: {
           locked = event.value;
+          break;
         }
         case BakuAction.SHOT_UPDATE_SYNOPSIS: {
           updateShot(event.value.shotId, (shot: Shot) =>
             ({...shot, synospsis: event.value.synopsis})
           )
+          break;
         }
         case BakuAction.SHOT_UPDATE_STORYBOARD: {
           updateShot(event.value.shotId, (shot: Shot) =>
             ({...shot, storyboard: event.value.storyboard})
           )
+          break;
         }
         case BakuAction.MOVIE_REVERSE_IMAGES: {
           const { shotId, imageIndexLeft, imageIndexRight } = event.value as { shotId: string, imageIndexLeft: number, imageIndexRight: number };
@@ -144,6 +150,7 @@ export class MovieService {
             const rightPart = shot.images.slice(imageIndexRight + 1);
             return {...shot, images: leftPart.concat(reversed, rightPart)};
           })
+          break;
         }
         default:
           break;
