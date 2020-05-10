@@ -4,8 +4,8 @@
       id="shotSynopsis"
       ref="shotSynopsis"
       rows="5"
-      maxlength="255"
-      :v-model="activeShot.synopsis"
+      maxlength="124"
+      :value="activeShot.synopsis"
       placeholder="Présenter votre plan avec un résumé"
       @blur="changeShotSynopsis()"
     ></textarea>

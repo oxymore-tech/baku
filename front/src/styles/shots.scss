@@ -81,7 +81,6 @@
 
   .card-footer {
 		border: 0;
-		padding: 6px 8px;
     display: flex;
     background: white;
     flex-direction: row;
@@ -89,7 +88,6 @@
     align-items: baseline;
 
 		.shot-name {
-			margin-left: 6px;
 			font-size: 1.3em;
 		}
 
@@ -188,5 +186,13 @@ a.dropdown-item {
 
 .activate-shot-link {
   width: 100%;
-  height: 30%;
+  padding: 6px 8px;
+  background: white;
+  height: 40%;
+
+  .shot-storyboard {
+    font-size: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }

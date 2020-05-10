@@ -66,11 +66,10 @@
             <div class="info-text">
               <p>{{ getImagesString(shot.imageNb) }}</p>
             </div>
-            <div class="info-text">
-              {{ shot.synopsis }}
-            </div>
           </div>
+           <div class="shot-storyboard">{{ shot.synopsis }}</div>
         </a>
+
       </div>
       <div class="shot-card create-shot" @click="createNewShot()">
         <img src="@/assets/plus.svg" alt="plus" />
@@ -99,6 +98,7 @@ type Shot = {
   locked: boolean;
   imageNb: number;
   duration: Duration;
+  synopsis: string;
 };
 
 @Component
@@ -142,6 +142,7 @@ export default class Shots extends Vue {
           previewUrl,
           imageNb: shot.images.length,
           locked: shot.locked,
+          synopsis: shot.synopsis,
           duration: {
             hours: this.getHours(index),
             minutes: this.getMinutes(index),
