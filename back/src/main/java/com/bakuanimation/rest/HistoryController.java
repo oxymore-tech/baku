@@ -5,6 +5,8 @@ import com.bakuanimation.service.HistoryServiceImpl;
 import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
+import io.micronaut.http.server.types.files.SystemFile;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
@@ -43,13 +45,14 @@ public class HistoryController {
     }
 
     @Get("/api/{projectId}/history")
-    public Single<byte[]> stack(@PathVariable String projectId) {
-        Path imagePath = pathService.getStackFile(permissionService.getProject(projectId).getId());
+    public Single<HttpResponse> stack(@PathVariable String projectId) {
+        Path stackFile = pathService.getStackFile(permissionService.getProject(projectId).getId());
         return Single.fromCallable(() -> {
-            if (!Files.exists(imagePath)) {
-                return "[]".getBytes();
+            if (!Files.exists(stackFile)) {
+                return (HttpResponse) HttpResponse.ok("[]".getBytes());
             } else {
-                return Files.readAllBytes(imagePath);
+                return (HttpResponse) HttpResponse.ok(new SystemFile(stackFile.toFile()))
+                        .header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
             }
         }).subscribeOn(Schedulers.io());
     }
