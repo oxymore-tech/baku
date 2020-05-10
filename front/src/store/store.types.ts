@@ -22,9 +22,12 @@ export interface SeenProject {
   id: string;
   adminId?: string;
   title: string;
-  posterUrl: string;
+  posterUrl?: string;
   synopsis?: string;
   locked?: boolean;
+  totalImages?: number;
+  fps?: number;
+  lastUpdate?: Date;
 }
 
 export interface UserState {

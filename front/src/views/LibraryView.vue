@@ -1,5 +1,5 @@
-<style lang="scss" scoped>
-@import "@/styles/library.scss";
+<style lang="scss">
+  @import "@/styles/library.scss";
 </style>
 
 <template>
@@ -8,185 +8,294 @@
       <span>{{ title() }}</span>
     </div>
 
+    <div class="movie-export-message">
+      <div class="export-message">
+        <p>
+          Cette liste est une aide pour faciliter l'utilisation de Baku. Elle n'est pas
+          sauvegardée dans nos serveurs. Si vous changez de navigateur, elle sera perdue. Nous
+          vous conseillons de sauvegarder les url des films que vous souhaitez conserver.
+        </p>
+        <b-button class="export-url-button" @click="exportUrls">
+          <i class="icon-attachment"></i>
+          Exporter les url
+        </b-button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <b-switch v-model="showDemoProjects">Afficher les films de démonstration</b-switch>
+    </div>
+
     <div class="movie-gallery">
-      <div
-        v-for="project in seenProjects"
-        :key="project.id"
-        class="movie-card"
-      >
-        <img :src="project.posterUrl" />
-        <div class="flex-column">
-          <div class="movie-toolbar">
 
-            <div class="movie-card-title">
-              {{ project.title }}
+      <div class="library-list">
+        <div
+          v-for="(project, index) in projects"
+          :key="`project-${index}`"
+          class="movie-card"
+        >
+
+          <div class="column-img">
+            <img :src="project.posterUrl" :alt="`${project.title} poster`"/>
+          </div>
+
+          <div class="flex-row">
+
+            <div class="flex-column movie-info">
+
+              <inline-input :value="project.title"
+                            :disabled="project.locked"
+                            editTitle="Cliquez pour renommer le film" style="flex:1"
+                            @input="setTitle(project, $event)"/>
+
+              <inline-input :value="project.synopsis"
+                            type="textarea"
+                            :disabled="project.locked"
+                            custom-class="movie-synopsis"
+                            editTitle="Cliquez pour changer le synopsis"
+                            @input="setSynopsis(project, $event)"/>
+
             </div>
 
-            <div class="movie-action" @click="onCopy(project.id)">
-              <i class="icon-copy-regular baku-button" />
-              <span class="baku-button">Copier l'url de partage</span>
-            </div>
+            <div class="movie-toolbar-2">
 
-            <div class="movie-action" v-if="project.adminId" @click="onCopy(project.adminId)">
-              <i class="icon-copy-solid baku-button" />
-              <span class="baku-button">Copier l'url d'administration</span>
-            </div>
-
-            <div class="movie-action">
-
-              <b-dropdown aria-role="list">
-
-                <div
-                  slot="trigger"
-                  role="button">
-                  <i class="icon-grid baku-button" />
-                  <span class="baku-button">Actions...</span>
+              <div>
+                <div v-if="project.lastUpdate">
+                  <span class="indication">Dernière mise à jour : </span>{{ project.lastUpdate }}
                 </div>
+                <div v-if="project.totalImages">
+                  <span class="indication">Durée : </span>{{getDurationString(project)}}
+                </div>
+                <div v-if="project.totalImages">
+                  {{getImagesString(project)}}
+                </div>
+              </div>
+              <b-button type="is-primary" @click="onOpen(project.id)">Ouvrir</b-button>
 
-                <b-dropdown-item class="" aria-role="listitem">
-                  <div class="option-logo" @click="onDuplicate(project.id)">
-                    <i class="icon-clone-regular baku-button"/>
-                    <span>Dupliquer le film</span>
-                  </div>
-                </b-dropdown-item>
-                <b-dropdown-item aria-role="listitem">
-                  <a :href="getMovieExportUrl(project.id)" target="_blank" >
-                    <div class="option-logo">
-                      <i class="icon-image-regular baku-button"/>
-                      <span>Exporter le film en séquence d'image</span>
-                    </div>
-                  </a>
-                </b-dropdown-item>
-                <b-dropdown-item aria-role="listitem">
-                  <!-- TODO. This seems mor complicated. See ProjectSettingPopup -->
-                  <a :href="getVideoUrl(project.id)" target="_blank" >
-                    <div class="option-logo">
-                      <i class="icon-movie baku-button"/>
-                      <span>Exporter le film en fichier vidéo</span>
-                    </div>
-                  </a>
-                </b-dropdown-item>
-                <b-dropdown-item aria-role="listitem">
-                  <div class="option-logo" @click="onDelete(project.id)">
-                    <i class="icon-close baku-button"/>
-                    <span>Supprimer le film</span>
-                  </div>
-                </b-dropdown-item>
-              </b-dropdown>
+            </div>
+
+
+            <div class="flex-column">
+
+              <div class="movie-action" @click="onCopy(project.id, true)">
+                <i class="icon-copy-regular baku-button"/>
+                <span class="baku-button">Copier l'url de partage</span>
+              </div>
+              <div class="movie-action" v-if="project.adminId"
+                   @click="onCopy(project.adminId, false)">
+                <i class="icon-copy-solid baku-button"/>
+                <span class="baku-button">Copier l'url d'administration</span>
+              </div>
+              <div class="movie-action">
+                <a
+                  :href="getMovieExportUrl()"
+                  target="_blank"
+                >
+                  <i class="icon-image-sequence "/>
+                  <span class="baku-button">Exporter les images</span>
+                </a>
+              </div>
+              <video-button :id="project.id"/>
+            </div>
+
+            <div class="movie-toolbar-2">
+
+              <div>
+                <b-switch @input="onLock($event, project.id)">Verrouiller</b-switch>
+              </div>
+
+              <div class="option-logo" @click="onDelete(project.id)">
+                <i class="icon-close baku-button"/>
+                <span>Supprimer le film</span>
+              </div>
 
             </div>
 
           </div>
 
-          <div class="movie-synopsis">
-            {{ project.synopsis }}
-          </div>
-
         </div>
-
-        <div class="movie-toolbar-2">
-
-          <div>
-            <b-button type="is-primary" @click="onOpen(project.id)">Ouvrir</b-button>
-          </div>
-
-          <!--<div>05/05/2020</div>-->
-
-          <div>
-            <b-switch @input="onLock($event, project.id)">Verrouiller</b-switch>
-          </div>
-
-        </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import store from '@/store';
-import * as api from '@/api';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
+  import store from '@/store';
+  import * as api from '@/api';
+  import { getDemoProjects } from '@/api';
+  import InlineInput from "@/components/InlineInput.vue";
+  import { SeenProject } from "@/store/store.types";
+  import { computeHours, computeMinutes, computeSeconds } from "@/store/project";
+  import { MovieService } from "@/utils/movie.service";
+  import VideoButton from "@/components/VideoButton.vue";
 
-const UserNS = namespace('user');
-@Component({
-  components: {},
-  store,
-})
-export default class LibraryView extends Vue {
-  @UserNS.State('seenProjects')
-  public seenProjects!: string[];
+  const UserNS = namespace('user');
 
-  public url = window.location.origin;
+  @Component({
+    components: {VideoButton, InlineInput},
+    store
+  })
+  export default class LibraryView extends Vue {
+    @UserNS.State('seenProjects')
+    public seenProjects!: SeenProject[];
 
-  public title() {
-    if (this.seenProjects.length == 0) {
-      return 'Quelques films de démonstration';
+    @UserNS.Action('refreshSeenProjectsMetadata')
+    refreshSeenProjectsMetadata!: Function;
+
+    @UserNS.Action('deleteSeenProject')
+    deleteSeenProject!: Function;
+
+    public url = window.location.origin;
+
+    showDemoProjects = false;
+
+    mounted() {
+      this.showDemoProjects = this.seenProjects.length == 0;
+      this.refreshSeenProjectsMetadata();
     }
-    return 'Mes films';
+
+    get projects() {
+      if (this.showDemoProjects) {
+        return MovieService.removeDoublons([...getDemoProjects(), ...this.seenProjects]);
+      } else {
+        return this.seenProjects;
+      }
+    }
+
+    public title() {
+      if (this.seenProjects.length == 0) {
+        return 'Quelques films de démonstration';
+      }
+      return 'Mes films';
+    }
+
+    public onCopy(projectId: string, share: boolean) {
+      const input = document.createElement('input');
+      input.value = this.getLink(projectId, share);
+      document.body.appendChild(input);
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      document.body.removeChild(input);
+    }
+
+    getLink(projectId: string, share: boolean): string {
+      const path = this.url + this.$router.resolve({
+        name: 'movie',
+        params: {
+          projectId
+        }
+      }).href;
+
+      this.$buefy.toast.open('Lien copié');
+
+      return path;
+    }
+
+    public onDelete(projectId: string) {
+      this.$buefy.dialog.confirm({
+        title: 'Suppression du film',
+        message: 'Etes vous sûr de vouloir <b>supprimer</b> votre film ?',
+        confirmText: 'Supprimer le film',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => this.deleteSeenProject(projectId)
+      })
+    }
+
+    public onOpen(projectId: string) {
+      this.$router.push({
+        name: 'movie',
+        params: {
+          projectId
+        }
+      });
+    }
+
+    public async onLock(lock: boolean, projectId: string) {
+      await this.$store.dispatch('project/lockMovie', {projectId, lock});
+    }
+
+    getMovieExportUrl(id: string) {
+      return api.getExportUrl(id);
+    }
+
+    getVideoUrl(id: string) {
+      return api.getVideoUrl(id);
+    }
+
+    exportUrls() {
+      const rows = [
+        ["titre", "url"],
+        this.seenProjects.map(s => {
+          const path = this.url + this.$router.resolve({
+            name: 'movie',
+            params: {
+              projectId: s.adminId || s.id
+            }
+          }).href;
+          return `"${s.title}", "${path}"`;
+        })
+      ];
+
+      let csvContent = "data:text/csv;charset=utf-8,";
+
+      rows.forEach(function (rowArray) {
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+      });
+      const csv = encodeURI(csvContent);
+
+      window.open(csv);
+    }
+
+    getImagesString(project: SeenProject) {
+      if (project.totalImages) {
+        return MovieService.getImagesString(project.totalImages);
+      } else {
+        return null;
+      }
+    }
+
+    getDurationString(project: SeenProject) {
+      if (project.totalImages && project.fps) {
+        const hours = computeHours(project.totalImages, project.fps);
+        const minutes = computeMinutes(project.totalImages, project.fps);
+        const seconds = computeSeconds(project.totalImages, project.fps);
+        const duration = {
+          hours, minutes, seconds
+        }
+        return MovieService.getDurationString(duration);
+      } else {
+        return null;
+      }
+    }
+
+    setTitle(seenProject: SeenProject, event: any) {
+      const newTitle = event.target.value;
+      if (newTitle !== seenProject.title) {
+        this.$store.dispatch('project/updateTitle', {projectId: seenProject.id, title: newTitle});
+      }
+    }
+
+    setSynopsis(seenProject: SeenProject, event: any) {
+      const newSynopsis = event.target.value;
+      if (newSynopsis !== seenProject.synopsis) {
+        this.$store.dispatch('project/updateSynopsis', {
+          projectId: seenProject.id,
+          synopsis: newSynopsis
+        });
+      }
+    }
+
+    setFps(seenProject: SeenProject, event: any) {
+      const newFps = event.target.value;
+      if (newFps !== seenProject.fps) {
+        this.$store.dispatch('project/updateFps', {projectId: seenProject.id, fps: newFps});
+      }
+    }
+
   }
-
-  public onCopy(projectId: string, mode: string = 'share') {
-    const input = document.createElement('input');
-    input.value = this.getLink(projectId, mode);
-    document.body.appendChild(input);
-    input.select();
-    input.setSelectionRange(0, 99999);
-    document.execCommand('copy');
-    document.body.removeChild(input);
-  }
-
-  getLink(projectId: string, mode: string): string {
-    const path = this.url + this.$router.resolve({
-      name: 'movieHome',
-      params: {
-        projectId,
-      },
-    }).href;
-
-    this.$buefy.toast.open('Lien copié');
-
-    return path;
-  }
-
-  public onDuplicate(projectId: string) {
-    console.log('DUPLICATE MOVIE', projectId); // TODO
-  }
-
-  public onExportImage(projectId: string) {
-
-  }
-
-  public onExportVideo(projectId: string) {
-
-  }
-
-  public onDelete(projectId: string) {
-    console.log('DELETE MOVIE', projectId); // TODO
-  }
-
-  public onOpen(projectId: string) {
-    this.$router.push({
-      name: 'movie',
-      params: {
-        projectId,
-      },
-    });
-  }
-
-  public onLock(lock: boolean, projectId: string) {
-    console.log('LOCK', lock, projectId);
-    // this.$store.dispatch('project/lockMovie', projectId);
-    // TODO. When action can accept projectId and lock status.
-  }
-
-  getMovieExportUrl(id: string) {
-    return api.getExportUrl(id);
-  }
-
-  getVideoUrl(id: string) {
-    return api.getVideoUrl(id);
-  }
-}
 </script>

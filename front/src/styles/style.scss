@@ -1,6 +1,7 @@
 html,
 body {
   height: 100%;
+  max-height: 100%;
   overflow: hidden;
 }
 
@@ -21,14 +22,22 @@ body {
 }
 
 .app-home {
-  background: transparent url("assets/baku_home_bg.png") 100% 0% no-repeat padding-box;
+  background: transparent url("assets/baku_home_bg.png") 100% 0 no-repeat padding-box;
+}
+
+.inline-editor {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+textarea {
+  resize: none !important;
 }
 
 nav {
   height: 75px;
   width: 100%;
-  padding-left: 12px;
-  padding-right: 12px;
   z-index: 3;
   display: flex;
   align-items: center;
@@ -107,7 +116,7 @@ nav {
   cursor: pointer;
 }
 
-.bug{
+.bug {
   border-radius: 16px;
   font-size: 16px;
   text-align: center;

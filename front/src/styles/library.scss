@@ -7,35 +7,72 @@
 .movie-gallery {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex: 1;
 }
 
 .flex-column {
   display: flex;
   flex-direction: column;
-  flex: 1;
+}
+
+.movie-export-message {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.export-message {
+  background: #FFBD72;
+  border-radius: 16px;
+  max-width: 1237px;
+  padding: 16px !important;
+  margin: 16px !important;
+  text-align: center;
+}
+
+.export-url-button {
+  margin-top: 12px;
+}
+
+.toolbar {
+  margin-left: 24px;
+  padding: 12px;
 }
 
 .movie-card {
-  height: 150px;
   // background: #ffffff 0% 0% no-repeat padding-box;
   opacity: 1;
   margin: 24px;
   padding: 12px;
   display: flex;
-  
+
   font-size: 14px;
 
   border-bottom: 1px solid #7F7F7F;
-  
-  img {
-    width: 200px;
-    height: 119px;
-    border-radius: 12px;
+
+  .column-img {
+    flex: 0.15;
+    text-align: center;
+    
+    img {
+      width: 200px;
+      height: 119px;
+      border-radius: 5px;
+      margin: 10px;
+    }
   }
 
   .movie-toolbar {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 
     .movie-action {
       margin-left: 12px;
@@ -54,18 +91,27 @@
 
   }
 
-  .movie-synopsis {
-    margin-left: 12px;
+  .movie-info {
     flex: 1;
-    color: #7F7F7F;
-  }
 
+    .movie-synopsis {
+      min-height: 80px !important;
+      margin-left: 12px;
+      flex: 1;
+      color: #7F7F7F;
+    }
+  }
 }
 
 .movie-toolbar-2 {
   width: 300px;
   display: flex;
   flex-direction: row;
+
+  .indication {
+    font-weight: 400;
+  }
+  
   div {
     margin: auto;
   }

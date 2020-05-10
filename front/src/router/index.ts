@@ -39,51 +39,6 @@ const routes = [
     name: 'movieEditing',
     path: '/movies/:projectId/movieEditing',
     component: TodoView,
-  },
-  {
-    name: 'apiInfo',
-    path: '/info',
-  },
-  {
-    path: '/api',
-    children: [
-      {
-        name: 'apiVideoStatus',
-        path: ':projectId/video/status',
-      },
-      {
-        name: 'apiIssue',
-        path: 'issue',
-      },
-      {
-        name: 'apiVideo',
-        path: ':projectId/video',
-      },
-      {
-        name: 'apiStack',
-        path: ':projectId/stack',
-      },
-      {
-        name: 'apiHistory',
-        path: ':projectId/history',
-      },
-      {
-        name: 'apiUpload',
-        path: ':projectId/upload',
-      },
-      {
-        name: 'apiExportProject',
-        path: ':projectId/export.zip',
-      },
-      {
-        name: 'apiExportShot',
-        path: ':projectId/:shotId/export.zip',
-      },
-      {
-        name: 'apiMovie',
-        path: 'movie',
-      }
-    ]
   }
 ];
 
@@ -95,7 +50,7 @@ const router = new VueRouter({
 });
 
 router.afterEach((to, from) => {
-  store.dispatch('user/updateSeenProjects');
+  store.dispatch('user/updateCurrentSeenProject');
 })
 
 export default router;

@@ -1,10 +1,11 @@
 import store from "@/store";
-import { BakuModule, UserState, SeenProject } from './store.types';
-import { Quality } from '@/utils/uploadedImage.class';
+import { BakuModule, SeenProject, UserState } from './store.types';
+import { deleteProject, getHistory } from "@/api";
+import { MovieService } from "@/utils/movie.service";
 
 // local storage keys
-const lsUsernameKey = 'username'
-const lsSeenProjectsKey = 'seenProjects'
+const lsUsernameKey = 'username';
+const lsSeenProjectsKey = 'seenProjects';
 
 const yokaiList = [
   'Akuma', 'Asobibi', 'Bakebi', 'Bakeneko', 'Baku', 'Daki', 'Enkō', 'Fūbo', 'Genbu', 'Hakuba', 'Hinode',
@@ -12,12 +13,6 @@ const yokaiList = [
   'Oni', 'Raijū', 'Reiki', 'Ryū', 'Saburō', 'Sankai', 'Sankibō', 'Sarugami', 'Satori', 'Shiryō', 'Shisa', 'Sōgenbi',
   'Sōjōbō', 'Son Gokū', 'Taiba', 'Tanuki', 'Tatsu', 'Tengubi', 'Tenji', 'Tenko', 'Tōtetsu', 'Uba Ga Hi', 'Ubume',
   'Uryû', 'Uwan', 'Waira', 'Yōko', 'Yōsei', 'Yosuzume', 'Yukinko', 'Yurei', 'Zan', 'Zorigami', 'Zuijin'];
-
-const defaultProject = {
-  id: 'premier_montage',
-  title: 'Mes premières fois',
-  posterUrl: '/img/PremFois.81be95db.jpg',
-}
 
 const initializeUsername = () => {
   // retrieve last username if exists
@@ -38,7 +33,7 @@ const initializeSeenProjects = () => {
   if (seenProjectsJson) {
     return JSON.parse(seenProjectsJson);
   }
-  return [defaultProject]
+  return [];
 };
 
 export const UserStore: BakuModule<UserState> = {
@@ -48,76 +43,95 @@ export const UserStore: BakuModule<UserState> = {
     seenProjects: initializeSeenProjects(),
   },
   mutations: {
-    addSeenProject(state, project: SeenProject) {
-      let start = state.seenProjects.slice()
-      start.unshift(project)
-      start = start.slice(0, 10);
-      start.push(defaultProject)
-
-      const result = [];
-      const map = new Map();
-      for (const item of start) {
-        if(!map.has(item.id)){
-          map.set(item.id, true);    // set any value to Map
-          result.push(item);
-        }
-      }
-      state.seenProjects = result;
+    updateSeenProjects(state, seenProjects: SeenProject[]) {
+      localStorage.setItem(lsSeenProjectsKey, JSON.stringify(seenProjects));
+      state.seenProjects = MovieService.removeDoublons(seenProjects);
     },
+    addSeenProject(state, project: SeenProject) {
+      const newSeenProjects = MovieService.removeDoublons([project, ...state.seenProjects]);
+      localStorage.setItem(lsSeenProjectsKey, JSON.stringify(newSeenProjects));
+      state.seenProjects = newSeenProjects;
+    },
+    deleteSeenProject(state, toDelete: SeenProject) {
+      const toDeleteIndex = state.seenProjects.findIndex(s => s.id == toDelete.id);
+      if (toDeleteIndex > -1) {
+        state.seenProjects.splice(toDeleteIndex, 1);
+        localStorage.setItem(lsSeenProjectsKey, JSON.stringify(state.seenProjects));
+      }
+    }
   },
   actions: {
-    updateSeenProjects(context, project: SeenProject) {
+    async refreshSeenProjectsMetadata(context) {
+      const updatedSeenProjects = [];
+      for (const seenProject of context.state.seenProjects) {
+        try {
+          const history = await getHistory(seenProject.id);
+          const movie = MovieService.merge(seenProject.id, history);
+          updatedSeenProjects.push({
+            ...seenProject,
+            title: movie.title,
+            fps: movie.fps,
+            totalImages: MovieService.getTotalImages(movie),
+            posterUrl: MovieService.getPosterUrl(movie),
+            synopsis: movie.synopsis,
+            locked: movie.locked,
+            lastUpdate: MovieService.getLastUpdate(history)
+          });
+        } catch (e) {
+          console.log(`Movie ${seenProject.id} not found on server : remove from loca storage`);
+        }
+      }
+      await context.commit('updateSeenProjects', updatedSeenProjects);
+    },
+    async deleteSeenProject(context, projectId: string) {
+      await deleteProject(projectId);
+      const toDelete = context.state.seenProjects.find(s => s.id === projectId);
+      if (toDelete) {
+        await context.commit('deleteSeenProject', toDelete);
+      }
+    },
+    async updateCurrentSeenProject(context) {
       let projectId = store.state.project.id;
       if (projectId) {
         const movie = store.getters["project/movie"];
-        let posterUrl = "";
-        if (movie.poster) {
-          posterUrl = movie.poster;
-        } else if (movie && movie.shots && movie.shots.length > 0 && movie.shots[0].images && movie.shots[0].images.length > 0) {
-          posterUrl = movie.shots[0].images[0].getUrl(Quality.Original);
-        } else {
+        const history = store.state.project.history;
 
-        }
-
-        let adminId = null;
+        let adminId = undefined;
         if (projectId.length > 36) {
           // Admin link
           adminId = projectId;
-          projectId = projectId.slice(0,36);
+          projectId = projectId.slice(0, 36);
         }
 
         const project: SeenProject = {
           id: projectId,
+          adminId,
           title: movie.title,
-          posterUrl: posterUrl,
+          posterUrl: MovieService.getPosterUrl(movie),
           synopsis: movie.synopsis,
           locked: movie.locked,
+          fps: movie.fps,
+          totalImages: MovieService.getTotalImages(movie),
+          lastUpdate: MovieService.getLastUpdate(history)
         }
 
-        if (adminId) {
-          project.adminId = adminId;
-        }
-
-        context.commit('addSeenProject', project);
-        localStorage.setItem(lsSeenProjectsKey, JSON.stringify(context.state.seenProjects));
+        await context.commit('addSeenProject', project);
       }
-
     },
   },
   getters: {
     getPersonalisedProjectTitle: (state) => {
-      const prefix = "Film de " + state.username
-      let suffixNumber = 0
-      let suffix = ""
-      const titles = state.seenProjects.map((p) => p.title).sort()
-      for (const i in titles) {
-        const seenTitle = titles[i]
+      const prefix = "Film de " + state.username;
+      let suffixNumber = 0;
+      let suffix = "";
+      const titles = state.seenProjects.map((p) => p.title).sort();
+      for (const seenTitle of titles) {
         if (prefix + suffix === seenTitle) {
-          suffixNumber += 1
-          suffix = " (" + suffixNumber + ")"
+          suffixNumber += 1;
+          suffix = " (" + suffixNumber + ")";
         }
       }
-      return prefix + suffix
-    },
-  },
+      return prefix + suffix;
+    }
+  }
 };

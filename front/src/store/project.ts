@@ -11,14 +11,17 @@ interface ProjectGetters {
   canLock: boolean;
 }
 
-const computeSeconds = (imageNumber: number, fps: number): number =>
-  Math.floor(imageNumber / fps) % 60
+export function computeSeconds(imageNumber: number, fps: number): number {
+  return Math.floor(imageNumber / fps) % 60;
+}
 
-const computeMinutes = (imageNumber: number, fps: number): number =>
-  Math.floor(imageNumber / fps / 60) % 60
+export function computeMinutes(imageNumber: number, fps: number): number {
+  return Math.floor(imageNumber / fps / 60) % 60;
+}
 
-const computeHours = (imageNumber: number, fps: number): number =>
-  Math.floor(imageNumber / fps / 60 / 60) % 60
+export function computeHours(imageNumber: number, fps: number): number {
+  return Math.floor(imageNumber / fps / 60 / 60) % 60;
+}
 
 const makeEvent = (context: BakuActionContext<ProjectState>, action: BakuAction, value: any) => {
   return {
@@ -29,19 +32,17 @@ const makeEvent = (context: BakuActionContext<ProjectState>, action: BakuAction,
   }
 }
 
-const loadEvents = (
-  context: BakuActionContext<ProjectState>,
-  events: BakuEvent[]): void => {
+function loadEvents(context: BakuActionContext<ProjectState>, events: BakuEvent[]): void {
 
-    const promise = api.stack(context.state.id, events);
+  const promise = api.stack(context.state.id, events);
 
-    events.map(event => {
-      context.commit('addToLocalHistory', event);
-      context.commit('incAction', 1);
-      promise.catch(() => context.commit('removeFromLocalHistory', event))
-        .finally(() => context.commit('incAction', -1));
-    })
-  };
+  events.map(event => {
+    context.commit('addToLocalHistory', event);
+    context.commit('incAction', 1);
+    promise.catch(() => context.commit('removeFromLocalHistory', event))
+      .finally(() => context.commit('incAction', -1));
+  })
+}
 
 export const ProjectStore: BakuModule<ProjectState> = {
   namespaced: true,
@@ -75,63 +76,62 @@ export const ProjectStore: BakuModule<ProjectState> = {
   actions: {
     async loadProject(context, projectId: string): Promise<void> {
       const movieHistory = await api.getHistory(projectId);
-      store.dispatch('user/updateSeenProjects');
-      await context.commit('setMovie', { projectId, movieHistory });
+      await context.commit('setMovie', {projectId, movieHistory});
+      await store.dispatch('user/updateCurrentSeenProject');
     },
     async addImagesToShot(context, values: any[]): Promise<void> {
       const events = values.map(value => makeEvent(context, BakuAction.MOVIE_INSERT_IMAGE, value));
       loadEvents(context, events);
-      store.dispatch('user/updateSeenProjects');
+      await store.dispatch('user/updateCurrentSeenProject');
     },
     async removeImagesFromShot(context, values: any[]) {
       const events = values.map(value => makeEvent(context, BakuAction.MOVIE_REMOVE_IMAGE, value));
       loadEvents(context, events);
-      store.dispatch('user/updateSeenProjects');
+      await store.dispatch('user/updateCurrentSeenProject');
     },
 
-    async reverseImages(context, values: { shotId: string, imageIndexLeft: number, imageIndexRight: number}) {
+    async reverseImages(context, values: { shotId: string, imageIndexLeft: number, imageIndexRight: number }) {
       const events = makeEvent(context, BakuAction.MOVIE_REVERSE_IMAGES, values);
       loadEvents(context, [events]);
-      store.dispatch('user/updateSeenProjects');
+      await store.dispatch('user/updateCurrentSeenProject');
     },
 
     changeActiveShot(context, shotIndex: number) {
       context.commit('changeActiveShot', shotIndex);
     },
 
-    async updateTitle(context, title: string) {
+    async updateTitle(context, {projectId, title}) {
       const event = makeEvent(context, BakuAction.MOVIE_UPDATE_TITLE, title);
-      loadEvents(context, [event]);
+      await api.stack(projectId, [event]);
     },
 
-    async updateSynopsis(context, synopsis: string) {
+    async updateSynopsis(context, {projectId, synopsis}) {
       const event = makeEvent(context, BakuAction.MOVIE_UPDATE_SYNOPSIS, synopsis);
-      console.log("update syno")
-      loadEvents(context, [event]);
+      await api.stack(projectId, [event]);
+    },
+
+    async changeFps(context, {projectId, fps}) {
+      const event = makeEvent(context, BakuAction.CHANGE_FPS, fps);
+      await api.stack(projectId, [event]);
     },
 
     async createShot(context): Promise<string> {
       const shotId = uuid.v4();
-      const event = makeEvent(context, BakuAction.SHOT_ADD, { shotId });
+      const event = makeEvent(context, BakuAction.SHOT_ADD, {shotId});
       loadEvents(context, [event]);
-      store.dispatch('user/updateSeenProjects');
+      store.dispatch('user/updateCurrentSeenProject');
       return shotId;
     },
 
     async removeShot(context, shotId: string) {
-      const event = makeEvent(context, BakuAction.SHOT_REMOVE, { shotId });
+      const event = makeEvent(context, BakuAction.SHOT_REMOVE, {shotId});
       loadEvents(context, [event]);
-      store.dispatch('user/updateSeenProjects');
+      store.dispatch('user/updateCurrentSeenProject');
     },
 
-    async changeFps(context, fps: number): Promise<void> {
-      const event = makeEvent(context, BakuAction.CHANGE_FPS, fps);
-      loadEvents(context, [event]);
-    },
-
-    async lockMovie(context, locked: boolean): Promise<void> {
+    async lockMovie(context, {projectId, locked}): Promise<void> {
       const event = makeEvent(context, BakuAction.MOVIE_LOCK, locked);
-      loadEvents(context, [event]);
+      await api.stack(projectId, [event]);
     },
 
     async lockShot(context, params: { shotId: string, locked: boolean }): Promise<void> {
@@ -139,49 +139,49 @@ export const ProjectStore: BakuModule<ProjectState> = {
       loadEvents(context, [event]);
     },
 
-    async changeShotSynopsis(context,  params: { shotId: string, synopsis: string }){
+    async changeShotSynopsis(context, params: { shotId: string, synopsis: string }) {
       const event = makeEvent(context, BakuAction.SHOT_UPDATE_SYNOPSIS, params);
       loadEvents(context, [event]);
     },
 
-    async changeShotStoryboard(context,  params: { shotId: string, storyboard: string }){
+    async changeShotStoryboard(context, params: { shotId: string, storyboard: string }) {
       const event = makeEvent(context, BakuAction.SHOT_UPDATE_STORYBOARD, params);
       loadEvents(context, [event]);
     }
   },
   getters: {
     movie: (state): Movie =>
-    MovieService.merge(state.id, state.history),
+      MovieService.merge(state.id, state.history),
 
     getActiveShot: (state, getters: ProjectGetters): Shot | undefined =>
-    getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
+      getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
 
     getActiveShotImgCount: (state, getters: ProjectGetters): number | undefined =>
-    (getters.getActiveShot ? getters.getActiveShot.images.length : 0),
+      (getters.getActiveShot ? getters.getActiveShot.images.length : 0),
 
     synchronizing: (state): boolean =>
-    state.pendingActions !== 0,
+      state.pendingActions !== 0,
 
     canEditMovie: (state, getters: ProjectGetters): boolean =>
-    !getters.movie.locked,
+      !getters.movie.locked,
 
     canEditActiveShot: (state, getters: ProjectGetters): boolean =>
-    !getters.movie.locked && (!getters.getActiveShot?.locked),
+      !getters.movie.locked && (!getters.getActiveShot?.locked),
 
     canLock: (state): boolean =>
-    (state.id).length > 36,
+      (state.id).length > 36,
 
-    getNoEditId: (state, getters: ProjectGetters): string => getters.canLock ? state.id.slice(0,36) : state.id,
+    getNoEditId: (state, getters: ProjectGetters): string => getters.canLock ? state.id.slice(0, 36) : state.id,
 
     getPreviousShotId: (state, getters: ProjectGetters): string | undefined => {
       let activeShotId = getters.getActiveShot.id;
       let previousShotId = getters.movie.shots[getters.movie.shots.length - 1].id;
 
-      for(let i = 0, i_len = getters.movie.shots.length; i < i_len; i++) {
-        if(getters.movie.shots[i].id == activeShotId) {
+      for (let i = 0, i_len = getters.movie.shots.length; i < i_len; i++) {
+        if (getters.movie.shots[i].id == activeShotId) {
           break;
         }
-        previousShotId  = getters.movie.shots[i].id;
+        previousShotId = getters.movie.shots[i].id;
       }
 
       return previousShotId;
@@ -191,11 +191,11 @@ export const ProjectStore: BakuModule<ProjectState> = {
       let activeShotId = getters.getActiveShot.id;
       let nextShotId = getters.movie.shots[0].id;
 
-      for(let i = getters.movie.shots.length -1; i >= 0; i--) {
-        if(getters.movie.shots[i].id == activeShotId) {
+      for (let i = getters.movie.shots.length - 1; i >= 0; i--) {
+        if (getters.movie.shots[i].id == activeShotId) {
           break;
         }
-        nextShotId  = getters.movie.shots[i].id;
+        nextShotId = getters.movie.shots[i].id;
       }
 
       return nextShotId;
@@ -211,44 +211,44 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     getImageCount: (state, getters: ProjectGetters): number => {
       let res = 0
-      for(let i = 0, i_len = getters.movie.shots.length; i < i_len; i++) {
+      for (let i = 0, i_len = getters.movie.shots.length; i < i_len; i++) {
         res += getters.movie.shots[i].images.length
       }
       return res
     },
 
     getHours: (state, getters): any =>
-    (shotIndex: number | undefined): any => {
-      let imgNb: number
-      if (shotIndex != undefined) {
-        imgNb = getters.movie.shots[shotIndex].images.length
-      } else {
-        imgNb = getters.getImageCount
-      }
-      return computeHours(imgNb, getters.movie.fps)
-    },
+      (shotIndex: number | undefined): any => {
+        let imgNb: number
+        if (shotIndex != undefined) {
+          imgNb = getters.movie.shots[shotIndex].images.length
+        } else {
+          imgNb = getters.getImageCount
+        }
+        return computeHours(imgNb, getters.movie.fps)
+      },
 
     getMinutes: (state, getters): any =>
-    (shotIndex: number | undefined): any => {
-      let imgNb: number
-      if (shotIndex != undefined) {
-        imgNb = getters.movie.shots[shotIndex].images.length
-      } else {
-        imgNb = getters.getImageCount
-      }
-      return computeMinutes(imgNb, getters.movie.fps)
-    },
+      (shotIndex: number | undefined): any => {
+        let imgNb: number
+        if (shotIndex != undefined) {
+          imgNb = getters.movie.shots[shotIndex].images.length
+        } else {
+          imgNb = getters.getImageCount
+        }
+        return computeMinutes(imgNb, getters.movie.fps)
+      },
 
     getSeconds: (state, getters): any =>
-    (shotIndex: number | undefined): any => {
-      let imgNb: number
-      if (shotIndex != undefined) {
-        imgNb = getters.movie.shots[shotIndex].images.length
-      } else {
-        imgNb = getters.getImageCount
-      }
-      return computeSeconds(imgNb, getters.movie.fps)
-    },
+      (shotIndex: number | undefined): any => {
+        let imgNb: number
+        if (shotIndex != undefined) {
+          imgNb = getters.movie.shots[shotIndex].images.length
+        } else {
+          imgNb = getters.getImageCount
+        }
+        return computeSeconds(imgNb, getters.movie.fps)
+      },
 
     movieDuration: (state, getters): Duration => {
       return {
