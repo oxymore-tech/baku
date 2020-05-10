@@ -129,7 +129,7 @@ export class MovieService {
         }
         case BakuAction.SHOT_UPDATE_SYNOPSIS: {
           updateShot(event.value.shotId, (shot: Shot) =>
-            ({...shot, synospsis: event.value.synopsis})
+            ({...shot, synopsis: event.value.synopsis})
           )
           break;
         }
