@@ -5,28 +5,12 @@
 <template>
   <div class="shots">
 
-		<div id="movie-header">
-			<div class="movie-header-container">
-				<div class="title-and-info">
-					<p class="movie-title"> {{ movie.title }} </p>
-					<div class="movie-info">
-						<p>{{ getImagesString(getImageCount) }}</p>
-						<p> {{ getDurationString(movieDuration) }} </p>
-					</div>
-				</div>
-				<div
-					v-if="movie.synopsis != 'Synopsis vide'"
-					class="synopsis">
-					{{ movie.synopsis }}
-				</div>
-			</div>
-		</div>
-
-    <div class="shot-cards-container">
+		<div class="shot-cards-container">
       <div
         v-for="shot in shots"
         :key="shot.id"
         class="shot-card"
+        :style="{background:'url(' + shot.previewUrl +') no-repeat, white', 'background-size': 'contain'}"
       >
         <b-dropdown
           position="is-top-left"
@@ -74,15 +58,9 @@
           class="activate-shot-link"
           @click.prevent="activateShot(shot.id)"
         >
-          <img
-            class="shot-preview"
-            :src="shot.previewUrl"
-            alt="shotPreview"
-          />
           <div class="card-footer">
             <p class="shot-name">{{ shot.name }}</p>
 						<div class="info-text">
-							<p>{{ getImagesString(shot.imageNb) }}</p>
 							<p>{{ getDurationString(shot.duration) }}</p>
 						</div>
 
@@ -199,13 +177,13 @@ export default class Shots extends Vue {
 
   public getDurationString(duration: Duration): string {
     if (duration.hours) {
-      return duration.hours + "h " + duration.minutes + "min " + duration.seconds + "sec"
+      return duration.hours + "h " + duration.minutes + "min " + duration.seconds + "s"
     } else if (duration.minutes) {
-      return duration.minutes + "min " + duration.seconds + "sec"
+      return duration.minutes + "min " + duration.seconds + "s"
     } else if (duration.seconds > 1) {
-      return duration.seconds + " secondes"
+      return duration.seconds + " s"
     } else if (duration.seconds == 1) {
-      return duration.seconds + " seconde"
+      return duration.seconds + " s"
 		} else {
       return "moins d'une seconde"
 		}

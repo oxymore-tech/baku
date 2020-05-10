@@ -84,11 +84,8 @@ export class MovieService {
           break;
         case BakuAction.MOVIE_INSERT_IMAGE: {
           const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: string };
-          console.log(event.timestamp);
           updateShot(shotId, (shot: Shot) => {
-            console.log(imageIndex);
             shot.images.splice(imageIndex, 0, new UploadedImage(projectId, image));
-            console.log(shot.images.length);
             return shot;
           });
 
