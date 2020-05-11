@@ -21,7 +21,6 @@
 .flex-column {
   display: flex;
   flex-direction: column;
-  width: 250px;
 }
 
 .movie-export-message {
@@ -52,16 +51,22 @@ input, textarea {
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
 }
 
+.main-frame {
+  max-width: 1000px;
+  margin: auto;
+}
+
 .movie-card {
   // background: #ffffff 0% 0% no-repeat padding-box;
   opacity: 1;
-  margin: 24px;
-  padding: 12px;
+  padding: 8px;
   display: flex;
+  box-sizing: border-box;
 
   font-size: 14px;
 
   border-bottom: 1px solid #7F7F7F;
+  margin: 6px auto;
 
   .column-img {
     // flex: 0.15;
@@ -84,8 +89,8 @@ input, textarea {
     .movie-action {
       margin-left: 12px;
 
-      a {
-        color: #4a4a4a;
+      .baku-button {
+        color: #4a4a4a !important;
       }
 
     }
@@ -94,6 +99,7 @@ input, textarea {
 
   .movie-info {
     flex: 1;
+    margin: 0px 12px;
   }
 
   .movie-card-title {
@@ -103,13 +109,15 @@ input, textarea {
 
   .movie-synopsis {
     font-size: 14px;
+    height: 80px !important;
     min-height: 80px !important;
     color: #7F7F7F;
+    overflow: auto;
   }
 }
 
 .movie-toolbar-1 {
-  width: 200px;
+  width: 170px;
   display: flex;
   flex-direction: column;
 
@@ -117,7 +125,7 @@ input, textarea {
     font-size: 14px;
   }
 
-  .indication+div {
+  .indication+div, .indication+span {
     font-size: 14px;
     color: #7F7F7F;
   }
@@ -129,11 +137,5 @@ input, textarea {
 }
 
 .movie-toolbar-2 {
-  width: 300px;
-  display: flex;
-  flex-direction: row;
-  
-  div {
-    margin: auto;
-  }
+  width: 220px;
 }
