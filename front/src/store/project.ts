@@ -129,9 +129,10 @@ export const ProjectStore: BakuModule<ProjectState> = {
       store.dispatch('user/updateCurrentSeenProject');
     },
 
-    async lockMovie(context, {projectId, locked}): Promise<void> {
+    async lockMovie(context, locked): Promise<void> {
       const event = makeEvent(context, BakuAction.MOVIE_LOCK, locked);
-      await api.stack(projectId, [event]);
+      loadEvents(context, [event]);
+      store.dispatch('user/updateCurrentSeenProject');
     },
 
     async lockShot(context, params: { shotId: string, locked: boolean }): Promise<void> {

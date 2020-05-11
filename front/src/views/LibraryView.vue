@@ -209,10 +209,6 @@
       window.open(api.getExportUrl(projectId), '_blank');
     }
 
-    public async onLock(lock: boolean, projectId: string) {
-      await this.$store.dispatch('project/lockMovie', {projectId, lock});
-    }
-
     public onOpen(projectId: string) {
       this.$router.push({
         name: 'movie',
