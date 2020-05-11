@@ -78,7 +78,7 @@
           </b-dropdown-item>
         </b-dropdown>
 
-        <b-dropdown append-to-body aria-role="list" v-if="this.id">
+        <b-dropdown append-to-body aria-role="list" v-if="$route.params.projectId">
           <div class="label-menu" slot="trigger" role="button">
             <p>Capture <i class=" icon-angle-down baku-button"/></p>
           </div>
