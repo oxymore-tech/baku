@@ -130,7 +130,7 @@
               />
               <CaptureToolboxComponent
                 v-if="getActiveShot && canEdit"
-                :isCapturing="IsFrameLiveView"
+                :isCapturing="true"
               />
             </div>
           </div>
@@ -212,7 +212,7 @@ export default class CaptureView extends AbstractProjectView {
   public getActiveShotImgCount!: number;
 
   @ProjectNS.Getter("canEditActiveShot")
-  public canEdit!: number;
+  public canEdit!: boolean;
 
   // Carroussel Frame
   public currentCarrousselFrame: number = 0;
@@ -280,7 +280,7 @@ export default class CaptureView extends AbstractProjectView {
     }
     if (
       this.isPlaying === "animation" &&
-      nextFrame === this.getActiveShotImgCount - 1
+      nextFrame === this.getActiveShotImgCount
     ) {
       this.pauseAnimation();
       return;
@@ -320,7 +320,7 @@ export default class CaptureView extends AbstractProjectView {
       this.initPlay("animation");
       this.animationBoundaries = {
         left: 0,
-        right: this.getActiveShot.images.length
+        right: this.getActiveShot.images.length + 1
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }

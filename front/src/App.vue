@@ -257,9 +257,11 @@ export default class App extends Vue {
   }
 
   public async onOpenPlan() {
-    await this.$router.push({
-      name: 'movie',
-    });
+    if (this.$route.name === "captureShot") {
+      await this.$router.push({
+        name: "movie"
+      });
+    }
   }
 
   public async onCreatePlan() {

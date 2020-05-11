@@ -6,7 +6,7 @@
   <div class="main">
     <div class="top-panel panel">
       <div class="logo-home">
-        <img src="@/assets/baku_solo.svg"/>
+        <img src="@/assets/baku_solo_beta.svg"/>
       </div>
       <div class="welcome-div">
         <h3>Libérez votre imagination</h3>
@@ -25,7 +25,7 @@
         <div id="libandyt">
           <div class="option-home" @click="onClickMyLibrary">
             <i class="icon-movie baku-button"/>
-            <span class="baku-button">Ma librairie</span>
+            <span class="baku-button">Mes Films</span>
           </div>
           <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
             <i class="icon-youtube-brands baku-button"/>
@@ -40,7 +40,10 @@
           <a href="https://twitter.com/bakuanimation">
             <img src="@/assets/twitter_logo.svg"/>
           </a>
-          <a href="https://bakuanimation.com/">
+          <a href="https://bakuanimation.com">
+            <img src="@/assets/facebook_logo.svg"/>
+          </a>
+          <a href="https://bakuanimation.com">
             <img src="@/assets/baku_solo.svg"/>
           </a>
         </div>
@@ -53,15 +56,15 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import { createProject, getVersion } from '@/api';
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { createProject, getVersion } from '@/api';
 
-  const ProjectNS = namespace('project');
-  const UserNS = namespace('user');
+const ProjectNS = namespace('project');
+const UserNS = namespace('user');
 
   @Component
-  export default class HomeView extends Vue {
+export default class HomeView extends Vue {
     @UserNS.State('seenProjects')
     public seenProjects!: string[];
 
@@ -75,7 +78,7 @@
     protected loadProjectAction!: (projectId: string) => Promise<void>;
 
     @ProjectNS.Action('changeFps')
-    protected changeFps!: (fps: number) => Promise<void>;
+    protected changeFps!: ({}) => Promise<void>;
 
     @ProjectNS.Action('updateTitle')
     protected updateTitle!: (title: string) => Promise<void>;
@@ -88,7 +91,7 @@
     public description2 =
       'est une plateforme collaborative de création de film d\'animation.';
 
-    version = "";
+    version = '';
 
     // public premierSynopsis = `Ce film d’animation a été réalisé par des enfants de l’école de
     //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
@@ -104,14 +107,14 @@
       if (!this.seenProjects) {
       }
       if (this.isMobile()) {
-        this.$router.push({name: 'smartphone'});
+        this.$router.push({ name: 'smartphone' });
       }
-      const {projectId} = this.$route.params;
+      const { projectId } = this.$route.params;
       if (projectId) {
         await this.loadProjectAction(projectId);
         await this.$router.push({
           name: 'movie',
-          params: {projectId},
+          params: { projectId },
         });
       }
       this.version = await getVersion();
@@ -127,7 +130,7 @@
       const projectId = await createProject();
       await this.loadProjectAction(projectId);
       const shotId = await this.createShotAction('Nouveau plan');
-      await this.changeFps(12);
+      await this.changeFps({projectId, fps: 12});
       await this.updateTitle(this.getPersonalisedProjectTitle);
       this.$store.dispatch('project/changeActiveShot', shotId);
       await this.$router.push({
@@ -142,9 +145,8 @@
     public async open(projectId: string) {
       await this.$router.push({
         name: 'movie',
-        params: {projectId},
+        params: { projectId },
       });
     }
-
-  }
+}
 </script>

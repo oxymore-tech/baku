@@ -43,12 +43,12 @@
 
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import axios from 'axios';
-  import { getVersion } from '@/api';
+import { Component, Vue } from 'vue-property-decorator';
+import axios from 'axios';
+import { getVersion } from '@/api';
 
   @Component
-  export default class IssuePopup extends Vue {
+export default class IssuePopup extends Vue {
     public data = {
       message: {
         text: '',
@@ -61,17 +61,21 @@
       titles: [
         {
           text: 'Nous remonter un comportement inattendu',
-          value: 'Nous remonter un comportement inattendu'
+          value: 'Nous remonter un comportement inattendu',
+        },
+        {
+          text: 'Nous donner votre avis et/ou nous faire part de suggestions de fonctionnalités',
+          value: 'Nous donner votre avis et/ou nous faire part de suggestions de fonctionnalités',
         },
       ],
       screen: {
         value: 'écran d\'accueil Baku',
       },
       screens: [
-        {text: 'écran d\'accueil Baku', value: 'écran d\'accueil Baku'},
-        {text: 'écran de capture d\'images', value: 'écran de capture d\'images'},
-        {text: 'écran de ma librairie de films', value: 'écran de ma librairie de films'},
-        {text: 'écran de gestion des plans', value: 'écran de gestion des plans'},
+        { text: 'écran d\'accueil Baku', value: 'écran d\'accueil Baku' },
+        { text: 'écran de capture d\'images', value: 'écran de capture d\'images' },
+        { text: 'écran de ma librairie de films', value: 'écran de ma librairie de films' },
+        { text: 'écran de gestion des plans', value: 'écran de gestion des plans' },
       ],
       email: {
         text: '',
@@ -82,7 +86,7 @@
 
     public version = '';
 
-    public async onSendIssue() { // git.commit.describe
+    public async onSendIssue() {
       this.data.errors = [];
       if (!this.data.message.text) {
         this.data.errors.push('La description est obligatoire.');
@@ -98,13 +102,13 @@
           this.data.message.sending += `\n__Email :__ ${this.data.email.text}`;
         }
         this.data.message.sending += `\n__Informations navigateur :__ ${navigator.userAgent}\n__Baku version :__ ${this.version}`;
-        axios.post("/api/issue", {title: this.data.title.value, body: this.data.message.sending})
+        axios.post('/api/issue', { title: this.data.title.value, body: this.data.message.sending })
           .catch((e) => {
             console.log(e);
           });
         this.$emit('close');
       }
     }
-  }
+}
 
 </script>
