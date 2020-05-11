@@ -337,7 +337,7 @@ export default class CaptureView extends AbstractProjectView {
       this.initPlay("selection");
       this.animationBoundaries = {
         left: this.selectedImages.left,
-        right: this.selectedImages.right + this.canEdit? 1:0
+        right: this.selectedImages.right + (this.canEdit ? 1:0)
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
