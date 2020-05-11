@@ -65,14 +65,18 @@
             </b-dropdown-item>
           </b-dropdown>
           <div class="card-footer">
-            <div style="width: 100%;">
-              <p class="shot-name">{{ shot.name }}</p>
-              <p class="shot-details">{{ getDurationString(shot.duration) }}</p>
-              <p class="shot-details">{{ getImagesString(shot.imageNb) }}</p>
+            <div style="width: 100%">
+              <template v-if="shot.locked">
+                <i class="icon-lock-solid baku-button" style="color:#FE676F"></i>
+              </template>
+              <template v-if="!shot.locked">
+                <i class="icon-unlock-solid baku-button"></i>
+              </template>
+              <span class="shot-name">{{ shot.name }}</span>
+              <span class="shot-details">{{ getImagesString(shot.imageNb) }}</span>
               <p class="shot-storyboard">Synopsis: {{ shot.synopsis }}</p>
             </div>
           </div>
-
       </div>
       <div class="shot-card create-shot" @click="createNewShot()">
         <div class="add-footer">
