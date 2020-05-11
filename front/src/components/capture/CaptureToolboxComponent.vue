@@ -211,10 +211,6 @@ export default class CaptureToolboxComponent extends Vue {
 </script>
 
 <style lang="scss">
-.box-container {
-  padding: 3px 10px !important;
-}
-
 .collapse-content {
   background-color: white;
   padding: 6px;

@@ -1,139 +1,145 @@
-.title {
-  text-align: center;
-  font-size: 18px;
-  font-weight: normal;
+.library.main-frame {
+  max-width: 1000px;
+  margin: auto;
 }
 
-.movie-gallery {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow-y: auto;
-}
+.library {
 
-.flex-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  flex: 1;
-}
-
-.flex-column {
-  display: flex;
-  flex-direction: column;
-  width: 250px;
-}
-
-.movie-export-message {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-
-.export-message {
-  background: #FFBD72;
-  border-radius: 16px;
-  max-width: 1237px;
-  padding: 16px !important;
-  margin: 16px !important;
-  text-align: center;
-}
-
-.export-url-button {
-  margin-top: 12px;
-}
-
-.toolbar {
-  margin-left: 24px;
-  padding: 12px;
-}
-
-input, textarea {
-  font-family: "Montserrat", Helvetica, Arial, sans-serif;
-}
-
-.movie-card {
-  // background: #ffffff 0% 0% no-repeat padding-box;
-  opacity: 1;
-  margin: 24px;
-  padding: 12px;
-  display: flex;
-
-  font-size: 14px;
-
-  border-bottom: 1px solid #7F7F7F;
-
-  .column-img {
-    // flex: 0.15;
+  .title {
     text-align: center;
-    width: 200px;
-    
-    img {
-      width: 200px;
-      height: 119px;
-      border-radius: 5px;
-      margin: 10px;
-      cursor: pointer;
-    }
+    font-size: 18px;
+    font-weight: normal;
   }
 
-  .movie-toolbar {
+  .movie-gallery {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+  }
 
-    .movie-action {
-      margin-left: 12px;
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex: 1;
+  }
 
-      a {
-        color: #4a4a4a;
+  .flex-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .movie-export-message {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .export-message {
+    background: #FFBD72;
+    border-radius: 16px;
+    max-width: 1237px;
+    padding: 16px !important;
+    margin: 16px !important;
+    text-align: center;
+  }
+
+  .export-url-button {
+    margin-top: 12px;
+  }
+
+  .toolbar {
+    margin-left: 24px;
+    padding: 12px;
+  }
+
+  input, textarea {
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+  }  
+
+  .movie-card {
+    // background: #ffffff 0% 0% no-repeat padding-box;
+    opacity: 1;
+    padding: 8px;
+    display: flex;
+    box-sizing: border-box;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid #7F7F7F;
+    margin: 6px auto;
+
+    .column-img {
+      // flex: 0.15;
+      text-align: center;
+      width: 200px;
+      
+      img {
+        width: 200px;
+        height: 119px;
+        border-radius: 5px;
+        margin: 10px;
+        cursor: pointer;
+      }
+    }
+
+    .movie-toolbar {
+      display: flex;
+      flex-direction: column;
+
+      .movie-action {
+        margin-left: 12px;
+
+        .baku-button {
+          color: #4a4a4a !important;
+        }
+
       }
 
     }
 
+    .movie-info {
+      flex: 1;
+      margin: 0px 12px;
+    }
+
+    .movie-card-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .textarea.movie-synopsis {
+      font-size: 14px;
+      height: 80px;
+      min-height: 80px;
+      color: #7F7F7F;
+      overflow: auto;
+    }
   }
 
-  .movie-info {
-    flex: 1;
+  .movie-toolbar-1 {
+    width: 170px;
+    display: flex;
+    flex-direction: column;
+
+    .indication {
+      font-size: 14px;
+    }
+
+    .indication+div, .indication+span {
+      font-size: 14px;
+      color: #7F7F7F;
+    }
+
+    .button-open {
+      margin: auto;
+    }
+
   }
 
-  .movie-card-title {
-    font-size: 16px;
-    font-weight: bold;
+  .movie-toolbar-2 {
+    width: 220px;
   }
 
-  .movie-synopsis {
-    font-size: 14px;
-    min-height: 80px !important;
-    color: #7F7F7F;
-  }
-}
-
-.movie-toolbar-1 {
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-
-  .indication {
-    font-size: 14px;
-  }
-
-  .indication+div {
-    font-size: 14px;
-    color: #7F7F7F;
-  }
-
-  .button-open {
-    margin: auto;
-  }
-
-}
-
-.movie-toolbar-2 {
-  width: 300px;
-  display: flex;
-  flex-direction: row;
-  
-  div {
-    margin: auto;
-  }
 }
