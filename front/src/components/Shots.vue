@@ -65,11 +65,15 @@
             </b-dropdown-item>
           </b-dropdown>
           <div class="card-footer">
-            <p class="shot-name">{{ shot.name }}</p>
-            <div class="info-text">
-              <p>{{ getImagesString(shot.imageNb) }}</p>
+            <div>
+              <span class="shot-name">{{ shot.name }}</span>
+              <br>
+              <span class="shot-details">{{ getDurationString(shot.duration) }}</span>
+              <br>
+              <span class="shot-details">{{ getImagesString(shot.imageNb) }}</span>
+              <br>
+              <p class="shot-storyboard">Synopsis: {{ shot.synopsis }}</p>
             </div>
-            <div class="shot-storyboard">{{ shot.synopsis }}</div>
           </div>
 
       </div>
