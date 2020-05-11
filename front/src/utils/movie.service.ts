@@ -97,7 +97,7 @@ export class MovieService {
     }
   }
 
-  public static getDurationString(duration: Duration): string {
+  public static getDurationString(duration: Duration, short = false): string {
     if (duration.hours) {
       return (
         duration.hours +
@@ -114,7 +114,11 @@ export class MovieService {
     } else if (duration.seconds == 1) {
       return duration.seconds + " s";
     } else {
-      return "moins d'une seconde";
+      if (!short) {
+        return "moins d'une seconde";
+      } else {
+        return "<1s";
+      }
     }
   }
 

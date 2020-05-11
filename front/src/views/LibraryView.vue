@@ -42,6 +42,7 @@
 
               <inline-input :value="project.title"
                             :disabled="project.locked"
+                            placeholder="Titre"
                             icon="pencil"
                             custom-class="movie-card-title"
                             editTitle="Cliquez pour renommer le film" style="flex:1"
@@ -56,6 +57,7 @@
             <inline-input :value="project.synopsis"
                           type="textarea"
                           :disabled="project.locked"
+                          placeholder="Synopsis"
                           custom-class="movie-synopsis"
                           editTitle="Cliquez pour changer le synopsis"
                           @input="setSynopsis(project, $event)"/>
@@ -66,15 +68,17 @@
 
             <div>
               <div v-if="project.lastUpdate">
-                <div class="indication">Mise à jour</div>
+                <div class="indication">Mise à jour :</div>
                 <div>{{ project.lastUpdate | formatDate }}</div>
+                <br/>
               </div>
               <div v-if="project.totalImages">
-                <span class="indication">Durée </span>
+                <span class="indication">Durée : </span>
                 <span>{{getDurationString(project)}}</span>
               </div>
               <div v-if="project.totalImages">
-                {{getImagesString(project)}}
+                <span class="indication">Images : </span>
+                <span>{{project.totalImages}}</span>
               </div>
             </div>
 
@@ -243,14 +247,6 @@
       window.open(csv);
     }
 
-    getImagesString(project: SeenProject) {
-      if (project.totalImages) {
-        return MovieService.getImagesString(project.totalImages);
-      } else {
-        return null;
-      }
-    }
-
     getDurationString(project: SeenProject) {
       if (project.totalImages && project.fps) {
         const hours = computeHours(project.totalImages, project.fps);
@@ -259,7 +255,7 @@
         const duration = {
           hours, minutes, seconds
         }
-        return MovieService.getDurationString(duration);
+        return MovieService.getDurationString(duration, true);
       } else {
         return null;
       }
