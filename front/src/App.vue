@@ -8,52 +8,21 @@
 
     <nav>
       <div class="left-nav">
-        <b-dropdown append-to-body aria-role="list" v-if="$route.name !== 'home'">
-          <div class="logo is-success" slot="trigger" role="button">
+        <div v-if="$route.name !== 'home'">
+          <div class="logo is-success" role="button" @click="onPageAccueil()">
             <img
-              src="@/assets/baku_logo_horizontal_menu_beta.svg"
+              src="@/assets/baku_logo_solo.png"
               class="baku-logo"
               alt="bakuanimation"
             />
           </div>
-
-          <b-dropdown-item class aria-role="listitem">
-            <div class="option-logo" @click="onPageAccueil()">
-              <i class="icon-movie-start-01 baku-button"/>
-              <span>Aller à la page d'accueil</span>
-            </div>
-          </b-dropdown-item>
-          <b-dropdown-item aria-role="listitem">
-            <div class="option-logo" @click="onPersoFilm()">
-              <i class="icon-cog baku-button"/>
-              <span>Personnaliser votre film</span>
-            </div>
-          </b-dropdown-item>
-          <b-dropdown-item aria-role="listitem">
-            <div class="option-logo" @click="onOpenLibrary()">
-              <i class="icon-cloud baku-button"/>
-              <span>Ouvrir ma librairie</span>
-            </div>
-          </b-dropdown-item>
-          <b-dropdown-item aria-role="listitem">
-            <div class="option-logo" @click="onOpenPlan()">
-              <i class="icon-grid baku-button"/>
-              <span>Accéder aux plans</span>
-            </div>
-          </b-dropdown-item>
-          <b-dropdown-item v-if="this.id" aria-role="listitem">
-            <div class="option-logo" @click="onCreatePlan()">
-              <i class="icon-plus baku-button"/>
-              <span>Créer un nouveau plan</span>
-            </div>
-          </b-dropdown-item>
-        </b-dropdown>
+        </div>
 
 
         <b-dropdown append-to-body aria-role="list">
-          <div class="label-menu"  slot="trigger" role="button">
-            <p v-if="this.id"> {{ this.movie.title }}<i class="icon-angle-down baku-button" /></p>
-            <p v-else> Ma librairie<i class="icon-angle-down baku-button" /></p>
+          <div class="label-menu" slot="trigger" role="button">
+            <p v-if="this.id"> {{ this.movie.title }}<i class="icon-angle-down baku-button"/></p>
+            <p v-else> Ma librairie<i class="icon-angle-down baku-button"/></p>
           </div>
 
           <b-dropdown-item class aria-role="listitem">
@@ -78,14 +47,22 @@
           </b-dropdown-item>
         </b-dropdown>
 
-        <b-dropdown append-to-body aria-role="list" v-if="this.id">
-          <div class="label-menu" slot="trigger" role="button">
-            <p>Capture <i class=" icon-angle-down baku-button"/></p>
+        <b-dropdown append-to-body aria-role="list" v-if="this.id && ($route.name === 'captureShot' || $route.name === 'movie') ">
+          <div class="label-menu label-menu-sep-left" slot="trigger" role="button">
+            <p v-if="$route.name === 'captureShot'">Capture <i
+              class=" icon-angle-down baku-button"/></p>
+            <p v-else-if="$route.name === 'movie'">Plans <i
+              class=" icon-angle-down baku-button"/></p>
+<!--            <p v-else-if="$route.name === 'movieEditing'">Edition <i-->
+<!--              class=" icon-angle-down baku-button"/></p>-->
+<!--            <p v-else-if="$route.name === 'library'">Mes films <i-->
+<!--              class=" icon-angle-down baku-button"/></p>-->
+            <p v-else>{{$route.name}} <i class="icon-angle-down baku-button"/></p>
           </div>
 
-<!--          <b-dropdown-item class aria-role="listitem" v-if="this.activeShotId">-->
-          <b-dropdown-item class aria-role="listitem" :disabled="!this.activeShotId || $route.name === 'captureShot'">
-            <div class="option-logo" @click="activateShot()">
+          <b-dropdown-item class aria-role="listitem"
+                           :disabled="!this.activeShotId || $route.name === 'captureShot'">
+            <div class="option-logo" @click="goToShot()">
               <i class="icon-camera baku-button"/>
               <span>Capture</span>
             </div>
@@ -98,59 +75,59 @@
             </div>
           </b-dropdown-item>
 
-          <b-dropdown-item class aria-role="listitem">
-            <div class="option-logo" @click="onCreatePlan()">
-              <i class="icon-plus baku-button"/>
-              <span>Nouveau plan</span>
-            </div>
-          </b-dropdown-item>
+<!--          <b-dropdown-item class aria-role="listitem">-->
+<!--            <div class="option-logo" @click="onCreatePlan()">-->
+<!--              <i class="icon-plus baku-button"/>-->
+<!--              <span>Nouveau plan</span>-->
+<!--            </div>-->
+<!--          </b-dropdown-item>-->
         </b-dropdown>
       </div>
 
+      <div
+        class="flex-container"
+        v-if="$route.name === 'captureShot' && activeShotIndex >= 0 || $route.name === 'movie'"
+      >
         <div
-          class="flex-container"
-          v-if="$route.name === 'captureShot' && activeShotIndex >= 0 || $route.name === 'movie'"
-        >
-          <div
-            v-if="nbShot > 1 && $route.name === 'captureShot'"
-            class="previous-plan"
-            @click="goToPreviousPlan()"
-            title="Plan précédent"
-          >&lt;
-          </div>
-          <div class="baku-button" @click="onOpenPlan()">
-            {{movie.title}}
-            <template
-              v-if="$route.name === 'captureShot' && activeShotIndex >= 0"
-            >- Plan {{ activeShotIndex + 1 }}
-            </template>
-          </div>
-          <div
-            v-if="nbShot > 1 && $route.name === 'captureShot'"
-            class="next-plan"
-            @click="goToNextPlan()"
-            title="Plan suivant"
-          >&gt;
-          </div>
+          v-if="nbShot > 1 && $route.name === 'captureShot'"
+          class="previous-plan"
+          @click="goToPreviousPlan()"
+          title="Plan précédent"
+        >&lt;
         </div>
+        <div class="baku-button" @click="onOpenPlan()">
+          {{movie.title}}
+          <template
+            v-if="$route.name === 'captureShot' && activeShotIndex >= 0"
+          >- Plan {{ activeShotIndex + 1 }}
+          </template>
+        </div>
+        <div
+          v-if="nbShot > 1 && $route.name === 'captureShot'"
+          class="next-plan"
+          @click="goToNextPlan()"
+          title="Plan suivant"
+        >&gt;
+        </div>
+      </div>
 
-        <div class="flex-container">
-          <div class="flex-container bug" :class="{'bug-home': $route.name === 'home'}">
-            <div>
-              <i
-                class="icon-bullhorn-solid baku-button"
-                @click="openIssue()"
-                title="Reporter un bug"
-              />
-            </div>
-          </div>
-          <div class="flex-container right-nav" :class="{'right-nav-home': $route.name === 'home'}">
-            <div>
-              <i class="icon-user-dragon"/>
-            </div>
-            <div class="pseudo">{{ username }}</div>
+      <div class="flex-container">
+        <div class="flex-container bug" :class="{'bug-home': $route.name === 'home'}">
+          <div>
+            <i
+              class="icon-bullhorn-solid baku-button"
+              @click="openIssue()"
+              title="Reporter un bug"
+            />
           </div>
         </div>
+        <div class="flex-container right-nav" :class="{'right-nav-home': $route.name === 'home'}">
+          <div>
+            <i class="icon-user-dragon"/>
+          </div>
+          <div class="pseudo">{{ username }}</div>
+        </div>
+      </div>
     </nav>
     <router-view :key="$route.fullPath"/>
   </div>
@@ -187,142 +164,142 @@ import { createProject } from '@/api';
 const ProjectNS = namespace('project');
 const UserNS = namespace('user');
 
-@Component({
-  components: {
-    ProjectSettingsPopup,
-  },
-})
+  @Component({
+    components: {
+      ProjectSettingsPopup,
+    },
+  })
 export default class App extends Vue {
-  @ProjectNS.State
-  public id!: string;
+    @ProjectNS.State
+    public id!: string;
 
-  @ProjectNS.Getter
-  public movie!: Movie;
+    @ProjectNS.Getter
+    public movie!: Movie;
 
-  @UserNS.State
-  public username!: string;
+    @UserNS.State
+    public username!: string;
 
-  @UserNS.Getter('getPersonalisedProjectTitle')
-  public getPersonalisedProjectTitle!: string;
+    @UserNS.Getter('getPersonalisedProjectTitle')
+    public getPersonalisedProjectTitle!: string;
 
-  @ProjectNS.Action('createShot')
-  private createShotAction!: (name?: string) => Promise<string>;
+    @ProjectNS.Action('createShot')
+    private createShotAction!: (name?: string) => Promise<string>;
 
-  @ProjectNS.Action('changeFps')
-  protected changeFps!: (fps: number) => Promise<void>;
+    @ProjectNS.Action('changeFps')
+    protected changeFps!: (fps: number) => Promise<void>;
 
-  @ProjectNS.Action('updateTitle')
-  protected updateTitle!: (title: string) => Promise<void>;
+    @ProjectNS.Action('updateTitle')
+    protected updateTitle!: (title: string) => Promise<void>;
 
-  @ProjectNS.Getter('getPreviousShotId')
-  protected previousShotId!: string;
+    @ProjectNS.Getter('getPreviousShotId')
+    protected previousShotId!: string;
 
-  @ProjectNS.Getter('getNextShotId')
-  protected nextShotId!: string;
+    @ProjectNS.Getter('getNextShotId')
+    protected nextShotId!: string;
 
-  @ProjectNS.Getter('getActiveShotIndex')
-  public activeShotIndex!: Number;
+    @ProjectNS.Getter('getActiveShotIndex')
+    public activeShotIndex!: Number;
 
-  @ProjectNS.Getter('getShotCount')
-  public nbShot!: Number;
+    @ProjectNS.Getter('getShotCount')
+    public nbShot!: Number;
 
-  @ProjectNS.State
-  public activeShotId!: string;
+    @ProjectNS.State
+    public activeShotId!: string;
 
-  @ProjectNS.Action('loadProject')
-  protected loadProjectAction!: (projectId: string) => Promise<void>;
+    @ProjectNS.Action('loadProject')
+    protected loadProjectAction!: (projectId: string) => Promise<void>;
 
-  public pageName!: string;
+    public pageName!: string;
 
-  public mounted() {
-    this.pageName = this.$route.name as string;
-  }
+    public mounted() {
+      this.pageName = this.$route.name as string;
+    }
 
-  public async onPageAccueil() {
-    await this.$router.push({
-      name: 'home',
-    });
-  }
-
-  public async onPersoFilm() {
-    await this.$router.push({
-      name: 'movieEditing',
-    });
-  }
-
-  public async onOpenLibrary() {
-    await this.$router.push({
-      name: 'library',
-    });
-  }
-
-  public async onOpenPlan() {
-    if (this.$route.name === "captureShot") {
+    public async onPageAccueil() {
       await this.$router.push({
-        name: "movie"
+        name: 'home',
       });
     }
-  }
 
-  public async onCreatePlan() {
-    const shotId = await this.createShotAction('Nouveau plan');
-    await this.moveToShot(shotId);
-  }
+    public async onPersoFilm() {
+      await this.$router.push({
+        name: 'movieEditing',
+      });
+    }
 
-  public async goToPreviousPlan() {
-    const shotId = this.previousShotId;
-    await this.moveToShot(shotId);
-  }
+    public async onOpenLibrary() {
+      await this.$router.push({
+        name: 'library',
+      });
+    }
 
-  public async goToNextPlan() {
-    const shotId = this.nextShotId;
-    await this.moveToShot(shotId);
-  }
+    public async onOpenPlan() {
+      if (this.$route.name === 'captureShot') {
+        await this.$router.push({
+          name: 'movie',
+        });
+      }
+    }
 
-  private async moveToShot(shotId: string) {
-    return this.$router.push({
-      name: 'captureShot',
-      params: {
-        projectId: this.id,
-        shotId,
-      },
-    });
-  }
+    public async onCreatePlan() {
+      const shotId = await this.createShotAction('Nouveau plan');
+      await this.moveToShot(shotId);
+    }
 
-  public openIssue() {
-    this.$buefy.modal.open({
-      parent: this,
-      component: IssuePopup,
-      hasModalCard: true,
-      canCancel: ['escape', 'outside'],
-    });
-  }
+    public async goToPreviousPlan() {
+      const shotId = this.previousShotId;
+      await this.moveToShot(shotId);
+    }
 
-  public async onCreateProject() {
-    const projectId = await createProject();
-    await this.loadProjectAction(projectId);
-    const shotId = await this.createShotAction('Nouveau plan');
-    await this.changeFps(12);
-    await this.updateTitle(this.getPersonalisedProjectTitle);
-    this.$store.dispatch('project/changeActiveShot', shotId);
-    await this.$router.push({
-      name: 'captureShot',
-      params: {
-        projectId,
-        shotId,
-      },
-    });
-  }
+    public async goToNextPlan() {
+      const shotId = this.nextShotId;
+      await this.moveToShot(shotId);
+    }
+
+    private async moveToShot(shotId: string) {
+      return this.$router.push({
+        name: 'captureShot',
+        params: {
+          projectId: this.id,
+          shotId,
+        },
+      });
+    }
+
+    public openIssue() {
+      this.$buefy.modal.open({
+        parent: this,
+        component: IssuePopup,
+        hasModalCard: true,
+        canCancel: ['escape', 'outside'],
+      });
+    }
+
+    public async onCreateProject() {
+      const projectId = await createProject();
+      await this.loadProjectAction(projectId);
+      const shotId = await this.createShotAction('Nouveau plan');
+      await this.changeFps(12);
+      await this.updateTitle(this.getPersonalisedProjectTitle);
+      this.$store.dispatch('project/changeActiveShot', shotId);
+      await this.$router.push({
+        name: 'captureShot',
+        params: {
+          projectId,
+          shotId,
+        },
+      });
+    }
 
 
-  public async onClickMyLibrary() {
-    await this.$router.push({
-      name: 'library',
-    });
-  }
+    public async onClickMyLibrary() {
+      await this.$router.push({
+        name: 'library',
+      });
+    }
 
-  public async activateShot() {
-    await this.moveToShot(this.activeShotId);
-  }
+    public async goToShot() {
+      await this.moveToShot(this.activeShotId);
+    }
 }
 </script>
