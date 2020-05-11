@@ -69,8 +69,8 @@
 }
 
 .shot-card {
-  width: 15vw;
-  height: 12vw;
+  width: 18vw;
+  height: 18vw;
   background: #ffffff 0 0 no-repeat padding-box;
   background-repeat: no-repeat;
   background-size:contain;
@@ -79,30 +79,34 @@
   margin: 0.7vw;
   font-size: 16px/6px;
   letter-spacing: 0;
-  overflow: hidden;
   align-items: flex-end;
   display:flex;
   position: relative;
 
   .card-footer {
-		border: 0;
+    border: 0;
     display: flex;
     background: white;
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
+    width: 100%;
+    .shot-name {
+        font-size: 1.3em;
+    }
 
-		.shot-name {
-			font-size: 1.3em;
-		}
-
-		.info-text {
-			margin-left: 24px;
-			p {
-				margin-bottom: -2px;
-				font-size: 0.7em;
-			}
-		}
+    .info-text {
+        margin-left: 24px;
+        p {
+            margin-bottom: -2px;
+            font-size: 0.7em;
+        }
+    }
+    .shot-storyboard {
+      font-size: 10px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
   }
 
   .settings-icon {
@@ -111,10 +115,10 @@
   }
 
   .shot-menu {
-    //display: none;
+    display: none;
     position: absolute;
-    bottom: 120px;
-    right: 6px;
+    top: 5px;
+    right: 5px;
   }
 
 	.dropdown-item-bloc {
@@ -134,16 +138,23 @@ a.dropdown-item {
 }
 
 .create-shot {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-	cursor: pointer;
-	img {
-		width: 108px;
-		height: 108px;
-		padding-bottom: 12px;
-	}
+  background-color: white;
+  background-position: 0% 0%, 0% 0%;
+  background-repeat: no-repeat, repeat;
+  background-attachment: scroll, scroll;
+  background-image: url("../assets/baku-cloud-spinner.svg"), none;
+  background-size: contain;
+  background-origin: padding-box, padding-box;
+  background-clip: border-box, border-box;
+  img {
+      width: 35px;
+  }
+}
+
+.add-footer {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 .shot-card:hover {
@@ -194,10 +205,5 @@ a.dropdown-item {
   padding: 6px 8px;
   background: white;
   height: 40%;
-
-  .shot-storyboard {
-    font-size: 10px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
+  color: #FE676F;
 }

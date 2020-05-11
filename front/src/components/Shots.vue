@@ -21,7 +21,7 @@
         class="shot-card"
         :style="{background:'url(' + shot.previewUrl +') no-repeat, white', 'background-size': 'contain'}"
       >
-          <b-dropdown position="is-top-right" aria-role="list" class="shot-menu" @click.native.stop>
+          <b-dropdown position="is-bottom-right" aria-role="list" class="shot-menu" @click.native.stop>
             <a class="settings-icon" slot="trigger">
               <i class="icon-cog baku-button"></i>
             </a>
@@ -69,12 +69,15 @@
             <div class="info-text">
               <p>{{ getImagesString(shot.imageNb) }}</p>
             </div>
+            <div class="shot-storyboard">{{ shot.synopsis }}</div>
           </div>
-           <div class="shot-storyboard">{{ shot.synopsis }}</div>
+
       </div>
       <div class="shot-card create-shot" @click="createNewShot()">
-        <img src="@/assets/plus.svg" alt="plus" />
-        <a class="activate-shot-link">Créer un nouveau plan</a>
+        <div class="add-footer">
+          <img src="@/assets/plus.svg" alt="plus" /><br>
+          <a class="activate-shot-link">Créer un plan</a>
+        </div>
       </div>
     </div>
   </div>
@@ -150,10 +153,10 @@ export default class Shots extends Vue {
           duration: {
             hours: this.getHours(index),
             minutes: this.getMinutes(index),
-            seconds: this.getSeconds(index)
-          }
+            seconds: this.getSeconds(index),
+          },
         };
-      }
+      },
     );
   }
 
