@@ -1,16 +1,6 @@
 <style lang="scss" scoped>
   .inline-editor-disabled {
-    font-weight: 400;
     padding: 10px;
-
-    font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    font-stretch: 100%;
-    font-style: normal;
-    font-variant-caps: normal;
-    font-variant-east-asian: normal;
-    font-variant-ligatures: normal;
-    font-variant-numeric: normal;
   }
 </style>
 

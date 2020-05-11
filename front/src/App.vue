@@ -19,8 +19,9 @@
         </div>
 
         <b-dropdown append-to-body aria-role="list" v-if="$route.name !== 'home'">
-         <div class="label-menu" slot="trigger" role="button">
-            <p v-if="this.id"> {{ this.movie.title }}<i class="icon-angle-down baku-button"/></p>
+          <div class="label-menu" slot="trigger" role="button">
+            <p v-if="$route.params.projectId"> {{ this.movie.title }}<i
+              class="icon-angle-down baku-button"/></p>
             <p v-else> Ma librairie<i class="icon-angle-down baku-button"/></p>
           </div>
 
@@ -31,12 +32,12 @@
             </div>
           </b-dropdown-item>
 
-<!--          <b-dropdown-item class aria-role="listitem">-->
-<!--            <div class="option-logo" @click="onClickMyLibrary()">-->
-<!--              <i class="icon-movie baku-button"/>-->
-<!--              <span>Mes films récents</span>-->
-<!--            </div>-->
-<!--          </b-dropdown-item>-->
+          <!--          <b-dropdown-item class aria-role="listitem">-->
+          <!--            <div class="option-logo" @click="onClickMyLibrary()">-->
+          <!--              <i class="icon-movie baku-button"/>-->
+          <!--              <span>Mes films récents</span>-->
+          <!--            </div>-->
+          <!--          </b-dropdown-item>-->
 
           <b-dropdown-item class aria-role="listitem">
             <div class="option-logo" @click="onCreateProject()">
@@ -46,16 +47,17 @@
           </b-dropdown-item>
         </b-dropdown>
 
-        <b-dropdown append-to-body aria-role="list" v-if="this.id && ($route.name === 'captureShot' || $route.name === 'movie') ">
+        <b-dropdown append-to-body aria-role="list"
+                    v-if="$route.params.projectId && ($route.name === 'captureShot' || $route.name === 'movie') ">
           <div class="label-menu label-menu-sep-left" slot="trigger" role="button">
             <p v-if="$route.name === 'captureShot'">Capture <i
               class=" icon-angle-down baku-button"/></p>
             <p v-else-if="$route.name === 'movie'">Plans <i
               class=" icon-angle-down baku-button"/></p>
-<!--            <p v-else-if="$route.name === 'movieEditing'">Edition <i-->
-<!--              class=" icon-angle-down baku-button"/></p>-->
-<!--            <p v-else-if="$route.name === 'library'">Mes films <i-->
-<!--              class=" icon-angle-down baku-button"/></p>-->
+            <!--            <p v-else-if="$route.name === 'movieEditing'">Edition <i-->
+            <!--              class=" icon-angle-down baku-button"/></p>-->
+            <!--            <p v-else-if="$route.name === 'library'">Mes films <i-->
+            <!--              class=" icon-angle-down baku-button"/></p>-->
             <p v-else>{{$route.name}} <i class="icon-angle-down baku-button"/></p>
           </div>
 
@@ -74,12 +76,12 @@
             </div>
           </b-dropdown-item>
 
-<!--          <b-dropdown-item class aria-role="listitem">-->
-<!--            <div class="option-logo" @click="onCreatePlan()">-->
-<!--              <i class="icon-plus baku-button"/>-->
-<!--              <span>Nouveau plan</span>-->
-<!--            </div>-->
-<!--          </b-dropdown-item>-->
+          <!--          <b-dropdown-item class aria-role="listitem">-->
+          <!--            <div class="option-logo" @click="onCreatePlan()">-->
+          <!--              <i class="icon-plus baku-button"/>-->
+          <!--              <span>Nouveau plan</span>-->
+          <!--            </div>-->
+          <!--          </b-dropdown-item>-->
         </b-dropdown>
       </div>
 
