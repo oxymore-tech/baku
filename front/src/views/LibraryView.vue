@@ -75,7 +75,7 @@
               </div>
 
               <div class="button-open">
-                <b-button type="is-primary" @click="onOpen(project.id)">Ouvrir</b-button>
+                <b-button type="is-primary" @click="onOpen(project.adminId || project.id)">Ouvrir</b-button>
               </div>
 
             </div>
