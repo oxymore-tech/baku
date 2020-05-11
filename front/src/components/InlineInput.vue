@@ -12,7 +12,7 @@
            :type="type"
            :value="value"
            :title="editTitle"
-           placeholder="Synopsis"
+           :placeholder="placeholder"
            :icon="icon"
            :custom-class="`${focus? null : 'inline-editor'} ${customClass}`"
            @input="setNewValue"
@@ -41,6 +41,9 @@
 
     @Prop()
     title!: string;
+
+    @Prop()
+    placeholder!: string;
 
     @Prop()
     editTitle!: string;
