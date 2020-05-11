@@ -10,7 +10,7 @@
         <p>Durée du film : {{ getDurationString(movieDuration) }}</p>
       </div>
 
-      <b-switch v-if="canUnLock" :value="movie.locked">Vérouiller le film</b-switch>
+      <b-switch v-if="canUnLock" :value="movie.locked" @input="lockMovie({projectId: projectId, locked: !movie.locked})">Vérouiller le film</b-switch>
     </div>
 
     <div class="shot-cards-container">
@@ -131,6 +131,9 @@ export default class Shots extends Vue {
 
   @ProjectNS.Getter
   protected getImageCount!: number;
+
+  @ProjectNS.Action('lockMovie')
+  protected lockMovie!: ({}) => Promise<void>;
 
   get shots(): any {
     return this.movie.shots.map(
