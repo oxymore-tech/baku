@@ -25,8 +25,13 @@
 
 #movie-header {
   display: inline-flex;
+  justify-content: space-between;
   margin-left:0.7vw;
   margin-bottom: 24px;
+
+  div {
+    display: inline-flex;
+  }
   
   p {
     margin-right: 15px;

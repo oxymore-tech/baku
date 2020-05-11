@@ -1,6 +1,7 @@
 import { BakuAction, BakuEvent, Duration } from '@/utils/types';
 import { ImageRef, Quality, UploadedImage } from '@/utils/uploadedImage.class';
 import * as _ from 'lodash';
+import { SeenProject } from '@/store/store.types';
 
 export enum KeyCodes {
   BACKSPACE = 8,
@@ -67,13 +68,20 @@ export class MovieService {
     return movie.shots.reduce((count, shot) => count + shot.images.reduce((count) => count + 1, 0), 0);
   }
 
-  public static removeDoublons(newSeenProjects: any[]) {
-    const result = [];
+  public static removeDoublons(newSeenProjects: SeenProject[]) {
+    let result: SeenProject[] = [];
     const map = new Set();
     for (const item of newSeenProjects) {
       if (!map.has(item.id)) {
         map.add(item.id);
         result.push(item);
+      } else {
+        result = result.map(olditem => {
+          if(olditem.id === item.id) {
+            return item.adminId ?  item : olditem;
+          }
+          return olditem;
+        })
       }
     }
     return result;
