@@ -15,67 +15,70 @@
 
     <div class="shot-cards-container">
       <div
+        @click.prevent="activateShot(shot.id)"
         v-for="shot in shots"
         :key="shot.id"
         class="shot-card"
         :style="{background:'url(' + shot.previewUrl +') no-repeat, white', 'background-size': 'contain'}"
       >
-        <b-dropdown position="is-top-left" aria-role="list" class="shot-menu">
-          <a class="settings-icon" slot="trigger">
-            <i class="icon-cog baku-button"></i>
-          </a>
-          <b-dropdown-item class="dropdown-item-bloc" has-link aria-role="listitem">
-            <a :href="getExportUrl(shot.id)" target="_blank">
-              <i class="icon-image-sequence baku-button"></i> Exporter en séquence d'image
+          <b-dropdown position="is-bottom-right" aria-role="list" class="shot-menu" @click.native.stop>
+            <a class="settings-icon" slot="trigger">
+              <i class="icon-cog baku-button"></i>
             </a>
-          </b-dropdown-item>
-          <b-dropdown-item class="dropdown-item-bloc" has-link aria-role="listitem">
-            <a :href="getExportUrl(shot.id)" target="_blank">
-              <i class="icon-movie baku-button"></i> Exporter en fichier vidéo
-            </a>
-          </b-dropdown-item>
-          <!--
-          <b-dropdown-item class="dropdown-item-bloc" has-link aria-role="listitem">
-            <a
-              :href="getExportUrl(shot.id)"
-              target="_blank"
-              ><i class="icon-image-regular baku-button"></i> Attacher un storyboard</a>
-				  </b-dropdown-item>
-          -->
-          <b-dropdown-item
-            class="dropdown-item-bloc"
-            aria-role="listitem"
-            @click="lockShot(shot.id, !shot.locked)"
-          >
-            <template v-if="shot.locked && canUnLock">
-              <i class="icon-unlock-solid baku-button"></i> Déverouiller le plan
-            </template>
-            <template v-if="!shot.locked">
-              <i class="icon-lock-solid baku-button"></i> Verouiller le plan
-            </template>
-          </b-dropdown-item>
-          <b-dropdown-item
-            v-if="!shot.locked && canEditMovie"
-            class="dropdown-item-bloc"
-            aria-role="listitem"
-            @click="removeShot(shot.id)"
-          >
-            <i class="icon-trash-alt baku-button"></i> Supprimer le plan
-          </b-dropdown-item>
-        </b-dropdown>
-        <a class="activate-shot-link" @click.prevent="activateShot(shot.id)">
+            <b-dropdown-item class="dropdown-item-bloc" has-link aria-role="listitem">
+              <a :href="getExportUrl(shot.id)" target="_blank">
+                <i class="icon-image-sequence baku-button"></i> Exporter en séquence d'image
+              </a>
+            </b-dropdown-item>
+            <b-dropdown-item class="dropdown-item-bloc" has-link aria-role="listitem">
+              <a :href="getExportUrl(shot.id)" target="_blank">
+                <i class="icon-movie baku-button"></i> Exporter en fichier vidéo
+              </a>
+            </b-dropdown-item>
+            <!--
+            <b-dropdown-item class="dropdown-item-bloc" has-link aria-role="listitem">
+              <a
+                :href="getExportUrl(shot.id)"
+                target="_blank"
+                ><i class="icon-image-regular baku-button"></i> Attacher un storyboard</a>
+                    </b-dropdown-item>
+            -->
+            <b-dropdown-item
+                    class="dropdown-item-bloc"
+                    aria-role="listitem"
+                    @click="lockShot(shot.id, !shot.locked)"
+            >
+              <template v-if="shot.locked && canUnLock && !movie.locked">
+                <i class="icon-unlock-solid baku-button"></i> Déverouiller le plan
+              </template>
+              <template v-if="!shot.locked && !movie.locked">
+                <i class="icon-lock-solid baku-button"></i> Verouiller le plan
+              </template>
+            </b-dropdown-item>
+            <b-dropdown-item
+                    v-if="!shot.locked && canEditMovie"
+                    class="dropdown-item-bloc"
+                    aria-role="listitem"
+                    @click="removeShot(shot.id)"
+            >
+              <i class="icon-trash-alt baku-button"></i> Supprimer le plan
+            </b-dropdown-item>
+          </b-dropdown>
           <div class="card-footer">
-            <p class="shot-name">{{ shot.name }}</p>
-            <div class="info-text">
-              <p>{{ getImagesString(shot.imageNb) }}</p>
+            <div style="width: 100%;">
+              <p class="shot-name">{{ shot.name }}</p>
+              <p class="shot-details">{{ getDurationString(shot.duration) }}</p>
+              <p class="shot-details">{{ getImagesString(shot.imageNb) }}</p>
+              <p class="shot-storyboard">Synopsis: {{ shot.synopsis }}</p>
             </div>
           </div>
-          <div class="shot-storyboard">{{ shot.synopsis }}</div>
-        </a>
+
       </div>
       <div class="shot-card create-shot" @click="createNewShot()">
-        <img src="@/assets/plus.svg" alt="plus" />
-        <a class="activate-shot-link">Créer un nouveau plan</a>
+        <div class="add-footer">
+          <img src="@/assets/plus.svg" alt="plus" /><br>
+          <a class="activate-shot-link">Créer un plan</a>
+        </div>
       </div>
     </div>
   </div>
@@ -151,10 +154,10 @@ export default class Shots extends Vue {
           duration: {
             hours: this.getHours(index),
             minutes: this.getMinutes(index),
-            seconds: this.getSeconds(index)
-          }
+            seconds: this.getSeconds(index),
+          },
         };
-      }
+      },
     );
   }
 

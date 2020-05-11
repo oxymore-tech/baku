@@ -25,10 +25,12 @@
       </select>
       <span>Ajoutez une adresse mail si vous souhaitez une réponse</span>
       <input type="text" name="email" id="email" required="" v-model="data.email.text">
-      <span>Sur quel écran étiez-vous quand ce comportement s'est produit</span>
-      <select name="screen" id="screen" v-model="data.screen.value">
-        <option v-for="s in data.screens" v-bind:value="s.value">{{s.text}}</option>
-      </select>
+      <div v-if="data.title.value === 'Nous remonter un comportement inattendu'">
+        <span>Sur quel écran étiez-vous quand ce comportement s'est produit</span>
+        <select name="screen" id="screen" v-model="data.screen.value">
+          <option v-for="s in data.screens" v-bind:value="s.value">{{s.text}}</option>
+        </select>
+      </div>
       <span>Que s'est-il passé exactement ?</span>
       <div class="form-group">
           <textarea class="message" name="textarea" id="textarea" required=""
@@ -56,7 +58,7 @@ export default class IssuePopup extends Vue {
         sending: '',
       },
       title: {
-        value: 'Nous remonter un comportement inattendu',
+        value: 'Nous donner votre avis et/ou nous faire part de suggestions de fonctionnalités',
       },
       titles: [
         {

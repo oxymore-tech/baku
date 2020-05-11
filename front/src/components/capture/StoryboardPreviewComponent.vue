@@ -1,15 +1,19 @@
+<style lang="scss" scoped>
+  @import "@/styles/storyboard.scss";
+</style>
+
 <template>
   <div v-if="activeShot" class="box-container storyboard-preview-container">
     <textarea
+      class="synopsis-storyboard"
       id="shotSynopsis"
       ref="shotSynopsis"
-      rows="5"
+      rows="2"
       maxlength="124"
       :value="activeShot.synopsis"
-      placeholder="Présenter votre plan avec un résumé"
+      placeholder="Présenter votre plan avec un résumé ..."
       @blur="changeShotSynopsis()"
     ></textarea>
-
     <div class="ajout-storyboard">
       <div>
         <div>
@@ -61,32 +65,3 @@ export default class StoryboardPreviewComponent extends Vue {
   }
 }
 </script>
-
-<style lang="scss">
-#shotSynopsis {
-  width: 300px;
-  resize: none;
-}
-
-.ajout-storyboard {
-  border: 1px solid lightgray;
-  border-radius: 15px;
-  width: 300px;
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-}
-
-.ajout-storyboard>div {
-  line-height: 1.5;
-  display: inline-block;
-  vertical-align: middle;
-  color: gray;
-  size: 30px;
-}
-
-.storyboard-icon {
-  margin-left: 30px;
-  margin-right: 30px;
-}
-</style>
