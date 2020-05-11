@@ -1,4 +1,4 @@
-<style lang="scss">
+<style lang="scss" scoped>
   @import "@/styles/library.scss";
 </style>
 
