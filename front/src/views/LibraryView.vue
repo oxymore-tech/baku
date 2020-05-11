@@ -285,18 +285,18 @@
       }
     }
 
-    setTitle(seenProject: SeenProject, event: any) {
+    setTitle(seenProject: SeenProject, event: string) {
       if (event) {
-        const newTitle = event.target.value;
+        const newTitle = event;
         if (newTitle !== seenProject.title) {
           this.$store.dispatch('project/updateTitle', {projectId: seenProject.id, title: newTitle});
         }
       }
     }
 
-    setSynopsis(seenProject: SeenProject, event: any) {
+    setSynopsis(seenProject: SeenProject, event: string) {
       if (event) {
-        const newSynopsis = event.target.value;
+        const newSynopsis = event;
         if (newSynopsis !== seenProject.synopsis) {
           this.$store.dispatch('project/updateSynopsis', {
             projectId: seenProject.id,
@@ -306,8 +306,8 @@
       }
     }
 
-    setFps(seenProject: SeenProject, event: any) {
-      const newFps = event.target.value;
+    setFps(seenProject: SeenProject, event: number) {
+      const newFps = event;
       if (newFps !== seenProject.fps) {
         this.$store.dispatch('project/updateFps', {projectId: seenProject.id, fps: newFps});
       }
