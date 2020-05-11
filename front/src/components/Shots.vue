@@ -5,12 +5,12 @@
 <template>
   <div class="shots">
     <div id="movie-header">
-      <div>
+      <p style="display: flex; align-items: center;">
+      Statut du film :
+      <b-switch style="margin-left: 10px" v-if="canUnLock" :value="movie.locked" @input="lockMovie(!movie.locked)">{{ movie.locked ? 'Verrouillé' : 'Déverrouillé'}}</b-switch>
+      </p>
         <p>Nombres d'images : {{ getImageCount }}</p>
         <p>Durée du film : {{ getDurationString(movieDuration) }}</p>
-      </div>
-
-      <b-switch v-if="canUnLock" :value="movie.locked" @input="lockMovie(!movie.locked)">Vérouiller le film</b-switch>
     </div>
 
     <div class="shot-cards-container">

@@ -25,16 +25,12 @@
 
 #movie-header {
   display: inline-flex;
-  justify-content: space-between;
+  align-items: center;
   margin-left:0.7vw;
   margin-bottom: 24px;
 
-  div {
-    display: inline-flex;
-  }
-  
   p {
-    margin-right: 15px;
+    margin-right: 30px;
   }
 
 	.movie-header-container {
