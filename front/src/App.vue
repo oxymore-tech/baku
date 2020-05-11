@@ -52,8 +52,8 @@
 
         <b-dropdown append-to-body aria-role="list">
           <div class="label-menu"  slot="trigger" role="button">
-            <p v-if="this.id"> {{ this.movie.title }}<i class="icon-angle-down baku-button" /></p>
-            <p v-else> Ma librairie<i class="icon-angle-down baku-button" /></p>
+            <p v-if="$route.name === 'library'"> Ma librairie<i class="icon-angle-down baku-button" /></p>
+            <p v-else-if="this.id"> {{ this.movie.title }}<i class="icon-angle-down baku-button" /></p>
           </div>
 
           <b-dropdown-item class aria-role="listitem">
