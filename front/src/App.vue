@@ -32,13 +32,6 @@
             </div>
           </b-dropdown-item>
 
-          <!--          <b-dropdown-item class aria-role="listitem">-->
-          <!--            <div class="option-logo" @click="onClickMyLibrary()">-->
-          <!--              <i class="icon-movie baku-button"/>-->
-          <!--              <span>Mes films récents</span>-->
-          <!--            </div>-->
-          <!--          </b-dropdown-item>-->
-
           <b-dropdown-item class aria-role="listitem">
             <div class="option-logo" @click="onCreateProject()">
               <i class="icon-plus baku-button"/>
@@ -54,10 +47,6 @@
               class=" icon-angle-down baku-button"/></p>
             <p v-else-if="$route.name === 'movie'">Plans <i
               class=" icon-angle-down baku-button"/></p>
-            <!--            <p v-else-if="$route.name === 'movieEditing'">Edition <i-->
-            <!--              class=" icon-angle-down baku-button"/></p>-->
-            <!--            <p v-else-if="$route.name === 'library'">Mes films <i-->
-            <!--              class=" icon-angle-down baku-button"/></p>-->
             <p v-else>{{$route.name}} <i class="icon-angle-down baku-button"/></p>
           </div>
 
@@ -75,41 +64,7 @@
               <span>Plans</span>
             </div>
           </b-dropdown-item>
-
-          <!--          <b-dropdown-item class aria-role="listitem">-->
-          <!--            <div class="option-logo" @click="onCreatePlan()">-->
-          <!--              <i class="icon-plus baku-button"/>-->
-          <!--              <span>Nouveau plan</span>-->
-          <!--            </div>-->
-          <!--          </b-dropdown-item>-->
         </b-dropdown>
-      </div>
-
-      <div
-        class="flex-container"
-        v-if="$route.name === 'captureShot' && activeShotIndex >= 0 || $route.name === 'movie'"
-      >
-        <div
-          v-if="nbShot > 1 && $route.name === 'captureShot'"
-          class="previous-plan"
-          @click="goToPreviousPlan()"
-          title="Plan précédent"
-        >&lt;
-        </div>
-        <div class="baku-button" @click="onOpenPlan()">
-          {{movie.title}}
-          <template
-            v-if="$route.name === 'captureShot' && activeShotIndex >= 0"
-          >- Plan {{ activeShotIndex + 1 }}
-          </template>
-        </div>
-        <div
-          v-if="nbShot > 1 && $route.name === 'captureShot'"
-          class="next-plan"
-          @click="goToNextPlan()"
-          title="Plan suivant"
-        >&gt;
-        </div>
       </div>
 
       <div class="flex-container">
@@ -148,7 +103,6 @@
     font-size: 24px;
     margin: 0 24px;
     overflow: hidden;
-    /* height: 100%; */
     text-overflow: clip;
     white-space: nowrap;
   }
@@ -192,12 +146,6 @@ export default class App extends Vue {
     @ProjectNS.Action('updateTitle')
     protected updateTitle!: (title: string) => Promise<void>;
 
-    @ProjectNS.Getter('getPreviousShotId')
-    protected previousShotId!: string;
-
-    @ProjectNS.Getter('getNextShotId')
-    protected nextShotId!: string;
-
     @ProjectNS.Getter('getActiveShotIndex')
     public activeShotIndex!: Number;
 
@@ -222,39 +170,12 @@ export default class App extends Vue {
       });
     }
 
-    public async onPersoFilm() {
-      await this.$router.push({
-        name: 'movieEditing',
-      });
-    }
-
-    public async onOpenLibrary() {
-      await this.$router.push({
-        name: 'library',
-      });
-    }
-
     public async onOpenPlan() {
       if (this.$route.name === 'captureShot') {
         await this.$router.push({
           name: 'movie',
         });
       }
-    }
-
-    public async onCreatePlan() {
-      const shotId = await this.createShotAction('Nouveau plan');
-      await this.moveToShot(shotId);
-    }
-
-    public async goToPreviousPlan() {
-      const shotId = this.previousShotId;
-      await this.moveToShot(shotId);
-    }
-
-    public async goToNextPlan() {
-      const shotId = this.nextShotId;
-      await this.moveToShot(shotId);
     }
 
     private async moveToShot(shotId: string) {
@@ -291,7 +212,6 @@ export default class App extends Vue {
         },
       });
     }
-
 
     public async onClickMyLibrary() {
       await this.$router.push({

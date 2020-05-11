@@ -109,7 +109,7 @@ nav {
 
 .previous-plan,
 .next-plan {
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 1000;
   padding-left: 10px;
   padding-right: 10px;
@@ -137,4 +137,8 @@ nav {
 
 .label-menu-sep-left{
   border-left: 2px solid lightgray;
+}
+
+.plan-name {
+  font-size: 24px;
 }
