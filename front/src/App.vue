@@ -97,10 +97,9 @@
         >&lt;
         </div>
         <div class="baku-button" @click="onOpenPlan()">
-          {{movie.title}}
           <template
             v-if="$route.name === 'captureShot' && activeShotIndex >= 0"
-          >- Plan {{ activeShotIndex + 1 }}
+          >Plan {{ activeShotIndex + 1 }}
           </template>
         </div>
         <div
