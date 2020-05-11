@@ -1,6 +1,6 @@
 <style lang="scss" scoped>
   .inline-editor-disabled {
-    padding: 10px;
+    padding: 5px;
   }
 </style>
 
@@ -13,7 +13,7 @@
            :value="value"
            :title="editTitle"
            placeholder="Synopsis"
-           icon-right="pencil"
+           :icon="icon"
            :custom-class="`${focus? null : 'inline-editor'} ${customClass}`"
            @input="setNewValue"
            @focus="onFocus"
@@ -35,6 +35,9 @@
 
     @Prop({default: 'text'})
     type!: 'textarea' | 'text';
+
+    @Prop({default: ''})
+    icon!: string;
 
     @Prop()
     title!: string;

@@ -3,10 +3,7 @@
 </style>
 
 <template>
-  <div class="main-frame">
-    <div class="title">
-      <span>{{ title() }}</span>
-    </div>
+  <div class="main-frame library">
 
     <div class="movie-export-message">
       <div class="export-message">
@@ -39,40 +36,16 @@
             <img :src="project.posterUrl" :alt="`${project.title} poster`" @click="onOpen(project.id)"/>
           </div>
 
-          <div class="flex-row">
+          <div class="movie-info">
 
-            <div class="flex-column movie-info">
+            <div class="flex-row">
 
               <inline-input :value="project.title"
                             :disabled="project.locked"
+                            icon="pencil"
                             custom-class="movie-card-title"
                             editTitle="Cliquez pour renommer le film" style="flex:1"
                             @input="setTitle(project, $event)"/>
-
-              <inline-input :value="project.synopsis"
-                            type="textarea"
-                            :disabled="project.locked"
-                            custom-class="movie-synopsis"
-                            editTitle="Cliquez pour changer le synopsis"
-                            @input="setSynopsis(project, $event)"/>
-
-            </div>
-
-            <div class="movie-toolbar-1">
-
-              <div>
-                <div v-if="project.lastUpdate">
-                  <div class="indication">Dernière mise à jour</div>
-                  <div>{{ project.lastUpdate | formatDate }}</div>
-                </div>
-                <div v-if="project.totalImages">
-                  <div class="indication">Durée</div>
-                  <div>{{getDurationString(project)}}</div>
-                </div>
-                <div v-if="project.totalImages">
-                  {{getImagesString(project)}}
-                </div>
-              </div>
 
               <div class="button-open">
                 <b-button type="is-primary" @click="onOpen(project.adminId || project.id)">Ouvrir</b-button>
@@ -80,41 +53,59 @@
 
             </div>
 
-            <div class="flex-column">
+            <inline-input :value="project.synopsis"
+                          type="textarea"
+                          :disabled="project.locked"
+                          custom-class="movie-synopsis"
+                          editTitle="Cliquez pour changer le synopsis"
+                          @input="setSynopsis(project, $event)"/>
 
-              <div class="movie-action" @click="onCopy(project.id, true)">
-                <i class="icon-copy-regular"/>
-                <span class="baku-button">Copier l'url de partage</span>
+          </div>
+
+          <div class="movie-toolbar-1">
+
+            <div>
+              <div v-if="project.lastUpdate">
+                <div class="indication">Mise à jour</div>
+                <div>{{ project.lastUpdate | formatDate }}</div>
               </div>
-
-              <div class="movie-action" v-if="project.adminId"
-                   @click="onCopy(project.adminId, false)">
-                <i class="icon-copy-solid"/>
-                <span class="baku-button">Copier l'url d'administration</span>
+              <div v-if="project.totalImages">
+                <span class="indication">Durée </span>
+                <span>{{getDurationString(project)}}</span>
               </div>
-
-              <div class="movie-action">
-                <a
-                  :href="getMovieExportUrl()"
-                  target="_blank"
-                >
-                  <i class="icon-image-sequence"/>
-                  <span class="baku-button">Exporter les images</span>
-                </a>
+              <div v-if="project.totalImages">
+                {{getImagesString(project)}}
               </div>
-
-              <video-button :id="project.id"/>
-
-              <div @click="onDelete(project.id)">
-                <i class="icon-close"/>
-                <span class ="baku-button">Supprimer</span>
-              </div>
-
             </div>
 
-            <!--<div>
-              <b-switch @input="onLock($event, project.id)">Verrouiller</b-switch>
-            </div>-->
+
+
+          </div>
+
+          <div class="movie-toolbar-2">
+
+            <div class="movie-action" @click="onCopy(project.id, true)">
+              <i class="icon-copy-regular"/>
+              <span class="baku-button">Copier l'url de partage</span>
+            </div>
+
+            <div class="movie-action" v-if="project.adminId"
+                  @click="onCopy(project.adminId, false)">
+              <i class="icon-copy-solid"/>
+              <span class="baku-button">Copier l'url d'administration</span>
+            </div>
+
+            <div class="movie-action" @click="onMovieExportUrl(project.id)">
+              <i class="icon-image-sequence"/>
+              <span class="baku-button">Exporter les images</span>
+            </div>
+
+            <video-button :id="project.id"/>
+
+            <div @click="onDelete(project.id)">
+              <i class="icon-close"/>
+              <span class ="baku-button">Supprimer</span>
+            </div>
 
           </div>
 
@@ -139,7 +130,7 @@
 
   Vue.filter('formatDate', function(value: any) {
     if (value) {
-      return moment(String(value)).format('MM/DD/YYYY hh:mm')
+      return moment(String(value)).format('MM/DD/YYYY HH:mm')
     }
   });
 
@@ -176,13 +167,6 @@
       }
     }
 
-    public title() {
-      if (this.seenProjects.length == 0) {
-        return 'Quelques films de démonstration';
-      }
-      return 'Mes films';
-    }
-
     public onCopy(projectId: string, share: boolean) {
       const input = document.createElement('input');
       input.value = this.getLink(projectId, share);
@@ -217,6 +201,14 @@
       })
     }
 
+    public onMovieExportUrl(projectId: string) {
+      window.open(api.getExportUrl(projectId), '_blank');
+    }
+
+    public async onLock(lock: boolean, projectId: string) {
+      await this.$store.dispatch('project/lockMovie', {projectId, lock});
+    }
+
     public onOpen(projectId: string) {
       this.$router.push({
         name: 'movie',
@@ -224,18 +216,6 @@
           projectId
         }
       });
-    }
-
-    public async onLock(lock: boolean, projectId: string) {
-      await this.$store.dispatch('project/lockMovie', {projectId, lock});
-    }
-
-    getMovieExportUrl(id: string) {
-      return api.getExportUrl(id);
-    }
-
-    getVideoUrl(id: string) {
-      return api.getVideoUrl(id);
     }
 
     exportUrls() {

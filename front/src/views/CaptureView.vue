@@ -279,7 +279,7 @@ export default class CaptureView extends AbstractProjectView {
     }
     if (
       this.isPlaying === 'animation'
-      && nextFrame === this.getActiveShotImgCount
+      && nextFrame === this.getActiveShotImgCount - (this.canEdit ? 0 : 1)
     ) {
       this.pauseAnimation();
       return;
@@ -335,7 +335,7 @@ export default class CaptureView extends AbstractProjectView {
       this.initPlay('selection');
       this.animationBoundaries = {
         left: this.selectedImages.left,
-        right: this.selectedImages.right + 1,
+        right: this.selectedImages.right + (this.canEdit ? 1 : 0),
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
