@@ -130,7 +130,7 @@
               />
               <CaptureToolboxComponent
                 v-if="getActiveShot && canEdit"
-                :isCapturing="IsFrameLiveView"
+                :isCapturing="true"
               />
             </div>
           </div>
@@ -212,7 +212,7 @@ export default class CaptureView extends AbstractProjectView {
   public getActiveShotImgCount!: number;
 
   @ProjectNS.Getter("canEditActiveShot")
-  public canEdit!: number;
+  public canEdit!: boolean;
 
   // Carroussel Frame
   public currentCarrousselFrame: number = 0;

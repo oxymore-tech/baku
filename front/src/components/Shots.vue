@@ -39,15 +39,14 @@
 				  </b-dropdown-item>
           -->
           <b-dropdown-item
-            v-if="canLock"
             class="dropdown-item-bloc"
             aria-role="listitem"
-            @click.prevent="lockShot(shot.id, !shot.locked)"
+            @click="lockShot(shot.id, !shot.locked)"
           >
-            <template v-if="shot.locked">
+            <template v-if="shot.locked && canUnLock">
               <i class="icon-unlock-solid baku-button"></i> Déverouiller le plan
             </template>
-            <template v-else>
+            <template v-if="!shot.locked">
               <i class="icon-lock-solid baku-button"></i> Verouiller le plan
             </template>
           </b-dropdown-item>
@@ -106,8 +105,8 @@
     @Prop({required: true})
     public projectId!: string;
 
-    @ProjectNS.Getter("canLock")
-    protected canLock!: boolean;
+    @ProjectNS.Getter("canUnLock")
+    protected canUnLock!: boolean;
 
     @ProjectNS.Getter("canEditMovie")
     protected canEditMovie!: boolean;

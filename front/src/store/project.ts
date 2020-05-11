@@ -153,6 +153,8 @@ export const ProjectStore: BakuModule<ProjectState> = {
     movie: (state): Movie =>
       MovieService.merge(state.id, state.history),
 
+    getMovieFps: (state, getters: ProjectGetters): number | undefined => getters.movie.fps,
+
     getActiveShot: (state, getters: ProjectGetters): Shot | undefined =>
       getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
 
@@ -168,7 +170,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
     canEditActiveShot: (state, getters: ProjectGetters): boolean =>
       !getters.movie.locked && (!getters.getActiveShot?.locked),
 
-    canLock: (state): boolean =>
+    canUnLock: (state): boolean =>
       (state.id).length > 36,
 
     getNoEditId: (state, getters: ProjectGetters): string => getters.canLock ? state.id.slice(0, 36) : state.id,
