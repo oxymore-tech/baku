@@ -1,9 +1,9 @@
-<style lang="scss" scoped>
+<style lang="scss">
   @import "@/styles/library.scss";
 </style>
 
 <template>
-  <div class="main-frame">
+  <div class="main-frame library">
 
     <div class="movie-export-message">
       <div class="export-message">
@@ -130,7 +130,7 @@
 
   Vue.filter('formatDate', function(value: any) {
     if (value) {
-      return moment(String(value)).format('MM/DD/YYYY hh:mm')
+      return moment(String(value)).format('MM/DD/YYYY HH:mm')
     }
   });
 
