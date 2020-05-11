@@ -18,9 +18,8 @@
           </div>
         </div>
 
-
-        <b-dropdown append-to-body aria-role="list">
-          <div class="label-menu" slot="trigger" role="button">
+        <b-dropdown append-to-body aria-role="list" v-if="$route.name !== 'home'">
+         <div class="label-menu" slot="trigger" role="button">
             <p v-if="this.id"> {{ this.movie.title }}<i class="icon-angle-down baku-button"/></p>
             <p v-else> Ma librairie<i class="icon-angle-down baku-button"/></p>
           </div>
@@ -32,12 +31,12 @@
             </div>
           </b-dropdown-item>
 
-          <b-dropdown-item class aria-role="listitem">
-            <div class="option-logo" @click="onClickMyLibrary()">
-              <i class="icon-movie baku-button"/>
-              <span>Mes films récents</span>
-            </div>
-          </b-dropdown-item>
+<!--          <b-dropdown-item class aria-role="listitem">-->
+<!--            <div class="option-logo" @click="onClickMyLibrary()">-->
+<!--              <i class="icon-movie baku-button"/>-->
+<!--              <span>Mes films récents</span>-->
+<!--            </div>-->
+<!--          </b-dropdown-item>-->
 
           <b-dropdown-item class aria-role="listitem">
             <div class="option-logo" @click="onCreateProject()">
