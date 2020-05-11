@@ -48,10 +48,10 @@
                     aria-role="listitem"
                     @click="lockShot(shot.id, !shot.locked)"
             >
-              <template v-if="shot.locked && canUnLock">
+              <template v-if="shot.locked && canUnLock && !movie.locked">
                 <i class="icon-unlock-solid baku-button"></i> Déverouiller le plan
               </template>
-              <template v-if="!shot.locked">
+              <template v-if="!shot.locked && !movie.locked">
                 <i class="icon-lock-solid baku-button"></i> Verouiller le plan
               </template>
             </b-dropdown-item>
