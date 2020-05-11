@@ -21,6 +21,7 @@
 .flex-column {
   display: flex;
   flex-direction: column;
+  width: 250px;
 }
 
 .movie-export-message {
@@ -47,6 +48,10 @@
   padding: 12px;
 }
 
+input, textarea {
+  font-family: "Montserrat", Helvetica, Arial, sans-serif;
+}
+
 .movie-card {
   // background: #ffffff 0% 0% no-repeat padding-box;
   opacity: 1;
@@ -59,14 +64,16 @@
   border-bottom: 1px solid #7F7F7F;
 
   .column-img {
-    flex: 0.15;
+    // flex: 0.15;
     text-align: center;
+    width: 200px;
     
     img {
       width: 200px;
       height: 119px;
       border-radius: 5px;
       margin: 10px;
+      cursor: pointer;
     }
   }
 
@@ -83,34 +90,48 @@
 
     }
 
-    .movie-card-title {
-      margin-left: 12px;
-      font-size: 16px;
-      width: 300px;
-    }
-
   }
 
   .movie-info {
     flex: 1;
-
-    .movie-synopsis {
-      min-height: 80px !important;
-      margin-left: 12px;
-      flex: 1;
-      color: #7F7F7F;
-    }
   }
+
+  .movie-card-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .movie-synopsis {
+    font-size: 14px;
+    min-height: 80px !important;
+    color: #7F7F7F;
+  }
+}
+
+.movie-toolbar-1 {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+
+  .indication {
+    font-size: 14px;
+  }
+
+  .indication+div {
+    font-size: 14px;
+    color: #7F7F7F;
+  }
+
+  .button-open {
+    margin: auto;
+  }
+
 }
 
 .movie-toolbar-2 {
   width: 300px;
   display: flex;
   flex-direction: row;
-
-  .indication {
-    font-weight: 400;
-  }
   
   div {
     margin: auto;
