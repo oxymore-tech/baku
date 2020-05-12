@@ -1,13 +1,13 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+import store from "@/store";
 import HomeView from '@/views/HomeView.vue';
 import TodoView from '@/views/TodoView.vue';
-import ShotsView from '@/views/ShotsView.vue';
+import LibraryView from '@/views/LibraryView.vue';
+import MovieView from '@/views/MovieView.vue';
 import CaptureView from '@/views/CaptureView.vue';
-import MovieHomeView from '@/views/MovieHomeView.vue';
 import SmartphoneView from '@/views/SmartphoneView.vue';
-import CollaborationView from '@/views/CollaborationView.vue';
 
 const routes = [
   {
@@ -15,77 +15,42 @@ const routes = [
     path: '/',
     component: HomeView,
   },
-
+  {
+    name: 'library',
+    path: '/library',
+    component: LibraryView,
+  },
   {
     name: 'smartphone',
     path: '/smartphone/:socketId',
     component: SmartphoneView,
   },
   {
-    name: 'movieHome',
+    name: 'movie',
     path: '/movies/:projectId',
-    component: MovieHomeView,
-  },
-  {
-    name: 'scenario',
-    path: '/movies/:projectId/scenario',
-    component: TodoView,
-  },
-  {
-    name: 'storyboard',
-    path: '/movies/:projectId/storyboard',
-    component: TodoView,
-  },
-  {
-    name: 'captureShots',
-    path: '/movies/:projectId/capture/shots',
-    component: ShotsView,
+    component: MovieView,
   },
   {
     name: 'captureShot',
-    path: '/movies/:projectId/capture/shots/:shotId',
+    path: '/movies/:projectId/shots/:shotId',
     component: CaptureView,
   },
   {
     name: 'movieEditing',
     path: '/movies/:projectId/movieEditing',
     component: TodoView,
-  },
-  {
-    name: 'collaboration',
-    path: '/movies/:projectId/collaboration',
-    component: CollaborationView,
-  },
-  { 
-    path: '/api',
-    children: [
-      {
-        name: 'stack',
-        path: ':projectId/stack',
-      },
-      {
-        name: 'history',
-        path: ':projectId/history',
-      },
-      {
-        name: 'upload',
-        path: ':projectId/upload',
-      },
-      {
-        name: 'exportProject',
-        path: ':projectId/export.zip',
-      },
-      {
-        name: 'exportShot',
-        path: ':projectId/:shotId/export.zip',
-      },
-    ]
   }
 ];
 
 Vue.use(VueRouter);
+
 const router = new VueRouter({
   mode: 'history',
   routes,
 });
+
+router.afterEach((to, from) => {
+  store.dispatch('user/updateCurrentSeenProject');
+})
+
 export default router;

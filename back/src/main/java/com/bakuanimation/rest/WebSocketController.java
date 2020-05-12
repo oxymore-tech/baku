@@ -1,4 +1,4 @@
-package com.bakuanimation.server;
+package com.bakuanimation.rest;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;

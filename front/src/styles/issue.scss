@@ -1,0 +1,79 @@
+input[type="text"],
+textarea,
+select {
+  background: rgba(255, 255, 255, 0.11);
+  border: none;
+  height: 25px;
+  margin: 4px;
+  outline: 0;
+  width: 100%;
+  background-color: #F2F2F2;
+  color: #888888;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
+  resize: none;
+}
+
+textarea {
+  height: 115px;
+}
+
+button {
+  color: #FFF;
+  background-color: #fe676f;
+  font-size: 15px;
+  text-align: center;
+  vertical-align: center;
+  font-style: normal;
+  border-radius: 5px;
+  width: 100%;
+  height: 40px;
+  border: 1px solid #fe676f;
+  border-width: 1px 1px 3px;
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.1) inset;
+  margin-bottom: 10px;
+}
+
+.counter {
+  background-color: #ffffff;
+  position: absolute;
+  right: 0px;
+  top: -25px;
+  font-size: 10px;
+  padding: 4px;
+}
+
+.form-group {
+  position: relative;
+}
+
+.error {
+  color: #fe676f;
+}
+
+.close {
+  position: absolute;
+  top: 2px;
+  right: 5px;
+  z-index: 4;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 575px;
+  font-size: 1em;
+  z-index: 5;
+}
+
+.card-head {
+  display: flex;
+  margin: auto;
+  font-size: 45px;
+  position: relative;
+
+  i {
+    font-size: 45px;
+    position: absolute;
+    top: 45px;
+    left: -53px;
+  }
+}

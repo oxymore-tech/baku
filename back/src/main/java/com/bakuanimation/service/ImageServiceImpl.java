@@ -1,5 +1,7 @@
-package com.bakuanimation.server;
+package com.bakuanimation.service;
 
+import com.bakuanimation.api.ImageService;
+import com.bakuanimation.model.Movie;
 import com.google.common.collect.ImmutableListMultimap;
 import com.mortennobel.imagescaling.ResampleFilters;
 import com.mortennobel.imagescaling.ResampleOp;
@@ -21,23 +23,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Singleton
-public class ImageService {
+public class ImageServiceImpl implements ImageService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageServiceImpl.class);
 
     private final PathService pathService;
-    private final HistoryService historyService;
 
-    public ImageService(PathService pathService, HistoryService historyService) {
+    public ImageServiceImpl(PathService pathService) {
         this.pathService = pathService;
-        this.historyService = historyService;
     }
 
     private BufferedImage reduce(BufferedImage sourceImage, int width) throws IOException {
@@ -65,6 +64,7 @@ public class ImageService {
         }
     }
 
+    @Override
     public void writeSmallerImages(String projectId, InputStream inputStream, String filename) {
         try {
             BufferedImage image = ImageIO.read(inputStream);
@@ -84,6 +84,29 @@ public class ImageService {
         }
     }
 
+    @Override
+    public long estimatedExportSize(Movie movie, @Nullable String shotId) {
+        ImmutableListMultimap<String, Path> images = shotId == null ?
+                movie.getImages() :
+                ImmutableListMultimap.<String, Path>builder()
+                        .putAll(shotId, movie.getImages().get(shotId))
+                        .build();
+        if (images.isEmpty()) {
+            return 0;
+        }
+        // https://stackoverflow.com/questions/22346487/how-can-we-estimate-overhead-of-a-compressed-file
+        return movie.getShots().stream()
+                .flatMap(shot -> movie.getImages().get(shot).stream())
+                .mapToLong(imgFile -> {
+                    try {
+                        return Files.size(imgFile) + 97 + 2 * 16; // each image entry will be 16 chars
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).sum() + 22;
+    }
+
+    @Override
     public void export(Movie movie, OutputStream outputStream, @Nullable String shotId) throws IOException {
         if (shotId == null) {
             LOGGER.info("Export {}", movie.getProjectId());
@@ -104,7 +127,6 @@ public class ImageService {
                     for (Path image : entry.getValue()) {
                         String path = String.format("%03d/%03d_%04d.jpg", shotIndex, shotIndex, imageIndex);
                         ZipEntry zipEntry = new ZipEntry(path);
-                        zipEntry.setLastModifiedTime(FileTime.fromMillis(Files.getLastModifiedTime(image).toMillis()));
                         zip.putNextEntry(zipEntry);
                         Files.copy(image, zip);
                         zip.closeEntry();

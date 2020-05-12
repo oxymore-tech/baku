@@ -12,6 +12,7 @@
     >
       <div
         class="b-slider-thumb"
+        :class="{liveview: isLiveView}"
         :tabindex="disabled ? false : 0"
         v-bind="$attrs"
         @mousedown="onButtonDown"
@@ -59,6 +60,9 @@ export default {
     };
   },
   computed: {
+    isLiveView() {
+      return this.value === this.$parent.max;
+    },
     disabled() {
       return this.$parent.disabled;
     },
@@ -153,9 +157,9 @@ export default {
         this.setPosition(this.newPosition);
       }
     },
-    onDragEnd() {
+    onDragEnd(event) {
       this.dragging = false;
-      this.$emit('dragend');
+      this.$emit('dragend', { oldValue: this.oldValue, shiftKey: event.shiftKey });
       if (this.value !== this.oldValue) {
         this.$parent.emitValue('change');
       }

@@ -2,13 +2,19 @@ import Vue from 'vue';
 import Buefy from 'buefy';
 import VueQrcodeReader from 'vue-qrcode-reader';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
-import 'buefy/dist/buefy.css';
+// import 'buefy/dist/buefy.css';
+import VueAnalytics from 'vue-analytics';
 import { ImageCacheService } from './utils/imageCache.service';
 import App from './App.vue';
 import router from './router';
 import store from './store';
 
 Vue.config.productionTip = false;
+
+Vue.use(VueAnalytics, {
+  id: 'UA-710041-23',
+  router,
+});
 
 Vue.use(Buefy);
 Vue.use(VueQrcodeReader);

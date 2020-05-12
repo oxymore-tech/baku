@@ -3,7 +3,8 @@
   width: 100%;
   flex: 1;
   justify-content: space-between;
-  padding: 10px 24px;
+  padding: 0px 0px 12px 24px;
+  max-height: calc(100% - 145px);
 }
 
 #preview-img {
@@ -104,13 +105,14 @@
   display: flex;
   font-size: 18px;
   align-items: center;
+  justify-content: space-between;
 
   .clock {
     background: #455054;
     border-radius: 8px;
     color: white;
     padding: 1px 5px;
-    width: 160px;
+    width: 85px;
     font-size: 26px;
     margin-bottom: 5px;
 

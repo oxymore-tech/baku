@@ -1,27 +1,14 @@
 <template>
-  <div
-    class="b-slider is-info"
-    :class="[size, rootClasses]"
-  >
-    <div
-      class="b-slider-track"
-      @click="onSliderClick"
-      ref="slider"
-    >
-      <div
-        class="b-slider-fill"
-        :style="barStyle"
-      />
+  <div class="b-slider is-info" :class="[size, rootClasses]">
+    <div class="b-slider-track" @click="onSliderClick" ref="slider">
+      <div class="b-slider-fill" :style="barStyle" />
       <template>
         <!--  -->
-        <ReadingSliderTickComponent
-          v-for="(val, key) in tickValues"
-          :key="key"
-          :value="val"
-        />
+        <ReadingSliderTickComponent v-for="(val, key) in tickValues" :key="key" :value="val" />
       </template>
       <slot />
       <ReadingSliderThumbComponent
+        v-if="valueLeft !== valueRight"
         v-model="valueLeft"
         :type="tooltipType"
         :tooltip="tooltip"
@@ -39,6 +26,7 @@
       />
 
       <ReadingSliderThumbComponent
+        v-if="valueLeft !== valueRight"
         v-model="valueRight"
         :type="tooltipType"
         :tooltip="tooltip"
@@ -70,7 +58,7 @@
         :aria-label="Array.isArray(ariaLabel) ? ariaLabel[0] : ariaLabel"
         :aria-disabled="disabled"
         @dragstart="onDragStart"
-        @dragend="onDragEnd"
+        @dragend="onDragEnd($event)"
       />
     </div>
   </div>
@@ -81,9 +69,17 @@
   background: transparent;
 }
 
+.b-slider .b-slider-track {
+  background: #7f7f7f !important;
+}
+
 .b-slider .b-slider-tick,
 .b-slider .b-slider-track {
-  height: 1rem;
+  height: 24px !important;
+}
+
+.b-slider-tick {
+  background: transparent !important;
 }
 
 .b-slider .b-slider-thumb {
@@ -92,7 +88,13 @@
 
 div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
   background-color: #ffbd72;
-  width: 0.7rem;
+  width: 13px;
+  height: 30px;
+  box-shadow: 0px 0px 10px #0000004d;
+}
+
+div.b-slider-thumb-wrapper.active-thumb .liveview {
+  background-color: #e66359;
 }
 </style>
 
@@ -176,12 +178,13 @@ export default class ReadingSliderComponent extends Vue {
     return result;
   }
 
-  get barStyle(): { width: string, left: string } {
+  get barStyle(): { width: string; left: string } {
     const maxValue = Math.max(this.valueLeft, this.valueRight);
     const minValue = Math.min(this.valueLeft, this.valueRight);
     const res = {
       width: `${(100 * (maxValue - minValue)) / (this.max - this.min)}%`,
       left: `${(100 * (minValue - this.min)) / (this.max - this.min)}%`,
+      background: '#ffbd72 !important',
     };
     return res;
   }
@@ -228,12 +231,28 @@ export default class ReadingSliderComponent extends Vue {
 
   onSliderClick(event: any) {
     if (this.disabled || this.isTrackClickDisabled) return;
-    const sliderOffsetLeft = (this.$refs.slider as any).getBoundingClientRect().left;
+    const sliderOffsetLeft = (this.$refs.slider as any).getBoundingClientRect()
+      .left;
     const percent = ((event.clientX - sliderOffsetLeft) / this.sliderSize) * 100;
-    const targetValue = Math.round(this.min + (percent * (this.max - this.min)) / 100);
+    const targetValue = Math.round(
+      this.min + (percent * (this.max - this.min)) / 100,
+    );
     const diffFirst = Math.abs(targetValue - this.valueSelected);
     if (diffFirst < this.step / 2) return;
-
+    if (event.shiftKey) {
+      if (this.isMultiSelectMode) {
+        this.valueLeft = Math.min(targetValue, this.valueLeft);
+        this.valueRight = Math.max(targetValue, this.valueRight);
+      } else {
+        this.valueLeft = Math.min(targetValue, this.valueSelected);
+        this.valueRight = Math.max(targetValue, this.valueSelected);
+      }
+    } else if (this.isMultiSelectMode) {
+      if (targetValue < this.valueLeft || targetValue > this.valueRight) {
+        this.valueRight = 0;
+        this.valueLeft = 0;
+      }
+    }
     this.valueSelected = targetValue;
     this.emitValue('change');
   }
@@ -243,7 +262,7 @@ export default class ReadingSliderComponent extends Vue {
     this.$emit('dragstart');
   }
 
-  onDragEnd() {
+  onDragEnd(event: { oldValue: number; shiftKey: boolean }) {
     this.isTrackClickDisabled = true;
     setTimeout(() => {
       // avoid triggering onSliderClick after dragend
@@ -251,11 +270,38 @@ export default class ReadingSliderComponent extends Vue {
     }, 0);
     this.dragging = false;
     this.$emit('dragend');
-    this.emitValue('input');
+    this.emitValue('input', event);
   }
 
-  emitValue(type: string) {
-    this.$emit(type, { left: this.valueLeft, right: this.valueRight, selected: this.valueSelected });
+  emitValue(type: string, event?: { oldValue: number; shiftKey: boolean }) {
+    if (event && event.shiftKey) {
+      if (this.valueSelected < event.oldValue && !this.isMultiSelectMode) {
+        this.$emit(type, {
+          left: this.valueSelected,
+          right: event.oldValue,
+          selected: this.valueSelected,
+        });
+      }
+      if (this.valueSelected > event.oldValue && !this.isMultiSelectMode) {
+        this.$emit(type, {
+          left: event.oldValue,
+          right: this.valueSelected,
+          selected: this.valueSelected,
+        });
+      }
+    } else if (this.isMultiSelectMode) {
+      this.$emit(type, {
+        left: Math.min(this.valueSelected, this.valueLeft),
+        right: Math.max(this.valueSelected, this.valueRight),
+        selected: this.valueSelected,
+      });
+    } else {
+      this.$emit(type, { left: 0, right: 0, selected: this.valueSelected });
+    }
+  }
+
+  get isMultiSelectMode() {
+    return this.valueLeft !== this.valueRight;
   }
 
   @Watch('value')
@@ -288,5 +334,4 @@ export default class ReadingSliderComponent extends Vue {
     this.setValues(this.value);
   }
 }
-
 </script>

@@ -1,39 +1,16 @@
 <template>
-  <div class="webcamCapture">
-    <div
-      id="capture-button"
-      class="capture-button"
-      @click="capture()"
-      :class="{ capturing: isCapturing, hidden: !mediaOk }"
-    >
-      <img alt="camera" class="capture-icon" src="@/assets/camera-solid-orange.svg" />
-    </div>
+  <div style="display:flex;">
+    <audio ref="audio" src="@/assets/camera_shutter.mp3"/>
+    <i class="icon-camera" v-if="canCapture && !protectCapture" @click="capture()" style="color:#e66359;" />
+    <i class="icon-camera" style="cursor:default" v-else-if="canCapture && protectCapture"/>
+    <img v-else src="@/assets/camera-off-color.svg" style="height:32px;" @click="moveToCapture()" />
   </div>
 </template>
 
 <style lang="scss">
-.capture-button {
-  width: 144px;
-  height: 82px;
-  font-size: 30px;
-  cursor: pointer;
-  color: #e66359;
-  text-align: center;
-}
-
-.hidden {
-  display: none;
-}
-
 .capturing {
   color: grey;
   cursor: progress;
-}
-
-.capture-icon {
-  margin-top: 18px;
-  width: 48px;
-  height: 43px;
 }
 </style>
 
@@ -44,6 +21,7 @@ import {
 import { namespace } from 'vuex-class';
 import { Device } from '@/utils/device.class';
 import { KeyCodes } from '@/utils/movie.service';
+import * as _ from 'lodash';
 
 const CaptureNS = namespace('capture');
 const WebRTCNS = namespace('webrtc');
@@ -56,11 +34,20 @@ export default class CaptureButtonComponent extends Vue {
   @Prop(Device)
   public readonly device!: Device;
 
+  @Prop()
+  public readonly canCapture!: boolean;
+
   @CaptureNS.State
   public scaleX!: number | 1;
 
   @CaptureNS.State
   public scaleY!: number | 1;
+
+  @CaptureNS.State
+  public stream!: MediaStream;
+
+  @CaptureNS.Action('detachMediaStream')
+  public detachMediaStream!: () => void;
 
   @WebRTCNS.State
   public dataChannel!: RTCDataChannel;
@@ -75,8 +62,11 @@ export default class CaptureButtonComponent extends Vue {
 
   public isCapturing = false;
 
+  public protectSpam = false;
+
+  private stopWebcamInterval: number = 0;
+
   public async mounted() {
-    this.onDeviceIdChanged();
     window.addEventListener('keyup', (e: KeyboardEvent) => {
       switch (e.keyCode) {
         case KeyCodes.ENTER:
@@ -100,36 +90,70 @@ export default class CaptureButtonComponent extends Vue {
     }
   }
 
+  get protectCapture(): boolean {
+    return this.isCapturing || this.protectSpam;
+  }
+
   public capture() {
+    (this.$refs.audio as HTMLAudioElement).play();
     this.isCapturing = true;
+    this.protectSpam = true;
+    setTimeout(() => {
+      this.protectSpam = false;
+    }, 750);
     if (this.device.isSmartphone()) {
-      this.captureSmartphone();
+      // this.captureSmartphone();
+      this.captureWebcam();
     } else {
       this.captureWebcam();
     }
   }
 
+  public moveToCapture() {
+    this.$emit('moveToCapture');
+  }
+
   @Watch('device')
-  public onDeviceIdChanged() {
+  async onDeviceIdChanged(newDevice: Device, oldDevice: Device) {
     this.isCapturing = false;
-    if (!this.device.isSmartphone()) {
+    if (!this.device.isSmartphone() && this.canCapture) {
       this.setupWebCam();
-    } else if (this.peerConnected) {
+    } else if (this.peerConnected && this.canCapture) {
       this.mediaOk = true;
       this.setupSmarphone();
-    } else {
-      this.$store.commit('capture/detachMediaStream');
     }
   }
 
   @Watch('dataChannel')
-  public onDataChannelChanged() {
-    if (this.dataChannel) {
+  public onDataChannelChanged(dataChannel: RTCDataChannel) {
+    if (dataChannel !== null) {
       this.mediaOk = true;
       this.setChannelEvents(this.dataChannel);
     }
-    if (this.device.isSmartphone()) {
+    if (this.device.isSmartphone() && dataChannel !== null) {
       this.setupSmarphone();
+    }
+  }
+
+  @Watch('canCapture')
+  onCanCaptureChange(canCapture: boolean) {
+    if (!this.device) {
+      return;
+    }
+    if (!this.device.isSmartphone()) {
+      if (canCapture) {
+        clearInterval(this.stopWebcamInterval);
+        this.stopWebcamInterval = 0;
+      }
+      if (canCapture && this.stream === null) {
+        this.setupWebCam();
+      } else if (this.stopWebcamInterval === 0) {
+        this.stopWebcamInterval = setTimeout(() => {
+          if (!this.canCapture) {
+            this.detachMediaStream();
+          }
+        }, 20000);
+      }
     }
   }
 
@@ -139,8 +163,13 @@ export default class CaptureButtonComponent extends Vue {
       const data = JSON.parse(event.data);
       switch (data.type) {
         case 'capture':
-          const video = document.getElementById('video-capture') as HTMLVideoElement;
-          const [blob, b64] = this.captureOriginal(video, { scaleX: this.scaleX, scaleY: this.scaleY });
+          const video = document.getElementById(
+            'video-capture',
+          ) as HTMLVideoElement;
+          const [blob, b64] = this.captureOriginal(video, {
+            scaleX: this.scaleX,
+            scaleY: this.scaleY,
+          });
           this.onCaptured(data.message, blob, b64);
           break;
         case 'upload':
@@ -182,18 +211,18 @@ export default class CaptureButtonComponent extends Vue {
     await this.$store.commit('capture/attachMediaStream', stream);
   }
 
-  private captureSmartphone() {
-    this.$store.commit('project/incAction', 1);
-    this.dataChannel.send(
-      JSON.stringify({
-        message: 'capture',
-        projectId: this.projectId,
-        type: 'cmd',
-        scaleX: this.scaleX,
-        scaleY: this.scaleY,
-      }),
-    );
-  }
+  // private captureSmartphone() {
+  //   this.$store.commit('project/incAction', 1);
+  //   this.dataChannel.send(
+  //     JSON.stringify({
+  //       message: 'capture',
+  //       projectId: this.projectId,
+  //       type: 'cmd',
+  //       scaleX: this.scaleX,
+  //       scaleY: this.scaleY,
+  //     }),
+  //   );
+  // }
 
   private captureWebcam() {
     this.$store.commit('project/incAction', 1);
@@ -209,20 +238,29 @@ export default class CaptureButtonComponent extends Vue {
 
   private onUploaded(id: string) {
     this.$emit('uploaded', id);
+    this.isCapturing = false;
   }
 
   private async onCaptured(id: string, thumb: Blob | undefined, b64: string) {
     this.$emit('captured', id, thumb, b64);
-    this.isCapturing = false;
   }
 
-  private captureOriginal(video: HTMLVideoElement, scales: {scaleX: number, scaleY: number}): [Blob, string] {
+  private captureOriginal(
+    video: HTMLVideoElement,
+    scales: { scaleX: number; scaleY: number },
+  ): [Blob, string] {
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const context2d = canvas.getContext('2d') as CanvasRenderingContext2D;
     context2d.scale(scales.scaleX, scales.scaleY);
-    context2d.drawImage(video, 0, 0, canvas.width * scales.scaleX, canvas.height * scales.scaleY);
+    context2d.drawImage(
+      video,
+      0,
+      0,
+      canvas.width * scales.scaleX,
+      canvas.height * scales.scaleY,
+    );
     const base64 = canvas.toDataURL('image/jpeg');
     return [this.imagetoblob(base64), base64];
   }

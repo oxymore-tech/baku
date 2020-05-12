@@ -54,11 +54,8 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   @WebrtcNS.Action('resetState')
   private resetRTC!: () => Promise<void>;
 
-  @CaptureNS.Action('setActiveCapture')
-  private setActiveCapture!: ({}) => Promise<void>;
-
   @CaptureNS.State
-  public activeCapture!: boolean;
+  public activeDevice!: boolean;
 
   private socket!: WSSocket;
 
@@ -74,7 +71,10 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   }
 
   public beforeDestroy() {
-    this.socket.close();
+    if (this.status !== 'CONNECTED') {
+      this.socket.close();
+      this.resetRTC();
+    }
   }
 
   @Watch('socketStatus')
@@ -142,9 +142,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
         setTimeout(() => (this.$parent as any).close(), 500);
       }
       if (this.peerConnection.connectionState === 'disconnected') {
-        if (this.activeCapture) {
-          this.setActiveCapture(false);
-        }
+        this.socket.close();
         this.resetRTC();
       }
     };
@@ -179,7 +177,6 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
 
   public close() {
     if (this.status !== 'CONNECTED') {
-      this.setActiveCapture(false);
     }
     (this.$parent as any).close();
   }

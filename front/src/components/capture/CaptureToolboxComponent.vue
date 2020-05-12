@@ -1,56 +1,76 @@
 <template>
-  <div class="box-container">
-    <div class="settings-header">
-      <i class="icon-cog" />
-      <h4>Caméra</h4>
-    </div>
+  <b-dropdown
+    position="is-top-left"
+    :disabled="!isCapturing"
+    :close-on-click="false"
+    append-to-body
+    aria-role="menu"
+    trap-focus
+  >
+    <a class="navbar-item" slot="trigger" role="button" slot-scope="{ active }">
+      <span>Réglages vidéo</span>
+      <b-icon :icon="active ? 'menu-down' : 'menu-up'"></b-icon>
+    </a>
+    <b-dropdown-item custom :focusable="false" class="box-container">
+      <b-field>
+        <b-select
+          icon="video"
+          :loading="!devices.length"
+          @input="onCaptureDeviceChange()"
+          v-model="selectedDeviceId"
+          placeholder="Sélectionner une caméra"
+        >
+          <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
+        </b-select>
+      </b-field>
 
-    <b-field>
-      <i class="icon-webcam" />
-      <b-select
-        @input="onCaptureDeviceChange()"
-        placeholder="Sélectionner une caméra"
-        :loading="!devices.length"
-        v-model="selectedDeviceId"
-        size="is-small"
-      >
-        <option v-for="device in devices" :key="device.id" :value="device.id">{{device.label}}</option>
-      </b-select>
-    </b-field>
+      <div class="field">
+        <b-switch :value="scaleY == -1" @input="toggleScaleY">Miroir horizontal</b-switch>
+      </div>
+      <div class="field">
+        <b-switch :value="scaleX != 1" @input="toggleScaleX">Miroir vertical</b-switch>
+      </div>
 
-    <div @click="toggleScaleY()">
-      <i class="icon-check_box baku-button mirror-checkboxes" v-if="scaleY < 0" />
-      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else />
-      Miroir horizontal
-    </div>
+      <div class="field onionSkinInput" style="display:inline-flex;">
+        <b-switch :value="onionSkinDisplay" @input="setOnionSkinDisplay($event)">
+          <b-field>
+            <div>Pelure d'oignon</div>
+          </b-field>
+        </b-switch>
+        <b-numberinput
+          v-if="onionSkinDisplay"
+          type="light"
+          :value="onionSkinValue"
+          @input="setOnionSkinValue($event)"
+          size="is-small"
+          controls-position="compact"
+          min="1"
+          max="5"
+        ></b-numberinput>
+      </div>
 
-    <div @click="toggleScaleX()">
-      <i class="icon-check_box baku-button mirror-checkboxes" v-if="scaleX < 0" />
-      <i class="icon-check_box_outline_blank baku-button mirror-checkboxes" v-else />
-      Miroir vertical
-    </div>
-    <div>
-      Pelure d'oignon
-      <input
-        type="number"
-        max="5"
-        min="0"
-        :value="onionSkin"
-        @change="setOnionSkin($event.target.value)"
-      />
-    </div>
-  </div>
+      <div class="field" style="display:inline-flex;">
+        <b-select :value="fps" @input="changeFps({projectId: projectId, fps: $event})">
+          <option :value="12">12</option>
+          <option :value="24">24</option>
+          <option :value="25">25</option>
+        </b-select>
+        <span class="control-label">Définir le nombre d'images par seconde</span>
+      </div>
+    </b-dropdown-item>
+  </b-dropdown>
 </template>
 
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch, Prop } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 import SmartphoneSynchroPopupComponent from "@/components/smartphone/SmartphoneSynchroPopupComponent.vue";
 import { Device } from "@/utils/device.class";
 
 const CaptureNS = namespace("capture");
 const WebRTCNS = namespace("webrtc");
+const ProjectNS = namespace("project");
 
 @Component({
   components: {
@@ -64,6 +84,15 @@ export default class CaptureToolboxComponent extends Vue {
 
   public selectedDevice: Device | null = null;
 
+  @Prop()
+  public isCapturing!: boolean;
+
+  @ProjectNS.State("id")
+  public projectId!: string;
+
+  @CaptureNS.State("activeDevice")
+  protected activeDevice!: Device | null;
+
   @CaptureNS.Action("selectDevice")
   protected selectDeviceAction!: (device: Device | null) => Promise<void>;
 
@@ -73,8 +102,14 @@ export default class CaptureToolboxComponent extends Vue {
   @CaptureNS.Action("toggleScaleY")
   protected toggleScaleY!: () => Promise<void>;
 
-  @CaptureNS.Action("setOnionSkin")
-  protected setOnionSkin!: (val: number) => Promise<void>;
+  @CaptureNS.Action("detachMediaStream")
+  public detachMediaStream!: () => void;
+
+  @CaptureNS.Action("setOnionSkinDisplay")
+  protected setOnionSkinDisplay!: (val: boolean) => Promise<void>;
+
+  @CaptureNS.Action("setOnionSkinValue")
+  protected setOnionSkinValue!: (val: number) => Promise<void>;
 
   @CaptureNS.State("scaleX")
   protected scaleX!: number;
@@ -82,11 +117,23 @@ export default class CaptureToolboxComponent extends Vue {
   @CaptureNS.State("scaleY")
   protected scaleY!: number;
 
-  @CaptureNS.State("onionSkin")
-  protected onionSkin!: number;
+  @CaptureNS.State("onionSkinDisplay")
+  protected onionSkinDisplay!: number;
+
+  @CaptureNS.State("onionSkinValue")
+  protected onionSkinValue!: number;
 
   @WebRTCNS.Action("resetState")
   private resetRTC!: () => Promise<void>;
+
+  @WebRTCNS.State("isConnected")
+  private isRTCConnected!: () => Promise<void>;
+
+  @ProjectNS.Getter("getMovieFps")
+  protected fps!: number;
+
+  @ProjectNS.Action("changeFps")
+  protected changeFps!: ({}) => Promise<void>;
 
   public async mounted() {
     try {
@@ -94,7 +141,7 @@ export default class CaptureToolboxComponent extends Vue {
       stream.getTracks().forEach((track: MediaStreamTrack) => {
         track.stop();
       });
-    }catch(e){
+    } catch (e) {
       console.info(e);
     }
     const devices = (await navigator.mediaDevices.enumerateDevices()) || [];
@@ -104,23 +151,25 @@ export default class CaptureToolboxComponent extends Vue {
           input.kind === "videoinput" && input.deviceId !== ""
       )
       .map(
-        (input: MediaDeviceInfo) =>
-          new Device(input.deviceId, input.label || "Caméra non reconnue")
+        (input: MediaDeviceInfo, idx: number) =>
+          new Device(input.deviceId, input.label || `Caméra ${idx + 1}`)
       );
     const deviceIds = [...new Set(videoDevices.map(d => d.id))];
     this.devices =
       deviceIds.map(id => videoDevices.find(d => d.id === id) as Device) || [];
-    // this.devices.push(new Device("smartphone", "Smartphone"));
+    this.devices.push(new Device("smartphone", "Smartphone"));
+    this.selectedDeviceId = this.devices[0].id ?? undefined;
+    this.selectDeviceAction(this.devices[0] ?? null);
   }
 
-  public onCaptureDeviceChange() {
+  public async onCaptureDeviceChange() {
     this.selectedDevice =
-      this.devices.find(d => d.id === this.selectedDeviceId) || null;
-    this.selectDeviceAction(this.selectedDevice);
-
+      this.devices.find(d => d.id == this.selectedDeviceId) || null;
+    await this.detachMediaStream();
     if (this.selectedDevice && !this.selectedDevice.isSmartphone()) {
-      this.resetRTC();
+      await this.resetRTC();
     }
+    this.selectDeviceAction(this.selectedDevice);
   }
 
   public verticalMirror() {
@@ -129,6 +178,34 @@ export default class CaptureToolboxComponent extends Vue {
 
   public horizontalMirror() {
     this.toggleScaleY();
+  }
+
+  @Watch("isRTCConnected")
+  onRTCConnectedChange(status: boolean) {
+    if (!status && this.selectedDevice && this.selectedDevice.isSmartphone()) {
+      this.selectedDevice = null;
+      this.selectedDeviceId = null;
+      this.selectDeviceAction(null);
+    }
+  }
+
+  @Watch("activeDevice")
+  onActiveDevice(device: Device) {
+    if (device && device.id === "smartphone") {
+      this.$buefy.modal.open({
+        parent: this,
+        component: SmartphoneSynchroPopupComponent,
+        hasModalCard: true,
+        canCancel: true,
+        onCancel: () => {
+          if (!this.isRTCConnected) {
+            this.selectedDevice = null;
+            this.selectedDeviceId = null;
+            this.selectDeviceAction(null);
+          }
+        }
+      });
+    }
   }
 }
 </script>
@@ -143,6 +220,7 @@ export default class CaptureToolboxComponent extends Vue {
   display: inline-flex;
   align-items: center;
   width: 100%;
+  margin-bottom: 10px;
 
   h4 {
     font-size: 28px;
@@ -155,15 +233,23 @@ export default class CaptureToolboxComponent extends Vue {
   }
 }
 
+.onionSkinInput {
+  height: 27px;
+  .switch {
+    float: left;
+  }
+  .b-numberinput {
+    margin-left: 20px;
+    float: right;
+    width: 75px;
+  }
+}
+
 .field {
   i {
     font-size: 20px;
     color: #707070;
     margin: 3px 5px 3px 0px;
   }
-}
-
-.mirror-checkboxes {
-  margin-right: 5px;
 }
 </style>

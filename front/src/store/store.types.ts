@@ -5,10 +5,10 @@ import { BakuEvent } from '@/utils/types';
 export interface CaptureState {
   stream: MediaStream | null;
   activeDevice: Device | null,
-  activeCapture: boolean;
   scaleX: number;
   scaleY: number;
-  onionSkin: number;
+  onionSkinDisplay: boolean;
+  onionSkinValue: number;
 }
 
 export interface ProjectState {
@@ -18,8 +18,21 @@ export interface ProjectState {
   pendingActions: number;
 }
 
+export interface SeenProject {
+  id: string;
+  adminId?: string;
+  title: string;
+  posterUrl?: string;
+  synopsis?: string;
+  locked?: boolean;
+  totalImages?: number;
+  fps?: number;
+  lastUpdate?: Date;
+}
+
 export interface UserState {
   username: string;
+  seenProjects: SeenProject[];
 }
 
 export interface BakuRootState {

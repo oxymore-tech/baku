@@ -4,7 +4,7 @@
       :value="sliderValue"
       @input="onSliderValueChange"
       :min="0"
-      :max="images.length - 1"
+      :max="canEdit? images.length : images.length -1"
       :step="1"
       :customFormatter="val => (parseInt(val,10) + 1).toString()"
       class="reading-slider-component"
@@ -38,6 +38,9 @@ export default class ImagesSelectorComponent extends Vue {
 
   @Prop()
   public value!: ReadingSliderBoundaries;
+
+  @Prop()
+  public canEdit!: boolean;
 
   get sliderValue() {
     return {

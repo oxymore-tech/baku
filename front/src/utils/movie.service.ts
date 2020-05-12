@@ -1,5 +1,7 @@
-import { BakuAction, BakuEvent } from '@/utils/types';
-import { ImageRef, UploadedImage } from '@/utils/uploadedImage.class';
+import { BakuAction, BakuEvent, Duration } from '@/utils/types';
+import { ImageRef, Quality, UploadedImage } from '@/utils/uploadedImage.class';
+import * as _ from 'lodash';
+import { SeenProject } from '@/store/store.types';
 
 export enum KeyCodes {
   BACKSPACE = 8,
@@ -32,11 +34,15 @@ export interface Movie {
   readonly poster?: ImageRef;
   readonly shots: Shot[];
   readonly fps: number;
+  readonly locked: boolean;
 }
 
 export interface Shot {
   readonly id: string;
   readonly images: ImageRef[];
+  readonly locked: boolean;
+  readonly synopsis: string;
+  readonly storyboard?: ImageRef;
 }
 
 export interface ReadingSliderBoundaries {
@@ -49,11 +55,79 @@ export interface ReadingSliderValue extends ReadingSliderBoundaries {
 }
 
 export class MovieService {
+
+  public static getLastUpdate(history?: BakuEvent[]): Date | undefined {
+    if (history) {
+      return history[history.length - 1]?.timestamp;
+    } else {
+      return undefined;
+    }
+  }
+
+  public static getTotalImages(movie: Movie) {
+    return movie.shots.reduce((count, shot) => count + shot.images.reduce((count) => count + 1, 0), 0);
+  }
+
+  public static removeDoublons(newSeenProjects: SeenProject[]) {
+    let result: SeenProject[] = [];
+    const map = new Set();
+    for (const item of newSeenProjects) {
+      if (!map.has(item.id)) {
+        map.add(item.id);
+        result.push(item);
+      } else {
+        result = result.map(olditem => {
+          if(olditem.id === item.id) {
+            return item.adminId ?  item : olditem;
+          }
+          return olditem;
+        })
+      }
+    }
+    return result;
+  }
+
+  public static getImagesString(imageNumber: number): string {
+    if (!imageNumber) {
+      return "pas encore d'image";
+    } else if (imageNumber == 1) {
+      return "1 image";
+    } else {
+      return imageNumber + " images";
+    }
+  }
+
+  public static getDurationString(duration: Duration, short = false): string {
+    if (duration.hours) {
+      return (
+        duration.hours +
+        "h " +
+        duration.minutes +
+        "min " +
+        duration.seconds +
+        "s"
+      );
+    } else if (duration.minutes) {
+      return duration.minutes + "min " + duration.seconds + "s";
+    } else if (duration.seconds > 1) {
+      return duration.seconds + " s";
+    } else if (duration.seconds == 1) {
+      return duration.seconds + " s";
+    } else {
+      if (!short) {
+        return "moins d'une seconde";
+      } else {
+        return "<1s";
+      }
+    }
+  }
+
   public static merge(projectId: string, events: BakuEvent[]): Movie {
     let title = 'Projet sans nom';
     let synopsis = 'Synopsis vide';
     let poster;
     let fps = 12;
+    let locked = false;
     const shots: Shot[] = [];
 
     const updateShot = (shotId: string, updateFn: (shot: Shot) => Shot) => {
@@ -77,7 +151,7 @@ export class MovieService {
           poster = event.value;
           break;
         case BakuAction.MOVIE_INSERT_IMAGE: {
-          const { shotId, imageIndex, image } = event.value as { shotId: string, imageIndex: number, image: string };
+          const {shotId, imageIndex, image} = event.value as { shotId: string, imageIndex: number, image: string };
           updateShot(shotId, (shot: Shot) => {
             shot.images.splice(imageIndex, 0, new UploadedImage(projectId, image));
             return shot;
@@ -89,6 +163,8 @@ export class MovieService {
           shots.push({
             id: event.value.shotId,
             images: [],
+            locked: false,
+            synopsis: '',
           });
           break;
         }
@@ -98,7 +174,7 @@ export class MovieService {
           break;
         }
         case BakuAction.MOVIE_REMOVE_IMAGE: {
-          const { shotId, imageIndex } = event.value as { shotId: string, imageIndex: number };
+          const {shotId, imageIndex} = event.value as { shotId: string, imageIndex: number };
           updateShot(shotId, (shot: Shot) => {
             shot.images.splice(imageIndex, 1);
             return shot;
@@ -109,12 +185,52 @@ export class MovieService {
           fps = event.value;
           break;
         }
+        case BakuAction.SHOT_LOCK: {
+          updateShot(event.value.shotId, (shot: Shot) =>
+            ({...shot, locked: event.value.locked})
+          );
+          break;
+        }
+        case BakuAction.MOVIE_LOCK: {
+          locked = event.value;
+          break;
+        }
+        case BakuAction.SHOT_UPDATE_SYNOPSIS: {
+          updateShot(event.value.shotId, (shot: Shot) =>
+            ({...shot, synopsis: event.value.synopsis})
+          )
+          break;
+        }
+        case BakuAction.SHOT_UPDATE_STORYBOARD: {
+          updateShot(event.value.shotId, (shot: Shot) =>
+            ({...shot, storyboard: event.value.storyboard})
+          )
+          break;
+        }
+        case BakuAction.MOVIE_REVERSE_IMAGES: {
+          const {shotId, imageIndexLeft, imageIndexRight} = event.value as { shotId: string, imageIndexLeft: number, imageIndexRight: number };
+          updateShot(shotId, (shot: Shot) => {
+            const leftPart = shot.images.slice(0, imageIndexLeft) || [];
+            const reversed = _.reverse(shot.images.slice(imageIndexLeft, imageIndexRight + 1));
+            const rightPart = shot.images.slice(imageIndexRight + 1);
+            return {...shot, images: leftPart.concat(reversed, rightPart)};
+          })
+          break;
+        }
         default:
           break;
       }
     });
     return {
-      title, synopsis, poster, shots, fps,
+      title, synopsis, poster, shots, fps, locked
     };
+  }
+
+  public static getPosterUrl(movie: Movie) {
+    if (movie.poster) {
+      return movie.poster.id;
+    } else if (movie && movie.shots && movie.shots.length > 0 && movie.shots[0].images && movie.shots[0].images.length > 0) {
+      return movie.shots[0].images[0].getUrl(Quality.Original);
+    }
   }
 }

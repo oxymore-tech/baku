@@ -1,6 +1,7 @@
 plugins {
     id "net.ltgt.apt-eclipse" version "0.21"
     id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "com.gorylenko.gradle-git-properties" version "2.2.2"
     id "application"
 }
 
@@ -29,6 +30,7 @@ dependencies {
     implementation "javax.annotation:javax.annotation-api"
     implementation "io.micronaut:micronaut-http-server-netty"
     implementation "io.micronaut:micronaut-http-client"
+    implementation "io.micronaut:micronaut-management"
 
     //tag::graal[]
     compileOnly "org.graalvm.nativeimage:svm"
@@ -36,6 +38,8 @@ dependencies {
     //end::graal[]
 
     compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.kohsuke', name: 'github-api', version: '1.111'
     implementation "org.slf4j:slf4j-api:1.7.5"
     implementation "com.google.code.gson:gson:2.8.6"
     implementation "com.google.cloud:google-cloud-translate:1.53.0"
@@ -49,6 +53,7 @@ dependencies {
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
 
     testCompile "org.assertj:assertj-core:3.15.0"
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
 
     testImplementation platform("io.micronaut:micronaut-bom:$micronautVersion")
     testImplementation "org.junit.jupiter:junit-jupiter-api"
@@ -56,6 +61,13 @@ dependencies {
     testImplementation "org.assertj:assertj-core"
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+}
+
+gitProperties {
+    // using any tags (not limited to annotated tags) for "git.commit.id.describe" property
+    // see http://ajoberstar.org/grgit/grgit-describe.html for more info about the describe method and available parameters
+    // 'it' is an instance of org.ajoberstar.grgit.Grgit
+    customProperty 'git.commit.describe', { it.describe(tags:true) } 
 }
 
 test.classpath += configurations.developmentOnly

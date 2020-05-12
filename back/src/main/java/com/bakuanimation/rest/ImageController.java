@@ -1,5 +1,10 @@
-package com.bakuanimation.server;
+package com.bakuanimation.rest;
 
+import com.bakuanimation.api.PermissionService;
+import com.bakuanimation.model.Movie;
+import com.bakuanimation.service.HistoryServiceImpl;
+import com.bakuanimation.service.ImageServiceImpl;
+import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -25,14 +30,17 @@ public class ImageController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
-    private final HistoryService historyService;
-    private final ImageService imageService;
+    private final HistoryServiceImpl historyService;
+    private final ImageServiceImpl imageService;
     private final PathService pathService;
+    private final PermissionService permissionService;
 
-    public ImageController(HistoryService historyService, ImageService imageService, PathService pathService) {
+    public ImageController(HistoryServiceImpl historyService, ImageServiceImpl imageService,
+                           PathService pathService, PermissionService permissionService) {
         this.historyService = historyService;
         this.imageService = imageService;
         this.pathService = pathService;
+        this.permissionService = permissionService;
     }
 
     @Post(value = "/api/{projectId}/upload", consumes = MediaType.MULTIPART_FORM_DATA)
@@ -47,7 +55,7 @@ public class ImageController {
         return Single.fromPublisher(uploadPublisher)
                 .subscribeOn(Schedulers.io())
                 .map(upload -> {
-                    imageService.writeSmallerImages(projectId, new FileInputStream(tempFile), file.getFilename());
+                    imageService.writeSmallerImages(permissionService.getProject(projectId).getId(), new FileInputStream(tempFile), file.getFilename());
                     Files.delete(tempFile.toPath());
                     return file.getFilename();
                 });
@@ -58,32 +66,32 @@ public class ImageController {
     public HttpResponse<Object> getImage(@PathVariable String projectId,
                                          @PathVariable String quality,
                                          @PathVariable String imageName) {
-        var imagePath = pathService.getImageFile(projectId, quality, imageName);
+        var imagePath = pathService.getImageFile(permissionService.getProject(projectId).getId(), quality, imageName);
         if (Files.exists(imagePath)) {
             return HttpResponse.ok(new SystemFile(imagePath.toFile()).attach(imageName));
         } else {
-            return HttpResponse.notFound(imageName + "not found");
+            return HttpResponse.notFound(imageName + " not found");
         }
     }
 
     @Get(value = "/api/{projectId}/export.zip")
     public Single<HttpResponse<StreamedFile>> export(@PathVariable String projectId) {
-        return historyService.interpretHistory(projectId)
+        return historyService.interpretHistory(permissionService.getProject(projectId).getId())
                 .map(movie -> {
-                    String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
+                    String movieName = movie.getName();
                     return writeExportResponse(movie, movieName, null);
                 });
     }
 
     @Get(value = "/api/{projectId}/{shotId}/export.zip")
     public Single<HttpResponse<StreamedFile>> exportShot(@PathVariable String projectId, @PathVariable String shotId) {
-        return historyService.interpretHistory(projectId)
+        return historyService.interpretHistory(permissionService.getProject(projectId).getId())
                 .map(movie -> {
                     int shotIndex = movie.getShots().indexOf(shotId);
                     if (shotIndex == -1) {
                         return HttpResponse.badRequest();
                     } else {
-                        String movieName = movie.getName().isBlank() ? movie.getProjectId() : movie.getName();
+                        String movieName = movie.getName();
                         movieName = movieName + "_" +(shotIndex+1);
                         return writeExportResponse(movie, movieName, shotId);
                     }
@@ -109,9 +117,12 @@ public class ImageController {
                 }
             }
         });
+        long estimatedSize = imageService.estimatedExportSize(movie, shotId);
         StreamedFile streamedFile = new StreamedFile(inputStream, MediaType.MULTIPART_FORM_DATA_TYPE)
                 .attach(name + ".zip");
-        return HttpResponse.ok(streamedFile).header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
+        return HttpResponse.ok(streamedFile)
+                .header(HttpHeaderNames.CONTENT_LENGTH, Long.toString(estimatedSize))
+                .header(HttpHeaderNames.CACHE_CONTROL, "no-cache");
     }
 
 }
