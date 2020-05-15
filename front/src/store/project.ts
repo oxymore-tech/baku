@@ -8,6 +8,7 @@ import uuid from 'uuid';
 interface ProjectGetters {
   movie: Movie;
   getActiveShot: Shot;
+  getActiveShotIndex: number;
   canLock: boolean;
 }
 
@@ -119,20 +120,20 @@ export const ProjectStore: BakuModule<ProjectState> = {
       const shotId = uuid.v4();
       const event = makeEvent(context, BakuAction.SHOT_ADD, {shotId});
       loadEvents(context, [event]);
-      store.dispatch('user/updateCurrentSeenProject');
+      await store.dispatch('user/updateCurrentSeenProject');
       return shotId;
     },
 
     async removeShot(context, shotId: string) {
       const event = makeEvent(context, BakuAction.SHOT_REMOVE, {shotId});
       loadEvents(context, [event]);
-      store.dispatch('user/updateCurrentSeenProject');
+      await store.dispatch('user/updateCurrentSeenProject');
     },
 
     async lockMovie(context, locked): Promise<void> {
       const event = makeEvent(context, BakuAction.MOVIE_LOCK, locked);
       loadEvents(context, [event]);
-      store.dispatch('user/updateCurrentSeenProject');
+      await store.dispatch('user/updateCurrentSeenProject');
     },
 
     async lockShot(context, params: { shotId: string, locked: boolean }): Promise<void> {
@@ -159,6 +160,9 @@ export const ProjectStore: BakuModule<ProjectState> = {
     getActiveShot: (state, getters: ProjectGetters): Shot | undefined =>
       getters.movie.shots.find((shot: Shot) => shot.id === state.activeShotId),
 
+    getActiveShotIndex: (state, getters: ProjectGetters): number =>
+      getters.movie.shots.findIndex((shot: Shot) => shot.id === state.activeShotId),
+
     getActiveShotImgCount: (state, getters: ProjectGetters): number | undefined =>
       (getters.getActiveShot ? getters.getActiveShot.images.length : 0),
 
@@ -176,48 +180,22 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     getNoEditId: (state, getters: ProjectGetters): string => getters.canLock ? state.id.slice(0, 36) : state.id,
 
-    getPreviousShotId: (state, getters: ProjectGetters): string | undefined => {
-      let activeShotId = getters.getActiveShot.id;
-      let previousShotId = getters.movie.shots[getters.movie.shots.length - 1].id;
-
-      for (let i = 0, i_len = getters.movie.shots.length; i < i_len; i++) {
-        if (getters.movie.shots[i].id == activeShotId) {
-          break;
-        }
-        previousShotId = getters.movie.shots[i].id;
-      }
-
-      return previousShotId;
+    getPreviousShotId: (state, getters: ProjectGetters): string => {
+      const index = (getters.getActiveShotIndex - 1) % getters.movie.shots.length;
+      return getters.movie.shots[index].id;
     },
 
     getNextShotId: (state, getters: ProjectGetters): string | undefined => {
-      let activeShotId = getters.getActiveShot.id;
-      let nextShotId = getters.movie.shots[0].id;
-
-      for (let i = getters.movie.shots.length - 1; i >= 0; i--) {
-        if (getters.movie.shots[i].id == activeShotId) {
-          break;
-        }
-        nextShotId = getters.movie.shots[i].id;
-      }
-
-      return nextShotId;
+      const index = (getters.getActiveShotIndex + 1) % getters.movie.shots.length;
+      return getters.movie.shots[index].id;
     },
 
     getShotCount: (state, getters: ProjectGetters): number | undefined => {
       return getters.movie.shots.length;
     },
 
-    getActiveShotIndex: (state, getters: ProjectGetters): number | undefined => {
-      return getters.movie.shots.findIndex((shot: Shot) => shot.id === getters.getActiveShot?.id);
-    },
-
     getImageCount: (state, getters: ProjectGetters): number => {
-      let res = 0
-      for (let i = 0, i_len = getters.movie.shots.length; i < i_len; i++) {
-        res += getters.movie.shots[i].images.length
-      }
-      return res
+      return MovieService.getTotalImages(getters.movie);
     },
 
     getHours: (state, getters): any =>

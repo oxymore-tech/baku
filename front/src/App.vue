@@ -154,22 +154,22 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
-import { Movie } from '@/utils/movie.service';
-import IssuePopup from '@/components/IssuePopup.vue';
-import { createProject } from '@/api';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
+  import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
+  import { Movie } from '@/utils/movie.service';
+  import IssuePopup from '@/components/IssuePopup.vue';
+  import { createProject } from '@/api';
 
-const ProjectNS = namespace('project');
-const UserNS = namespace('user');
+  const ProjectNS = namespace('project');
+  const UserNS = namespace('user');
 
   @Component({
     components: {
       ProjectSettingsPopup,
     },
   })
-export default class App extends Vue {
+  export default class App extends Vue {
     @ProjectNS.State
     public id!: string;
 
@@ -217,26 +217,26 @@ export default class App extends Vue {
 
     public async onPageAccueil() {
       await this.$router.push({
-        name: 'home',
+        name: 'home'
       });
     }
 
     public async onPersoFilm() {
       await this.$router.push({
-        name: 'movieEditing',
+        name: 'movieEditing'
       });
     }
 
     public async onOpenLibrary() {
       await this.$router.push({
-        name: 'library',
+        name: 'library'
       });
     }
 
     public async onOpenPlan() {
       if (this.$route.name === 'captureShot') {
         await this.$router.push({
-          name: 'movie',
+          name: 'movie'
         });
       }
     }
@@ -256,14 +256,8 @@ export default class App extends Vue {
       await this.moveToShot(shotId);
     }
 
-    private async moveToShot(shotId: string) {
-      return this.$router.push({
-        name: 'captureShot',
-        params: {
-          projectId: this.id,
-          shotId,
-        },
-      });
+    private moveToShot(shotId: string) {
+      return this.$store.dispatch("project/changeActiveShot", shotId);
     }
 
     public openIssue() {
@@ -271,7 +265,7 @@ export default class App extends Vue {
         parent: this,
         component: IssuePopup,
         hasModalCard: true,
-        canCancel: ['escape', 'outside'],
+        canCancel: ['escape', 'outside']
       });
     }
 
@@ -281,25 +275,24 @@ export default class App extends Vue {
       const shotId = await this.createShotAction('Nouveau plan');
       await this.changeFps(12);
       await this.updateTitle(this.getPersonalisedProjectTitle);
-      this.$store.dispatch('project/changeActiveShot', shotId);
+      await this.$store.dispatch('project/changeActiveShot', shotId);
       await this.$router.push({
         name: 'captureShot',
         params: {
           projectId,
-          shotId,
+          shotId
         },
       });
     }
 
-
     public async onClickMyLibrary() {
       await this.$router.push({
-        name: 'library',
+        name: 'library'
       });
     }
 
     public async goToShot() {
       await this.moveToShot(this.activeShotId);
     }
-}
+  }
 </script>
