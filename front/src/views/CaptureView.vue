@@ -16,18 +16,18 @@
             <div class="preview-content">
               <template v-if="onionSkinDisplay">
                 <img
-                  v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
+                  v-if="getActiveShot && getActiveShot.images[activeFrame - onionSkinValue] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
                   alt="ghostImg"
                   id="ghost-img"
-                  :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue].id)"
+                  :src="ImageCacheService.getImage(getActiveShot.images[activeFrame - onionSkinValue].id)"
                 />
                 <template v-for="ghostIndex in onionSkinAsArray">
                   <img
                     :key="ghostIndex"
-                    v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeDevice && IsFrameLiveView"
+                    v-if="getActiveShot && getActiveShot.images[activeFrame - ghostIndex] && activeDevice && IsFrameLiveView"
                     alt="ghostImg"
                     class="onion-skin"
-                    :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - ghostIndex].id)"
+                    :src="ImageCacheService.getImage(getActiveShot.images[activeFrame - ghostIndex].id)"
                   />
                 </template>
               </template>
@@ -51,11 +51,12 @@
           </div>
           <div class="preview-actions">
             <ImagesSelectorComponent
+              ref="imageSelector"
               v-if="getActiveShot"
               :projectId="id"
               :activeShot="getActiveShot.id"
               :images="getActiveShot.images"
-              :activeImage="currentDisplayedFrame"
+              :activeImage="activeFrame"
               :canEdit="canEdit"
               @activeImageChange="onActiveFrameChange"
               :activeDevice="activeDevice"
@@ -63,9 +64,9 @@
             />
             <div class="media-controls">
               <div class="clock">
-                <span>{{ nbMins(this.currentDisplayedFrame) }}</span>
+                <span ref="minutes">{{ nbMins(this.activeFrame) }}</span>
                 <span class="clock-small">:</span>
-                <span>{{ nbSecs(this.currentDisplayedFrame) }}</span>
+                <span ref="seconds">{{ nbSecs(this.activeFrame) }}</span>
               </div>
 
               <div style="display:inline-flex; align-items:center;">
@@ -106,7 +107,7 @@
                   v-if="canEdit"
                   :device="activeDevice"
                   :projectId="id"
-                  :canCapture="currentDisplayedFrame === getActiveShotImgCount"
+                  :canCapture="activeFrame === getActiveShotImgCount"
                   @captured="onCaptured"
                   @uploaded="onUploaded"
                   @moveToCapture="moveToCapture()"
@@ -290,15 +291,23 @@ export default class CaptureView extends AbstractProjectView {
     this.animationFrame = requestAnimationFrame(this.animate);
   }
 
-  private displayFrame(frame: number) {
-    const activeShot = this.getActiveShot;
-    if (activeShot) {
-      const image = activeShot.images[frame];
-      if (image) {
-        this.previewImg!.src = ImageCacheService.getImage(image.id);
+    private displayFrame(frame: number) {
+      const activeShot = this.getActiveShot;
+      if (activeShot) {
+        const image = activeShot.images[frame];
+        if (image) {
+          this.previewImg!.src = ImageCacheService.getImage(image.id);
+        }
+        const imageSelector = this.$refs.imageSelector as ImagesSelectorComponent;
+        if (imageSelector) {
+          imageSelector!.setFrame(frame);
+        }
+
+        // TODO settings textContext in Chromium is SOOOOO time consuming in layout
+        // (this.$refs.minutes as HTMLElement).textContent = this.nbMins(frame);
+        // (this.$refs.seconds as HTMLElement).textContent = this.nbSecs(frame);
       }
     }
-  }
 
     private setActiveFrame(frame: number) {
       this.activeFrame = frame;
@@ -326,8 +335,8 @@ export default class CaptureView extends AbstractProjectView {
 
    public playAnimation() {
       if (!this.isPlaying && this.getActiveShot.images.length > 0) {
-        if (this.currentDisplayedFrame === this.getActiveShotImgCount) {
-          this.moveFrameAbsolute(0);
+        if (this.activeFrame === this.getActiveShotImgCount) {
+          this.moveFrame(0);
           this.syncActiveFrame();
         }
         this.initPlay('animation');
@@ -415,7 +424,7 @@ export default class CaptureView extends AbstractProjectView {
 
     get IsFrameLiveView() {
       return false;
-      // return this.currentDisplayedFrame === this.getActiveShot?.images.length;
+      // return this.activeFrame === this.getActiveShot?.images.length;
     }
 
     private onImagePreloaded(imageId: string): void {
@@ -509,30 +518,21 @@ export default class CaptureView extends AbstractProjectView {
     return this.selectedImages.left !== this.selectedImages.right;
   }
 
-  public nbHours(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
-      % 60}`.padStart(2, '0');
-  }
-
-  public nbMins(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60) % 60}`.padStart(
-      2,
-      '0',
-    );
-  }
+    public nbMins(frame: number): string {
+      return `${Math.floor((frame + 1) / this.movie.fps / 60) % 60}`.padStart(
+        2,
+        '0',
+      );
+    }
 
   public nbSecs(frame: number): string {
     return `${Math.floor((frame + 1) / this.movie.fps) % 60}`.padStart(2, '0');
   }
 
-  public frameNb(frame: number): string {
-    return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
-  }
-
-  public onUploaded(id: string) {
-    ImageCacheService.startPreloadingImage(new UploadedImage(this.id, id), () => this.$forceUpdate());
-    this.$store.commit('project/incAction', -1);
-  }
+    public onUploaded(id: string) {
+      ImageCacheService.startPreloadingImage(new UploadedImage(this.id, id), () => this.$forceUpdate());
+      this.$store.commit('project/incAction', -1);
+    }
 
   public async onCaptured(id: string, thumb: Blob, b64: string) {
     ImageCacheService.putImageBlobInCache(id, b64);
