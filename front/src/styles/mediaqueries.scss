@@ -1,8 +1,10 @@
 // Medium devices (tablets, 768px and up)
 @media (min-width: 768px) { 
+  
   html {
-    font-size: 62.5%;
+    font-size: 6px;
   }
+
 }
 
 // Large devices (desktops, 992px and up)
@@ -10,7 +12,7 @@
   
   html {
     // font-size: 62.5%;
-    font-size: 10px;
+    font-size: 8px;
   }
 
 }
@@ -19,7 +21,7 @@
 @media (min-width: 1200px) { 
   
   html {
-    font-size: 12px;
+    font-size: 10px;
   }
 
 }
