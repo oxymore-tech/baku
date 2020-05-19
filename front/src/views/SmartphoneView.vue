@@ -157,6 +157,7 @@ export default class SmartphoneView extends Vue {
       this.socket.sendWSMessage({ action: 'rtcAnswer', value: answer });
     } catch (e) {
       console.error('Failed sending answer', e);
+      this.isWebRTCSupported = false;
     }
   }
 
