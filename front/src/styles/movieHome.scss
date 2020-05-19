@@ -17,7 +17,7 @@
   background: #ffffff 0 0 no-repeat padding-box;
   border-radius: 16px;
   opacity: 1;
-  font-size: 16px/6px;
+  font-size: 1.6rem/0.6rem;
   letter-spacing: 0;
   box-shadow: 0 0 20px #00000029;
   display: flex;
@@ -30,7 +30,7 @@
     flex-direction: column;
 
     .movie-title {
-      font-size: 32px;
+      font-size: 3.2rem;
     }
   }
 
@@ -51,5 +51,5 @@
   color: white;
   border: 0;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1.6rem;
 }
