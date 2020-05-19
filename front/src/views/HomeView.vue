@@ -18,7 +18,7 @@
                 <span class="name">{{ name }}</span><span>{{ description2 }}</span>
               </div>
             </div>
-            <div>
+            <div class="create-button-container">
               <button class="create-button" @click="onCreateProject">Créer un film</button>
               <div class="create-button-top-right"></div>
             </div>

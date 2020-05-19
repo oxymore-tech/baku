@@ -34,6 +34,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
+      width: 100%;
       justify-content: center;
 
       .welcome-div-logo {
@@ -41,11 +42,18 @@
         width: 200px;
         height: 200px;        
         background-repeat: no-repeat;
+
+        // media query : margin-right: auto on wrap
       }
 
       .welcome-div-description {
-        flex-grow: 1;
-        min-width: 850px; //
+
+        h3 {
+          font-size: 64px; // TODO
+        }
+        span {
+          font-size: 24px; // TODO
+        }  
       }
     }
 
@@ -54,46 +62,33 @@
     }
   }
 
-  h3 {
-    font-size: 65px;
-  }
+  .create-button-container {
+    position: relative;
+    width: 350px; // TODO
+    margin: auto;
 
-  span {
-    font-size: 24px;
-  }
+    .create-button {
+      margin: 0 0 0 auto;
+      background: transparent linear-gradient(260deg, #FFBD72 0%, #FE676F 100%) 0% 0% no-repeat padding-box;
+      border-radius: 44px;
+      color: white;
+      cursor: pointer;
+      font-family: Montserrat;
+      box-shadow: 0px 0px 20px #00000029;
+      border: 0;
+      font-size: 24px; // TODO
+      height: 48px; // TODO
+      width: 100%;
+    }
 
-  // .logo-home {
-  //   position: absolute;
-  //   top: 150px;
-  //   left: 70px;
-
-  //   img {
-  //     width: 364px;
-  //     display: inline-flex;
-  //   }
-  // }
-
-  .create-button {
-    margin: 0 0 0 auto;
-    width: 292px;
-    height: 48px;
-    background: transparent linear-gradient(260deg, #FFBD72 0%, #FE676F 100%) 0% 0% no-repeat padding-box;
-    border-radius: 44px;
-    color: white;
-    cursor: pointer;
-    font-size: 24px;
-    font-family: Montserrat;
-    box-shadow: 0px 0px 20px #00000029;
-    border: 0;
-  }
-
-  .create-button-top-right {
-    background-image: url("../assets/top_rigth.png");
-    width: 50px;
-    height: 54px;
-    float: right;
-    margin-top: -18px;
-    margin-left: -22px;
+    .create-button-top-right {
+      background-image: url("../assets/top_rigth.png");
+      width: 50px; // TODO
+      height: 54px; // TODO
+      position: absolute;
+      top: -18px; // TODO
+      right: -28px; // TODO
+    }
   }
 }
 
