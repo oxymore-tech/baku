@@ -1,6 +1,7 @@
 .main {
   width: 100%;
-  height: calc(100% + 250px);
+  // height: calc(100% + 250px);
+  height: calc(100% - 75px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,13 +9,16 @@
   overflow: auto;
 }
 
-.top-panel {
+.panel.top-panel {
   flex-direction: row;
   width: 100%;
   justify-content: center;
   flex: 1;
-  align-items: center;
-  position: relative;
+  // align-items: center;
+  align-items: flex-end;
+  // position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 0;
 
   .welcome-div {
     display: flex;
@@ -25,6 +29,25 @@
     z-index: 1;
     border-radius: 4px;
     width: 100%;
+
+    .welcome-div-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+
+      .welcome-div-logo {
+        background-image: url(../assets/baku_solo_beta.svg);
+        width: 200px;
+        height: 200px;        
+        background-repeat: no-repeat;
+      }
+
+      .welcome-div-description {
+        flex-grow: 1;
+        min-width: 850px; //
+      }
+    }
 
     .description {
       margin: 0px 0px 15px;
@@ -39,16 +62,16 @@
     font-size: 24px;
   }
 
-  .logo-home {
-    position:absolute;
-    top: 150px;
-    left: 70px;
+  // .logo-home {
+  //   position: absolute;
+  //   top: 150px;
+  //   left: 70px;
 
-    img {
-      width: 364px;
-      display: inline-flex;
-    }
-  }
+  //   img {
+  //     width: 364px;
+  //     display: inline-flex;
+  //   }
+  // }
 
   .create-button {
     margin: 0 0 0 auto;
@@ -102,7 +125,7 @@ a {
   }
 }
 
-#libandyt{
+#libandyt {
   display: flex;
   flex-direction: column;
   width: 280px;
@@ -111,12 +134,15 @@ a {
 .mini-icons-container {
   justify-content: left;
   width: 350px;
+
   a {
     margin-right: 50px;
   }
+
   img {
     width: 35px;
   }
+
   position: relative;
   left: 15px
 }

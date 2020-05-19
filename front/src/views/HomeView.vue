@@ -5,22 +5,24 @@
 <template>
   <div class="main">
     <div class="top-panel panel">
-      <div class="logo-home">
-        <img src="@/assets/baku_solo_beta.svg"/>
-      </div>
       <div class="welcome-div">
-        <h3>Libérez votre imagination</h3>
-        <div class="description">
-          <div>
-            <span>{{ description1 }}</span>
+        <div class="welcome-div-header">
+          <div class="welcome-div-logo"></div>
+          <div class="welcome-div-description">
+            <h3>Libérez votre imagination</h3>
+            <div class="description">
+              <div>
+                <span>{{ description1 }}</span>
+              </div>
+              <div>
+                <span class="name">{{ name }}</span><span>{{ description2 }}</span>
+              </div>
+            </div>
+            <div>
+              <button class="create-button" @click="onCreateProject">Créer un film</button>
+              <div class="create-button-top-right"></div>
+            </div>
           </div>
-          <div>
-            <span class="name">{{ name }}</span><span>{{ description2 }}</span>
-          </div>
-        </div>
-        <div>
-          <button class="create-button" @click="onCreateProject">Créer un film</button>
-          <div class="create-button-top-right"></div>
         </div>
         <div id="libandyt">
           <div class="option-home" @click="onClickMyLibrary">

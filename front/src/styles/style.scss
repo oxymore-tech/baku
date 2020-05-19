@@ -1,3 +1,7 @@
+html {
+  overflow-y: auto !important;
+}
+
 html,
 body {
   height: 100%;
@@ -22,7 +26,18 @@ body {
 }
 
 .app-home {
-  background: transparent url("assets/baku_home_bg.png") 100% 0 no-repeat padding-box;
+  // background: transparent url("assets/baku_home_bg.png") 100% 0 no-repeat padding-box;
+  background-image: url(assets/baku_home_bg.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-color: #fff;
+}
+
+@media screen and (min-width: 1200px) {
+  .app-home {
+    background-size: 100%;
+  }
 }
 
 .inline-editor {
