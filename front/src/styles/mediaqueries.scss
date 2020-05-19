@@ -2,7 +2,8 @@
 @media (min-width: 768px) { 
   
   html {
-    font-size: 6px;
+    // font-size: 10px;
+    font-size: 62.5%;
   }
 
 }
@@ -11,8 +12,8 @@
 @media (min-width: 992px) { 
   
   html {
-    // font-size: 62.5%;
-    font-size: 8px;
+    //  font-size: 10px;
+    font-size: 62.5%;
   }
 
 }
@@ -21,7 +22,16 @@
 @media (min-width: 1200px) { 
   
   html {
-    font-size: 10px;
+    // font-size: 10px;
+    font-size: 62.5%;
   }
 
+}
+
+.button, .input, .taginput .taginput-container.is-focusable, .textarea, .select select, .file-cta, .file-name, .pagination-previous, .pagination-next, .pagination-link, .pagination-ellipsis {
+  font-size: 1.2rem;
+}
+
+.dropdown-item, .dropdown .dropdown-menu .has-link a {
+  font-size: 1.4rem;
 }
