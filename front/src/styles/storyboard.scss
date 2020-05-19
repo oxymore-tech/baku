@@ -1,12 +1,17 @@
-#shotSynopsis {
-  width: 300px;
-  resize: none;
+.storyboard-preview-container {
+  width: 20%;
+  max-width: 200px;
 }
+
+// #shotSynopsis {
+//   width: 300px;
+//   resize: none;
+// }
 
 .ajout-storyboard {
   border: 1px solid lightgray;
   border-radius: 15px;
-  width: 300px;
+  // width: 300px;
   height: 100px;
   line-height: 100px;
   text-align: center;

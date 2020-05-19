@@ -10,7 +10,7 @@ body {
 }
 
 .main-frame {
-  height: calc(100% - 75px);
+  height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
 }
@@ -45,7 +45,7 @@ textarea {
 }
 
 nav {
-  height: 75px;
+  height: 50px;
   width: 100%;
   z-index: 3;
   display: flex;

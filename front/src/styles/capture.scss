@@ -67,22 +67,22 @@
 }
 
 @media screen and (max-width: 1699px) {
-  #video-capture {
-    width: 640px;
-    height: 360px;
-  }
   .preview-container {
     width: 640px;
-  }
+  
+    .preview-content {
+      width: 640px;
+      height: 360px;
 
-  .preview-content {
-    width: 640px;
-    height: 360px;
-  }
-
-  #preview-img {
-    width: 640px;
-    height: 360px;
+      #video-capture {
+        width: 640px;
+        height: 360px;
+      }
+      #preview-img {
+        width: 640px;
+        height: 360px;
+      }
+    }
   }
 }
 

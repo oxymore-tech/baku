@@ -12,7 +12,9 @@
   display: inline-flex;
   flex-direction: column;
   padding: 10px 0px 10px 10px;
-  width: 250px;
+  // width: 250px;
+  width: 20%;
+  max-width: 200px;
 
   ul {
     overflow: auto;
