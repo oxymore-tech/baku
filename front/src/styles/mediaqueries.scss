@@ -1,5 +1,5 @@
-// Medium devices (tablets, 768px and up)
-@media (min-width: 768px) { 
+// Phones and tablets
+@media (max-width: 992px) { 
   html {
     font-size: 62.5%;
   }
@@ -9,8 +9,7 @@
 @media (min-width: 992px) { 
   
   html {
-    // font-size: 62.5%;
-    font-size: 10px;
+    font-size: 62.5%;
   }
 
 }
@@ -19,7 +18,10 @@
 @media (min-width: 1200px) { 
   
   html {
-    font-size: 12px;
+    font-size: 62.5%;
+  }
+  .app.app-home {
+    background-size: auto 50%;
   }
 
 }

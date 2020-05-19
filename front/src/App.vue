@@ -134,10 +134,10 @@
 </template>
 
 <style lang="scss">
-  @import "styles/mediaqueries.scss";
   @import "styles/style.scss";
   @import "styles/buefy.scss";
   @import "assets/style.css";
+  @import "styles/mediaqueries.scss";
 
   .left-nav {
     display: flex;
