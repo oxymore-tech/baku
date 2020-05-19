@@ -169,29 +169,29 @@
           span {
             font-size: 2.4rem;
           }
-
-          .create-button-container {
-            width: 34rem;
-
-            .create-button {
-              font-size: 2.4rem;
-              height: 5rem;
-            }
-
-            .create-button-top-right {
-              width: 5rem;
-              height: 5.4rem;
-              top: -1.8rem;
-              right: -2.8rem;
-            }
-          }
         }
       }
 
       .welcome-div-actions {
+
+        .create-button-container {
+          width: 34rem;
+
+          .create-button {
+            font-size: 2.4rem;
+            height: 5rem;
+          }
+
+          .create-button-top-right {
+            width: 5rem;
+            height: 5.4rem;
+            top: -1.8rem;
+            right: -2.8rem;
+          }
+        }
         #libandyt {
           .option-home {
-            font-size: 1rem;
+            font-size: 2rem;
 
             i {
               font-size: 2.4rem;
