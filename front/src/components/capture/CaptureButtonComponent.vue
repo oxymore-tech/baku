@@ -116,7 +116,7 @@ export default class CaptureButtonComponent extends Vue {
   @Watch('device')
   async onDeviceIdChanged(newDevice: Device, oldDevice: Device) {
     this.isCapturing = false;
-    if (!this.device.isSmartphone() && this.canCapture) {
+    if (this.device && !this.device.isSmartphone() && this.canCapture) {
       this.setupWebCam();
     } else if (this.peerConnected && this.canCapture) {
       this.mediaOk = true;
