@@ -7,7 +7,7 @@
 
   .title {
     text-align: center;
-    font-size: 18px;
+    font-size: 1.8rem;
     font-weight: normal;
   }
 
@@ -65,7 +65,7 @@
     display: flex;
     box-sizing: border-box;
 
-    font-size: 14px;
+    font-size: 1.4rem;
 
     border-bottom: 1px solid #7F7F7F;
     margin: 6px auto;
@@ -105,12 +105,12 @@
     }
 
     .movie-card-title {
-      font-size: 16px;
+      font-size: 1.6rem;
       font-weight: bold;
     }
 
     .movie-synopsis {
-      font-size: 14px;
+      font-size: 1.4rem;
       height: 80px;
       min-height: 80px;
       color: #7F7F7F;
@@ -124,11 +124,11 @@
     flex-direction: column;
 
     .indication {
-      font-size: 14px;
+      font-size: 1.4rem;
     }
 
     .indication+div, .indication+span {
-      font-size: 14px;
+      font-size: 1.4rem;
       color: #7F7F7F;
     }
 

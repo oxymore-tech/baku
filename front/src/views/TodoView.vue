@@ -38,7 +38,7 @@ export default class TodoView extends AbstractProjectView {
   }
 
   h3 {
-    font-size: 96px;
+    font-size: 9.6rem;
     font-weight: bold;
   }
 
