@@ -130,7 +130,7 @@ export default class HomeView extends Vue {
       const projectId = await createProject();
       await this.loadProjectAction(projectId);
       const shotId = await this.createShotAction('Nouveau plan');
-      await this.changeFps({projectId, fps: 12});
+      await this.changeFps({ projectId, fps: 12 });
       await this.updateTitle(this.getPersonalisedProjectTitle);
       this.$store.dispatch('project/changeActiveShot', shotId);
       await this.$router.push({

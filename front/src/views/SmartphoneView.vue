@@ -1,5 +1,6 @@
 <template>
   <div style="padding: 5px;" v-if="isWebRTCSupported">
+    <p></p>
     <h1 v-if="isConnected">
       Synchronisation en
       <span class="has-text-success">OK</span>
@@ -12,10 +13,10 @@
     <ul class="dependsOnOrientation">
       <li>Pensez à placer votre téléphone en mode paysage (activer la rotation automatique)</li>
     </ul>
-    <img  class="dependsOnOrientation" src="@/assets/rotate_phone.gif">
+    <img class="dependsOnOrientation" src="@/assets/rotate_phone.gif" />
     <video id="localVideo" style="opacity:0" autoplay playsinline width="1920" height="1080"></video>
   </div>
-  <div v-else>Synchronisation non supportée par votre navigateur</div>
+  <div v-else style="padding: 5px;">Synchronisation non supportée par votre navigateur</div>
 </template>
 
 <script lang="ts">
@@ -60,7 +61,7 @@ export default class SmartphoneView extends Vue {
   public mounted() {
     this.isWebRTCSupported = !!navigator.getUserMedia && !!window.RTCPeerConnection;
 
-    if(!this.isWebRTCSupported) {
+    if (!this.isWebRTCSupported) {
       return;
     }
 
@@ -136,11 +137,18 @@ export default class SmartphoneView extends Vue {
 
     stream
       .getVideoTracks()
-      .forEach((track) => this.peerConnection.addTrack(track, stream));
+      .forEach((track) => {
+        try {
+          this.peerConnection.addTrack(track, stream);
+        } catch (e) {
+          this.isWebRTCSupported = false;
+        }
+      });
     try {
       await this.peerConnection.setRemoteDescription(remoteOffer);
     } catch (e) {
       console.error('Failed to set remote description', e);
+      this.isWebRTCSupported = false;
     }
 
     try {

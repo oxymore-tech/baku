@@ -83,7 +83,6 @@
             </div>
 
 
-
           </div>
 
           <div class="movie-toolbar-2">
@@ -120,31 +119,31 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import store from '@/store';
-  import * as api from '@/api';
-  import { getDemoProjects } from '@/api';
-  import InlineInput from "@/components/InlineInput.vue";
-  import { SeenProject } from "@/store/store.types";
-  import { computeHours, computeMinutes, computeSeconds } from "@/store/project";
-  import { MovieService } from "@/utils/movie.service";
-  import VideoButton from "@/components/VideoButton.vue";
-  import moment from 'moment'
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import store from '@/store';
+import * as api from '@/api';
+import { getDemoProjects } from '@/api';
+import InlineInput from '@/components/InlineInput.vue';
+import { SeenProject } from '@/store/store.types';
+import { computeHours, computeMinutes, computeSeconds } from '@/store/project';
+import { MovieService } from '@/utils/movie.service';
+import VideoButton from '@/components/VideoButton.vue';
+import moment from 'moment';
 
-  Vue.filter('formatDate', function(value: any) {
-    if (value) {
-      return moment(String(value)).format('MM/DD/YYYY HH:mm')
-    }
-  });
+Vue.filter('formatDate', (value: any) => {
+  if (value) {
+    return moment(String(value)).format('MM/DD/YYYY HH:mm');
+  }
+});
 
-  const UserNS = namespace('user');
+const UserNS = namespace('user');
 
   @Component({
-    components: {VideoButton, InlineInput},
-    store
+    components: { VideoButton, InlineInput },
+    store,
   })
-  export default class LibraryView extends Vue {
+export default class LibraryView extends Vue {
     @UserNS.State('seenProjects')
     public seenProjects!: SeenProject[];
 
@@ -166,9 +165,8 @@
     get projects() {
       if (this.showDemoProjects) {
         return MovieService.removeDoublons([...getDemoProjects(), ...this.seenProjects]);
-      } else {
-        return this.seenProjects;
       }
+      return this.seenProjects;
     }
 
     public onCopy(projectId: string, share: boolean) {
@@ -185,8 +183,8 @@
       const path = this.url + this.$router.resolve({
         name: 'movie',
         params: {
-          projectId
-        }
+          projectId,
+        },
       }).href;
 
       this.$buefy.toast.open('Lien copié');
@@ -201,8 +199,8 @@
         confirmText: 'Supprimer le film',
         type: 'is-danger',
         hasIcon: true,
-        onConfirm: () => this.deleteSeenProject(projectId)
-      })
+        onConfirm: () => this.deleteSeenProject(projectId),
+      });
     }
 
     public onMovieExportUrl(projectId: string) {
@@ -213,30 +211,30 @@
       this.$router.push({
         name: 'movie',
         params: {
-          projectId
-        }
+          projectId,
+        },
       });
     }
 
     exportUrls() {
       const rows = [
-        ["titre", "url"],
-        this.seenProjects.map(s => {
+        ['titre', 'url'],
+        this.seenProjects.map((s) => {
           const path = this.url + this.$router.resolve({
             name: 'movie',
             params: {
-              projectId: s.adminId || s.id
-            }
+              projectId: s.adminId || s.id,
+            },
           }).href;
           return `"${s.title}", "${path}"`;
-        })
+        }),
       ];
 
-      let csvContent = "data:text/csv;charset=utf-8,";
+      let csvContent = 'data:text/csv;charset=utf-8,';
 
-      rows.forEach(function (rowArray) {
-        let row = rowArray.join(",");
-        csvContent += row + "\r\n";
+      rows.forEach((rowArray) => {
+        const row = rowArray.join(',');
+        csvContent += `${row}\r\n`;
       });
       const csv = encodeURI(csvContent);
 
@@ -249,19 +247,18 @@
         const minutes = computeMinutes(project.totalImages, project.fps);
         const seconds = computeSeconds(project.totalImages, project.fps);
         const duration = {
-          hours, minutes, seconds
-        }
+          hours, minutes, seconds,
+        };
         return MovieService.getDurationString(duration, true);
-      } else {
-        return null;
       }
+      return null;
     }
 
     setTitle(seenProject: SeenProject, event: string) {
       if (event) {
         const newTitle = event;
         if (newTitle !== seenProject.title) {
-          this.$store.dispatch('project/updateTitle', {projectId: seenProject.id, title: newTitle});
+          this.$store.dispatch('project/updateTitle', { projectId: seenProject.id, title: newTitle });
         }
       }
     }
@@ -272,7 +269,7 @@
         if (newSynopsis !== seenProject.synopsis) {
           this.$store.dispatch('project/updateSynopsis', {
             projectId: seenProject.id,
-            synopsis: newSynopsis
+            synopsis: newSynopsis,
           });
         }
       }
@@ -281,9 +278,8 @@
     setFps(seenProject: SeenProject, event: number) {
       const newFps = event;
       if (newFps !== seenProject.fps) {
-        this.$store.dispatch('project/updateFps', {projectId: seenProject.id, fps: newFps});
+        this.$store.dispatch('project/updateFps', { projectId: seenProject.id, fps: newFps });
       }
     }
-
-  }
+}
 </script>
