@@ -32,7 +32,7 @@
         <b-switch :value="scaleX != 1" @input="toggleScaleX">Miroir vertical</b-switch>
       </div>
 
-      <div class="field onionSkinInput" style="display:inline-flex;">
+      <div class="field onionSkinInput">
         <b-switch :value="onionSkinDisplay" @input="setOnionSkinDisplay($event)">
           <b-field>
             <div>Pelure d'oignon</div>
@@ -212,7 +212,7 @@ export default class CaptureToolboxComponent extends Vue {
 <style lang="scss">
 
 .dropdown-menu {
-  width: 20rem;
+  width: 25rem;
 }
 .collapse-content {
   background-color: white;
@@ -243,12 +243,15 @@ export default class CaptureToolboxComponent extends Vue {
 
 .onionSkinInput {
   height: 27px;
+  display: flex;
+  align-items: center;
+
   .switch {
     float: left;
   }
   .b-numberinput {
     margin-left: 20px;
-    float: right;
+    // float: right;
     width: 75px;
   }
 }
