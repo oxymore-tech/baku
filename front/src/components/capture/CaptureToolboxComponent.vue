@@ -8,7 +8,7 @@
     trap-focus
   >
     <a class="navbar-item" slot="trigger" role="button" slot-scope="{ active }">
-      <span>Réglages vidéo</span>
+      <span class="item-title">Réglages vidéo</span>
       <b-icon :icon="active ? 'menu-down' : 'menu-up'"></b-icon>
     </a>
     <b-dropdown-item custom :focusable="false" class="box-container">

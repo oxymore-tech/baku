@@ -108,13 +108,15 @@
   justify-content: space-between;
 
   .clock {
-    background: #455054;
+    width: 8rem;
+    height: 3.5rem;
+    background-color: #455054;
     border-radius: 8px;
     color: white;
-    padding: 1px 5px;
-    width: 85px;
+    // padding: 1px 5px;
     font-size: 2.6rem;
-    margin-bottom: 5px;
+    // margin-bottom: 5px;
+    text-align: center;
 
     .clock-small {
       font-size: 1.8rem;
@@ -130,7 +132,11 @@
   }
 
   .toolbar-button-big {
-    font-size: 3.2rem;
+    font-size: 3rem;
+  }
+
+  .item-title {
+    font-size: 1.6rem;
   }
 }
 

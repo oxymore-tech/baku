@@ -16,13 +16,11 @@
     ></textarea>
     <div class="ajout-storyboard">
       <div>
-        <div>
-          <i class="icon-camera baku-button storyboard-icon"/>
-          <i class="icon-attachment baku-button storyboard-icon"/>
-        </div>
-        <div>
-          Ajouter votre storyboard
-        </div>
+        <i class="icon-camera baku-button storyboard-icon"/>
+        <i class="icon-attachment baku-button storyboard-icon"/>
+      </div>
+      <div style="margin-top: 10px">
+        Ajouter votre storyboard
       </div>
     </div>
   </div>

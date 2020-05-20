@@ -1,28 +1,22 @@
 .storyboard-preview-container {
   width: 20%;
   max-width: 200px;
+  padding: 10px 0;
 }
-
-// #shotSynopsis {
-//   width: 300px;
-//   resize: none;
-// }
 
 .ajout-storyboard {
   border: 1px solid lightgray;
   border-radius: 15px;
-  // width: 300px;
-  height: 100px;
-  line-height: 100px;
   text-align: center;
+  padding: 30px 0px;
 }
 
 .ajout-storyboard>div {
-  line-height: 1.5;
   display: inline-block;
   vertical-align: middle;
   color: gray;
   size: 30px;
+  font-size: 1.4rem;
 }
 
 .storyboard-icon {
@@ -36,4 +30,5 @@
   border-radius: 15px;
   background-color: #F2F2F2;
   padding: 5px;
+  font-size: 1rem;
 }

@@ -14,7 +14,7 @@
         <i class="icon-user-circle"/>
         <div>
           <div>
-            {{user(event) +" "}}
+            <span class="action-user">{{user(event) +" "}}</span>
             <span class="action-highlight">{{action(event)}}</span>
           </div>
           <div class="action-date">{{" " + date(event)}}</div>
