@@ -1,5 +1,6 @@
 <template>
-  <div style="padding: 5px;">
+  <div style="padding: 5px;" v-if="isWebRTCSupported">
+    <p></p>
     <h1 v-if="isConnected">
       Synchronisation en
       <span class="has-text-success">OK</span>
@@ -12,9 +13,10 @@
     <ul class="dependsOnOrientation">
       <li>Pensez à placer votre téléphone en mode paysage (activer la rotation automatique)</li>
     </ul>
-    <img  class="dependsOnOrientation" src="@/assets/rotate_phone.gif">
+    <img class="dependsOnOrientation" src="@/assets/rotate_phone.gif" />
     <video id="localVideo" style="opacity:0" autoplay playsinline width="1920" height="1080"></video>
   </div>
+  <div v-else>Synchronisation non supportée par votre navigateur</div>
 </template>
 
 <script lang="ts">
@@ -49,12 +51,20 @@ export default class SmartphoneView extends Vue {
 
   private device = new Device('smartphone', 'Smartphone');
 
+  public isWebRTCSupported = true;
+
   public created() {
     const { socketId } = this.$route.params;
     this.socketId = socketId;
   }
 
   public mounted() {
+    this.isWebRTCSupported = !!navigator.getUserMedia && !!window.RTCPeerConnection;
+
+    if (!this.isWebRTCSupported || parseInt(getAndroidVersion(), 10) < 8) {
+      return;
+    }
+
     this.socket.messageListenerFunction = (message) => {
       switch (message.action) {
         case 'rtcOffer':
@@ -83,12 +93,12 @@ export default class SmartphoneView extends Vue {
       this.onIceCandidate.bind(this),
     );
 
-    this.peerConnection.onconnectionstatechange = (_event) => {
-      if (this.peerConnection.connectionState === 'connected') {
+    this.peerConnection.oniceconnectionstatechange = (_event) => {
+      if (this.peerConnection.iceConnectionState === 'connected') {
         // CONNECTION OK
         this.$store.commit('webrtc/setupConnection');
       }
-      if (this.peerConnection.connectionState === 'disconnected') {
+      if (this.peerConnection.iceConnectionState === 'disconnected') {
         delete this.peerConnection;
         this.localVideo.srcObject
           .getTracks()
@@ -109,15 +119,22 @@ export default class SmartphoneView extends Vue {
 
   private async startStream(remoteOffer: any) {
     this.localVideo = document.getElementById('localVideo');
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: { min: 1280, ideal: 1920 },
-        height: { min: 720, ideal: 1080 },
-        facingMode: {
-          exact: 'environment',
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { min: 1280, ideal: 1920 },
+          height: { min: 720, ideal: 1080 },
+          facingMode: {
+            exact: 'environment',
+          },
         },
-      },
-    });
+      });
+    } catch (e) {
+      this.isWebRTCSupported = false;
+      return;
+    }
+
     this.localVideo.srcObject = stream;
 
     this.peerConnection.ondatachannel = (event) => {
@@ -125,9 +142,14 @@ export default class SmartphoneView extends Vue {
       this.setChannelEvents(dataChannel);
     };
 
-    stream
-      .getVideoTracks()
-      .forEach((track) => this.peerConnection.addTrack(track, stream));
+    stream.getVideoTracks().forEach((track) => {
+      try {
+        this.peerConnection.addTrack(track, stream);
+      } catch (e) {
+        this.isWebRTCSupported = false;
+      }
+    });
+
     try {
       await this.peerConnection.setRemoteDescription(remoteOffer);
     } catch (e) {
@@ -188,6 +210,12 @@ export default class SmartphoneView extends Vue {
       value: event.candidate,
     });
   }
+}
+
+function getAndroidVersion() : string {
+  const ua = (navigator.userAgent).toLowerCase();
+  const match = ua.match(/android\s([0-9\.]*)/i);
+  return match ? match[1] : '8';
 }
 </script>
 

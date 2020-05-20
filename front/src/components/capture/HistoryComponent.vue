@@ -3,8 +3,12 @@
 </style>
 
 <template>
-  <div class="history">
-    <h4 class="title">Historique</h4>
+  <div class="history" :class="{'mini-mode': !displayed}">
+    <h4 class="title">
+      <i class="icon-history"></i>
+      <span>Historique</span>
+      <i class="icon-chevron-right baku-button" @click="displayed = !displayed"></i>
+    </h4>
     <ul>
       <li
         v-for="(event, index) in history.slice().reverse()"
@@ -14,7 +18,7 @@
         <i class="icon-user-circle"/>
         <div>
           <div>
-            {{user(event) +" "}}
+            <span class="action-user">{{user(event) +" "}}</span>
             <span class="action-highlight">{{action(event)}}</span>
           </div>
           <div class="action-date">{{" " + date(event)}}</div>
@@ -35,6 +39,8 @@ const ProjectNS = namespace('project');
 export default class HistoryComponent extends Vue {
   @ProjectNS.State
   public history!: BakuEvent[];
+
+  public displayed: boolean = true;
 
   public user(event: BakuEvent): string {
     return event.user;

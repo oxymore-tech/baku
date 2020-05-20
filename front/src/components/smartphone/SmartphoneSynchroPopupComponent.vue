@@ -131,8 +131,8 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
       this.onIceCandidate.bind(this),
     );
 
-    this.peerConnection.onconnectionstatechange = (_event) => {
-      if (this.peerConnection.connectionState === 'connected') {
+    this.peerConnection.oniceconnectionstatechange = (_event) => {
+      if (this.peerConnection.iceConnectionState === 'connected') {
         // CONNECTION OK
         console.log('CONNECTION OK');
         this.status = 'CONNECTED';
@@ -141,7 +141,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
         this.$store.commit('webrtc/setupConnection');
         setTimeout(() => (this.$parent as any).close(), 500);
       }
-      if (this.peerConnection.connectionState === 'disconnected') {
+      if (this.peerConnection.iceConnectionState === 'disconnected') {
         this.socket.close();
         this.resetRTC();
       }
@@ -172,7 +172,14 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   }
 
   private gotRemoteStream(e: any) {
-    this.$store.commit('webrtc/setMediaStream', e.streams[0]);
+    console.log('track', e);
+    if (e.stream && e.streams[0]) {
+      this.$store.commit('webrtc/setMediaStream', e.streams[0]);
+    } else {
+      const inboundStream = new MediaStream();
+      inboundStream.addTrack(e.track);
+      this.$store.commit('webrtc/setMediaStream', inboundStream);
+    }
   }
 
   public close() {

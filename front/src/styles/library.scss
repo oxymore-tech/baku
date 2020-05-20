@@ -1,13 +1,17 @@
 .library.main-frame {
-  max-width: 1000px;
-  margin: auto;
+  font-size: 1.2rem;
+}
+
+i[class^="icon-"] {
+  font-size: 1.8rem;
+  margin: 0.2rem;
 }
 
 .library {
 
   .title {
     text-align: center;
-    font-size: 18px;
+    font-size: 1.8rem;
     font-weight: normal;
   }
 
@@ -16,6 +20,7 @@
     flex-direction: column;
     flex: 1;
     overflow-y: auto;
+    margin: auto;
   }
 
   .flex-row {
@@ -30,6 +35,12 @@
     flex-direction: column;
   }
 
+  .top-section {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
   .movie-export-message {
     display: flex;
     flex-direction: row;
@@ -39,10 +50,15 @@
   .export-message {
     background: #FFBD72;
     border-radius: 16px;
-    max-width: 1237px;
+    max-width: 1150px;
     padding: 16px !important;
     margin: 16px !important;
     text-align: center;
+
+    .button {
+      font-size: 1.6rem;
+    }
+
   }
 
   .export-url-button {
@@ -50,6 +66,7 @@
   }
 
   .toolbar {
+    font-size: 1.6rem;
     margin-left: 24px;
     padding: 12px;
   }
@@ -65,38 +82,25 @@
     display: flex;
     box-sizing: border-box;
 
-    font-size: 14px;
+    font-size: 1.4rem;
 
     border-bottom: 1px solid #7F7F7F;
     margin: 6px auto;
 
+    
     .column-img {
       // flex: 0.15;
       text-align: center;
-      width: 200px;
+      width: 135px;
       
       img {
-        width: 200px;
-        height: 119px;
+        width: 135px;
+        height: 76px;
         border-radius: 5px;
         margin: 10px;
         cursor: pointer;
       }
-    }
-
-    .movie-toolbar {
-      display: flex;
-      flex-direction: column;
-
-      .movie-action {
-        margin-left: 12px;
-
-        .baku-button {
-          color: #4a4a4a !important;
-        }
-
-      }
-
+      
     }
 
     .movie-info {
@@ -105,12 +109,16 @@
     }
 
     .movie-card-title {
-      font-size: 16px;
+      font-size: 1.6rem;
       font-weight: bold;
     }
 
+    .movie-card-duration {
+      padding: 6px;
+    }
+
     .movie-synopsis {
-      font-size: 14px;
+      font-size: 1.2rem;
       height: 80px;
       min-height: 80px;
       color: #7F7F7F;
@@ -118,28 +126,103 @@
     }
   }
 
-  .movie-toolbar-1 {
-    width: 170px;
+  .movie-toolbars {
     display: flex;
     flex-direction: column;
+  }
+
+  .movie-toolbar-1 {
+    display: flex;
+    flex-direction: row;
 
     .indication {
-      font-size: 14px;
+      font-size: 1.4rem;
     }
 
     .indication+div, .indication+span {
-      font-size: 14px;
+      font-size: 1.2rem;
       color: #7F7F7F;
     }
 
     .button-open {
       margin: auto;
+
+      .button {
+        font-size: 1.6rem;
+      }
+
     }
 
   }
 
   .movie-toolbar-2 {
-    width: 220px;
+    width: 240px;
+    padding: 6px;
+  }
+
+  @media (max-width: 768px) { 
+  
+    .column-img {
+      width: 90px;
+    }    
+    
+    img, .column-img img {
+      width: 90px;
+      height: 76px;
+    }
+  
+  }
+
+  @media (min-width: 992px) { 
+    .movie-toolbars {
+      flex-direction: row;
+    }
+
+    .movie-toolbar-1 {
+      flex-direction: column;
+      width: 120px;
+    }
+
+    .movie-toolbar-1 .button-open {
+      margin: initial;
+    }
+  }
+  
+  @media (min-width: 1200px) { 
+
+    .movie-gallery {
+      width: calc(100% - 300px);
+      max-width: 1250px;
+    }
+
+    .movie-toolbars {
+      flex-direction: row;
+    }
+
+    .movie-toolbar-1 {
+      flex-direction: row-reverse;
+    }
+
+    .movie-toolbar-1 .indication {
+      width: 120px;
+    }
+
+    .movie-toolbar-1 .button-open {
+      margin-right: 12px;
+    }
+  }
+
+  @media (min-width: 1400px) { 
+    
+    .top-section .toolbar {
+      position: absolute;
+      top: 20px;      
+    }
+
+    .export-message {
+      max-width: 800px;
+    }
+
   }
 
 }

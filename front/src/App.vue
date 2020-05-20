@@ -18,14 +18,19 @@
           </div>
         </div>
 
-        <b-dropdown append-to-body aria-role="list" v-if="$route.name !== 'home'">
+        <b-dropdown append-to-body aria-role="list" v-if="$route.name !== 'home' && $route.name !== 'smartphone'">
           <div class="label-menu" slot="trigger" role="button">
-            <p v-if="$route.params.projectId"> {{ this.movie.title }}<i
-              class="icon-angle-down baku-button"/></p>
-            <p v-else> Ma librairie<i class="icon-angle-down baku-button"/></p>
+            <p v-if="$route.params.projectId">
+              {{ this.movie.title }}
+              <i class="icon-ellipsis-v baku-button"/>
+            </p>
+            <p v-else>
+              Mes films
+              <i class="icon-ellipsis-v baku-button"/>
+            </p>
           </div>
 
-          <b-dropdown-item class aria-role="listitem">
+          <b-dropdown-item class aria-role="listitem" v-if="$route.name !== 'library'">
             <div class="option-logo" @click="onClickMyLibrary()">
               <i class="icon-folder-open-regular baku-button"/>
               <span>Mes films</span>
@@ -137,6 +142,7 @@
   @import "styles/style.scss";
   @import "styles/buefy.scss";
   @import "assets/style.css";
+  @import "styles/mediaqueries.scss";
 
   .left-nav {
     display: flex;
@@ -144,7 +150,7 @@
   }
 
   .movie-title {
-    font-size: 24px;
+    font-size: 2.4rem;
     margin: 0 24px;
     overflow: hidden;
     /* height: 100%; */
@@ -256,14 +262,8 @@ export default class App extends Vue {
       await this.moveToShot(shotId);
     }
 
-    private async moveToShot(shotId: string) {
-      return this.$router.push({
-        name: 'captureShot',
-        params: {
-          projectId: this.id,
-          shotId,
-        },
-      });
+    private moveToShot(shotId: string) {
+      return this.$store.dispatch('project/changeActiveShot', shotId);
     }
 
     public openIssue() {
@@ -281,7 +281,7 @@ export default class App extends Vue {
       const shotId = await this.createShotAction('Nouveau plan');
       await this.changeFps(12);
       await this.updateTitle(this.getPersonalisedProjectTitle);
-      this.$store.dispatch('project/changeActiveShot', shotId);
+      await this.$store.dispatch('project/changeActiveShot', shotId);
       await this.$router.push({
         name: 'captureShot',
         params: {
@@ -290,7 +290,6 @@ export default class App extends Vue {
         },
       });
     }
-
 
     public async onClickMyLibrary() {
       await this.$router.push({

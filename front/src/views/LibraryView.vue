@@ -3,24 +3,29 @@
 </style>
 
 <template>
+
   <div class="main-frame library">
 
-    <div class="movie-export-message">
-      <div class="export-message">
-        <p>
-          Cette liste est une aide pour faciliter l'utilisation de Baku. Elle n'est pas
-          sauvegardée dans nos serveurs. Si vous changez de navigateur, elle sera perdue. Nous
-          vous conseillons de sauvegarder les url des films que vous souhaitez conserver.
-        </p>
-        <b-button class="export-url-button" @click="exportUrls">
-          <i class="icon-attachment"></i>
-          Exporter les url
-        </b-button>
-      </div>
-    </div>
+    <div class="top-section">
 
-    <div class="toolbar">
-      <b-switch v-model="showDemoProjects">Afficher les films de démonstration</b-switch>
+      <div class="movie-export-message">
+        <div class="export-message">
+          <p>
+            Cette liste est une aide pour faciliter l'utilisation de Baku. Elle n'est pas
+            sauvegardée dans nos serveurs. Si vous changez de navigateur, elle sera perdue. Nous
+            vous conseillons de sauvegarder les url des films que vous souhaitez conserver.
+          </p>
+          <b-button class="export-url-button" @click="exportUrls">
+            <i class="icon-attachment"></i>
+            Exporter les url
+          </b-button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <b-switch v-model="showDemoProjects">Afficher films démos</b-switch>
+      </div>
+
     </div>
 
     <div class="movie-gallery">
@@ -43,14 +48,11 @@
               <inline-input :value="project.title"
                             :disabled="project.locked"
                             placeholder="Titre"
-                            icon="pencil"
                             custom-class="movie-card-title"
                             editTitle="Cliquez pour renommer le film" style="flex:1"
                             @input="setTitle(project, $event)"/>
 
-              <div class="button-open">
-                <b-button type="is-primary" @click="onOpen(project.adminId || project.id)">Ouvrir</b-button>
-              </div>
+              <span class="movie-card-duration" v-if="project.totalImages">{{getDurationString(project)}}</span>
 
             </div>
 
@@ -64,51 +66,51 @@
 
           </div>
 
-          <div class="movie-toolbar-1">
+          <div class="movie-toolbars">
 
-            <div>
-              <div v-if="project.lastUpdate">
-                <div class="indication">Mise à jour :</div>
-                <div>{{ project.lastUpdate | formatDate }}</div>
-                <br/>
+            <div class="movie-toolbar-1">
+
+                <div v-if="project.lastUpdate">
+                  <div class="indication">Mise à jour :</div>
+                  <div>{{ project.lastUpdate | formatDate }}</div>
+                </div>
+
+                <div class="button-open">
+                  <b-button type="is-primary" @click="onOpen(project.adminId || project.id)">Ouvrir</b-button>
+                </div>
+
+                <!--<div v-if="project.totalImages">
+                  <span class="indication">Images : </span>
+                  <span>{{project.totalImages}}</span>
+                </div>-->
+
+            </div>
+
+            <div class="movie-toolbar-2">
+
+              <div class="movie-action" @click="onCopy(project.id, true)">
+                <i class="icon-copy-regular"/>
+                <span class="baku-button">Copier l'url de partage</span>
               </div>
-              <div v-if="project.totalImages">
-                <span class="indication">Durée : </span>
-                <span>{{getDurationString(project)}}</span>
+
+              <div class="movie-action" v-if="project.adminId"
+                    @click="onCopy(project.adminId, false)">
+                <i class="icon-copy-solid"/>
+                <span class="baku-button">Copier l'url d'administration</span>
               </div>
-              <div v-if="project.totalImages">
-                <span class="indication">Images : </span>
-                <span>{{project.totalImages}}</span>
+
+              <div class="movie-action" @click="onMovieExportUrl(project.id)">
+                <i class="icon-image-sequence"/>
+                <span class="baku-button">Exporter les images</span>
               </div>
-            </div>
 
+              <video-button :id="project.id"/>
 
+              <div @click="onDelete(project.id)">
+                <i class="icon-close"/>
+                <span class ="baku-button"> {{ project.adminId ? 'Supprimer':'Effacer de l\'historique' }} </span>
+              </div>
 
-          </div>
-
-          <div class="movie-toolbar-2">
-
-            <div class="movie-action" @click="onCopy(project.id, true)">
-              <i class="icon-copy-regular"/>
-              <span class="baku-button">Copier l'url de partage</span>
-            </div>
-
-            <div class="movie-action" v-if="project.adminId"
-                  @click="onCopy(project.adminId, false)">
-              <i class="icon-copy-solid"/>
-              <span class="baku-button">Copier l'url d'administration</span>
-            </div>
-
-            <div class="movie-action" @click="onMovieExportUrl(project.id)">
-              <i class="icon-image-sequence"/>
-              <span class="baku-button">Exporter les images</span>
-            </div>
-
-            <video-button :id="project.id"/>
-
-            <div @click="onDelete(project.id)">
-              <i class="icon-close"/>
-              <span class ="baku-button">Supprimer</span>
             </div>
 
           </div>
@@ -120,31 +122,31 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import store from '@/store';
-  import * as api from '@/api';
-  import { getDemoProjects } from '@/api';
-  import InlineInput from "@/components/InlineInput.vue";
-  import { SeenProject } from "@/store/store.types";
-  import { computeHours, computeMinutes, computeSeconds } from "@/store/project";
-  import { MovieService } from "@/utils/movie.service";
-  import VideoButton from "@/components/VideoButton.vue";
-  import moment from 'moment'
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import store from '@/store';
+import * as api from '@/api';
+import { getDemoProjects } from '@/api';
+import InlineInput from '@/components/InlineInput.vue';
+import { SeenProject } from '@/store/store.types';
+import { computeHours, computeMinutes, computeSeconds } from '@/store/project';
+import { MovieService } from '@/utils/movie.service';
+import VideoButton from '@/components/VideoButton.vue';
+import moment from 'moment';
 
-  Vue.filter('formatDate', function(value: any) {
-    if (value) {
-      return moment(String(value)).format('MM/DD/YYYY HH:mm')
-    }
-  });
+Vue.filter('formatDate', (value: any) => {
+  if (value) {
+    return moment(String(value)).format('MM/DD/YYYY HH:mm');
+  }
+});
 
-  const UserNS = namespace('user');
+const UserNS = namespace('user');
 
   @Component({
-    components: {VideoButton, InlineInput},
-    store
+    components: { VideoButton, InlineInput },
+    store,
   })
-  export default class LibraryView extends Vue {
+export default class LibraryView extends Vue {
     @UserNS.State('seenProjects')
     public seenProjects!: SeenProject[];
 
@@ -166,9 +168,8 @@
     get projects() {
       if (this.showDemoProjects) {
         return MovieService.removeDoublons([...getDemoProjects(), ...this.seenProjects]);
-      } else {
-        return this.seenProjects;
       }
+      return this.seenProjects;
     }
 
     public onCopy(projectId: string, share: boolean) {
@@ -185,8 +186,8 @@
       const path = this.url + this.$router.resolve({
         name: 'movie',
         params: {
-          projectId
-        }
+          projectId,
+        },
       }).href;
 
       this.$buefy.toast.open('Lien copié');
@@ -201,8 +202,8 @@
         confirmText: 'Supprimer le film',
         type: 'is-danger',
         hasIcon: true,
-        onConfirm: () => this.deleteSeenProject(projectId)
-      })
+        onConfirm: () => this.deleteSeenProject(projectId),
+      });
     }
 
     public onMovieExportUrl(projectId: string) {
@@ -213,30 +214,30 @@
       this.$router.push({
         name: 'movie',
         params: {
-          projectId
-        }
+          projectId,
+        },
       });
     }
 
     exportUrls() {
       const rows = [
-        ["titre", "url"],
-        this.seenProjects.map(s => {
+        ['titre', 'url'],
+        this.seenProjects.map((s) => {
           const path = this.url + this.$router.resolve({
             name: 'movie',
             params: {
-              projectId: s.adminId || s.id
-            }
+              projectId: s.adminId || s.id,
+            },
           }).href;
           return `"${s.title}", "${path}"`;
-        })
+        }),
       ];
 
-      let csvContent = "data:text/csv;charset=utf-8,";
+      let csvContent = 'data:text/csv;charset=utf-8,';
 
-      rows.forEach(function (rowArray) {
-        let row = rowArray.join(",");
-        csvContent += row + "\r\n";
+      rows.forEach((rowArray) => {
+        const row = rowArray.join(',');
+        csvContent += `${row}\r\n`;
       });
       const csv = encodeURI(csvContent);
 
@@ -249,19 +250,18 @@
         const minutes = computeMinutes(project.totalImages, project.fps);
         const seconds = computeSeconds(project.totalImages, project.fps);
         const duration = {
-          hours, minutes, seconds
-        }
+          hours, minutes, seconds,
+        };
         return MovieService.getDurationString(duration, true);
-      } else {
-        return null;
       }
+      return null;
     }
 
     setTitle(seenProject: SeenProject, event: string) {
       if (event) {
         const newTitle = event;
         if (newTitle !== seenProject.title) {
-          this.$store.dispatch('project/updateTitle', {projectId: seenProject.id, title: newTitle});
+          this.$store.dispatch('project/updateTitle', { projectId: seenProject.id, title: newTitle });
         }
       }
     }
@@ -272,7 +272,7 @@
         if (newSynopsis !== seenProject.synopsis) {
           this.$store.dispatch('project/updateSynopsis', {
             projectId: seenProject.id,
-            synopsis: newSynopsis
+            synopsis: newSynopsis,
           });
         }
       }
@@ -281,9 +281,8 @@
     setFps(seenProject: SeenProject, event: number) {
       const newFps = event;
       if (newFps !== seenProject.fps) {
-        this.$store.dispatch('project/updateFps', {projectId: seenProject.id, fps: newFps});
+        this.$store.dispatch('project/updateFps', { projectId: seenProject.id, fps: newFps });
       }
     }
-
-  }
+}
 </script>

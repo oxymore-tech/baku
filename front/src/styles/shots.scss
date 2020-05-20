@@ -28,6 +28,7 @@
   align-items: center;
   margin-left:0.7vw;
   margin-bottom: 24px;
+  font-size: 1.2rem;
 
   p {
     margin-right: 30px;
@@ -46,7 +47,7 @@
 		justify-content: center;
 
 		.movie-title {
-			font-size: 2.5em;
+			font-size: 2.5rem;
 		}
 		.movie-info {
 			margin-top: 9px;
@@ -59,21 +60,29 @@
 		// border-radius: 0px 0px 8px 8px;
 		padding-top: 18px;
 
-		font-size: 1.2em;
+		font-size: 1.2rem;
 		text-align: center;
 	}
 }
 
+@media (min-width: 1400px) { 
+    
+  #movie-header {
+    font-size: 1.6rem;   
+  }
+
+}
+
 .shot-card {
-  width: 18vw;
-  height: 18vw;
+  width: 300px;
+  height: 300px;
   background: #ffffff 0 0 no-repeat padding-box;
   background-repeat: no-repeat;
   background-size:contain;
   border-radius: 8px;
   opacity: 1;
-  margin: 0.7vw;
-  font-size: 16px/6px;
+  margin: 8px;
+  font-size: 1.6rem/0.6rem;
   letter-spacing: 0;
   align-items: flex-end;
   display:flex;
@@ -90,17 +99,17 @@
     width: 100%;
     padding: 5px;
     .shot-name {
-        font-size: 1.3em;
+        font-size: 1.3rem;
     }
 
     .shot-details{
-      font-size: 10px;
+      font-size: 1.0rem;
       float: right;
       padding-top: 8px;
     }
     .shot-storyboard {
       margin-top: 5px;
-      font-size: 10px;
+      font-size: 1.0rem;
       text-overflow: ellipsis;
       overflow: hidden;
     }
@@ -108,7 +117,7 @@
 
   .settings-icon {
     color: gray;
-		font-size: 1.5em;
+		font-size: 1.5rem;
   }
 
   .shot-menu {

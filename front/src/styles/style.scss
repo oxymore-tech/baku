@@ -1,3 +1,7 @@
+html {
+  overflow-y: auto !important;
+}
+
 html,
 body {
   height: 100%;
@@ -6,7 +10,7 @@ body {
 }
 
 .main-frame {
-  height: calc(100% - 75px);
+  height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
 }
@@ -22,7 +26,12 @@ body {
 }
 
 .app-home {
-  background: transparent url("assets/baku_home_bg.png") 100% 0 no-repeat padding-box;
+  // background: transparent url("assets/baku_home_bg.png") 100% 0 no-repeat padding-box;
+  background-image: url(assets/baku_home_bg.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-color: #fff;
 }
 
 .inline-editor {
@@ -36,7 +45,7 @@ textarea {
 }
 
 nav {
-  height: 75px;
+  height: 50px;
   width: 100%;
   z-index: 3;
   display: flex;
@@ -50,7 +59,7 @@ nav {
   width: 135px;
   height: 35px;
   font-weight: lighter;
-  font-size: 18px;
+  font-size: 1.8rem;
   text-align: center;
   padding: 4px 8px;
   margin: 0 34px;
@@ -92,7 +101,7 @@ nav {
 
 .right-nav {
   border-radius: 16px;
-  font-size: 16px;
+  font-size: 1.6rem;
   text-align: center;
   padding: 2px 10px 0;
   background-color: white;
@@ -109,7 +118,7 @@ nav {
 
 .previous-plan,
 .next-plan {
-  font-size: 16px;
+  font-size: 1.6rem;
   font-weight: 1000;
   padding-left: 10px;
   padding-right: 10px;
@@ -118,7 +127,7 @@ nav {
 
 .bug {
   border-radius: 16px;
-  font-size: 16px;
+  font-size: 1.6rem;
   text-align: center;
   padding: 2px 2px 0;
   margin-right: 10px;
@@ -129,12 +138,15 @@ nav {
   padding-left: 5px;
 }
 
-.label-menu{
+.label-menu {
   cursor: pointer;
-  font-size: 20px;
-  padding-left: 10px;
-}
+  font-size: 1.8rem;
+  background-color: white;
+  border-radius: 16px;
+  padding: 2px 10px;
 
-.label-menu-sep-left{
-  border-left: 2px solid lightgray;
+  p {
+    display: flex;
+    align-items: center;
+  }
 }

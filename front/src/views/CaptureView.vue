@@ -12,126 +12,127 @@
           :activeShot="getActiveShot"
         />
         <div class="preview-container">
-          <div class="preview-content">
-            <template v-if="onionSkinDisplay">
-              <img
-                v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
-                alt="ghostImg"
-                id="ghost-img"
-                :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue].id)"
-              />
-              <template v-for="ghostIndex in onionSkinAsArray">
+          <div class="preview-content-wrapper">
+            <div class="preview-content">
+              <template v-if="onionSkinDisplay">
                 <img
-                  :key="ghostIndex"
-                  v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeDevice && IsFrameLiveView"
+                  v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
                   alt="ghostImg"
-                  class="onion-skin"
-                  :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - ghostIndex].id)"
+                  id="ghost-img"
+                  :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue].id)"
                 />
+                <template v-for="ghostIndex in onionSkinAsArray">
+                  <img
+                    :key="ghostIndex"
+                    v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeDevice && IsFrameLiveView"
+                    alt="ghostImg"
+                    class="onion-skin"
+                    :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - ghostIndex].id)"
+                  />
+                </template>
               </template>
-            </template>
-            <video
-              v-if="activeDevice"
-              :class="{hidden: !IsFrameLiveView}"
-              id="video-capture"
-              ref="videoCapture"
-              :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkinDisplay ? 0.4 : 1}"
-              autoplay
-              muted
-              playsinline
-            />
-            <img
-              id="preview-img"
-              ref="previewImg"
-              src="@/assets/baku-cloud-spinner.svg"
-              :class="{hidden: IsFrameLiveView}"
-            />
+              <video
+                v-if="activeDevice"
+                :class="{hidden: !IsFrameLiveView}"
+                id="video-capture"
+                ref="videoCapture"
+                :style="{transform: 'scale(' + scaleX +', ' +scaleY +')', 'opacity': onionSkinDisplay ? 0.4 : 1}"
+                autoplay
+                muted
+                playsinline
+              />
+              <img
+                id="preview-img"
+                ref="previewImg"
+                src="@/assets/baku-cloud-spinner.svg"
+                :class="{hidden: IsFrameLiveView}"
+              />
+            </div>
           </div>
-          <ImagesSelectorComponent
-            v-if="getActiveShot"
-            :projectId="id"
-            :activeShot="getActiveShot.id"
-            :images="getActiveShot.images"
-            :activeImage="currentDisplayedFrame"
-            :canEdit="canEdit"
-            @activeImageChange="onActiveFrameChange"
-            :activeDevice="activeDevice"
-            v-model="selectedImages"
-          />
-          <div class="media-controls">
-            <div class="clock">
-              <span>{{ nbMins(this.currentDisplayedFrame) }}</span>
-              <span class="clock-small">:</span>
-              <span>{{ nbSecs(this.currentDisplayedFrame) }}</span>
-            </div>
+          <div class="preview-actions">
+            <ImagesSelectorComponent
+              v-if="getActiveShot"
+              :projectId="id"
+              :activeShot="getActiveShot.id"
+              :images="getActiveShot.images"
+              :activeImage="currentDisplayedFrame"
+              :canEdit="canEdit"
+              @activeImageChange="onActiveFrameChange"
+              :activeDevice="activeDevice"
+              v-model="selectedImages"
+            />
+            <div class="media-controls">
+              <div class="clock">
+                <span>{{ nbMins(this.currentDisplayedFrame) }}</span>
+                <span class="clock-small">:</span>
+                <span>{{ nbSecs(this.currentDisplayedFrame) }}</span>
+              </div>
 
-            <div style="display:inline-flex; align-items:center;">
-              <i
-                class="toolbar-button icon-backward baku-button"
-                style="color:#455054;"
-                @click="moveFrame(- 1)"
-              />
-              <template v-if="!isMultiSelect">
+              <div style="display:inline-flex; align-items:center;">
                 <i
-                  class="toolbar-button toolbar-button-big icon-play"
-                  :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
-                  @click="playAnimation()"
-                  v-if="isPlaying !== 'animation'"
+                  class="toolbar-button icon-backward baku-button"
+                  style="color:#455054;"
+                  @click="moveFrame(- 1)"
                 />
-                <i
-                  class="toolbar-button toolbar-button-big icon-pause baku-button"
-                  @click="pauseAnimation()"
-                  v-else
-                />
-              </template>
-              <template v-else>
-                <i
-                  class="toolbar-button toolbar-button-big icon-play_loop"
-                  :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
-                  @click="playSelection()"
-                  v-if="isPlaying !== 'selection'"
-                />
-                <i
-                  class="toolbar-button toolbar-button-big icon-pause baku-button"
-                  @click="pauseAnimation()"
-                  v-else
-                />
-              </template>
+                <template v-if="!isMultiSelect">
+                  <i
+                    class="toolbar-button toolbar-button-big icon-play"
+                    :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
+                    @click="playAnimation()"
+                    v-if="isPlaying !== 'animation'"
+                  />
+                  <i
+                    class="toolbar-button toolbar-button-big icon-pause baku-button"
+                    @click="pauseAnimation()"
+                    v-else
+                  />
+                </template>
+                <template v-else>
+                  <i
+                    class="toolbar-button toolbar-button-big icon-play_loop"
+                    :class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"
+                    @click="playSelection()"
+                    v-if="isPlaying !== 'selection'"
+                  />
+                  <i
+                    class="toolbar-button toolbar-button-big icon-pause baku-button"
+                    @click="pauseAnimation()"
+                    v-else
+                  />
+                </template>
 
-              <CaptureButtonComponent
-                class="baku-button toolbar-button toolbar-button-big"
-                v-if="canEdit"
-                :device="activeDevice"
-                :projectId="id"
-                :canCapture="currentDisplayedFrame === getActiveShotImgCount"
-                @captured="onCaptured"
-                @uploaded="onUploaded"
-                @moveToCapture="moveToCapture()"
-              />
-              <i
-                class="toolbar-button icon-forward baku-button"
-                style="color:#455054;"
-                @click="moveFrame(1)"
-              />
-            </div>
+                <CaptureButtonComponent
+                  class="baku-button toolbar-button toolbar-button-big"
+                  v-if="canEdit"
+                  :device="activeDevice"
+                  :projectId="id"
+                  :canCapture="currentDisplayedFrame === getActiveShotImgCount"
+                  @captured="onCaptured"
+                  @uploaded="onUploaded"
+                  @moveToCapture="moveToCapture()"
+                />
+                <i
+                  class="toolbar-button icon-forward baku-button"
+                  style="color:#455054;"
+                  @click="moveFrame(1)"
+                />
+              </div>
 
-            <!-- <div
+              <!-- <div
               class="baku-button toolbar-button toolbar-capture-button"
               :class="{'active-capture': activeDevice, 'disabled' : !!isPlaying}"
               @click="setactiveDevice(activeDevice)"
-            >Mode Capture</div>-->
-            <div class="toolbar-button">
-              <img
-                style="height: 28px; width:28px"
-                v-if="synchronizing"
-                alt="loading"
-                id="synchronization"
-                src="@/assets/baku-balls-spinner.svg"
-              />
-              <CaptureToolboxComponent
-                v-if="getActiveShot && canEdit"
-                :isCapturing="true"
-              />
+              >Mode Capture</div>-->
+              <div class="toolbar-button">
+                <img
+                  style="height: 28px; width:28px"
+                  v-if="synchronizing"
+                  alt="loading"
+                  id="synchronization"
+                  src="@/assets/baku-balls-spinner.svg"
+                />
+                <CaptureToolboxComponent v-if="getActiveShot && canEdit" :isCapturing="true" />
+              </div>
             </div>
           </div>
         </div>
@@ -163,26 +164,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import * as _ from "lodash";
+import { Component, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import * as _ from 'lodash';
 
-import store from "@/store";
-import AbstractProjectView from "@/views/AbstractProjectView.vue";
-import CarrouselComponent from "@/components/capture/CarrouselComponent.vue";
-import ImagesSelectorComponent from "@/components/image-selector/ImagesSelectorComponent.vue";
-import CaptureToolboxComponent from "@/components/capture/CaptureToolboxComponent.vue";
-import HistoryComponent from "@/components/capture/HistoryComponent.vue";
-import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
-import StoryboardPreviewComponent from "@/components/capture/StoryboardPreviewComponent.vue";
-import { Device } from "@/utils/device.class";
-import { ImageCacheService } from "@/utils/imageCache.service";
-import { Movie, ReadingSliderBoundaries, Shot } from "@/utils/movie.service";
-import { UploadedImage } from "../utils/uploadedImage.class";
+import store from '@/store';
+import AbstractProjectView from '@/views/AbstractProjectView.vue';
+import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
+import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import HistoryComponent from '@/components/capture/HistoryComponent.vue';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
+import { Device } from '@/utils/device.class';
+import { ImageCacheService } from '@/utils/imageCache.service';
+import { Movie, ReadingSliderBoundaries, Shot } from '@/utils/movie.service';
+import { UploadedImage } from '@/utils/uploadedImage.class';
 
-const CaptureNS = namespace("capture");
-const ProjectNS = namespace("project");
-const WebRTCNS = namespace("webrtc");
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
+const WebRTCNS = namespace('webrtc');
 
 @Component({
   components: {
@@ -191,9 +192,9 @@ const WebRTCNS = namespace("webrtc");
     CarrouselComponent,
     CaptureButtonComponent,
     ImagesSelectorComponent,
-    StoryboardPreviewComponent
+    StoryboardPreviewComponent,
   },
-  store
+  store,
 })
 export default class CaptureView extends AbstractProjectView {
   @ProjectNS.State
@@ -211,7 +212,7 @@ export default class CaptureView extends AbstractProjectView {
   @ProjectNS.Getter
   public getActiveShotImgCount!: number;
 
-  @ProjectNS.Getter("canEditActiveShot")
+  @ProjectNS.Getter('canEditActiveShot')
   public canEdit!: boolean;
 
   // Carroussel Frame
@@ -232,13 +233,13 @@ export default class CaptureView extends AbstractProjectView {
   @CaptureNS.State
   public scaleY!: number | 1;
 
-  @CaptureNS.State("onionSkinDisplay")
+  @CaptureNS.State('onionSkinDisplay')
   protected onionSkinDisplay!: number;
 
-  @CaptureNS.State("onionSkinValue")
+  @CaptureNS.State('onionSkinValue')
   protected onionSkinValue!: number;
 
-  @ProjectNS.Action("addImagesToShot")
+  @ProjectNS.Action('addImagesToShot')
   protected addImagesToShot!: ({}) => Promise<void>;
 
   @WebRTCNS.State
@@ -254,12 +255,14 @@ export default class CaptureView extends AbstractProjectView {
 
   public animationBoundaries!: ReadingSliderBoundaries;
 
-  public isPlaying: "animation" | "selection" | null = null;
+  public isPlaying: 'animation' | 'selection' | null = null;
 
   private previewImg!: HTMLImageElement;
 
   public mounted() {
-    this.$store.dispatch("project/changeActiveShot", this.$route.params.shotId).then(() => this.displayFrame(0));
+    this.$store
+      .dispatch('project/changeActiveShot', this.$route.params.shotId)
+      .then(() => this.displayFrame(0));
     this.previewImg = this.$refs.previewImg as HTMLImageElement;
   }
 
@@ -268,8 +271,7 @@ export default class CaptureView extends AbstractProjectView {
       this.animationStart = timestamp;
     }
     if (!this.animationStartFrame) {
-      this.animationStartFrame =
-        this.currentCarrousselFrame - this.animationBoundaries.left;
+      this.animationStartFrame = this.currentCarrousselFrame - this.animationBoundaries.left;
     }
 
     const nextFrame = this.getNextFrame(timestamp);
@@ -279,8 +281,8 @@ export default class CaptureView extends AbstractProjectView {
       this.displayFrame(nextFrame);
     }
     if (
-      this.isPlaying === "animation" &&
-      nextFrame === this.getActiveShotImgCount - (this.canEdit ? 0 : 1)
+      this.isPlaying === 'animation'
+      && nextFrame === this.getActiveShotImgCount - (this.canEdit ? 0 : 1)
     ) {
       this.pauseAnimation();
       return;
@@ -289,21 +291,23 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   private displayFrame(frame: number) {
-    if (this.getActiveShot && this.getActiveShot.images[frame]) {
-      const imageId = this.getActiveShot.images[frame].id;
-      this.previewImg!.src = ImageCacheService.getImage(imageId);
+    const activeShot = this.getActiveShot;
+    if (activeShot) {
+      const image = activeShot.images[frame];
+      if (image) {
+        this.previewImg!.src = ImageCacheService.getImage(image.id);
+      }
     }
   }
 
   private getNextFrame(timestamp: number) {
     const imageFromStart = Math.floor(
-      (timestamp - this.animationStart) * (this.movie.fps / 1000)
+      (timestamp - this.animationStart) * (this.movie.fps / 1000),
     );
-    const animationLength =
-      this.animationBoundaries.right - this.animationBoundaries.left;
+    const animationLength = this.animationBoundaries.right - this.animationBoundaries.left;
     return (
-      this.animationBoundaries.left +
-      ((this.animationStartFrame + imageFromStart) % animationLength)
+      this.animationBoundaries.left
+      + ((this.animationStartFrame + imageFromStart) % animationLength)
     );
   }
 
@@ -315,35 +319,39 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
-  public playAnimation() {
-    if (!this.isPlaying && this.getActiveShot.images.length > 0) {
-      this.initPlay("animation");
-      this.animationBoundaries = {
-        left: 0,
-        right: this.getActiveShot.images.length + 1
-      };
-      this.animationFrame = requestAnimationFrame(this.animate);
+   public playAnimation() {
+      if (!this.isPlaying && this.getActiveShot.images.length > 0) {
+        if (this.currentDisplayedFrame === this.getActiveShotImgCount) {
+          this.moveFrameAbsolute(0);
+          this.syncActiveFrame();
+        }
+        this.initPlay('animation');
+        this.animationBoundaries = {
+          left: 0,
+          right: this.getActiveShot.images.length + 1,
+        };
+        this.animationFrame = requestAnimationFrame(this.animate);
+      }
     }
-  }
 
   public playSelection() {
     if (!this.isPlaying && this.getActiveShot.images.length > 0) {
       if (
-        this.currentCarrousselFrame < this.selectedImages.left ||
-        this.currentCarrousselFrame > this.selectedImages.right
+        this.currentCarrousselFrame < this.selectedImages.left
+        || this.currentCarrousselFrame > this.selectedImages.right
       ) {
         this.currentCarrousselFrame = this.selectedImages.left;
       }
-      this.initPlay("selection");
+      this.initPlay('selection');
       this.animationBoundaries = {
         left: this.selectedImages.left,
-        right: this.selectedImages.right + (this.canEdit ? 1:0)
+        right: this.selectedImages.right + (this.canEdit ? 1 : 0),
       };
       this.animationFrame = requestAnimationFrame(this.animate);
     }
   }
 
-  public initPlay(type: "animation" | "selection") {
+  public initPlay(type: 'animation' | 'selection') {
     this.isPlaying = type;
   }
 
@@ -364,13 +372,13 @@ export default class CaptureView extends AbstractProjectView {
         ImageCacheService.startPreloading(
           this.getActiveShot.images,
           this.currentCarrousselFrame,
-          this.onImagePreloaded
+          this.onImagePreloaded,
         );
       }
     }
   }
 
-  @Watch("stream")
+  @Watch('stream')
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
     if (newValue) {
       (this.$refs.videoCapture as HTMLVideoElement).srcObject = newValue;
@@ -378,18 +386,18 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
-  @Watch("getActiveShot")
+  @Watch('getActiveShot')
   public async onActiveShotChange(shot: Shot) {
     if (shot) {
       ImageCacheService.startPreloading(
         shot.images,
         this.currentCarrousselFrame,
-        this.onImagePreloaded
+        this.onImagePreloaded,
       );
     }
   }
 
-  @Watch("getActiveShotImgCount")
+  @Watch('getActiveShotImgCount')
   public async onActiveShotImgCountChange(nb: number) {
     if (nb) {
       this.displayFrame(this.currentCarrousselFrame);
@@ -422,6 +430,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public moveToCapture() {
+    this.pauseAnimation();
     this.onActiveFrameChange(this.getActiveShot.images.length);
   }
 
@@ -446,8 +455,8 @@ export default class CaptureView extends AbstractProjectView {
 
   public onActiveFrameChange(newActiveFrame: number) {
     if (
-      newActiveFrame < this.selectedImages.left ||
-      newActiveFrame > this.selectedImages.right
+      newActiveFrame < this.selectedImages.left
+      || newActiveFrame > this.selectedImages.right
     ) {
       this.selectedImages.left = this.selectedImages.right = 0;
     }
@@ -468,11 +477,11 @@ export default class CaptureView extends AbstractProjectView {
       this.selectedImages.left = Math.min(this.currentDisplayedFrame, newFrame);
       this.selectedImages.right = Math.max(
         this.currentDisplayedFrame,
-        newFrame
+        newFrame,
       );
     } else if (
-      newFrame >= this.selectedImages.left &&
-      newFrame <= this.selectedImages.right
+      newFrame >= this.selectedImages.left
+      && newFrame <= this.selectedImages.right
     ) {
       this.selectedImages.left = newFrame;
       this.moveFrameAbsolute(this.selectedImages.left);
@@ -496,30 +505,28 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public nbHours(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60) %
-      60}`.padStart(2, "0");
+    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
+      % 60}`.padStart(2, '0');
   }
 
   public nbMins(frame: number): string {
     return `${Math.floor((frame + 1) / this.movie.fps / 60) % 60}`.padStart(
       2,
-      "0"
+      '0',
     );
   }
 
   public nbSecs(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps) % 60}`.padStart(2, "0");
+    return `${Math.floor((frame + 1) / this.movie.fps) % 60}`.padStart(2, '0');
   }
 
   public frameNb(frame: number): string {
-    return `${(frame + 1) % this.movie.fps}`.padStart(2, "0");
+    return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
   }
 
   public onUploaded(id: string) {
-    ImageCacheService.startPreloadingImage(new UploadedImage(this.id, id), () =>
-      this.$forceUpdate()
-    );
-    this.$store.commit("project/incAction", -1);
+    ImageCacheService.startPreloadingImage(new UploadedImage(this.id, id), () => this.$forceUpdate());
+    this.$store.commit('project/incAction', -1);
   }
 
   public async onCaptured(id: string, thumb: Blob, b64: string) {
@@ -529,8 +536,8 @@ export default class CaptureView extends AbstractProjectView {
       {
         shotId: this.getActiveShot.id,
         imageIndex: newActiveFrame,
-        image: id
-      }
+        image: id,
+      },
     ]);
     this.onActiveFrameChange(newActiveFrame + 1);
   }

@@ -7,7 +7,7 @@
     <div class="toolbar">
       <div v-if="!isMultiSelect"
         class="toolbar-button"
-        @click="changeSelection(activeImage - computedLeftCarrousel.length, activeImage + computedRightCarrousel.length  )"
+        @click="changeSelection(0, images.length - 1)"
         :class="{disabled : isFrameLiveView || isPlaying || !canEdit}"
       >
         <i class="icon-copy baku-button" />
@@ -83,7 +83,7 @@
           </div>
         </template>
         <template v-else>
-          <div :key="'left'+index" class="image-container">
+          <div :key="'left'+index" class="image-container image-container-empty">
             <div
               @click="moveToImage($event, index - computedLeftCarrousel.length + (isFrameLiveView ? 1 : 0))"
               class="carrousel-thumb"
@@ -136,7 +136,7 @@
           </div>
         </template>
         <template v-if="image === null">
-          <div :key="'right'+index" class="image-container">
+          <div :key="'right'+index" class="image-container image-container-empty">
             <div
               @click="moveToImage($event,index + 1)"
               class="carrousel-thumb"
@@ -405,15 +405,15 @@ export default class CarrouselComponent extends Vue {
         })),
       );
       this.$emit('activeImageChange', this.activeImage + 1);
-      this.changeSelection(this.activeImage + 1,  this.activeImage + this.imagesToCopy.length);
+      this.changeSelection(this.activeImage + 1, this.activeImage + this.imagesToCopy.length);
     }
   }
 
   public changeSelection(left: number, right: number) {
     this.$emit('changeSelection', {
-        left: left,
-        right: right,
-      });
+      left,
+      right,
+    });
   }
 
   public async onPasteAndReverse() {
@@ -427,7 +427,7 @@ export default class CarrouselComponent extends Vue {
         shotId: this.activeShot,
         imageIndexLeft: this.selectedImages.left,
         imageIndexRight: this.selectedImages.right,
-      })
+      });
       // const reverted = [...this.imagesToCopy].reverse();
       // this.addImagesToShot(
       //   reverted.map((imgref: string, index: number) => ({

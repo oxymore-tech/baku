@@ -1,7 +1,7 @@
 <template>
   <div style="display:flex;">
     <audio ref="audio" src="@/assets/camera_shutter.mp3"/>
-    <i class="icon-camera" v-if="canCapture && !protectCapture" @click="capture()" style="color:#e66359;" />
+    <i class="icon-camera" v-if="canCapture && !protectCapture" @click="capture()" style="color:#e66359; font-size: 3rem" />
     <i class="icon-camera" style="cursor:default" v-else-if="canCapture && protectCapture"/>
     <img v-else src="@/assets/camera-off-color.svg" style="height:32px;" @click="moveToCapture()" />
   </div>
@@ -116,7 +116,7 @@ export default class CaptureButtonComponent extends Vue {
   @Watch('device')
   async onDeviceIdChanged(newDevice: Device, oldDevice: Device) {
     this.isCapturing = false;
-    if (!this.device.isSmartphone() && this.canCapture) {
+    if (this.device && !this.device.isSmartphone() && this.canCapture) {
       this.setupWebCam();
     } else if (this.peerConnected && this.canCapture) {
       this.mediaOk = true;

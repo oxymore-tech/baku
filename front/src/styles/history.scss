@@ -13,44 +13,90 @@
   flex-direction: column;
   padding: 10px 0px 10px 10px;
   width: 250px;
+  min-width: 250px;
+
+  &.mini-mode {
+    width: 70px;
+    min-width: 0px;
+    padding: 0px;
+    height: 0px;
+
+    .title {
+      width: 70px;
+      margin-left: auto;
+      background-color: white;
+      border-radius: 8px 0 0 8px;
+      margin: 5px 0 0 auto;
+      padding: 10px;
+
+      i {
+        margin: 0 5px;
+      }
+
+      span {
+        display: none;
+      }
+    }
+
+    ul {
+      display: none;
+    }
+  }
 
   ul {
     overflow: auto;
   }
-}
 
-.title {
-  text-align: left;
-  font-size: 24px;
-  font-weight: lighter;
-  color: #455054;
-  margin: 5px 0;
-}
-
-.action {
-  text-align: left;
-  font-size: 14px;
-  font-weight: bold;
-  color: #455054;
-  margin: 5px;
-  display: flex;
-
-  i {
-    font-size: 24px;
-    margin-top: 3px;
-    margin-right: 3px;
+  .title {
+    text-align: left;
+    font-size: 2.4rem;
+    font-weight: lighter;
     color: #455054;
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    i {
+      font-size: 2.2rem;
+    }
+  }
+
+  .action {
+    text-align: left;
+    color: #455054;
+    margin: 5px;
+    display: flex;
+
+    i {
+      font-size: 2.4rem;
+      margin-top: 3px;
+      margin-right: 3px;
+      color: #455054;
+    }
+
+    .action-user {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .action-highlight {
+      font-size: 1rem;
+      font-weight: normal;
+      color: #455054;
+    }
+
+    .action-date {
+      font-size: 0.8rem;
+      color: #7f7f7f;
+    }
   }
 
 }
 
-.action-highlight {
-  font-size: 14px;
-  font-weight: normal;
-  color: #455054;
-}
-
-.action-date {
-  font-size: 12px;
-  color: #7f7f7f;
+// Phones and tablets
+@media (max-width: 992px) { 
+  // .storyboard-preview-container {
+  //   display: none;
+  // }
 }

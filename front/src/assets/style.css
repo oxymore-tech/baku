@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'baku';
-  src:  url('fonts/baku.eot?m626l');
-  src:  url('fonts/baku.eot?m626l#iefix') format('embedded-opentype'),
-    url('fonts/baku.ttf?m626l') format('truetype'),
-    url('fonts/baku.woff?m626l') format('woff'),
-    url('fonts/baku.svg?m626l#baku') format('svg');
+  src:  url('fonts/baku.eot?uh1gs0');
+  src:  url('fonts/baku.eot?uh1gs0#iefix') format('embedded-opentype'),
+    url('fonts/baku.ttf?uh1gs0') format('truetype'),
+    url('fonts/baku.woff?uh1gs0') format('woff'),
+    url('fonts/baku.svg?uh1gs0#baku') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -58,234 +58,232 @@
 .icon-check_box_outline_blank:before {
   content: "\e90a";
 }
-.icon-clone-regular:before {
+.icon-chevron-right:before {
   content: "\e90b";
 }
-.icon-close:before {
+.icon-clone-regular:before {
   content: "\e90c";
 }
-.icon-cloud:before {
+.icon-close:before {
   content: "\e90d";
 }
-.icon-cog:before {
+.icon-cloud:before {
   content: "\e90e";
 }
-.icon-cogs-solid:before {
+.icon-cog:before {
   content: "\e90f";
 }
-.icon-compress:before {
+.icon-cogs-solid:before {
   content: "\e910";
 }
-.icon-copy:before {
+.icon-compress:before {
   content: "\e911";
 }
-.icon-copy-regular:before {
+.icon-copy:before {
   content: "\e912";
 }
-.icon-copy-solid:before {
+.icon-copy-regular:before {
   content: "\e913";
 }
-.icon-cut:before {
+.icon-copy-solid:before {
   content: "\e914";
 }
-.icon-edit:before {
+.icon-cut:before {
   content: "\e915";
 }
-.icon-envelope-regular:before {
+.icon-edit:before {
   content: "\e916";
 }
-.icon-exclamation-circle-solid:before {
+.icon-ellipsis-v:before {
   content: "\e917";
 }
-.icon-expand:before {
+.icon-envelope-regular:before {
   content: "\e918";
 }
-.icon-filter_drama:before {
+.icon-exclamation-circle-solid:before {
   content: "\e919";
 }
-.icon-folder-open-regular:before {
+.icon-expand:before {
   content: "\e91a";
 }
-.icon-forward:before {
+.icon-filter_drama:before {
   content: "\e91b";
 }
-.icon-grid:before {
+.icon-folder-open-regular:before {
   content: "\e91c";
 }
-.icon-home-solid:before {
+.icon-forward:before {
   content: "\e91d";
 }
-.icon-image-regular:before {
+.icon-grid:before {
   content: "\e91e";
 }
-.icon-image-sequence:before {
+.icon-history:before {
   content: "\e91f";
 }
-.icon-info:before {
+.icon-home-solid:before {
   content: "\e920";
 }
-.icon-instagram-brands:before {
+.icon-image-regular:before {
   content: "\e921";
 }
-.icon-loading:before {
+.icon-image-sequence:before {
   content: "\e922";
 }
-.icon-lock-solid:before {
+.icon-info:before {
   content: "\e923";
 }
-.icon-movie:before {
+.icon-instagram-brands:before {
   content: "\e924";
 }
-.icon-movie-done:before {
+.icon-loading:before {
   content: "\e925";
 }
-.icon-movie-start-01:before {
+.icon-lock-solid:before {
   content: "\e926";
 }
-.icon-oignon .path1:before {
+.icon-movie:before {
   content: "\e927";
+}
+.icon-movie-done:before {
+  content: "\e928";
+}
+.icon-movie-start-01:before {
+  content: "\e929";
+}
+.icon-oignon .path1:before {
+  content: "\e92a";
   color: rgb(0, 0, 0);
   opacity: 0.25;
 }
 .icon-oignon .path2:before {
-  content: "\e928";
+  content: "\e92b";
   margin-left: -1em;
   color: rgb(0, 0, 0);
   opacity: 0.5;
 }
 .icon-oignon .path3:before {
-  content: "\e929";
+  content: "\e92c";
   margin-left: -1em;
   color: rgb(0, 0, 0);
   opacity: 0.75;
 }
 .icon-oignon .path4:before {
-  content: "\e92a";
+  content: "\e92d";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-paste:before {
-  content: "\e92b";
-}
-.icon-pause:before {
-  content: "\e92c";
-}
-.icon-play:before {
-  content: "\e92d";
-}
-.icon-play_loop:before {
   content: "\e92e";
 }
-.icon-plus:before {
+.icon-pause:before {
   content: "\e92f";
 }
-.icon-reapeat:before {
+.icon-play:before {
   content: "\e930";
 }
-.icon-recording:before {
+.icon-play_loop:before {
   content: "\e931";
 }
-.icon-reverse:before {
+.icon-plus:before {
   content: "\e932";
 }
-.icon-set_begin:before {
+.icon-reapeat:before {
   content: "\e933";
 }
-.icon-set_end:before {
+.icon-recording:before {
   content: "\e934";
 }
-.icon-signal:before {
+.icon-reverse:before {
   content: "\e935";
 }
-.icon-start:before {
+.icon-select-all:before {
   content: "\e936";
 }
-.icon-step-backward:before {
+.icon-set_begin:before {
   content: "\e937";
 }
-.icon-step-forward:before {
+.icon-set_end:before {
   content: "\e938";
 }
-.icon-stop:before {
+.icon-signal:before {
   content: "\e939";
 }
-.icon-sync-alt:before {
+.icon-start:before {
   content: "\e93a";
 }
-.icon-trash-alt:before {
+.icon-step-backward:before {
   content: "\e93b";
 }
-.icon-twitter-brands:before {
+.icon-step-forward:before {
   content: "\e93c";
 }
-.icon-unlock-solid:before {
+.icon-stop:before {
   content: "\e93d";
 }
-.icon-user-bird .path1:before {
+.icon-sync-alt:before {
   content: "\e93e";
+}
+.icon-trash-alt:before {
+  content: "\e93f";
+}
+.icon-twitter-brands:before {
+  content: "\e940";
+}
+.icon-unlock-solid:before {
+  content: "\e941";
+}
+.icon-user-bird .path1:before {
+  content: "\e942";
   color: rgb(0, 0, 0);
 }
 .icon-user-bird .path2:before {
-  content: "\e93f";
+  content: "\e943";
   margin-left: -1em;
   color: rgb(243, 243, 243);
 }
 .icon-user-bird .path3:before {
-  content: "\e940";
+  content: "\e944";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-user-circle:before {
-  content: "\e941";
+  content: "\e945";
 }
 .icon-user-dragon:before {
-  content: "\e942";
+  content: "\e946";
 }
 .icon-user-horse .path1:before {
-  content: "\e943";
+  content: "\e947";
   color: rgb(0, 0, 0);
 }
 .icon-user-horse .path2:before {
-  content: "\e944";
+  content: "\e948";
   margin-left: -1em;
   color: rgb(255, 255, 255);
 }
 .icon-user-horse .path3:before {
-  content: "\e945";
+  content: "\e949";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-user-kiwi .path1:before {
-  content: "\e946";
+  content: "\e94a";
   color: rgb(0, 0, 0);
 }
 .icon-user-kiwi .path2:before {
-  content: "\e947";
+  content: "\e94b";
   margin-left: -1em;
   color: rgb(255, 255, 255);
 }
 .icon-user-kiwi .path3:before {
-  content: "\e948";
+  content: "\e94c";
   margin-left: -1em;
   color: rgb(0, 0, 0);
 }
 .icon-webcam:before {
-  content: "\e949";
+  content: "\e94d";
 }
 .icon-youtube-brands:before {
-  content: "\e94a";
-}
-
-.spin {
-  animation: spin-animation 0.8s infinite linear;
-  display: inline-block;
-}
-
-@keyframes spin-animation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(359deg);
-  }
+  content: "\e94e";
 }
