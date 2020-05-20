@@ -8,6 +8,7 @@
     trap-focus
   >
     <a class="navbar-item" slot="trigger" role="button" slot-scope="{ active }">
+      <i class="icon-webcam"></i>
       <span class="item-title">Réglages vidéo</span>
       <b-icon :icon="active ? 'menu-down' : 'menu-up'"></b-icon>
     </a>
@@ -31,7 +32,7 @@
         <b-switch :value="scaleX != 1" @input="toggleScaleX">Miroir vertical</b-switch>
       </div>
 
-      <div class="field onionSkinInput" style="display:inline-flex;">
+      <div class="field onionSkinInput">
         <b-switch :value="onionSkinDisplay" @input="setOnionSkinDisplay($event)">
           <b-field>
             <div>Pelure d'oignon</div>
@@ -209,6 +210,10 @@ export default class CaptureToolboxComponent extends Vue {
 </script>
 
 <style lang="scss">
+
+.dropdown-menu {
+  width: 25rem;
+}
 .collapse-content {
   background-color: white;
   padding: 6px;
@@ -231,23 +236,36 @@ export default class CaptureToolboxComponent extends Vue {
   }
 }
 
+.item-title {
+  margin-left: 5px;
+  font-size: 1.6rem;
+}
+
 .onionSkinInput {
   height: 27px;
+  display: flex;
+  align-items: center;
+
   .switch {
     float: left;
   }
   .b-numberinput {
     margin-left: 20px;
-    float: right;
+    // float: right;
     width: 75px;
   }
 }
 
 .field {
+  font-size: 1.2rem;
   i {
     font-size: 2.0rem;
     color: #707070;
     margin: 3px 5px 3px 0px;
+  }
+
+  .control {
+    margin-right: 5px;
   }
 }
 </style>

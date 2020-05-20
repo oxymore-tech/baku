@@ -20,9 +20,14 @@
 
         <b-dropdown append-to-body aria-role="list" v-if="$route.name !== 'home' && $route.name !== 'smartphone'">
           <div class="label-menu" slot="trigger" role="button">
-            <p v-if="$route.params.projectId"> {{ this.movie.title }}<i
-              class="icon-angle-down baku-button"/></p>
-            <p v-else> Mes films<i class="icon-angle-down baku-button"/></p>
+            <p v-if="$route.params.projectId">
+              {{ this.movie.title }}
+              <i class="icon-ellipsis-v baku-button"/>
+            </p>
+            <p v-else>
+              Mes films
+              <i class="icon-ellipsis-v baku-button"/>
+            </p>
           </div>
 
           <b-dropdown-item class aria-role="listitem" v-if="$route.name !== 'library'">

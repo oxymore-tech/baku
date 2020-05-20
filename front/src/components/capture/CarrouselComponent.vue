@@ -83,7 +83,7 @@
           </div>
         </template>
         <template v-else>
-          <div :key="'left'+index" class="image-container">
+          <div :key="'left'+index" class="image-container image-container-empty">
             <div
               @click="moveToImage($event, index - computedLeftCarrousel.length + (isFrameLiveView ? 1 : 0))"
               class="carrousel-thumb"
@@ -136,7 +136,7 @@
           </div>
         </template>
         <template v-if="image === null">
-          <div :key="'right'+index" class="image-container">
+          <div :key="'right'+index" class="image-container image-container-empty">
             <div
               @click="moveToImage($event,index + 1)"
               class="carrousel-thumb"
