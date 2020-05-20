@@ -90,15 +90,15 @@
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import { Duration } from "@/utils/types";
-import { Spinner } from "@/utils/spinner.class";
-import { Quality } from "@/utils/uploadedImage.class";
-import { Movie, MovieService } from "@/utils/movie.service";
-import * as api from "@/api";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Duration } from '@/utils/types';
+import { Spinner } from '@/utils/spinner.class';
+import { Quality } from '@/utils/uploadedImage.class';
+import { Movie, MovieService } from '@/utils/movie.service';
+import * as api from '@/api';
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 type Shot = {
   id: string;
@@ -115,10 +115,10 @@ export default class Shots extends Vue {
   @Prop({ required: true })
   public projectId!: string;
 
-  @ProjectNS.Getter("canUnLock")
+  @ProjectNS.Getter('canUnLock')
   protected canUnLock!: boolean;
 
-  @ProjectNS.Getter("canEditMovie")
+  @ProjectNS.Getter('canEditMovie')
   protected canEditMovie!: boolean;
 
   @ProjectNS.Getter
@@ -166,24 +166,24 @@ export default class Shots extends Vue {
   }
 
   public async createNewShot() {
-    const shotId = await this.$store.dispatch("project/createShot");
-    await this.$store.dispatch("project/changeActiveShot", shotId);
-    this.$emit("close");
+    const shotId = await this.$store.dispatch('project/createShot');
+    await this.$store.dispatch('project/changeActiveShot', shotId);
+    this.$emit('close');
   }
 
   public async activateShot(shotId: string) {
-    await this.$store.dispatch("project/changeActiveShot", shotId);
-    this.$emit("close");
+    await this.$store.dispatch('project/changeActiveShot', shotId);
+    this.$emit('close');
   }
 
   public async removeShot(shotId: string) {
-    await this.$store.dispatch("project/removeShot", shotId);
+    await this.$store.dispatch('project/removeShot', shotId);
   }
 
   public async lockShot(shotId: string, shotLocked: boolean) {
-    await this.$store.dispatch("project/lockShot", {
+    await this.$store.dispatch('project/lockShot', {
       shotId,
-      locked: shotLocked
+      locked: shotLocked,
     });
   }
 
@@ -200,7 +200,7 @@ export default class Shots extends Vue {
   }
 
   public close() {
-    this.$emit("close");
+    this.$emit('close');
   }
 }
 </script>

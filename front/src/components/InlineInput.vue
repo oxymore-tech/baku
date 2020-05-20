@@ -22,21 +22,20 @@
 
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component
-  export default class InlineInput extends Vue {
-
-    @Prop({required: true})
+export default class InlineInput extends Vue {
+    @Prop({ required: true })
     value!: string;
 
-    @Prop({default: false})
+    @Prop({ default: false })
     disabled!: boolean;
 
-    @Prop({default: 'text'})
+    @Prop({ default: 'text' })
     type!: 'textarea' | 'text';
 
-    @Prop({default: ''})
+    @Prop({ default: '' })
     icon!: string;
 
     @Prop()
@@ -48,10 +47,10 @@
     @Prop()
     editTitle!: string;
 
-    @Prop({default: ""})
+    @Prop({ default: '' })
     customClass!: string;
 
-    newValue: string = "";
+    newValue: string = '';
 
     focus: boolean = false;
 
@@ -73,6 +72,5 @@
         this.$emit('input', this.newValue);
       }
     }
-
-  }
+}
 </script>

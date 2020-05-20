@@ -25,17 +25,16 @@
 
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { VideoStatus, VideoStatusEnum } from "@/utils/types";
-  import * as api from "@/api";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { VideoStatus, VideoStatusEnum } from '@/utils/types';
+import * as api from '@/api';
 
   @Component
-  export default class InlineInput extends Vue {
-
-    @Prop({required: true})
+export default class InlineInput extends Vue {
+    @Prop({ required: true })
     id!: string;
 
-    videoStatus: VideoStatus = {status: VideoStatusEnum.Pending, lastModified: 0};
+    videoStatus: VideoStatus = { status: VideoStatusEnum.Pending, lastModified: 0 };
 
     private refreshVideoStatusTimer?: number;
 
@@ -84,5 +83,5 @@
     private async refreshVideoStatus() {
       this.videoStatus = await api.getVideoStatus(this.id);
     }
-  }
+}
 </script>

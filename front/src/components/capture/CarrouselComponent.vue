@@ -405,15 +405,15 @@ export default class CarrouselComponent extends Vue {
         })),
       );
       this.$emit('activeImageChange', this.activeImage + 1);
-      this.changeSelection(this.activeImage + 1,  this.activeImage + this.imagesToCopy.length);
+      this.changeSelection(this.activeImage + 1, this.activeImage + this.imagesToCopy.length);
     }
   }
 
   public changeSelection(left: number, right: number) {
     this.$emit('changeSelection', {
-        left: left,
-        right: right,
-      });
+      left,
+      right,
+    });
   }
 
   public async onPasteAndReverse() {
@@ -427,7 +427,7 @@ export default class CarrouselComponent extends Vue {
         shotId: this.activeShot,
         imageIndexLeft: this.selectedImages.left,
         imageIndexRight: this.selectedImages.right,
-      })
+      });
       // const reverted = [...this.imagesToCopy].reverse();
       // this.addImagesToShot(
       //   reverted.map((imgref: string, index: number) => ({
