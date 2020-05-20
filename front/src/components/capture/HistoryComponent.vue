@@ -6,7 +6,7 @@
   <div class="history" :class="{'mini-mode': !displayed}">
     <h4 class="title">
       <i class="icon-history"></i>
-      <span>Historique</span>      
+      <span>Historique</span>
       <i class="icon-chevron-right baku-button" @click="displayed = !displayed"></i>
     </h4>
     <ul>
