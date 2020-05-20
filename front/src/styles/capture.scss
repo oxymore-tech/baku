@@ -10,6 +10,7 @@
     width: 55%;
     display: flex;
     flex-direction: column;
+    margin: 0 10px;
   
     .preview-content-wrapper {
       max-height: calc(100% - 90px);
@@ -123,7 +124,7 @@
 }
 
 // X-Large screens
-@media (min-width: 1900px) { 
+@media (min-width: 1921px) { 
   .preview-bloc .preview-container {
     width: 30%;
   }
