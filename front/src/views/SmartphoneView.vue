@@ -212,11 +212,11 @@ export default class SmartphoneView extends Vue {
   }
 }
 
-  function getAndroidVersion() : string {
-    const ua = (navigator.userAgent).toLowerCase();
-    var match = ua.match(/android\s([0-9\.]*)/i);
-    return match ? match[1] : '8';
-};
+function getAndroidVersion() : string {
+  const ua = (navigator.userAgent).toLowerCase();
+  const match = ua.match(/android\s([0-9\.]*)/i);
+  return match ? match[1] : '8';
+}
 </script>
 
 <style lang="scss" scoped>
