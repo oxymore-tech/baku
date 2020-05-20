@@ -56,14 +56,14 @@
                     v-if="$route.params.projectId && ($route.name === 'captureShot' || $route.name === 'movie') ">
           <div class="label-menu" slot="trigger" role="button">
             <p v-if="$route.name === 'captureShot'">Capture <i
-              class=" icon-angle-down baku-button"/></p>
+              class=" icon-ellipsis-v baku-button"/></p>
             <p v-else-if="$route.name === 'movie'">Plans <i
-              class=" icon-angle-down baku-button"/></p>
+              class=" icon-ellipsis-v baku-button"/></p>
             <!--            <p v-else-if="$route.name === 'movieEditing'">Edition <i-->
             <!--              class=" icon-angle-down baku-button"/></p>-->
             <!--            <p v-else-if="$route.name === 'library'">Mes films <i-->
             <!--              class=" icon-angle-down baku-button"/></p>-->
-            <p v-else>{{$route.name}} <i class="icon-angle-down baku-button"/></p>
+            <p v-else>{{$route.name}} <i class="icon-ellipsis-v baku-button"/></p>
           </div>
 
           <b-dropdown-item class aria-role="listitem"
@@ -91,7 +91,7 @@
       </div>
 
       <div
-        class="flex-container"
+        class="flex-container plan-button-container"
         v-if="$route.name === 'captureShot' && activeShotIndex >= 0 || $route.name === 'movie'"
       >
         <div
@@ -117,7 +117,7 @@
       </div>
 
       <div class="flex-container">
-        <div class="flex-container bug" :class="{'bug-home': $route.name === 'home'}">
+        <div class="flex-container bug label-menu" :class="{'bug-home': $route.name === 'home'}">
           <div>
             <i
               class="icon-bullhorn-solid baku-button"
@@ -126,7 +126,7 @@
             />
           </div>
         </div>
-        <div class="flex-container right-nav" :class="{'right-nav-home': $route.name === 'home'}">
+        <div class="flex-container right-nav label-menu" :class="{'right-nav-home': $route.name === 'home'}">
           <div>
             <i class="icon-user-dragon"/>
           </div>
@@ -158,6 +158,10 @@
     white-space: nowrap;
   }
 
+  .plan-button-container {
+    position: absolute;
+    left: 50%; // TODO: media query for small screens
+  }
   .active-plan-button {
     cursor: pointer;
     font-size: 1.8rem;
