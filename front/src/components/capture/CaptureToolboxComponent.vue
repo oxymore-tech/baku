@@ -8,7 +8,7 @@
     trap-focus
   >
     <a class="navbar-item" slot="trigger" role="button" slot-scope="{ active }">
-      <span>Réglages vidéo</span>
+      <span class="item-title">Réglages vidéo</span>
       <b-icon :icon="active ? 'menu-down' : 'menu-up'"></b-icon>
     </a>
     <b-dropdown-item custom :focusable="false" class="box-container">
@@ -221,12 +221,12 @@ export default class CaptureToolboxComponent extends Vue {
   margin-bottom: 10px;
 
   h4 {
-    font-size: 28px;
+    font-size: 2.8rem;
     font-weight: lighter;
   }
 
   i {
-    font-size: 28px;
+    font-size: 2.8rem;
     padding-right: 10px;
   }
 }
@@ -245,7 +245,7 @@ export default class CaptureToolboxComponent extends Vue {
 
 .field {
   i {
-    font-size: 20px;
+    font-size: 2.0rem;
     color: #707070;
     margin: 3px 5px 3px 0px;
   }

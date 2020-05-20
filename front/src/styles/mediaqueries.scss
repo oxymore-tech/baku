@@ -1,0 +1,40 @@
+// Phones and tablets
+@media (max-width: 992px) { 
+
+  html {
+    // font-size: 10px;
+    font-size: 62.5%;
+  }
+
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) { 
+  
+  html {
+    //  font-size: 10px;
+    font-size: 62.5%;
+  }
+
+}
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) { 
+  
+  html {
+    //  font-size: 10px;
+    font-size: 62.5%;
+  }
+  .app.app-home {
+    background-size: auto 50%;
+  }
+
+}
+
+.button, .input, .taginput .taginput-container.is-focusable, .textarea, .select select, .file-cta, .file-name, .pagination-previous, .pagination-next, .pagination-link, .pagination-ellipsis {
+  font-size: 1.2rem;
+}
+
+.dropdown-item, .dropdown .dropdown-menu .has-link a {
+  font-size: 1.4rem;
+}

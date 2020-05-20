@@ -137,6 +137,7 @@
   @import "styles/style.scss";
   @import "styles/buefy.scss";
   @import "assets/style.css";
+  @import "styles/mediaqueries.scss";
 
   .left-nav {
     display: flex;
@@ -144,7 +145,7 @@
   }
 
   .movie-title {
-    font-size: 24px;
+    font-size: 2.4rem;
     margin: 0 24px;
     overflow: hidden;
     /* height: 100%; */

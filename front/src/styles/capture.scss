@@ -67,22 +67,22 @@
 }
 
 @media screen and (max-width: 1699px) {
-  #video-capture {
-    width: 640px;
-    height: 360px;
-  }
   .preview-container {
     width: 640px;
-  }
+  
+    .preview-content {
+      width: 640px;
+      height: 360px;
 
-  .preview-content {
-    width: 640px;
-    height: 360px;
-  }
-
-  #preview-img {
-    width: 640px;
-    height: 360px;
+      #video-capture {
+        width: 640px;
+        height: 360px;
+      }
+      #preview-img {
+        width: 640px;
+        height: 360px;
+      }
+    }
   }
 }
 
@@ -103,21 +103,23 @@
 .media-controls {
   width: 100%;
   display: flex;
-  font-size: 18px;
+  font-size: 1.8rem;
   align-items: center;
   justify-content: space-between;
 
   .clock {
-    background: #455054;
+    width: 8rem;
+    height: 3.5rem;
+    background-color: #455054;
     border-radius: 8px;
     color: white;
-    padding: 1px 5px;
-    width: 85px;
-    font-size: 26px;
-    margin-bottom: 5px;
+    // padding: 1px 5px;
+    font-size: 2.6rem;
+    // margin-bottom: 5px;
+    text-align: center;
 
     .clock-small {
-      font-size: 18px;
+      font-size: 1.8rem;
     }
   }
 
@@ -130,7 +132,11 @@
   }
 
   .toolbar-button-big {
-    font-size: 32px;
+    font-size: 3rem;
+  }
+
+  .item-title {
+    font-size: 1.6rem;
   }
 }
 
