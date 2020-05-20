@@ -7,7 +7,7 @@
     <div class="toolbar">
       <div v-if="!isMultiSelect"
         class="toolbar-button"
-        @click="changeSelection(activeImage - computedLeftCarrousel.length, activeImage + computedRightCarrousel.length  )"
+        @click="changeSelection(0, images.length - 1)"
         :class="{disabled : isFrameLiveView || isPlaying || !canEdit}"
       >
         <i class="icon-copy baku-button" />

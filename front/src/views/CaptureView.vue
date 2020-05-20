@@ -318,6 +318,10 @@ export default class CaptureView extends AbstractProjectView {
 
     public playAnimation() {
       if (!this.isPlaying && this.getActiveShot.images.length > 0) {
+        if(this.currentDisplayedFrame === this.getActiveShotImgCount) {
+          this.moveFrameAbsolute(0);
+          this.syncActiveFrame();
+        }
         this.initPlay('animation');
         this.animationBoundaries = {
           left: 0,
@@ -423,6 +427,7 @@ export default class CaptureView extends AbstractProjectView {
     }
 
     public moveToCapture() {
+      this.pauseAnimation();
       this.onActiveFrameChange(this.getActiveShot.images.length);
     }
 

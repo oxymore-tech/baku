@@ -55,7 +55,7 @@
           <option :value="24">24</option>
           <option :value="25">25</option>
         </b-select>
-        <span class="control-label">Définir le nombre d'images par seconde</span>
+        <span class="control-label">Images par seconde</span>
       </div>
     </b-dropdown-item>
   </b-dropdown>

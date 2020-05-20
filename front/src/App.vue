@@ -22,10 +22,10 @@
           <div class="label-menu" slot="trigger" role="button">
             <p v-if="$route.params.projectId"> {{ this.movie.title }}<i
               class="icon-angle-down baku-button"/></p>
-            <p v-else> Ma librairie<i class="icon-angle-down baku-button"/></p>
+            <p v-else> Mes films<i class="icon-angle-down baku-button"/></p>
           </div>
 
-          <b-dropdown-item class aria-role="listitem">
+          <b-dropdown-item class aria-role="listitem" v-if="$route.name !== 'library'">
             <div class="option-logo" @click="onClickMyLibrary()">
               <i class="icon-folder-open-regular baku-button"/>
               <span>Mes films</span>

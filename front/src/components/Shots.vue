@@ -7,7 +7,7 @@
     <div id="movie-header">
       <p style="display: flex; align-items: center;">
       Statut du film :
-      <b-switch style="margin-left: 10px" v-if="canUnLock" :value="movie.locked" @input="lockMovie(!movie.locked)">{{ movie.locked ? 'Verrouillé' : 'Déverrouillé'}}</b-switch>
+      <b-switch style="margin-left: 10px" :disabled="!canUnLock" :value="movie.locked" @input="lockMovie(!movie.locked)">{{ movie.locked ? 'Verrouillé' : 'Déverrouillé'}}</b-switch>
       </p>
         <p>Nombres d'images : {{ getImageCount }}</p>
         <p>Durée du film : {{ getDurationString(movieDuration) }}</p>
@@ -44,16 +44,21 @@
                     </b-dropdown-item>
             -->
             <b-dropdown-item
+                    v-if="shot.locked"
                     class="dropdown-item-bloc"
                     aria-role="listitem"
-                    @click="lockShot(shot.id, !shot.locked)"
+                    @click="lockShot(shot.id, !shot.locked)" :disabled="!canUnLock"
             >
-              <template v-if="shot.locked && canUnLock && canEditMovie">
                 <i class="icon-unlock-solid baku-button"></i> Déverouiller le plan
-              </template>
-              <template v-if="!shot.locked && canEditMovie">
+
+            </b-dropdown-item>
+            <b-dropdown-item
+                    v-if="!shot.locked"
+                    class="dropdown-item-bloc"
+                    aria-role="listitem"
+                    @click="lockShot(shot.id, !shot.locked)" :disabled="!canEditMovie"
+            >
                 <i class="icon-lock-solid baku-button"></i> Verouiller le plan
-              </template>
             </b-dropdown-item>
             <b-dropdown-item
                     v-if="!shot.locked && canEditMovie"

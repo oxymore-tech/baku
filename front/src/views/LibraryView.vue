@@ -108,7 +108,7 @@
 
               <div @click="onDelete(project.id)">
                 <i class="icon-close"/>
-                <span class ="baku-button">Supprimer</span>
+                <span class ="baku-button"> {{ project.adminId ? 'Supprimer':'Effacer de l\'historique' }} </span>
               </div>
 
             </div>
