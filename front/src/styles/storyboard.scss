@@ -1,6 +1,5 @@
 .storyboard-preview-container {
-  width: 20%;
-  max-width: 200px;
+  width: 200px;
   padding: 10px 0;
 }
 
@@ -31,4 +30,11 @@
   background-color: #F2F2F2;
   padding: 5px;
   font-size: 1rem;
+}
+
+// Phones and tablets
+@media (max-width: 992px) { 
+  .storyboard-preview-container {
+    display: none;
+  }
 }
