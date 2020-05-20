@@ -28,6 +28,7 @@
   align-items: center;
   margin-left:0.7vw;
   margin-bottom: 24px;
+  font-size: 1.2rem;
 
   p {
     margin-right: 30px;
@@ -65,14 +66,14 @@
 }
 
 .shot-card {
-  width: 18vw;
-  height: 18vw;
+  width: 180px;
+  height: 180px;
   background: #ffffff 0 0 no-repeat padding-box;
   background-repeat: no-repeat;
   background-size:contain;
   border-radius: 8px;
   opacity: 1;
-  margin: 0.7vw;
+  margin: 6px;
   font-size: 1.6rem/0.6rem;
   letter-spacing: 0;
   align-items: flex-end;

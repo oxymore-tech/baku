@@ -7,11 +7,6 @@ i[class^="icon-"] {
   margin: 0.2rem;
 }
 
-.icon.is-left {
-  top: 1rem;
-  left: 1rem;
-}
-
 .library {
 
   .title {
@@ -26,12 +21,6 @@ i[class^="icon-"] {
     flex: 1;
     overflow-y: auto;
     margin: auto;
-  }
-
-  @media (min-width: 1200px) {
-    .movie-gallery {
-      width: calc(100% - 300px);
-    }
   }
 
   .flex-row {
@@ -52,13 +41,6 @@ i[class^="icon-"] {
     position: relative;
   }
 
-  @media (min-width: 1400px) { 
-    .top-section .toolbar {
-      position: absolute;
-      top: 20px;      
-    }
-  }
-
   .movie-export-message {
     display: flex;
     flex-direction: row;
@@ -77,21 +59,6 @@ i[class^="icon-"] {
       font-size: 1.6rem;
     }
 
-  }
-
-  @media (min-width: 1400px) { 
-    .export-message {
-      max-width: 800px;
-    }
-  }
-
-  @media (max-width: 768px) { 
-  
-    img {
-      width: 90px;
-      height: 76px;
-    }
-  
   }
 
   .export-url-button {
@@ -133,19 +100,7 @@ i[class^="icon-"] {
         margin: 10px;
         cursor: pointer;
       }
-
-      @media (max-width: 768px) { 
-        img {
-          width: 90px;
-          height: 76px;
-        }      
-      }
-    }
-
-    @media (max-width: 768px) { 
-      .column-img {
-        width: 90px;
-      }    
+      
     }
 
     .movie-info {
@@ -205,6 +160,19 @@ i[class^="icon-"] {
     padding: 6px;
   }
 
+  @media (max-width: 768px) { 
+  
+    .column-img {
+      width: 90px;
+    }    
+    
+    img, .column-img img {
+      width: 90px;
+      height: 76px;
+    }
+  
+  }
+
   @media (min-width: 992px) { 
     .movie-toolbars {
       flex-direction: row;
@@ -223,6 +191,7 @@ i[class^="icon-"] {
   @media (min-width: 1200px) { 
 
     .movie-gallery {
+      width: calc(100% - 300px);
       max-width: 1250px;
     }
 
@@ -241,6 +210,19 @@ i[class^="icon-"] {
     .movie-toolbar-1 .button-open {
       margin-right: 12px;
     }
+  }
+
+  @media (min-width: 1400px) { 
+    
+    .top-section .toolbar {
+      position: absolute;
+      top: 20px;      
+    }
+
+    .export-message {
+      max-width: 800px;
+    }
+
   }
 
 }
