@@ -172,8 +172,8 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   }
 
   private gotRemoteStream(e: any) {
-    console.log('track',e);
-    if(e.stream && e.streams[0]) {
+    console.log('track', e);
+    if (e.stream && e.streams[0]) {
       this.$store.commit('webrtc/setMediaStream', e.streams[0]);
     } else {
       const inboundStream = new MediaStream();
