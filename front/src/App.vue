@@ -20,9 +20,14 @@
 
         <b-dropdown append-to-body aria-role="list" v-if="$route.name !== 'home'">
           <div class="label-menu" slot="trigger" role="button">
-            <p v-if="$route.params.projectId"> {{ this.movie.title }}<i
-              class="icon-angle-down baku-button"/></p>
-            <p v-else> Ma librairie<i class="icon-angle-down baku-button"/></p>
+            <p v-if="$route.params.projectId">
+              {{ this.movie.title }}
+              <i class="icon-ellipsis-v baku-button"/>
+            </p>
+            <p v-else>
+              Ma librairie
+              <i class="icon-ellipsis-v baku-button"/>
+            </p>
           </div>
 
           <b-dropdown-item class aria-role="listitem">
@@ -49,7 +54,7 @@
 
         <b-dropdown append-to-body aria-role="list"
                     v-if="$route.params.projectId && ($route.name === 'captureShot' || $route.name === 'movie') ">
-          <div class="label-menu label-menu-sep-left" slot="trigger" role="button">
+          <div class="label-menu" slot="trigger" role="button">
             <p v-if="$route.name === 'captureShot'">Capture <i
               class=" icon-angle-down baku-button"/></p>
             <p v-else-if="$route.name === 'movie'">Plans <i
@@ -96,7 +101,7 @@
           title="Plan précédent"
         >&lt;
         </div>
-        <div class="baku-button" @click="onOpenPlan()">
+        <div class="active-plan-button" @click="onOpenPlan()">
           <template
             v-if="$route.name === 'captureShot' && activeShotIndex >= 0"
           >Plan {{ activeShotIndex + 1 }}
@@ -151,6 +156,11 @@
     /* height: 100%; */
     text-overflow: clip;
     white-space: nowrap;
+  }
+
+  .active-plan-button {
+    cursor: pointer;
+    font-size: 1.8rem;
   }
 </style>
 

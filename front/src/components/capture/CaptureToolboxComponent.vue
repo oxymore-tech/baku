@@ -8,6 +8,7 @@
     trap-focus
   >
     <a class="navbar-item" slot="trigger" role="button" slot-scope="{ active }">
+      <i class="icon-webcam"></i>
       <span class="item-title">Réglages vidéo</span>
       <b-icon :icon="active ? 'menu-down' : 'menu-up'"></b-icon>
     </a>
@@ -211,6 +212,10 @@ export default class CaptureToolboxComponent extends Vue {
 </script>
 
 <style lang="scss">
+
+.dropdown-menu {
+  width: 20rem;
+}
 .collapse-content {
   background-color: white;
   padding: 6px;
@@ -233,6 +238,11 @@ export default class CaptureToolboxComponent extends Vue {
   }
 }
 
+.item-title {
+  margin-left: 5px;
+  font-size: 1.6rem;
+}
+
 .onionSkinInput {
   height: 27px;
   .switch {
@@ -246,10 +256,15 @@ export default class CaptureToolboxComponent extends Vue {
 }
 
 .field {
+  font-size: 1.2rem;
   i {
     font-size: 2.0rem;
     color: #707070;
     margin: 3px 5px 3px 0px;
+  }
+
+  .control {
+    margin-right: 5px;
   }
 }
 </style>
