@@ -3,24 +3,29 @@
 </style>
 
 <template>
+
   <div class="main-frame library">
 
-    <div class="movie-export-message">
-      <div class="export-message">
-        <p>
-          Cette liste est une aide pour faciliter l'utilisation de Baku. Elle n'est pas
-          sauvegardée dans nos serveurs. Si vous changez de navigateur, elle sera perdue. Nous
-          vous conseillons de sauvegarder les url des films que vous souhaitez conserver.
-        </p>
-        <b-button class="export-url-button" @click="exportUrls">
-          <i class="icon-attachment"></i>
-          Exporter les url
-        </b-button>
-      </div>
-    </div>
+    <div class="top-section">
 
-    <div class="toolbar">
-      <b-switch v-model="showDemoProjects">Afficher les films de démonstration</b-switch>
+      <div class="movie-export-message">
+        <div class="export-message">
+          <p>
+            Cette liste est une aide pour faciliter l'utilisation de Baku. Elle n'est pas
+            sauvegardée dans nos serveurs. Si vous changez de navigateur, elle sera perdue. Nous
+            vous conseillons de sauvegarder les url des films que vous souhaitez conserver.
+          </p>
+          <b-button class="export-url-button" @click="exportUrls">
+            <i class="icon-attachment"></i>
+            Exporter les url
+          </b-button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <b-switch v-model="showDemoProjects">Afficher films démos</b-switch>
+      </div>
+
     </div>
 
     <div class="movie-gallery">
@@ -43,14 +48,11 @@
               <inline-input :value="project.title"
                             :disabled="project.locked"
                             placeholder="Titre"
-                            icon="pencil"
                             custom-class="movie-card-title"
                             editTitle="Cliquez pour renommer le film" style="flex:1"
                             @input="setTitle(project, $event)"/>
 
-              <div class="button-open">
-                <b-button type="is-primary" @click="onOpen(project.adminId || project.id)">Ouvrir</b-button>
-              </div>
+              <span class="movie-card-duration" v-if="project.totalImages">{{getDurationString(project)}}</span>
 
             </div>
 
@@ -64,51 +66,51 @@
 
           </div>
 
-          <div class="movie-toolbar-1">
+          <div class="movie-toolbars">
 
-            <div>
-              <div v-if="project.lastUpdate">
-                <div class="indication">Mise à jour :</div>
-                <div>{{ project.lastUpdate | formatDate }}</div>
-                <br/>
+            <div class="movie-toolbar-1">
+
+                <div v-if="project.lastUpdate">
+                  <div class="indication">Mise à jour :</div>
+                  <div>{{ project.lastUpdate | formatDate }}</div>
+                </div>
+
+                <div class="button-open">
+                  <b-button type="is-primary" @click="onOpen(project.adminId || project.id)">Ouvrir</b-button>
+                </div>
+
+                <!--<div v-if="project.totalImages">
+                  <span class="indication">Images : </span>
+                  <span>{{project.totalImages}}</span>
+                </div>-->
+
+            </div>
+
+            <div class="movie-toolbar-2">
+
+              <div class="movie-action" @click="onCopy(project.id, true)">
+                <i class="icon-copy-regular"/>
+                <span class="baku-button">Copier l'url de partage</span>
               </div>
-              <div v-if="project.totalImages">
-                <span class="indication">Durée : </span>
-                <span>{{getDurationString(project)}}</span>
+
+              <div class="movie-action" v-if="project.adminId"
+                    @click="onCopy(project.adminId, false)">
+                <i class="icon-copy-solid"/>
+                <span class="baku-button">Copier l'url d'administration</span>
               </div>
-              <div v-if="project.totalImages">
-                <span class="indication">Images : </span>
-                <span>{{project.totalImages}}</span>
+
+              <div class="movie-action" @click="onMovieExportUrl(project.id)">
+                <i class="icon-image-sequence"/>
+                <span class="baku-button">Exporter les images</span>
               </div>
-            </div>
 
+              <video-button :id="project.id"/>
 
+              <div @click="onDelete(project.id)">
+                <i class="icon-close"/>
+                <span class ="baku-button">Supprimer</span>
+              </div>
 
-          </div>
-
-          <div class="movie-toolbar-2">
-
-            <div class="movie-action" @click="onCopy(project.id, true)">
-              <i class="icon-copy-regular"/>
-              <span class="baku-button">Copier l'url de partage</span>
-            </div>
-
-            <div class="movie-action" v-if="project.adminId"
-                  @click="onCopy(project.adminId, false)">
-              <i class="icon-copy-solid"/>
-              <span class="baku-button">Copier l'url d'administration</span>
-            </div>
-
-            <div class="movie-action" @click="onMovieExportUrl(project.id)">
-              <i class="icon-image-sequence"/>
-              <span class="baku-button">Exporter les images</span>
-            </div>
-
-            <video-button :id="project.id"/>
-
-            <div @click="onDelete(project.id)">
-              <i class="icon-close"/>
-              <span class ="baku-button">Supprimer</span>
             </div>
 
           </div>
