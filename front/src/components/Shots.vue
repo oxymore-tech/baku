@@ -19,7 +19,7 @@
         v-for="(shot, index) in movie.shots"
         :key="shot.id"
         class="shot-card"
-        :style="{background:'url(' + shot.images[0] ? shot.images[0].getUrl('original') : Spinner +') no-repeat, white', 'background-size': 'contain'}"
+        :style="{background:'url(' + (shot.images[0] ? shot.images[0].getUrl('original') : Spinner) +') no-repeat, white', 'background-size': 'contain'}"
       >
           <b-dropdown position="is-bottom-right" aria-role="list" class="shot-menu" @click.native.stop>
             <a class="settings-icon" slot="trigger">
@@ -136,9 +136,6 @@ export default class Shots extends Vue {
   protected getHours!: any;
 
   @ProjectNS.Getter
-  protected getTimesByShot!: any;
-
-  @ProjectNS.Getter
   protected getMinutes!: any;
 
   @ProjectNS.Getter
@@ -149,25 +146,6 @@ export default class Shots extends Vue {
 
   @ProjectNS.Action('lockMovie')
   protected lockMovie!: (locked: boolean) => Promise<void>;
-
-  get shots(): any {
-    return this.movie.shots.map(
-      (shot: any, index: any): Shot => {
-        const previewUrl = shot.images[0]
-          ? shot.images[0].getUrl(Quality.Original)
-          : Spinner;
-        return {
-          id: shot.id,
-          name: `Plan ${index + 1}`,
-          previewUrl,
-          imageNb: shot.images.length,
-          locked: shot.locked,
-          synopsis: shot.synopsis,
-          duration: this.getTimesByShot[shot.id],
-        };
-      },
-    );
-  }
 
   public async createNewShot() {
     const shotId = await this.$store.dispatch('project/createShot');
