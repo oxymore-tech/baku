@@ -78,7 +78,7 @@
                 <i class="icon-unlock-solid baku-button"></i>
               </template>
               <span class="shot-name">{{`Plan ${index + 1}`}}</span>
-              <span class="shot-details">{{ getImagesString(shot.imageNb) }}</span>
+              <span class="shot-details">{{ getImagesString(shot.images.length ) }}</span>
               <p class="shot-storyboard">Synopsis: {{ shot.synopsis }}</p>
             </div>
           </div>
