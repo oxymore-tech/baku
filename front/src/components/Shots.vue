@@ -16,10 +16,10 @@
     <div class="shot-cards-container">
       <div
         @click.prevent="activateShot(shot.id)"
-        v-for="shot in shots"
+        v-for="(shot, index) in movie.shots"
         :key="shot.id"
         class="shot-card"
-        :style="{background:'url(' + shot.previewUrl +') no-repeat, white', 'background-size': 'contain'}"
+        :style="{background:'url(' + shot.images[0] ? shot.images[0].getUrl('original') : Spinner +') no-repeat, white', 'background-size': 'contain'}"
       >
           <b-dropdown position="is-bottom-right" aria-role="list" class="shot-menu" @click.native.stop>
             <a class="settings-icon" slot="trigger">
@@ -77,7 +77,7 @@
               <template v-if="!shot.locked">
                 <i class="icon-unlock-solid baku-button"></i>
               </template>
-              <span class="shot-name">{{ shot.name }}</span>
+              <span class="shot-name">{{`Plan ${index + 1}`}}</span>
               <span class="shot-details">{{ getImagesString(shot.imageNb) }}</span>
               <p class="shot-storyboard">Synopsis: {{ shot.synopsis }}</p>
             </div>
@@ -136,6 +136,9 @@ export default class Shots extends Vue {
   protected getHours!: any;
 
   @ProjectNS.Getter
+  protected getTimesByShot!: any;
+
+  @ProjectNS.Getter
   protected getMinutes!: any;
 
   @ProjectNS.Getter
@@ -160,11 +163,7 @@ export default class Shots extends Vue {
           imageNb: shot.images.length,
           locked: shot.locked,
           synopsis: shot.synopsis,
-          duration: {
-            hours: this.getHours(index),
-            minutes: this.getMinutes(index),
-            seconds: this.getSeconds(index),
-          },
+          duration: this.getTimesByShot[shot.id],
         };
       },
     );

@@ -198,6 +198,17 @@ export const ProjectStore: BakuModule<ProjectState> = {
       return MovieService.getTotalImages(getters.movie);
     },
 
+    getTimesByShot:(state, getters) => {
+      return getters.movie.shots.reduce((prev: any, curr: Shot) => {
+        prev[curr.id] = {
+          'hours': computeHours(curr.images.length, getters.movie.fps),
+          'minutes': computeMinutes(curr.images.length, getters.movie.fps),
+          'seconds': computeSeconds(curr.images.length, getters.movie.fps),
+        };
+        return prev;
+      }, {})
+    },
+
     getHours: (state, getters): any =>
       (shotIndex: number | undefined): any => {
         let imgNb: number
