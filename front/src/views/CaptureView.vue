@@ -303,9 +303,8 @@ export default class CaptureView extends AbstractProjectView {
           imageSelector!.setFrame(frame);
         }
 
-        // TODO settings textContext in Chromium is SOOOOO time consuming in layout
-        // (this.$refs.minutes as HTMLElement).textContent = this.nbMins(frame);
-        // (this.$refs.seconds as HTMLElement).textContent = this.nbSecs(frame);
+        (this.$refs.minutes as HTMLElement).textContent = this.nbMins(frame);
+        (this.$refs.seconds as HTMLElement).textContent = this.nbSecs(frame);
       }
     }
 
@@ -423,8 +422,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
     get IsFrameLiveView() {
-      return false;
-      // return this.activeFrame === this.getActiveShot?.images.length;
+      return this.activeFrame === this.getActiveShot?.images.length;
     }
 
     private onImagePreloaded(imageId: string): void {
