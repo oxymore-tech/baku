@@ -78,7 +78,7 @@
                 <i class="icon-unlock-solid baku-button"></i>
               </template>
               <span class="shot-name">{{`Plan ${index + 1}`}}</span>
-              <span class="shot-details">{{ getImagesString(shot.images.length ) }}</span>
+              <span class="shot-details">{{ getImagesString(shot.images.length) }}</span>
               <p class="shot-storyboard">Synopsis: {{ shot.synopsis }}</p>
             </div>
           </div>
@@ -98,22 +98,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Duration } from '@/utils/types';
-import { Spinner } from '@/utils/spinner.class';
-import { Quality } from '@/utils/uploadedImage.class';
 import { Movie, MovieService } from '@/utils/movie.service';
 import * as api from '@/api';
 
 const ProjectNS = namespace('project');
-
-type Shot = {
-  id: string;
-  name: string;
-  previewUrl: string;
-  locked: boolean;
-  imageNb: number;
-  duration: Duration;
-  synopsis: string;
-};
 
 @Component
 export default class Shots extends Vue {
