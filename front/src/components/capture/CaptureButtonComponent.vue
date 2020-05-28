@@ -3,7 +3,7 @@
     <audio ref="audio" src="@/assets/camera_shutter.mp3"/>
     <i class="icon-camera" v-if="canCapture && !protectCapture" @click="capture()" style="color:#e66359; font-size: 3rem" />
     <i class="icon-camera" style="cursor:default" v-else-if="canCapture && protectCapture"/>
-    <img v-else src="@/assets/camera-off-color.svg" style="height:32px;" @click="moveToCapture()" />
+    <img v-else src="@/assets/camera-off-color.svg" style="height:32px; max-width:unset" @click="moveToCapture()" />
   </div>
 </template>
 

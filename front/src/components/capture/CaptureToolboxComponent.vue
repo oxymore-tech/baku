@@ -43,7 +43,6 @@
           type="light"
           :value="onionSkinValue"
           @input="setOnionSkinValue($event)"
-          size="is-small"
           controls-position="compact"
           min="1"
           max="5"
@@ -252,7 +251,7 @@ export default class CaptureToolboxComponent extends Vue {
   .b-numberinput {
     margin-left: 20px;
     // float: right;
-    width: 75px;
+    width: 90px;
   }
 }
 

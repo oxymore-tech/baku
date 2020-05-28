@@ -91,7 +91,8 @@
       </div>
 
       <div
-        class="flex-container"
+        class="flex-container flex-center"
+        style="font-size: 1.8rem"
         v-if="$route.name === 'captureShot' && activeShotIndex >= 0 || $route.name === 'movie'"
       >
         <div
