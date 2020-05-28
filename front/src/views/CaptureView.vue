@@ -429,7 +429,9 @@ export default class CaptureView extends AbstractProjectView {
     if (this.getActiveShot.images[this.activeFrame].id === imageId) {
       this.displayFrame(this.activeFrame);
     }
-    (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
+    if (this.$refs.carrousel) {
+      (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
+    }
   }
 
   public moveFrame(moveOffset: number) {
