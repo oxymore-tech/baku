@@ -114,6 +114,11 @@ nav {
 
 .flex-container {
   display: flex;
+
+  &.flex-center {
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .previous-plan,

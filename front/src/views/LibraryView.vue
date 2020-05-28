@@ -38,7 +38,10 @@
         >
 
           <div class="column-img">
-            <img :src="project.posterUrl" :alt="`${project.title} poster`" @click="onOpen(project.id)"/>
+            <!-- <img :src="project.posterUrl" :alt="`${project.title} poster`" @click="onOpen(project.id)"/> -->
+            <div v-bind:style="{ backgroundImage: 'url(' + project.posterUrl + ')' }"
+              class="project-image-container"
+              @click="onOpen(project.id)"></div>
           </div>
 
           <div class="movie-info">

@@ -19,7 +19,7 @@
         v-for="shot in shots"
         :key="shot.id"
         class="shot-card"
-        :style="{background:'url(' + shot.previewUrl +') no-repeat, white', 'background-size': 'contain'}"
+        :style="{ backgroundImage:'url(' + shot.previewUrl +')' }"
       >
           <b-dropdown position="is-bottom-right" aria-role="list" class="shot-menu" @click.native.stop>
             <a class="settings-icon" slot="trigger">
@@ -49,7 +49,7 @@
                     aria-role="listitem"
                     @click="lockShot(shot.id, !shot.locked)" :disabled="!canUnLock"
             >
-                <i class="icon-unlock-solid baku-button"></i> Déverouiller le plan
+                <i class="icon-unlock-solid baku-button"></i> Déverrouiller le plan
 
             </b-dropdown-item>
             <b-dropdown-item
@@ -58,7 +58,7 @@
                     aria-role="listitem"
                     @click="lockShot(shot.id, !shot.locked)" :disabled="!canEditMovie"
             >
-                <i class="icon-lock-solid baku-button"></i> Verouiller le plan
+                <i class="icon-lock-solid baku-button"></i> Verrouiller le plan
             </b-dropdown-item>
             <b-dropdown-item
                     v-if="!shot.locked && canEditMovie"
