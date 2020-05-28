@@ -19,7 +19,7 @@
         v-for="(shot, index) in movie.shots"
         :key="shot.id"
         class="shot-card"
-        :style="{background:'url(' + (shot.images[0] ? shot.images[0].getUrl('original') : Spinner) +') no-repeat, white', 'background-size': 'contain'}"
+        :style="{background:'url(' + (shot.images[0] ? shot.images[0].getUrl('original') : spinner) +') no-repeat, white', 'background-size': 'contain'}"
       >
           <b-dropdown position="is-bottom-right" aria-role="list" class="shot-menu" @click.native.stop>
             <a class="settings-icon" slot="trigger">
@@ -100,6 +100,7 @@ import { namespace } from 'vuex-class';
 import { Duration } from '@/utils/types';
 import { Movie, MovieService } from '@/utils/movie.service';
 import * as api from '@/api';
+import { Spinner } from "@/utils/spinner.class";
 
 const ProjectNS = namespace('project');
 
@@ -134,6 +135,8 @@ export default class Shots extends Vue {
 
   @ProjectNS.Action('lockMovie')
   protected lockMovie!: (locked: boolean) => Promise<void>;
+
+  public spinner: string = Spinner;
 
   public async createNewShot() {
     const shotId = await this.$store.dispatch('project/createShot');
