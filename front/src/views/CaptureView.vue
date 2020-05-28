@@ -391,6 +391,13 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
+  @Watch('$route.params.shotId')
+  public onShotIdChange(id: string) {
+    this.$store
+      .dispatch('project/changeActiveShot', this.$route.params.shotId)
+      .then(() => this.displayFrame(0));
+  }
+
   @Watch('stream')
   public onStreamChange(newValue: MediaStream, _oldValue: MediaStream) {
     if (newValue) {
