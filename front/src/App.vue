@@ -134,7 +134,7 @@
         </div>
       </div>
     </nav>
-    <router-view :key="$route.fullPath"/>
+    <router-view/>
   </div>
 </template>
 
@@ -262,8 +262,15 @@ export default class App extends Vue {
       await this.moveToShot(shotId);
     }
 
-    private moveToShot(shotId: string) {
-      return this.$store.dispatch('project/changeActiveShot', shotId);
+    private async moveToShot(shotId: string) {
+      return this.$router.push({
+        name: 'captureShot',
+        params: {
+          projectId: this.id,
+          shotId,
+        },
+      });
+      // return this.$store.dispatch('project/changeActiveShot', shotId);
     }
 
     public openIssue() {

@@ -27,9 +27,9 @@
 
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator';
-  import {VideoStatus, VideoStatusEnum} from '@/utils/types';
-  import * as api from '@/api';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { VideoStatus, VideoStatusEnum } from '@/utils/types';
+import * as api from '@/api';
 
   @Component
 export default class InlineInput extends Vue {
