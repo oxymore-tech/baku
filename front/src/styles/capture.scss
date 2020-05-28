@@ -7,7 +7,7 @@
   max-height: calc(100% - 145px);
 
   .preview-container {
-    width: 55%;
+    width: 48%;
     display: flex;
     flex-direction: column;
     margin: 0 10px;
@@ -35,10 +35,12 @@
         }
 
         #preview-img {
-          width: 100%;
+          // width: 100%;
           height: 100%;
           background: white;
           position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
         }
 
         .onion-skin {
@@ -117,9 +119,16 @@
 
 
 // Phones and tablets
-@media (max-width: 992px) { 
+@media (max-width: 992px) and (min-height: 575px) { 
   .preview-bloc .preview-container {
-    width: calc(100% - 100px);
+    width: calc(75% - 100px);
+  }
+}
+
+// Little heights
+@media (max-height: 767px) { 
+  .preview-bloc .preview-container {
+    width: 30%;
   }
 }
 
