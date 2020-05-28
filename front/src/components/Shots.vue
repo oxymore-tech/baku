@@ -16,10 +16,10 @@
     <div class="shot-cards-container">
       <div
         @click.prevent="activateShot(shot.id)"
-        v-for="shot in shots"
+        v-for="(shot, index) in movie.shots"
         :key="shot.id"
         class="shot-card"
-        :style="{background:'url(' + shot.previewUrl +') no-repeat, white', 'background-size': 'contain'}"
+        :style="{background:'url(' + (shot.images[0] ? shot.images[0].getUrl('original') : Spinner) +') no-repeat, white', 'background-size': 'contain'}"
       >
           <b-dropdown position="is-bottom-right" aria-role="list" class="shot-menu" @click.native.stop>
             <a class="settings-icon" slot="trigger">
@@ -77,8 +77,8 @@
               <template v-if="!shot.locked">
                 <i class="icon-unlock-solid baku-button"></i>
               </template>
-              <span class="shot-name">{{ shot.name }}</span>
-              <span class="shot-details">{{ getImagesString(shot.imageNb) }}</span>
+              <span class="shot-name">{{`Plan ${index + 1}`}}</span>
+              <span class="shot-details">{{ getImagesString(shot.images.length) }}</span>
               <p class="shot-storyboard">Synopsis: {{ shot.synopsis }}</p>
             </div>
           </div>
@@ -98,22 +98,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Duration } from '@/utils/types';
-import { Spinner } from '@/utils/spinner.class';
-import { Quality } from '@/utils/uploadedImage.class';
 import { Movie, MovieService } from '@/utils/movie.service';
 import * as api from '@/api';
 
 const ProjectNS = namespace('project');
-
-type Shot = {
-  id: string;
-  name: string;
-  previewUrl: string;
-  locked: boolean;
-  imageNb: number;
-  duration: Duration;
-  synopsis: string;
-};
 
 @Component
 export default class Shots extends Vue {
@@ -146,29 +134,6 @@ export default class Shots extends Vue {
 
   @ProjectNS.Action('lockMovie')
   protected lockMovie!: (locked: boolean) => Promise<void>;
-
-  get shots(): any {
-    return this.movie.shots.map(
-      (shot: any, index: any): Shot => {
-        const previewUrl = shot.images[0]
-          ? shot.images[0].getUrl(Quality.Original)
-          : Spinner;
-        return {
-          id: shot.id,
-          name: `Plan ${index + 1}`,
-          previewUrl,
-          imageNb: shot.images.length,
-          locked: shot.locked,
-          synopsis: shot.synopsis,
-          duration: {
-            hours: this.getHours(index),
-            minutes: this.getMinutes(index),
-            seconds: this.getSeconds(index),
-          },
-        };
-      },
-    );
-  }
 
   public async createNewShot() {
     const shotId = await this.$store.dispatch('project/createShot');
