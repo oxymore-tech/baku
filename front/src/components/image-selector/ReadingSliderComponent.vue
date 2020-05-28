@@ -201,6 +201,11 @@ export default class ReadingSliderComponent extends Vue {
     return (this.$refs.slider as any).clientWidth;
   }
 
+  public setFrame(value: number) {
+    const buttonSelected = this.$refs.buttonSelected as ReadingSliderThumbComponent;
+    buttonSelected.setFrame(value);
+  }
+
   setValues(newValue: ReadingSliderValue) {
     if (this.min > this.max) {
       return;

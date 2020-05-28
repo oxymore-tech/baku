@@ -16,18 +16,18 @@
             <div class="preview-content">
               <template v-if="onionSkinDisplay">
                 <img
-                  v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - onionSkinValue] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
+                  v-if="getActiveShot && getActiveShot.images[activeFrame - onionSkinValue] && activeDevice && IsFrameLiveView && onionSkinDisplay > 0"
                   alt="ghostImg"
                   id="ghost-img"
-                  :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - onionSkinValue].id)"
+                  :src="ImageCacheService.getImage(getActiveShot.images[activeFrame - onionSkinValue].id)"
                 />
                 <template v-for="ghostIndex in onionSkinAsArray">
                   <img
                     :key="ghostIndex"
-                    v-if="getActiveShot && getActiveShot.images[currentCarrousselFrame - ghostIndex] && activeDevice && IsFrameLiveView"
+                    v-if="getActiveShot && getActiveShot.images[activeFrame - ghostIndex] && activeDevice && IsFrameLiveView"
                     alt="ghostImg"
                     class="onion-skin"
-                    :src="ImageCacheService.getImage(getActiveShot.images[currentCarrousselFrame - ghostIndex].id)"
+                    :src="ImageCacheService.getImage(getActiveShot.images[activeFrame - ghostIndex].id)"
                   />
                 </template>
               </template>
@@ -51,11 +51,12 @@
           </div>
           <div class="preview-actions">
             <ImagesSelectorComponent
+              ref="imageSelector"
               v-if="getActiveShot"
               :projectId="id"
               :activeShot="getActiveShot.id"
               :images="getActiveShot.images"
-              :activeImage="currentDisplayedFrame"
+              :activeImage="activeFrame"
               :canEdit="canEdit"
               @activeImageChange="onActiveFrameChange"
               :activeDevice="activeDevice"
@@ -63,9 +64,9 @@
             />
             <div class="media-controls">
               <div class="clock">
-                <span>{{ nbMins(this.currentDisplayedFrame) }}</span>
+                <span ref="minutes">{{ nbMins(this.activeFrame) }}</span>
                 <span class="clock-small">:</span>
-                <span>{{ nbSecs(this.currentDisplayedFrame) }}</span>
+                <span ref="seconds">{{ nbSecs(this.activeFrame) }}</span>
               </div>
 
               <div style="display:inline-flex; align-items:center;">
@@ -106,7 +107,7 @@
                   v-if="canEdit"
                   :device="activeDevice"
                   :projectId="id"
-                  :canCapture="currentDisplayedFrame === getActiveShotImgCount"
+                  :canCapture="activeFrame === getActiveShotImgCount"
                   @captured="onCaptured"
                   @uploaded="onUploaded"
                   @moveToCapture="moveToCapture()"
@@ -145,11 +146,11 @@
         :projectId="id"
         :activeShot="getActiveShot.id"
         :images="getActiveShot.images"
-        :activeImage="currentCarrousselFrame"
+        :activeImage="activeFrame"
         :isPlaying="isPlaying"
         :isFrameLiveView="IsFrameLiveView"
         @activeImageChange="onActiveFrameChange"
-        @moveFrame="moveFrame"
+        @moveFrame="movePlayingFrame"
         @moveHome="moveHome"
         @moveEnd="moveEnd"
         @stopMovingFrame="syncActiveFrame"
@@ -215,11 +216,11 @@ export default class CaptureView extends AbstractProjectView {
   @ProjectNS.Getter('canEditActiveShot')
   public canEdit!: boolean;
 
-  // Carroussel Frame
-  public currentCarrousselFrame: number = 0;
+    // Carroussel Frame
+    public activeFrame: number = 0;
 
-  // Displayed Frame (previewImg + imageSelector)
-  public currentDisplayedFrame: number = 0;
+    // Displayed Frame (previewImg + imageSelector)
+    public playingFrame: number = 0;
 
   @CaptureNS.State
   public activeDevice!: Device;
@@ -271,18 +272,18 @@ export default class CaptureView extends AbstractProjectView {
       this.animationStart = timestamp;
     }
     if (!this.animationStartFrame) {
-      this.animationStartFrame = this.currentCarrousselFrame - this.animationBoundaries.left;
+      this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
     }
 
     const nextFrame = this.getNextFrame(timestamp);
 
-    if (nextFrame !== this.currentDisplayedFrame) {
-      this.currentDisplayedFrame = nextFrame;
+    if (nextFrame !== this.playingFrame) {
+      this.playingFrame = nextFrame;
       this.displayFrame(nextFrame);
     }
     if (
       this.isPlaying === 'animation'
-      && nextFrame === this.getActiveShotImgCount - (this.canEdit ? 0 : 1)
+    && nextFrame === this.getActiveShotImgCount - (this.canEdit ? 0 : 1)
     ) {
       this.pauseAnimation();
       return;
@@ -297,7 +298,19 @@ export default class CaptureView extends AbstractProjectView {
       if (image) {
         this.previewImg!.src = ImageCacheService.getImage(image.id);
       }
+      const imageSelector = this.$refs.imageSelector as ImagesSelectorComponent;
+      if (imageSelector) {
+        imageSelector!.setFrame(frame);
+      }
+
+      (this.$refs.minutes as HTMLElement).textContent = this.nbMins(frame);
+      (this.$refs.seconds as HTMLElement).textContent = this.nbSecs(frame);
     }
+  }
+
+  private setActiveFrame(frame: number) {
+    this.activeFrame = frame;
+    this.playingFrame = this.activeFrame;
   }
 
   private getNextFrame(timestamp: number) {
@@ -319,28 +332,28 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
-   public playAnimation() {
-      if (!this.isPlaying && this.getActiveShot.images.length > 0) {
-        if (this.currentDisplayedFrame === this.getActiveShotImgCount) {
-          this.moveFrameAbsolute(0);
-          this.syncActiveFrame();
-        }
-        this.initPlay('animation');
-        this.animationBoundaries = {
-          left: 0,
-          right: this.getActiveShot.images.length + 1,
-        };
-        this.animationFrame = requestAnimationFrame(this.animate);
+  public playAnimation() {
+    if (!this.isPlaying && this.getActiveShot.images.length > 0) {
+      if (this.activeFrame === this.getActiveShotImgCount) {
+        this.moveFrame(0);
+        this.syncActiveFrame();
       }
+      this.initPlay('animation');
+      this.animationBoundaries = {
+        left: 0,
+        right: this.getActiveShot.images.length + 1,
+      };
+      this.animationFrame = requestAnimationFrame(this.animate);
     }
+  }
 
   public playSelection() {
     if (!this.isPlaying && this.getActiveShot.images.length > 0) {
       if (
-        this.currentCarrousselFrame < this.selectedImages.left
-        || this.currentCarrousselFrame > this.selectedImages.right
+        this.activeFrame < this.selectedImages.left
+        || this.activeFrame > this.selectedImages.right
       ) {
-        this.currentCarrousselFrame = this.selectedImages.left;
+        this.setActiveFrame(this.selectedImages.left);
       }
       this.initPlay('selection');
       this.animationBoundaries = {
@@ -367,11 +380,11 @@ export default class CaptureView extends AbstractProjectView {
 
   private syncActiveFrame() {
     if (!this.isPlaying) {
-      if (this.currentCarrousselFrame !== this.currentDisplayedFrame) {
-        this.currentCarrousselFrame = this.currentDisplayedFrame;
+      if (this.activeFrame !== this.playingFrame) {
+        this.activeFrame = this.playingFrame;
         ImageCacheService.startPreloading(
           this.getActiveShot.images,
-          this.currentCarrousselFrame,
+          this.activeFrame,
           this.onImagePreloaded,
         );
       }
@@ -391,7 +404,7 @@ export default class CaptureView extends AbstractProjectView {
     if (shot) {
       ImageCacheService.startPreloading(
         shot.images,
-        this.currentCarrousselFrame,
+        this.activeFrame,
         this.onImagePreloaded,
       );
     }
@@ -400,7 +413,7 @@ export default class CaptureView extends AbstractProjectView {
   @Watch('getActiveShotImgCount')
   public async onActiveShotImgCountChange(nb: number) {
     if (nb) {
-      this.displayFrame(this.currentCarrousselFrame);
+      this.displayFrame(this.activeFrame);
     }
   }
 
@@ -409,20 +422,26 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   get IsFrameLiveView() {
-    return this.currentDisplayedFrame === this.getActiveShot?.images.length;
+    return this.activeFrame === this.getActiveShot?.images.length;
   }
 
   private onImagePreloaded(imageId: string): void {
-    if (this.getActiveShot.images[this.currentDisplayedFrame].id == imageId) {
-      this.displayFrame(this.currentDisplayedFrame);
+    if (this.getActiveShot.images[this.activeFrame].id === imageId) {
+      this.displayFrame(this.activeFrame);
     }
     (this.$refs.carrousel as CarrouselComponent).imageReady(imageId);
   }
 
   public moveFrame(moveOffset: number) {
-    const computedFrame = this.currentDisplayedFrame + moveOffset;
-    this.moveFrameAbsolute(computedFrame);
-    this.syncActiveFrame();
+    const computedFrame = this.activeFrame + moveOffset;
+    this.setActiveFrame(this.computeMoveFrame(computedFrame));
+    this.displayFrame(this.activeFrame);
+  }
+
+  public movePlayingFrame(moveOffset: number) {
+    const computedFrame = this.playingFrame + moveOffset;
+    this.playingFrame = this.computeMoveFrame(computedFrame);
+    this.displayFrame(this.playingFrame);
   }
 
   public moveHome() {
@@ -438,30 +457,27 @@ export default class CaptureView extends AbstractProjectView {
     this.onActiveFrameChange(this.getActiveShot.images.length - 1);
   }
 
-  private moveFrameAbsolute(frame: number): number {
+  private computeMoveFrame(frame: number): number {
     if (!this.isPlaying) {
       const minFrame = 0;
       if (frame < minFrame) {
-        this.currentDisplayedFrame = minFrame;
-      } else if (frame > this.getActiveShot.images.length) {
-        this.currentDisplayedFrame = this.getActiveShot.images.length;
-      } else {
-        this.currentDisplayedFrame = frame;
+        return minFrame;
       }
-      this.displayFrame(this.currentDisplayedFrame);
+      if (frame > this.getActiveShot.images.length) {
+        return this.getActiveShot.images.length;
+      }
+      return frame;
     }
-    return this.currentDisplayedFrame;
+    return this.playingFrame;
   }
 
   public onActiveFrameChange(newActiveFrame: number) {
-    if (
-      newActiveFrame < this.selectedImages.left
-      || newActiveFrame > this.selectedImages.right
-    ) {
-      this.selectedImages.left = this.selectedImages.right = 0;
+    if (newActiveFrame < this.selectedImages.left || newActiveFrame > this.selectedImages.right) {
+      this.selectedImages.left = 0;
+      this.selectedImages.right = 0;
     }
-    this.moveFrameAbsolute(newActiveFrame);
-    this.syncActiveFrame();
+    this.setActiveFrame(this.computeMoveFrame(newActiveFrame));
+    this.displayFrame(this.activeFrame);
   }
 
   public moveLeftBoundary() {
@@ -474,17 +490,12 @@ export default class CaptureView extends AbstractProjectView {
 
   public increaseSelection(newFrame: number) {
     if (!this.isMultiSelect) {
-      this.selectedImages.left = Math.min(this.currentDisplayedFrame, newFrame);
-      this.selectedImages.right = Math.max(
-        this.currentDisplayedFrame,
-        newFrame,
-      );
-    } else if (
-      newFrame >= this.selectedImages.left
-      && newFrame <= this.selectedImages.right
-    ) {
+      this.selectedImages.left = Math.min(this.activeFrame, newFrame);
+      this.selectedImages.right = Math.max(this.activeFrame, newFrame);
+    } else if (newFrame >= this.selectedImages.left && newFrame <= this.selectedImages.right) {
       this.selectedImages.left = newFrame;
-      this.moveFrameAbsolute(this.selectedImages.left);
+      this.setActiveFrame(this.computeMoveFrame(this.selectedImages.left));
+      this.displayFrame(this.activeFrame);
     } else {
       this.selectedImages.left = Math.min(this.selectedImages.left, newFrame);
       this.selectedImages.right = Math.max(this.selectedImages.right, newFrame);
@@ -492,7 +503,8 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   resetSelection() {
-    this.selectedImages.left = this.selectedImages.right = 0;
+    this.selectedImages.left = 0;
+    this.selectedImages.right = 0;
   }
 
   changeSelection(params: { left: number; right: number }) {
@@ -504,24 +516,12 @@ export default class CaptureView extends AbstractProjectView {
     return this.selectedImages.left !== this.selectedImages.right;
   }
 
-  public nbHours(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60 / 60)
-      % 60}`.padStart(2, '0');
-  }
-
   public nbMins(frame: number): string {
-    return `${Math.floor((frame + 1) / this.movie.fps / 60) % 60}`.padStart(
-      2,
-      '0',
-    );
+    return `${Math.floor((frame + 1) / this.movie.fps / 60) % 60}`.padStart(2, '0');
   }
 
   public nbSecs(frame: number): string {
     return `${Math.floor((frame + 1) / this.movie.fps) % 60}`.padStart(2, '0');
-  }
-
-  public frameNb(frame: number): string {
-    return `${(frame + 1) % this.movie.fps}`.padStart(2, '0');
   }
 
   public onUploaded(id: string) {

@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="sliderWrapper"
     class="b-slider-thumb-wrapper"
     :class="{ 'is-dragging': dragging }"
     :style="wrapperStyle"
@@ -31,7 +32,9 @@
 </template>
 
 <script>
-export default {
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component({
   name: 'BSliderThumb',
   inheritAttrs: false,
   props: {
@@ -186,5 +189,10 @@ export default {
       }
     },
   },
-};
+})
+export default class ReadingSliderComponent extends Vue {
+  setFrame(frame) {
+    this.$refs.sliderWrapper.style.left = `${((frame - this.min) / (this.max - this.min)) * 100}%`;
+  }
+}
 </script>
