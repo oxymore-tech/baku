@@ -15,6 +15,12 @@
   width: 250px;
   min-width: 250px;
 
+  &.floating-mode {
+    position: absolute;
+    right: 0;
+    height: 100%;
+  }
+
   &.mini-mode {
     width: 70px;
     min-width: 0px;
@@ -92,11 +98,4 @@
     }
   }
 
-}
-
-// Phones and tablets
-@media (max-width: 992px) { 
-  // .storyboard-preview-container {
-  //   display: none;
-  // }
 }

@@ -90,9 +90,7 @@
         </b-dropdown>
       </div>
 
-      <div
-        class="flex-container flex-center"
-        style="font-size: 1.8rem"
+      <div class="plans-container"
         v-if="$route.name === 'captureShot' && activeShotIndex >= 0 || $route.name === 'movie'"
       >
         <div
@@ -157,6 +155,21 @@
     /* height: 100%; */
     text-overflow: clip;
     white-space: nowrap;
+  }
+
+  .plans-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+  }
+
+  @media (max-height: 580px) {
+    .plans-container {
+      position: absolute;
+      left: 18px;
+      top: 60px;
+    }
   }
 </style>
 

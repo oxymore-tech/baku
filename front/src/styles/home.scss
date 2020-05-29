@@ -34,7 +34,6 @@
       border-radius: 4px;
       width: 100%;
       height: 100%;
-      padding-bottom: 7rem;
     }
 
 
@@ -54,7 +53,7 @@
         background-repeat: no-repeat;
         position: absolute;
         left: 0;
-        bottom: 0;
+        bottom: 2rem;
       }
 
       .welcome-div-description {
@@ -168,6 +167,7 @@
         .welcome-div-logo {
           height: 250px;
         }
+
         .welcome-div-description {
           h3 {
             font-size: 6.4rem;
@@ -202,9 +202,49 @@
 }
 
 // Phones and tablets
-@media (max-width: 992px) { 
+@media (max-width: 992px) {
   .panel.top-panel .welcome-div-header .welcome-div-logo {
     position: unset;
     margin: auto;
+  }
+}
+
+@media (max-height: 580px) {
+  .panel.top-panel {
+
+    .welcome-div-header {
+      .welcome-div-logo {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    .welcome-div-actions {
+      flex-direction: row;
+      margin-bottom: 1rem;
+      .create-button-container {
+        width: 22rem;
+        margin-right: 1rem;
+
+        .create-button {
+          height: 4rem;
+        }
+
+        .create-button-top-right {
+          display: none;
+        }
+      }
+      #libandyt {
+        flex-direction: row;
+
+        .option-home {
+          width: 20rem;
+          height: 4rem;
+          margin-right: 1rem;
+          margin-top: 0;
+        }
+      }
+    }
   }
 }

@@ -69,7 +69,7 @@
                 <span ref="seconds">{{ nbSecs(this.activeFrame) }}</span>
               </div>
 
-              <div style="display:inline-flex; align-items:center;">
+              <div class="play-controls">
                 <i
                   class="toolbar-button icon-backward baku-button"
                   style="color:#455054;"
@@ -124,7 +124,7 @@
               :class="{'active-capture': activeDevice, 'disabled' : !!isPlaying}"
               @click="setactiveDevice(activeDevice)"
               >Mode Capture</div>-->
-              <div class="toolbar-button">
+              <div class="toolbar-button toolbox-control">
                 <img
                   style="height: 28px; width:28px"
                   v-if="synchronizing"
