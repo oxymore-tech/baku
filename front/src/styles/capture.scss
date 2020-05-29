@@ -13,10 +13,10 @@
     display: flex;
     flex-direction: column;
     margin: 0 10px;
-  
+
     .preview-content-wrapper {
       //max-height: calc(100% - 90px);
-  
+
       .preview-content {
         width: 100%;
         padding-bottom: 56.25%;
@@ -76,7 +76,7 @@
           width: 8rem;
           background-color: #455054;
           border-radius: 8px;
-          height:36px;
+          height: 36px;
           min-height: 36px;
           max-height: 36px;
           color: white;
@@ -95,11 +95,11 @@
           .toolbar-capture-button {
             margin-left: 100px;
           }
-  
+
           .active-capture {
             color: #e66359;
           }
-  
+
           .toolbar-button-big {
             font-size: 3rem;
           }
@@ -134,37 +134,48 @@
     max-height: calc(100% - 105px);
     min-height: calc(100% - 105px);
 
-    .preview-container .preview-actions .media-controls {
-      .clock {
-        display: none;
-      }
+    .preview-container {
+      margin: auto;
 
-      .play-controls {
-        flex-direction: column;
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 70px;
-
-        * {
-          margin-bottom: 15px;
-        }
-      
-        i.icon-forward, i.icon-backward {
+      .preview-actions .media-controls {
+        .clock {
           display: none;
         }
-      }
 
-      .toolbox-control {
-        position: absolute;
-        right: 0;
-        top: 28%;
-        transform: translateY(-28%);
-        width: 70px;
-        background-color: white;
-        border-radius: 8px 0 0 8px;
-        padding: 10px;
+        .play-controls {
+          flex-direction: column;
+          position: absolute;
+          right: 0;
+          top: 160px;
+          width: 70px;
+
+          * {
+            margin-bottom: 15px;
+          }
+
+          i.icon-forward,
+          i.icon-backward {
+            position: absolute;
+            top: 5px;
+          }
+
+          i.icon-backward {
+            left: 0;
+          }
+          i.icon-forward {
+            right: 0;
+          }
+        }
+
+        .toolbox-control {
+          position: absolute;
+          right: 0;
+          top: 105px;
+          width: 70px;
+          background-color: white;
+          border-radius: 8px 0 0 8px;
+          padding: 10px;
+        }
       }
     }
   }

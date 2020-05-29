@@ -1,5 +1,6 @@
 <template>
   <b-dropdown
+    class="toolbox-dropdown"
     position="is-top-left"
     :disabled="!isCapturing"
     :close-on-click="false"
@@ -281,10 +282,10 @@ export default class CaptureToolboxComponent extends Vue {
 }
 
 @media (max-height: 580px) {
-  .dropdown.is-mobile-modal > .dropdown-menu {
+  .toolbox-dropdown.dropdown.is-mobile-modal > .dropdown-menu {
     padding-top: 0px;
-    top: 0px !important;
-    right: 62px !important;
+    top: 105px !important;
+    right: 60px !important;
     left: unset !important;
     width: max-content;
     transform: unset !important;
@@ -296,11 +297,13 @@ export default class CaptureToolboxComponent extends Vue {
     padding: 0;
     .icon-webcam {
       font-size: 2.2rem;
+      margin-right: 5px;
     }
     .item-title {
       display: none;
     }
     .icon-chevron-right {
+      font-size: 2.2rem;
       &.menu-up {
         transform: rotate(0deg);
       }
