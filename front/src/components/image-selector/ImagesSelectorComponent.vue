@@ -13,12 +13,6 @@
   </div>
 </template>
 
-<style lang="scss">
-.reading-slider-component {
-  margin-left: 4px;
-}
-</style>
-
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ImageRef } from '@/utils/uploadedImage.class';

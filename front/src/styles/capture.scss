@@ -3,18 +3,18 @@
   width: 100%;
   flex: 1;
   justify-content: space-between;
-  padding: 0px 0px 12px 20px;
+  padding: 0 0 12px 20px;
   max-height: calc(100% - 145px);
   min-height: calc(100% - 145px);
 
   .preview-container {
-    width: 48%;
+    width: 70%;
     display: flex;
     flex-direction: column;
     margin: 0 10px;
   
     .preview-content-wrapper {
-      max-height: calc(100% - 90px);
+      //max-height: calc(100% - 90px);
   
       .preview-content {
         width: 100%;
@@ -121,24 +121,15 @@
   }
 }
 
-
-// Phones and tablets
-@media (max-width: 992px) and (min-height: 575px) { 
-  .preview-bloc .preview-container {
-    width: calc(75% - 100px);
-  }
-}
-
 // Little heights
-@media (max-height: 690px) { 
+@media (max-height: 700px) {
   .preview-bloc .preview-container {
-    width: 30%;
+    width: 50%;
   }
 }
 
-// X-Large screens
-@media (min-width: 1921px) { 
+@media (max-height: 800px) {
   .preview-bloc .preview-container {
-    width: 30%;
+    width: 60%;
   }
 }
