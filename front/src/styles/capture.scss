@@ -8,7 +8,8 @@
   min-height: calc(100% - 145px);
 
   .preview-container {
-    width: 70%;
+    // width: 70%;
+    width: 90vh;
     display: flex;
     flex-direction: column;
     margin: 0 10px;
@@ -87,17 +88,23 @@
           }
         }
 
-        .toolbar-capture-button {
-          margin-left: 100px;
+        .play-controls {
+          display: flex;
+          align-items: center;
+
+          .toolbar-capture-button {
+            margin-left: 100px;
+          }
+  
+          .active-capture {
+            color: #e66359;
+          }
+  
+          .toolbar-button-big {
+            font-size: 3rem;
+          }
         }
 
-        .active-capture {
-          color: #e66359;
-        }
-
-        .toolbar-button-big {
-          font-size: 3rem;
-        }
 
       }
 
@@ -122,14 +129,55 @@
 }
 
 // Little heights
-@media (max-height: 700px) {
-  .preview-bloc .preview-container {
-    width: 50%;
+@media (max-height: 580px) {
+  .preview-bloc {
+    max-height: calc(100% - 105px);
+    min-height: calc(100% - 105px);
+
+    .preview-container .preview-actions .media-controls {
+      .clock {
+        display: none;
+      }
+
+      .play-controls {
+        flex-direction: column;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 70px;
+
+        * {
+          margin-bottom: 15px;
+        }
+      
+        i.icon-forward, i.icon-backward {
+          display: none;
+        }
+      }
+
+      .toolbox-control {
+        position: absolute;
+        right: 0;
+        top: 28%;
+        transform: translateY(-28%);
+        width: 70px;
+        background-color: white;
+        border-radius: 8px 0 0 8px;
+        padding: 10px;
+      }
+    }
   }
 }
 
-@media (max-height: 800px) {
-  .preview-bloc .preview-container {
-    width: 60%;
-  }
-}
+// @media (min-height: 700px) and (max-height: 750px) {
+//   .preview-bloc .preview-container {
+//     width: 50%;
+//   }
+// }
+
+// @media (min-height: 750px) and (max-height: 850px) {
+//   .preview-bloc .preview-container {
+//     width: 60%;
+//   }
+// }

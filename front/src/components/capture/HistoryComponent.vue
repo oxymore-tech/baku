@@ -1,9 +1,9 @@
 <style lang="scss" scoped>
-  @import "@/styles/history.scss";
+@import "@/styles/history.scss";
 </style>
 
 <template>
-  <div class="history" :class="{'mini-mode': !displayed}">
+  <div class="history" :class="{'mini-mode': !displayed, 'floating-mode': windowHeight < 580}">
     <h4 class="title">
       <i class="icon-history"></i>
       <span>Historique</span>
@@ -15,7 +15,7 @@
         :key="`action_${index}`"
         class="action"
       >
-        <i class="icon-user-circle"/>
+        <i class="icon-user-circle" />
         <div>
           <div>
             <span class="action-user">{{user(event) +" "}}</span>
@@ -29,18 +29,28 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { BakuAction, BakuEvent } from '@/utils/types';
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import { BakuAction, BakuEvent } from "@/utils/types";
 
-const ProjectNS = namespace('project');
+const ProjectNS = namespace("project");
 
 @Component
 export default class HistoryComponent extends Vue {
   @ProjectNS.State
   public history!: BakuEvent[];
 
-  public displayed: boolean = true;
+  public windowHeight: number = window.innerHeight;
+  public displayed: boolean = window.innerHeight > 580;
+
+  mounted() {
+    // this.windowHeight = window.innerHeight;
+    window.addEventListener("resize", this.onResize);
+  }
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
+  }
 
   public user(event: BakuEvent): string {
     return event.user;
@@ -49,23 +59,23 @@ export default class HistoryComponent extends Vue {
   public action(event: BakuEvent): string {
     switch (event.action) {
       case BakuAction.MOVIE_UPDATE_TITLE:
-        return 'change le titre du film';
+        return "change le titre du film";
       case BakuAction.MOVIE_UPDATE_SYNOPSIS:
-        return 'change le synopsis du film';
+        return "change le synopsis du film";
       case BakuAction.MOVIE_UPDATE_POSTER:
-        return 'change le poster du film';
+        return "change le poster du film";
       case BakuAction.MOVIE_INSERT_IMAGE:
-        return 'ajoute une photo';
+        return "ajoute une photo";
       case BakuAction.MOVIE_REMOVE_IMAGE:
-        return 'supprime une photo';
+        return "supprime une photo";
       case BakuAction.SHOT_ADD:
-        return 'ajoute un plan';
+        return "ajoute un plan";
       case BakuAction.SHOT_REMOVE:
-        return 'supprime un plan';
+        return "supprime un plan";
       case BakuAction.CHANGE_FPS:
         return `change les fps du film ${event.value}`;
       default:
-        return '';
+        return "";
     }
   }
 
@@ -73,7 +83,11 @@ export default class HistoryComponent extends Vue {
     if (event.timestamp) {
       return new Date(event.timestamp).toLocaleString();
     }
-    return '';
+    return "";
+  }
+
+  private onResize(event) {
+    this.windowHeight = event.target.innerHeight;
   }
 }
 </script>

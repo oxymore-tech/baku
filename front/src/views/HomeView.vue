@@ -20,11 +20,11 @@
           <div id="libandyt">
             <div class="option-home" @click="onClickMyLibrary">
               <i class="icon-movie baku-button" />
-              <span class="baku-button">Mes Films</span>
+              <span class="baku-button">Mes films</span>
             </div>
             <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
               <div class="baku-logo"></div>
-              <span>Tutoriels et films</span>
+              <span>Tutoriels</span>
             </a>
           </div>
           <!-- <div class="mini-icons-container">

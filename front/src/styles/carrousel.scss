@@ -96,6 +96,16 @@
   }
 }
 
+// Little heights
+@media (max-height: 580px) {
+  .carrousel-root-div {
+    height: 105px;
+  }
+  .toolbar {
+    display: none;
+  }
+}
+
 @media (max-width: 1024px) { 
   .toolbar-button {
     font-size: 1.2rem;
