@@ -86,7 +86,7 @@ export default class HistoryComponent extends Vue {
     return "";
   }
 
-  private onResize(event) {
+  private onResize(event: any) {
     this.windowHeight = event.target.innerHeight;
   }
 }

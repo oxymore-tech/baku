@@ -30,7 +30,7 @@
               </a>
             </b-dropdown-item>
             <b-dropdown-item class="dropdown-item-bloc" has-link aria-role="listitem">
-              <a :href="getExportUrl(shot.id)" target="_blank">
+              <a :href="getVideoUrl(shot.id)" target="_blank">
                 <i class="icon-movie baku-button"></i> Exporter en fichier vidéo
               </a>
             </b-dropdown-item>
@@ -169,6 +169,10 @@ export default class Shots extends Vue {
 
   public getExportUrl(shotId: string): string {
     return api.getExportUrl(this.projectId, shotId);
+  }
+
+  public getVideoUrl(shotId: string): string {
+    return api.getVideoUrl(this.projectId, shotId);
   }
 
   public close() {
