@@ -484,6 +484,9 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public onActiveFrameChange(newActiveFrame: number) {
+    if (this.isPlaying) {
+      this.pauseAnimation();
+    }
     if (newActiveFrame < this.selectedImages.left || newActiveFrame > this.selectedImages.right) {
       this.selectedImages.left = 0;
       this.selectedImages.right = 0;
