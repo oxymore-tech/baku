@@ -63,6 +63,28 @@
       </div>
     </div>
     <div ref="carrouselContainer" class="carrousel-container">
+      <template v-for="(image, index) in computedPreviousShotImages">
+        <template v-if="image !== null">
+          <div
+            :key="'left'+index+'-prev'"
+            class="image-container previous-shot-images"
+          >
+            <img
+              class="carrousel-thumb"
+              :alt="image"
+              :src="ImageCacheService.getThumbnail(image.id)"
+            />
+          </div>
+        </template>
+        <template v-else>
+          <div :key="'left'+index" class="image-container image-container-empty">
+            <div
+              class="carrousel-thumb"
+              style="width:100%; border:none"
+            />
+          </div>
+        </template>
+      </template>
       <!-- LEFT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedLeftCarrousel">
         <template v-if="image !== null">
@@ -166,6 +188,7 @@ import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.
 import { Device } from '@/utils/device.class';
 import { ImageRef } from '@/utils/uploadedImage.class';
 import { KeyCodes, ReadingSliderBoundaries } from '@/utils/movie.service';
+import { Shot } from '../../utils/movie.service';
 
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
@@ -211,6 +234,9 @@ export default class CarrouselComponent extends Vue {
 
   @ProjectNS.Getter('canEditActiveShot')
   protected canEdit!: boolean;
+
+  @ProjectNS.Getter('getPreviousShot')
+  protected previousShot!: Shot | undefined;
 
   private imagesToCopy: string[] = [];
 
@@ -311,15 +337,22 @@ export default class CarrouselComponent extends Vue {
     return this.images[this.activeImage];
   }
 
+  get computedPreviousShotImages(): ImageRef[]{
+    const count = 5 - this.computedLeftCarrousel.length;
+    const images = this.previousShot ? (this.previousShot.images || []) : [];
+    let leftImagesAvaible = images.slice(-count);
+    return new Array(count - leftImagesAvaible.length)
+      .fill(null)
+      .concat(leftImagesAvaible);
+  }
+
   get computedLeftCarrousel(): ImageRef[] {
     const count = 5;
     const sliceIndex = this.isFrameLiveView
       ? this.activeImage + 1
       : this.activeImage;
-    const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-count);
-    return new Array(count - leftImagesAvaible.length)
-      .fill(null)
-      .concat(leftImagesAvaible);
+    let leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-count);
+    return leftImagesAvaible;
   }
 
   get computedRightCarrousel(): ImageRef[] {
