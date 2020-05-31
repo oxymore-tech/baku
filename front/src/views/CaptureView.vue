@@ -378,7 +378,7 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
-  private stopMoving() {
+  public stopMoving() {
     this.isPlaying = null;
     this.syncActiveFrame();
   }
