@@ -327,6 +327,8 @@ export default class CaptureView extends AbstractProjectView {
   public togglePlay() {
     if (this.isPlaying) {
       this.pauseAnimation();
+    } else if (this.isMultiSelect) {
+      this.playSelection();
     } else {
       this.playAnimation();
     }
