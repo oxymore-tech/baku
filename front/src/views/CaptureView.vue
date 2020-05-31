@@ -153,7 +153,7 @@
         @moveFrame="movePlayingFrame"
         @moveHome="moveHome"
         @moveEnd="moveEnd"
-        @stopMovingFrame="syncActiveFrame"
+        @stopMovingFrame="stopMoving"
         @togglePlay="togglePlay"
         @increaseSelection="increaseSelection($event)"
         @resetSelection="resetSelection()"
@@ -281,10 +281,8 @@ export default class CaptureView extends AbstractProjectView {
       this.playingFrame = nextFrame;
       this.displayFrame(nextFrame);
     }
-    if (
-      this.isPlaying === 'animation'
-    && nextFrame === this.getActiveShotImgCount - (this.canEdit ? 0 : 1)
-    ) {
+    if (this.isPlaying === 'animation'
+    && nextFrame === this.getActiveShotImgCount - (this.canEdit ? 0 : 1)) {
       this.pauseAnimation();
       return;
     }
@@ -380,6 +378,11 @@ export default class CaptureView extends AbstractProjectView {
     }
   }
 
+  private stopMoving() {
+    this.isPlaying = null;
+    this.syncActiveFrame();
+  }
+
   private syncActiveFrame() {
     if (!this.isPlaying) {
       if (this.activeFrame !== this.playingFrame) {
@@ -431,7 +434,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   get IsFrameLiveView() {
-    return this.activeFrame === this.getActiveShot?.images.length;
+    return !this.isPlaying && this.activeFrame === this.getActiveShot?.images.length;
   }
 
   private onImagePreloaded(imageId: string): void {
@@ -450,6 +453,7 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   public movePlayingFrame(moveOffset: number) {
+    this.initPlay('animation');
     const computedFrame = this.playingFrame + moveOffset;
     this.playingFrame = this.computeMoveFrame(computedFrame);
     this.displayFrame(this.playingFrame);
@@ -469,17 +473,14 @@ export default class CaptureView extends AbstractProjectView {
   }
 
   private computeMoveFrame(frame: number): number {
-    if (!this.isPlaying) {
-      const minFrame = 0;
-      if (frame < minFrame) {
-        return minFrame;
-      }
-      if (frame > this.getActiveShot.images.length) {
-        return this.getActiveShot.images.length;
-      }
-      return frame;
+    const minFrame = 0;
+    if (frame < minFrame) {
+      return minFrame;
     }
-    return this.playingFrame;
+    if (frame > this.getActiveShot.images.length) {
+      return this.getActiveShot.images.length;
+    }
+    return frame;
   }
 
   public onActiveFrameChange(newActiveFrame: number) {
