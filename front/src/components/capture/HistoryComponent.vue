@@ -5,7 +5,7 @@
 <template>
   <div class="history" :class="{'mini-mode': !displayed, 'floating-mode': windowHeight < 580}">
     <h4 class="title">
-      <i class="icon-history"></i>
+      <i class="icon-history baku-button" @click="loadProjectAction(projectId)"></i>
       <span>Historique</span>
       <i class="icon-chevron-right baku-button" @click="displayed = !displayed"></i>
     </h4>
@@ -39,6 +39,12 @@ const ProjectNS = namespace("project");
 export default class HistoryComponent extends Vue {
   @ProjectNS.State
   public history!: BakuEvent[];
+
+  @ProjectNS.State("id")
+  public projectId!: string;
+
+  @ProjectNS.Action('loadProject')
+  protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public windowHeight: number = window.innerHeight;
   public displayed: boolean = window.innerHeight > 580;
