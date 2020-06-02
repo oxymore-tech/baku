@@ -34,7 +34,6 @@
       border-radius: 4px;
       width: 100%;
       height: 100%;
-      padding-bottom: 7rem;
     }
 
 
@@ -54,25 +53,14 @@
         background-repeat: no-repeat;
         position: absolute;
         left: 0;
-        bottom: 0;
+        bottom: 2rem;
       }
 
       .welcome-div-description {
-        .description {
-          margin: 0px 0px 15px;
-
-          .name {
-            color: #FE676F;
-            font-weight: bold;
-          }
-        }
+        margin-bottom: 2rem;
 
         h3 {
           font-size: 3.3rem;
-        }
-
-        span {
-          font-size: 1.6rem;
         }
       }
     }
@@ -94,10 +82,25 @@
           text-align: left;
           display: inline-flex;
           align-items: center;
+          justify-content: center;
+          border: 1px solid #EEEEEE;
+          border-radius: 44px;
+          height: 6.2rem;
+          width: 34rem;
+          font-size: 1.9rem;
 
           i {
             margin-right: 10px;
-            font-size: 1.4rem;
+            color: #FE676F;
+          }
+
+          .baku-logo {
+            height: 2rem;
+            width: 2rem;
+            background-image: url(../assets/baku_solo.svg);
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin-right: 10px;
           }
         }
       }
@@ -118,7 +121,7 @@
 
   .create-button-container {
     position: relative;
-    width: 17rem;
+    width: 34rem;
     margin: auto;
 
     .create-button {
@@ -130,8 +133,8 @@
       font-family: Montserrat;
       box-shadow: 0px 0px 20px #00000029;
       border: 0;
-      font-size: 1.2rem;
-      height: 2.5rem;
+      font-size: 2.4rem;
+      height: 6.2rem;
       width: 100%;
     }
 
@@ -140,11 +143,11 @@
       background-size: cover;
       background-position: top;
       background-repeat: no-repeat;
-      width: 2.5rem;
-      height: 2.5rem;
+      width: 6.2rem;
+      height: 6.2rem;
       position: absolute;
-      top: -1rem;
-      right: -1.5rem;
+      top: -2.2rem;
+      right: -3.6rem;
     }
   }
 }
@@ -161,34 +164,28 @@
   .panel.top-panel {
     .welcome-div {
       .welcome-div-header {
+        .welcome-div-logo {
+          height: 250px;
+        }
+
         .welcome-div-description {
           h3 {
             font-size: 6.4rem;
-          }
-
-          span {
-            font-size: 2.4rem;
           }
         }
       }
 
       .welcome-div-actions {
 
-        .create-button-container {
-          width: 34rem;
+        // .create-button-container {
 
-          .create-button {
-            font-size: 2.4rem;
-            height: 5rem;
-          }
-
-          .create-button-top-right {
-            width: 5rem;
-            height: 5.4rem;
-            top: -1.8rem;
-            right: -2.8rem;
-          }
-        }
+        //   .create-button-top-right {
+        //     width: 5rem;
+        //     height: 5.4rem;
+        //     top: -1.8rem;
+        //     right: -2.8rem;
+        //   }
+        // }
         #libandyt {
           .option-home {
             font-size: 2rem;
@@ -205,9 +202,49 @@
 }
 
 // Phones and tablets
-@media (max-width: 992px) { 
+@media (max-width: 992px) {
   .panel.top-panel .welcome-div-header .welcome-div-logo {
     position: unset;
     margin: auto;
+  }
+}
+
+@media (max-height: 580px) {
+  .panel.top-panel {
+
+    .welcome-div-header {
+      .welcome-div-logo {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    .welcome-div-actions {
+      flex-direction: row;
+      margin-bottom: 1rem;
+      .create-button-container {
+        width: 22rem;
+        margin-right: 1rem;
+
+        .create-button {
+          height: 4rem;
+        }
+
+        .create-button-top-right {
+          display: none;
+        }
+      }
+      #libandyt {
+        flex-direction: row;
+
+        .option-home {
+          width: 20rem;
+          height: 4rem;
+          margin-right: 1rem;
+          margin-top: 0;
+        }
+      }
+    }
   }
 }

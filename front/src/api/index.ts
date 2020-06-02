@@ -45,7 +45,10 @@ export function getVideoStatus(projectId: string): Promise<VideoStatus> {
     .then(r => r.data);
 }
 
-export function getVideoUrl(projectId: string): string {
+export function getVideoUrl(projectId: string, shotId?: string): string {
+  if (shotId) {
+    return `/api/${projectId}/${shotId}/video`;
+  }
   return `/api/${projectId}/video`;
 }
 

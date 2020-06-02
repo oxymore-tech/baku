@@ -6,8 +6,9 @@ import HomeView from '@/views/HomeView.vue';
 import TodoView from '@/views/TodoView.vue';
 import LibraryView from '@/views/LibraryView.vue';
 import MovieView from '@/views/MovieView.vue';
-import CaptureView from '@/views/CaptureView.vue';
 import SmartphoneView from '@/views/SmartphoneView.vue';
+
+const Capture = () => import('@/views/CaptureView.vue');
 
 const routes = [
   {
@@ -33,7 +34,7 @@ const routes = [
   {
     name: 'captureShot',
     path: '/movies/:projectId/shots/:shotId',
-    component: CaptureView,
+    component: Capture,
   },
   {
     name: 'movieEditing',

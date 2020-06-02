@@ -38,7 +38,9 @@
         >
 
           <div class="column-img">
-            <img :src="project.posterUrl" :alt="`${project.title} poster`" @click="onOpen(project.id)"/>
+            <div v-bind:style="{ backgroundImage: 'url(' + project.posterUrl + ')' }"
+                 class="project-image-container"
+                 @click="onOpen(project.adminId || project.id)"></div>
           </div>
 
           <div class="movie-info">
@@ -70,31 +72,32 @@
 
             <div class="movie-toolbar-1">
 
-                <div v-if="project.lastUpdate">
-                  <div class="indication">Mise à jour :</div>
-                  <div>{{ project.lastUpdate | formatDate }}</div>
-                </div>
+              <div v-if="project.lastUpdate">
+                <div class="indication">Mise à jour :</div>
+                <div>{{ project.lastUpdate | formatDate }}</div>
+              </div>
 
-                <div class="button-open">
-                  <b-button type="is-primary" @click="onOpen(project.adminId || project.id)">Ouvrir</b-button>
-                </div>
+              <div class="button-open">
+                <b-button type="is-primary" @click="onOpen(project.adminId || project.id)">Ouvrir
+                </b-button>
+              </div>
 
-                <!--<div v-if="project.totalImages">
-                  <span class="indication">Images : </span>
-                  <span>{{project.totalImages}}</span>
-                </div>-->
+              <!--<div v-if="project.totalImages">
+                <span class="indication">Images : </span>
+                <span>{{project.totalImages}}</span>
+              </div>-->
 
             </div>
 
             <div class="movie-toolbar-2">
 
-              <div class="movie-action" @click="onCopy(project.id, true)">
+              <div class="movie-action" @click="onCopy(project.id)">
                 <i class="icon-copy-regular"/>
                 <span class="baku-button">Copier l'url de partage</span>
               </div>
 
               <div class="movie-action" v-if="project.adminId"
-                    @click="onCopy(project.adminId, false)">
+                   @click="onCopy(project.adminId)">
                 <i class="icon-copy-solid"/>
                 <span class="baku-button">Copier l'url d'administration</span>
               </div>
@@ -108,7 +111,7 @@
 
               <div @click="onDelete(project.id)">
                 <i class="icon-close"/>
-                <span class ="baku-button"> {{ project.adminId ? 'Supprimer':'Effacer de l\'historique' }} </span>
+                <span class="baku-button"> {{ project.adminId ? 'Supprimer':'Effacer de l\'historique' }} </span>
               </div>
 
             </div>
@@ -122,31 +125,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import store from '@/store';
-import * as api from '@/api';
-import { getDemoProjects } from '@/api';
-import InlineInput from '@/components/InlineInput.vue';
-import { SeenProject } from '@/store/store.types';
-import { computeHours, computeMinutes, computeSeconds } from '@/store/project';
-import { MovieService } from '@/utils/movie.service';
-import VideoButton from '@/components/VideoButton.vue';
-import moment from 'moment';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { namespace } from 'vuex-class';
+  import store from '@/store';
+  import * as api from '@/api';
+  import { getDemoProjects } from '@/api';
+  import InlineInput from '@/components/InlineInput.vue';
+  import { SeenProject } from '@/store/store.types';
+  import { computeHours, computeMinutes, computeSeconds } from '@/store/project';
+  import { MovieService } from '@/utils/movie.service';
+  import VideoButton from '@/components/VideoButton.vue';
+  import moment from 'moment';
 
-Vue.filter('formatDate', (value: any) => {
-  if (value) {
-    return moment(String(value)).format('MM/DD/YYYY HH:mm');
-  }
-});
+  Vue.filter('formatDate', (value: any) => {
+    if (value) {
+      return moment(String(value)).format('MM/DD/YYYY HH:mm');
+    }
+  });
 
-const UserNS = namespace('user');
+  const UserNS = namespace('user');
 
   @Component({
-    components: { VideoButton, InlineInput },
+    components: {VideoButton, InlineInput},
     store,
   })
-export default class LibraryView extends Vue {
+  export default class LibraryView extends Vue {
     @UserNS.State('seenProjects')
     public seenProjects!: SeenProject[];
 
@@ -172,9 +175,9 @@ export default class LibraryView extends Vue {
       return this.seenProjects;
     }
 
-    public onCopy(projectId: string, share: boolean) {
+    public onCopy(projectId: string) {
       const input = document.createElement('input');
-      input.value = this.getLink(projectId, share);
+      input.value = this.getLink(projectId);
       document.body.appendChild(input);
       input.select();
       input.setSelectionRange(0, 99999);
@@ -182,13 +185,8 @@ export default class LibraryView extends Vue {
       document.body.removeChild(input);
     }
 
-    getLink(projectId: string, share: boolean): string {
-      const path = this.url + this.$router.resolve({
-        name: 'movie',
-        params: {
-          projectId,
-        },
-      }).href;
+    getLink(projectId: string): string {
+      const path = this.getMovieUrl(projectId);
 
       this.$buefy.toast.open('Lien copié');
 
@@ -221,16 +219,12 @@ export default class LibraryView extends Vue {
 
     exportUrls() {
       const rows = [
-        ['titre', 'url'],
-        this.seenProjects.map((s) => {
-          const path = this.url + this.$router.resolve({
-            name: 'movie',
-            params: {
-              projectId: s.adminId || s.id,
-            },
-          }).href;
-          return `"${s.title}", "${path}"`;
-        }),
+        ['titre', 'admin', 'partage'],
+        ...this.seenProjects.map((s) => {
+          const admin = this.getMovieUrl(s.adminId);
+          const share = this.getMovieUrl(s.id);
+          return [s.title, admin, share];
+        })
       ];
 
       let csvContent = 'data:text/csv;charset=utf-8,';
@@ -242,6 +236,18 @@ export default class LibraryView extends Vue {
       const csv = encodeURI(csvContent);
 
       window.open(csv);
+    }
+
+    private getMovieUrl(id?: string) {
+      if (id) {
+        return this.url + this.$router.resolve({
+          name: 'movie',
+          params: {
+            projectId: id
+          }
+        }).href;
+      }
+      return "";
     }
 
     getDurationString(project: SeenProject) {
@@ -261,7 +267,7 @@ export default class LibraryView extends Vue {
       if (event) {
         const newTitle = event;
         if (newTitle !== seenProject.title) {
-          this.$store.dispatch('project/updateTitle', { projectId: seenProject.id, title: newTitle });
+          this.$store.dispatch('project/updateTitle', {projectId: seenProject.id, title: newTitle});
         }
       }
     }
@@ -281,8 +287,8 @@ export default class LibraryView extends Vue {
     setFps(seenProject: SeenProject, event: number) {
       const newFps = event;
       if (newFps !== seenProject.fps) {
-        this.$store.dispatch('project/updateFps', { projectId: seenProject.id, fps: newFps });
+        this.$store.dispatch('project/updateFps', {projectId: seenProject.id, fps: newFps});
       }
     }
-}
+  }
 </script>

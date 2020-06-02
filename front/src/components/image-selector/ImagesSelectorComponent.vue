@@ -3,6 +3,7 @@
     <ReadingSliderComponent
       :value="sliderValue"
       @input="onSliderValueChange"
+      ref="slider"
       :min="0"
       :max="canEdit? images.length : images.length -1"
       :step="1"
@@ -11,12 +12,6 @@
     ></ReadingSliderComponent>
   </div>
 </template>
-
-<style lang="scss">
-.reading-slider-component {
-  margin-left: 4px;
-}
-</style>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -48,6 +43,11 @@ export default class ImagesSelectorComponent extends Vue {
       right: Math.min(this.value.right, this.images.length - 1),
       selected: this.activeImage,
     };
+  }
+
+  public setFrame(value: number) {
+    const slider = this.$refs.slider as ReadingSliderComponent;
+    slider.setFrame(value);
   }
 
   onSliderValueChange(newSliderValue: ReadingSliderValue) {

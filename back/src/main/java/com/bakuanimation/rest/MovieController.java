@@ -61,7 +61,8 @@ public final class MovieController {
     @Get(value = "/api/{projectId}/{shotId}/video")
     public Single<HttpResponse<Object>> download(@PathVariable String projectId,
                                                  @PathVariable String shotId) {
-        return movieService.generatePlan(projectId, shotId)
+        String id = permissionService.getProject(projectId).getId();
+        return movieService.generatePlan(id, shotId)
                 .doOnError(v -> LOGGER.warn("Error", v))
                 .map(movie -> HttpResponse.ok(new SystemFile(movie.toFile()).attach(movie.getFileName().toString())));
     }

@@ -7,18 +7,20 @@
 </style>
 
 <template>
-  <div v-if="isVideoAvailable" :title="videoTitle">
-    <i class="icon-movie-done"></i>&nbsp;
-    <a :href="getVideoUrl()" target="_blank">Exporter en vidéo (mp4)</a>
-  </div>
-  <div v-else>
-    <div v-if="isVideoPending" title="Génération en cours...">
-      <i class="icon-loading spin"></i>&nbsp;
-      <span>Exporter en vidéo (mp4)</span>
+  <div>
+    <div v-if="isVideoAvailable" :title="downloadVideoTitle">
+      <i class="icon-movie-done"></i>&nbsp;
+      <a :href="getVideoUrl()" target="_blank">Télécharger la vidéo (mp4)</a>
     </div>
-    <div v-else title="Générer une vidéo">
-      <i class="icon-movie"></i>&nbsp;
-      <a @click="generateVideo()">Exporter en vidéo (mp4)</a>
+    <div>
+      <div v-if="isVideoPending" title="Génération en cours...">
+        <i class="icon-loading spin"></i>&nbsp;
+        <span>Génération en cours...</span>
+      </div>
+      <div v-else-if="!isVideoUpToDate" :title="generateVideoTitle">
+        <i class="icon-movie"></i>&nbsp;
+        <a @click="generateVideo()">{{generateVideoTitle}}</a>
+      </div>
     </div>
   </div>
 </template>
@@ -61,23 +63,27 @@ export default class InlineInput extends Vue {
       return this.videoStatus.status === VideoStatusEnum.UpToDate;
     }
 
-    get videoTitle() {
+    get downloadVideoTitle() {
       if (this.isVideoUpToDate) {
         return 'La dernière vidéo est disponible';
       }
       return `Dernière vidéo est disponible : ${new Date(this.videoStatus.lastModified * 1000).toDateString()}`;
     }
 
+    get generateVideoTitle() {
+      if (this.videoStatus.status === VideoStatusEnum.NotGenerated) {
+        return 'Générer la vidéo';
+      }
+      return 'Mettre à jour la vidéo';
+    }
+
     generateVideo() {
+      this.videoStatus = { status: VideoStatusEnum.Pending, lastModified: this.videoStatus.lastModified };
       return api.generateVideo(this.id);
     }
 
     getVideoUrl() {
       return api.getVideoUrl(this.id);
-    }
-
-    getMovieExportUrl() {
-      return api.getExportUrl(this.id);
     }
 
     private async refreshVideoStatus() {

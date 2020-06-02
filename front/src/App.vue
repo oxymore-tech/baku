@@ -90,8 +90,7 @@
         </b-dropdown>
       </div>
 
-      <div
-        class="flex-container"
+      <div class="plans-container"
         v-if="$route.name === 'captureShot' && activeShotIndex >= 0 || $route.name === 'movie'"
       >
         <div
@@ -134,7 +133,7 @@
         </div>
       </div>
     </nav>
-    <router-view :key="$route.fullPath"/>
+    <router-view/>
   </div>
 </template>
 
@@ -156,6 +155,21 @@
     /* height: 100%; */
     text-overflow: clip;
     white-space: nowrap;
+  }
+
+  .plans-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+  }
+
+  @media (max-height: 580px) {
+    .plans-container {
+      position: absolute;
+      left: 18px;
+      top: 60px;
+    }
   }
 </style>
 
@@ -262,8 +276,15 @@ export default class App extends Vue {
       await this.moveToShot(shotId);
     }
 
-    private moveToShot(shotId: string) {
-      return this.$store.dispatch('project/changeActiveShot', shotId);
+    private async moveToShot(shotId: string) {
+      return this.$router.push({
+        name: 'captureShot',
+        params: {
+          projectId: this.id,
+          shotId,
+        },
+      });
+      // return this.$store.dispatch('project/changeActiveShot', shotId);
     }
 
     public openIssue() {

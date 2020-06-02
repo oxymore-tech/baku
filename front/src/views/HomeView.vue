@@ -9,16 +9,7 @@
         <div class="welcome-div-header">
           <div class="welcome-div-logo"></div>
           <div class="welcome-div-description">
-            <h3>Libérez votre imagination</h3>
-            <div class="description">
-              <div>
-                <span>{{ description1 }}</span>
-              </div>
-              <div>
-                <span class="name">{{ name }}</span>
-                <span>{{ description2 }}</span>
-              </div>
-            </div>
+            <h3>Bienvenue sur baku-studio</h3>
           </div>
         </div>
         <div class="welcome-div-actions">
@@ -29,14 +20,14 @@
           <div id="libandyt">
             <div class="option-home" @click="onClickMyLibrary">
               <i class="icon-movie baku-button" />
-              <span class="baku-button">Mes Films</span>
+              <span class="baku-button">Mes films</span>
             </div>
             <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
-              <i class="icon-youtube-brands baku-button" />
-              <span>Tutoriels et films</span>
+              <div class="baku-logo"></div>
+              <span>Tutoriels</span>
             </a>
           </div>
-          <div class="mini-icons-container">
+          <!-- <div class="mini-icons-container">
             <a href="https://www.instagram.com/bakuanim/">
               <img src="@/assets/instagram_logo.svg" />
             </a>
@@ -49,7 +40,7 @@
             <a href="https://bakuanimation.com">
               <img src="@/assets/baku_solo.svg" />
             </a>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -84,14 +75,6 @@ export default class HomeView extends Vue {
 
   @ProjectNS.Action('updateTitle')
   protected updateTitle!: (title: string) => Promise<void>;
-
-  public description1 =
-    'Sortez vos crayons, pinceaux et couleurs, et racontez une histoire.';
-
-  public name = 'Baku ';
-
-  public description2 =
-    "est une plateforme collaborative de création de film d'animation.";
 
   version = '';
 
