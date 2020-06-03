@@ -7,5 +7,7 @@ import io.reactivex.Single;
 public interface HistoryService {
     Single<Boolean> addStack(Project project, byte[] stack);
 
+    Single<Boolean> deleteMovie(Project project);
+
     Single<Movie> interpretHistory(String projectId);
 }

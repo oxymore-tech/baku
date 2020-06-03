@@ -34,8 +34,7 @@ public class HistoryController {
 
     @Delete(value = "/api/{projectId}")
     public Single<Boolean> deleteProject(@PathVariable String projectId) {
-        return Single.fromCallable(() -> permissionService.deleteMovie(projectId))
-                .subscribeOn(Schedulers.io());
+        return historyService.deleteMovie(permissionService.getProject(projectId));
     }
 
     @Post("/api/{projectId}/stack")

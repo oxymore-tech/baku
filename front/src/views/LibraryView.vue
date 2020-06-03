@@ -109,9 +109,13 @@
 
               <video-button :id="project.id"/>
 
-              <div @click="onDelete(project.id)">
+              <div v-if="project.adminId && !project.locked" @click="onDelete(project.id)">
                 <i class="icon-close"/>
-                <span class="baku-button"> {{ project.adminId ? 'Supprimer':'Effacer de l\'historique' }} </span>
+                <span class="baku-button">Supprimer</span>
+              </div>
+              <div @click="onRemoveFromSeenProject(project.id)">
+                <i class="icon-close"/>
+                <span class="baku-button">Effacer de l'historique</span>
               </div>
 
             </div>
@@ -156,6 +160,9 @@
     @UserNS.Action('refreshSeenProjectsMetadata')
     refreshSeenProjectsMetadata!: Function;
 
+    @UserNS.Action('deleteProject')
+    deleteProject!: Function;
+
     @UserNS.Action('deleteSeenProject')
     deleteSeenProject!: Function;
 
@@ -198,6 +205,17 @@
         title: 'Suppression du film',
         message: 'Etes vous sûr de vouloir <b>supprimer</b> votre film ?',
         confirmText: 'Supprimer le film',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => this.deleteProject(projectId),
+      });
+    }
+
+    public onRemoveFromSeenProject(projectId: string) {
+      this.$buefy.dialog.confirm({
+        title: "Retirer de l'historique",
+        message: 'Etes vous sûr de vouloir <b>retirer</b> votre film de votre historique ?',
+        confirmText: "Retirer le film de l'historique",
         type: 'is-danger',
         hasIcon: true,
         onConfirm: () => this.deleteSeenProject(projectId),
