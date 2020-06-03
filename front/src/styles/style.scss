@@ -32,6 +32,15 @@ body {
   background-repeat: no-repeat;
   background-size: contain;
   background-color: #fff;
+
+  @media (min-width: 1200px) {
+    background-size: auto 50%;
+  }
+
+  @media (max-height: 360px) {
+    background-size: 75%;
+  }
+
 }
 
 .inline-editor {

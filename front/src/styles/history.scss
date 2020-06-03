@@ -100,3 +100,11 @@
   }
 
 }
+
+
+// Little heights
+@media (max-height: 580px) {
+  .history {
+    display: none;
+  }
+}
