@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.api.client.util.Lists;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
@@ -25,6 +26,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Executors;
 
@@ -92,6 +95,24 @@ public class HistoryServiceImpl implements HistoryService {
             Files.delete(stackFile);
         }
         Files.move(temp, stackFile);
+    }
+
+    @Override
+    public Single<Boolean> deleteMovie(Project project) {
+        return interpretHistory(project.getId())
+                .map(movie -> {
+                    try {
+                        permissionService.hasRight(project, movie, new BakuEvent(BakuAction.DELETE_MOVIE.ordinal(),
+                                JsonNodeFactory.instance.objectNode(), "", ""));
+                        LOGGER.debug("Marked project {} to delete", project.getId());
+                        Path newPath = Files.move(pathService.projectDir(project.getId()), pathService.deletePath(project.getId()));
+                        Files.setLastModifiedTime(newPath, FileTime.from(Instant.now()));
+                        return true;
+                    } catch (IOException e) {
+                        LOGGER.warn("Error while marking file to delete", e);
+                        return false;
+                    }
+                });
     }
 
     @Override

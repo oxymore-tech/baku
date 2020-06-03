@@ -25,8 +25,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 
-import static com.bakuanimation.model.BakuAction.MOVIE_LOCK;
-import static com.bakuanimation.model.BakuAction.SHOT_LOCK;
+import static com.bakuanimation.model.BakuAction.*;
 
 @Singleton
 public final class PermissionServiceImpl implements PermissionService {
@@ -65,25 +64,12 @@ public final class PermissionServiceImpl implements PermissionService {
                 Instant lastModifiedDate = Files.getLastModifiedTime(projectPath).toInstant();
                 LOGGER.debug("last modified time of {} -> {}", projectPath, lastModifiedDate);
                 if (lastModifiedDate.isBefore(limit)) {
-                    LOGGER.info("Will delete {}",projectPath);
+                    LOGGER.info("Will delete {}", projectPath);
                     FileUtils.deleteDirectory(projectPath.toFile());
                 }
             }
         } catch (Exception e) {
             LOGGER.warn("Error while trying to delete old projects", e);
-        }
-    }
-
-    @Override
-    public boolean deleteMovie(String projectId) {
-        try {
-            LOGGER.debug("Marked project {} to delete", projectId);
-            Path newPath = Files.move(pathService.projectDir(projectId), pathService.deletePath(projectId));
-            Files.setLastModifiedTime(newPath, FileTime.from(Instant.now()));
-            return true;
-        } catch (IOException e) {
-            LOGGER.warn("Error while marking file to delete", e);
-            return false;
         }
     }
 
@@ -114,14 +100,19 @@ public final class PermissionServiceImpl implements PermissionService {
                 authorizeOperation(project);
             }
         } else {
+            // Any operation that is not lock or unlock is forbidden when the movie is locked (including deleting a movie)
             if (movie.isLocked()) {
                 throw new ForbiddenOperationException("Movie is locked");
             }
-            JsonNode shotId = event.getValue().get("shotId");
-            if (shotId != null) {
-                String shot = shotId.asText();
-                if (movie.getLockedShots().contains(shot)) {
-                    throw new ForbiddenOperationException("Shot " + shot + " is locked");
+            if (bakuAction == DELETE_MOVIE) {
+                authorizeOperation(project);
+            } else {
+                JsonNode shotId = event.getValue().get("shotId");
+                if (shotId != null) {
+                    String shot = shotId.asText();
+                    if (movie.getLockedShots().contains(shot)) {
+                        throw new ForbiddenOperationException("Shot " + shot + " is locked");
+                    }
                 }
             }
         }
