@@ -357,7 +357,6 @@ export default class CarrouselComponent extends Vue {
       ? this.activeImage + 1
       : this.activeImage;
     let leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-count);
-    console.log(leftImagesAvaible);
     return leftImagesAvaible;
   }
 
