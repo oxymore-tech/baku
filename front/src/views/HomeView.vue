@@ -17,16 +17,14 @@
             <button class="create-button" @click="onCreateProject">Créer un film</button>
             <div class="create-button-top-right"></div>
           </div>
-          <div id="libandyt">
-            <div class="option-home" @click="onClickMyLibrary">
-              <i class="icon-movie baku-button" />
-              <span class="baku-button">Mes films</span>
-            </div>
-            <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
-              <div class="baku-logo"></div>
-              <span>Tutoriels</span>
-            </a>
+          <div class="option-home" @click="onClickMyLibrary">
+            <i class="icon-movie baku-button" />
+            <span class="baku-button">Mes films</span>
           </div>
+          <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
+            <div class="baku-logo"></div>
+            <span>Tutoriels</span>
+          </a>
           <!-- <div class="mini-icons-container">
             <a href="https://www.instagram.com/bakuanim/">
               <img src="@/assets/instagram_logo.svg" />

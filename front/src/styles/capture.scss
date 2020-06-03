@@ -146,31 +146,18 @@
           flex-direction: column;
           position: absolute;
           right: 0;
-          top: 160px;
+          top: 120px;
           width: 70px;
 
           * {
             margin-bottom: 15px;
-          }
-
-          i.icon-forward,
-          i.icon-backward {
-            position: absolute;
-            top: 5px;
-          }
-
-          i.icon-backward {
-            left: 0;
-          }
-          i.icon-forward {
-            right: 0;
           }
         }
 
         .toolbox-control {
           position: absolute;
           right: 0;
-          top: 105px;
+          top: 50px;
           width: 70px;
           background-color: white;
           border-radius: 8px 0 0 8px;
@@ -180,15 +167,3 @@
     }
   }
 }
-
-// @media (min-height: 700px) and (max-height: 750px) {
-//   .preview-bloc .preview-container {
-//     width: 50%;
-//   }
-// }
-
-// @media (min-height: 750px) and (max-height: 850px) {
-//   .preview-bloc .preview-container {
-//     width: 60%;
-//   }
-// }
