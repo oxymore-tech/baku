@@ -83,8 +83,14 @@ export const UserStore: BakuModule<UserState> = {
       }
       await context.commit('updateSeenProjects', updatedSeenProjects);
     },
+    async deleteProject(context, projectId: string) {
+      const toDelete = context.state.seenProjects.find(s => s.id === projectId);
+      if (toDelete) {
+        await deleteProject(toDelete.adminId || toDelete.id);
+        await context.commit('deleteSeenProject', toDelete);
+      }
+    },
     async deleteSeenProject(context, projectId: string) {
-      await deleteProject(projectId);
       const toDelete = context.state.seenProjects.find(s => s.id === projectId);
       if (toDelete) {
         await context.commit('deleteSeenProject', toDelete);
