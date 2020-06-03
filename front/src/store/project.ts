@@ -10,6 +10,7 @@ interface ProjectGetters {
   getActiveShot: Shot;
   getActiveShotIndex: number;
   canLock: boolean;
+  getPreviousShotId: string;
 }
 
 export function computeSeconds(imageNumber: number, fps: number): number {
@@ -180,10 +181,16 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     getNoEditId: (state, getters: ProjectGetters): string => getters.canLock ? state.id.slice(0, 36) : state.id,
 
-    getPreviousShotId: (state, getters: ProjectGetters): string => {
+    getPreviousShotId: (state, getters: ProjectGetters): string | undefined => {
       const index = (getters.getActiveShotIndex - 1) % getters.movie.shots.length;
+      if(index === -1){
+        return undefined;
+      }
       return getters.movie.shots[index].id;
     },
+
+    getPreviousShot: (state, getters: ProjectGetters): Shot | undefined  =>
+      getters.movie.shots.find((shot: Shot) => shot.id === getters.getPreviousShotId),
 
     getNextShotId: (state, getters: ProjectGetters): string | undefined => {
       const index = (getters.getActiveShotIndex + 1) % getters.movie.shots.length;
