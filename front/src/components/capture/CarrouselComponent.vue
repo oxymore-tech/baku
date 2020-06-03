@@ -77,7 +77,7 @@
           </div>
         </template>
         <template v-else>
-          <div :key="'left'+index" class="image-container image-container-empty">
+          <div :key="'left'+index+'-prev'" class="image-container image-container-empty">
             <div
               class="carrousel-thumb"
               style="width:100%; border:none"
@@ -189,7 +189,6 @@ import { Device } from '@/utils/device.class';
 import { ImageRef } from '@/utils/uploadedImage.class';
 import { KeyCodes, ReadingSliderBoundaries } from '@/utils/movie.service';
 import { Shot } from '../../utils/movie.service';
-
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
 
@@ -237,6 +236,9 @@ export default class CarrouselComponent extends Vue {
 
   @ProjectNS.Getter('getPreviousShot')
   protected previousShot!: Shot | undefined;
+
+  @ProjectNS.Getter('getActiveShotIndex')
+  protected getActiveShotIndex!: number;
 
   private imagesToCopy: string[] = [];
 
@@ -341,6 +343,9 @@ export default class CarrouselComponent extends Vue {
     const count = 5 - this.computedLeftCarrousel.length;
     const images = this.previousShot ? (this.previousShot.images || []) : [];
     let leftImagesAvaible = images.slice(-count);
+    if(this.getActiveShotIndex === 0) {
+      leftImagesAvaible = [];
+    }
     return new Array(count - leftImagesAvaible.length)
       .fill(null)
       .concat(leftImagesAvaible);
@@ -352,6 +357,7 @@ export default class CarrouselComponent extends Vue {
       ? this.activeImage + 1
       : this.activeImage;
     let leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-count);
+    console.log(leftImagesAvaible);
     return leftImagesAvaible;
   }
 
