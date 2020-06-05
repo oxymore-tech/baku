@@ -385,7 +385,7 @@
     }
 
     public stopMoving() {
-      this.isPlaying = null;
+      this.pauseAnimation();
       this.syncActiveFrame();
     }
 

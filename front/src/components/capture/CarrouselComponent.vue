@@ -264,7 +264,7 @@ export default class CarrouselComponent extends Vue {
             } else if (this.isMultiSelect && this.activeImage - 1 < this.selectedImages.left) {
               this.$emit('resetSelection');
             }
-            this.$emit('activeImageChange', this.activeImage -1);
+            this.$emit('moveFrame', -1);
             break;
           case KeyCodes.RIGHT_ARROW:
             if (e.shiftKey) {
@@ -276,7 +276,7 @@ export default class CarrouselComponent extends Vue {
             } else if (this.isMultiSelect && this.activeImage + 1 > this.selectedImages.right) {
               this.$emit('resetSelection');
             }
-            this.$emit('activeImageChange', this.activeImage + 1);
+            this.$emit('moveFrame', 1);
             break;
           case KeyCodes.SPACE:
             this.$emit('togglePlay', e);
