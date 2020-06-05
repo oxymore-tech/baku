@@ -78,6 +78,110 @@ export function getDemoProjects(): SeenProject[] {
       locked: true,
       totalImages: 3000,
       fps: 25
+    },
+    {
+      id: 'bonhomme',
+      title: 'bonhomme',
+      posterUrl: "/images/bonhomme/original/bonhomme_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'danse_002_01',
+      title: 'danse_002_01',
+      posterUrl: "/images/danse_002_01/original/danse_002_01_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'DessinAnime_veleda_main_villeneuve1',
+      title: 'DessinAnime_veleda_main_villeneuve1',
+      posterUrl: "/images/DessinAnime_veleda_main_villeneuve1/original/DessinAnime_veleda_main_villeneuve1_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'Habillage_Plan03',
+      title: 'Habillage_Plan03',
+      posterUrl: "/images/Habillage_Plan03/original/Habillage_Plan03_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'homme',
+      title: 'homme',
+      posterUrl: "/images/homme/original/homme_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'la_tache_rouge',
+      title: 'la_tache_rouge',
+      posterUrl: "/images/la_tache_rouge/original/la_tache_rouge_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'Lhomme_de_sable',
+      title: 'Lhomme_de_sable',
+      posterUrl: "/images/Lhomme_de_sable/original/Lhomme_de_sable_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'marche',
+      title: 'marche',
+      posterUrl: "/images/marche/original/marche_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'Paf',
+      title: 'Paf',
+      posterUrl: "/images/Paf/original/Paf_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'Sable',
+      title: 'Sable',
+      posterUrl: "/images/Sable/original/Sable_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'The_Villeneuve',
+      title: 'The_Villeneuve',
+      posterUrl: "/images/The_Villeneuve/original/The_Villeneuve_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'velo_001_01',
+      title: 'velo_001_01',
+      posterUrl: "/images/velo_001_01/original/velo_001_01_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
+    },
+    {
+      id: 'video_linda_HD;',
+      title: 'video_linda_HD;',
+      posterUrl: "/images/video_linda_HD;/original/video_linda_HD;_00000.jpg",
+      synopsis: "",
+      locked: true,
+      fps:12
     }
   ];
 }
