@@ -83,8 +83,8 @@ public class HistoryServiceImpl implements HistoryService {
         }
     }
 
-    @VisibleForTesting
-    void writeHistory(String projectId, List<BakuEvent> events) throws IOException {
+    @Override
+    public void writeHistory(String projectId, List<BakuEvent> events) throws IOException {
         Path stackFile = pathService.getStackFile(projectId);
         Path temp = pathService.getStackTempFile(projectId);
         pathService.createDirectory(projectId);

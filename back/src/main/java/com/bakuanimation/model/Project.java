@@ -22,4 +22,12 @@ public final class Project {
     public String getAdminId() {
         return adminId;
     }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id='" + id + '\'' +
+                ", adminId='" + adminId + '\'' +
+                '}';
+    }
 }
