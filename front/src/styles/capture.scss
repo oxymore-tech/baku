@@ -76,12 +76,21 @@
           width: 8rem;
           background-color: #455054;
           border-radius: 8px;
-          height: 36px;
-          min-height: 36px;
-          max-height: 36px;
           color: white;
           font-size: 2.4rem;
           text-align: center;
+          padding-top: .5rem;
+
+          .clock-digit {
+            position: relative;
+
+            .clock-digit-indicator {
+              position: absolute;
+              right: 0;
+              top: -.8rem;
+              font-size: 0.9rem;
+            }
+          }
 
           .clock-small {
             font-size: 1.8rem;
@@ -162,6 +171,7 @@
           i.icon-backward {
             left: 0;
           }
+
           i.icon-forward {
             right: 0;
           }
