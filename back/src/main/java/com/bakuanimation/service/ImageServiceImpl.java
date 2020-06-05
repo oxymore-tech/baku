@@ -149,7 +149,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Single<Project> importMovie(String projectName) {
-        String user = "system";
+        String user = "baku";
         String timestamp = Instant.now().toString();
         return Single.fromCallable(() -> {
             if (!Files.exists(pathService.projectDir(projectName))) {
@@ -171,6 +171,9 @@ public class ImageServiceImpl implements ImageService {
 
             List<BakuEvent> events = new ArrayList<>();
             JsonNodeFactory jsonNodeFactory = JsonNodeFactory.instance;
+            events.add(new BakuEvent(BakuAction.CHANGE_FPS.ordinal(), jsonNodeFactory.numberNode(12), user, timestamp));
+            events.add(new BakuEvent(BakuAction.MOVIE_UPDATE_TITLE.ordinal(), jsonNodeFactory.textNode(projectName), user, timestamp));
+
 
             for (Map.Entry<String, List<Path>> shotEntry : shots.entrySet()) {
                 ObjectNode shotNode = jsonNodeFactory.objectNode();
