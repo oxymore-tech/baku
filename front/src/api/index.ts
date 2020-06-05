@@ -176,8 +176,8 @@ export function getDemoProjects(): SeenProject[] {
       fps:12
     },
     {
-      id: 'video_linda_HD;',
-      title: 'video_linda_HD;',
+      id: 'video_linda_HD',
+      title: 'video_linda_HD',
       posterUrl: "/images/video_linda_HD;/original/video_linda_HD;_00000.jpg",
       synopsis: "",
       locked: true,
