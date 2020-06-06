@@ -58,6 +58,9 @@ export const UserStore: BakuModule<UserState> = {
         state.seenProjects.splice(toDeleteIndex, 1);
         localStorage.setItem(lsSeenProjectsKey, JSON.stringify(state.seenProjects));
       }
+    },
+    changeUsername(state, username: string){
+      state.username = username;
     }
   },
   actions: {
@@ -95,6 +98,9 @@ export const UserStore: BakuModule<UserState> = {
       if (toDelete) {
         await context.commit('deleteSeenProject', toDelete);
       }
+    },
+    async updateUsername(context, name: string){
+      await context.commit('changeUsername', name);
     },
     async updateCurrentSeenProject(context) {
       let projectId = store.state.project.id;
