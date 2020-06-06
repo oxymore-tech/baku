@@ -26,7 +26,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   public username!: string;
 
   @UserNS.Action('updateUsername')
-  public updateUsername: (username: string) => Promise<void>;
+  public updateUsername!: (username: string) => Promise<void>;
 
   public async changeName() {
     this.updateUsername((this.$refs['usrname'] as any).value);
