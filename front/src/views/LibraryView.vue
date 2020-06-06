@@ -113,7 +113,7 @@
                 <i class="icon-close"/>
                 <span class="baku-button">Supprimer</span>
               </div>
-              <div @click="onRemoveFromSeenProject(project.id)">
+              <div v-if="!project.isDemo" @click="onRemoveFromSeenProject(project.id)">
                 <i class="icon-close"/>
                 <span class="baku-button">Effacer de l'historique</span>
               </div>
@@ -177,7 +177,7 @@
 
     get projects() {
       if (this.showDemoProjects) {
-        return MovieService.removeDoublons([...getDemoProjects(), ...this.seenProjects]);
+        return MovieService.removeDoublons([...getDemoProjects().map(project => ({...project, isDemo: true})), ...this.seenProjects]);
       }
       return this.seenProjects;
     }

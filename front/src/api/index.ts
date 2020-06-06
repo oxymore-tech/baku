@@ -77,7 +77,7 @@ export function getDemoProjects(): SeenProject[] {
         "souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées. Ce film a était créé dans le cadre d'un atelier avec des enfants organisé par la ménagerie",
       locked: true,
       totalImages: 3000,
-      fps: 25
+      fps: 25,
     },
     {
       id: 'bonhomme',
