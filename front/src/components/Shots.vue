@@ -64,7 +64,7 @@
             <i class="icon-lock-solid baku-button"></i> Verrouiller le plan
           </b-dropdown-item>
           <b-dropdown-item
-            v-if="!shot.locked"
+            v-if="!shot.locked && movie.shots.length > 1"
             class="dropdown-item-bloc"
             aria-role="listitem"
             @click="moveShot(shot.id)" :disabled="!canEditMovie"
@@ -165,8 +165,8 @@
     }
 
     public async moveShot(shotId: string) {
-      const shotIndex = this.movie.shots.findIndex((shot: Shot) => shot.id === shotId);
-      if (shotIndex) {
+      const shotIndex = this.movie.shots.findIndex((shot: Shot) => shot.id == shotId);
+      if (shotIndex != -1) {
         this.$buefy.dialog.prompt({
           message: 'Entrez la nouvelle position du plan :',
           inputAttrs: {
