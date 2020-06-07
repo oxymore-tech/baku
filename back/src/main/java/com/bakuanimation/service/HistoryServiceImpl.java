@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.api.client.util.Lists;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
@@ -127,6 +126,7 @@ public class HistoryServiceImpl implements HistoryService {
         String synopsis = "";
         int fps = 0;
         boolean movieLocked = false;
+        List<String> shots = new ArrayList<>();
         Map<String, List<Path>> images = new LinkedHashMap<>();
         Set<String> lockedShots = new HashSet<>();
         for (BakuEvent element : history) {
@@ -161,6 +161,7 @@ public class HistoryServiceImpl implements HistoryService {
                 case SHOT_ADD: {
                     String shotId = element.getValue().get("shotId").asText();
                     images.put(shotId, new ArrayList<>());
+                    shots.add(shotId);
                     break;
                 }
                 case CHANGE_FPS:
@@ -175,6 +176,19 @@ public class HistoryServiceImpl implements HistoryService {
                 case SHOT_REMOVE: {
                     String shotId = element.getValue().get("shotId").asText();
                     images.remove(shotId);
+                    shots.remove(shotId);
+                    break;
+                }
+                case SHOT_MOVE: {
+                    String shotId = element.getValue().get("shotId").asText();
+                    int index = element.getValue().get("index").asInt();
+                    if (index < 0) {
+                        index = 0;
+                    } else if (index > shots.size() - 1) {
+                        index = shots.size() - 1;
+                    }
+                    shots.remove(shotId);
+                    shots.set(index, shotId);
                     break;
                 }
                 case MOVIE_LOCK: {
@@ -205,7 +219,6 @@ public class HistoryServiceImpl implements HistoryService {
             }
         }
 
-        ImmutableList<String> shots = ImmutableList.copyOf(images.keySet());
         ImmutableListMultimap.Builder<String, Path> imagesBuilder = ImmutableListMultimap.builder();
         for (Map.Entry<String, List<Path>> imagesEntry : images.entrySet()) {
             String shotId = imagesEntry.getKey();

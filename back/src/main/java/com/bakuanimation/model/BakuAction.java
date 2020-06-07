@@ -19,7 +19,8 @@ public enum BakuAction {
     SHOT_UPDATE_SYNOPSIS,
     SHOT_UPDATE_STORYBOARD,
     MOVIE_REVERSE_IMAGES,
-    DELETE_MOVIE;
+    DELETE_MOVIE,
+    SHOT_MOVE;
 
     private static final Map<Integer, BakuAction> lookup = Maps.newHashMap();
 

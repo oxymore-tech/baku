@@ -125,6 +125,12 @@ export const ProjectStore: BakuModule<ProjectState> = {
       return shotId;
     },
 
+    async moveShot(context, params: { shotId: string, index: number }): Promise<void> {
+      const event = makeEvent(context, BakuAction.SHOT_MOVE, params);
+      loadEvents(context, [event]);
+      await store.dispatch('user/updateCurrentSeenProject');
+    },
+
     async removeShot(context, shotId: string) {
       const event = makeEvent(context, BakuAction.SHOT_REMOVE, {shotId});
       loadEvents(context, [event]);
@@ -183,13 +189,13 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     getPreviousShotId: (state, getters: ProjectGetters): string | undefined => {
       const index = (getters.getActiveShotIndex - 1) % getters.movie.shots.length;
-      if(index === -1){
+      if (index === -1) {
         return undefined;
       }
       return getters.movie.shots[index].id;
     },
 
-    getPreviousShot: (state, getters: ProjectGetters): Shot | undefined  =>
+    getPreviousShot: (state, getters: ProjectGetters): Shot | undefined =>
       getters.movie.shots.find((shot: Shot) => shot.id === getters.getPreviousShotId),
 
     getNextShotId: (state, getters: ProjectGetters): string | undefined => {

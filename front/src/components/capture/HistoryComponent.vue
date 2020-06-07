@@ -89,6 +89,8 @@
           return "ajoute un plan";
         case BakuAction.SHOT_REMOVE:
           return "supprime un plan";
+        case BakuAction.SHOT_MOVE:
+          return "déplace un plan";
         case BakuAction.CHANGE_FPS:
           return `change les fps du film ${event.value}`;
         default:
