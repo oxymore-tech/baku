@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'baku';
-  src:  url('fonts/baku.eot?xsccwv');
-  src:  url('fonts/baku.eot?xsccwv#iefix') format('embedded-opentype'),
-    url('fonts/baku.ttf?xsccwv') format('truetype'),
-    url('fonts/baku.woff?xsccwv') format('woff'),
-    url('fonts/baku.svg?xsccwv#baku') format('svg');
+  src:  url('fonts/baku.eot?55jqbl');
+  src:  url('fonts/baku.eot?55jqbl#iefix') format('embedded-opentype'),
+    url('fonts/baku.ttf?55jqbl') format('truetype'),
+    url('fonts/baku.woff?55jqbl') format('woff'),
+    url('fonts/baku.svg?55jqbl#baku') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -233,247 +233,54 @@
 .icon-unlock-solid:before {
   content: "\e941";
 }
-.icon-user-bear .path1:before {
+.icon-user-bear:before {
   content: "\e942";
-  color: rgb(0, 0, 0);
 }
-.icon-user-bear .path2:before {
+.icon-user-bird:before {
   content: "\e943";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
 }
-.icon-user-bear .path3:before {
+.icon-user-boar:before {
   content: "\e944";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-bear .path4:before {
-  content: "\e945";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-bird .path1:before {
-  content: "\e946";
-  color: rgb(0, 0, 0);
-}
-.icon-user-bird .path2:before {
-  content: "\e947";
-  margin-left: -1em;
-  color: rgb(243, 243, 243);
-}
-.icon-user-bird .path3:before {
-  content: "\e948";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-boar .path1:before {
-  content: "\e949";
-  color: rgb(0, 0, 0);
-}
-.icon-user-boar .path2:before {
-  content: "\e94a";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-boar .path3:before {
-  content: "\e94b";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
 }
 .icon-user-circle:before {
-  content: "\e94c";
+  content: "\e945";
 }
-.icon-user-dog .path1:before {
-  content: "\e94d";
-  color: rgb(0, 0, 0);
-}
-.icon-user-dog .path2:before {
-  content: "\e94e";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-dog .path3:before {
-  content: "\e94f";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
+.icon-user-dog:before {
+  content: "\e946";
 }
 .icon-user-dragon:before {
+  content: "\e947";
+}
+.icon-user-fox:before {
+  content: "\e948";
+}
+.icon-user-frog:before {
+  content: "\e949";
+}
+.icon-user-ghost:before {
+  content: "\e94a";
+}
+.icon-user-horse:before {
+  content: "\e94b";
+}
+.icon-user-kiwi:before {
+  content: "\e94c";
+}
+.icon-user-monkey:before {
+  content: "\e94d";
+}
+.icon-user-rabbit:before {
+  content: "\e94e";
+}
+.icon-user-turtle:before {
+  content: "\e94f";
+}
+.icon-user-whales:before {
   content: "\e950";
 }
-.icon-user-fox .path1:before {
-  content: "\e951";
-  color: rgb(0, 0, 0);
-}
-.icon-user-fox .path2:before {
-  content: "\e952";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-fox .path3:before {
-  content: "\e953";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-fox .path4:before {
-  content: "\e954";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-fox .path5:before {
-  content: "\e955";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-fox .path6:before {
-  content: "\e956";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-fox .path7:before {
-  content: "\e957";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-frog .path1:before {
-  content: "\e958";
-  color: rgb(0, 0, 0);
-}
-.icon-user-frog .path2:before {
-  content: "\e959";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-frog .path3:before {
-  content: "\e95a";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-ghost .path1:before {
-  content: "\e95b";
-  color: rgb(0, 0, 0);
-}
-.icon-user-ghost .path2:before {
-  content: "\e95c";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-ghost .path3:before {
-  content: "\e95d";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-horse .path1:before {
-  content: "\e95e";
-  color: rgb(0, 0, 0);
-}
-.icon-user-horse .path2:before {
-  content: "\e95f";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-horse .path3:before {
-  content: "\e960";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-kiwi .path1:before {
-  content: "\e961";
-  color: rgb(0, 0, 0);
-}
-.icon-user-kiwi .path2:before {
-  content: "\e962";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-kiwi .path3:before {
-  content: "\e963";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-monkey .path1:before {
-  content: "\e964";
-  color: rgb(255, 255, 255);
-}
-.icon-user-monkey .path2:before {
-  content: "\e965";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-monkey .path3:before {
-  content: "\e966";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-rabbit .path1:before {
-  content: "\e967";
-  color: rgb(0, 0, 0);
-}
-.icon-user-rabbit .path2:before {
-  content: "\e968";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-rabbit .path3:before {
-  content: "\e969";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-rabbit .path4:before {
-  content: "\e96a";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-rabbit .path5:before {
-  content: "\e96b";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-rabbit .path6:before {
-  content: "\e96c";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-turtle .path1:before {
-  content: "\e96d";
-  color: rgb(0, 0, 0);
-}
-.icon-user-turtle .path2:before {
-  content: "\e96e";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-turtle .path3:before {
-  content: "\e96f";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-turtle .path4:before {
-  content: "\e970";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-whales .path1:before {
-  content: "\e971";
-  color: rgb(0, 0, 0);
-}
-.icon-user-whales .path2:before {
-  content: "\e972";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
-}
-.icon-user-whales .path3:before {
-  content: "\e973";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-.icon-user-whales .path4:before {
-  content: "\e974";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
 .icon-webcam:before {
-  content: "\e975";
+  content: "\e951";
 }
 .icon-youtube-brands:before {
-  content: "\e976";
+  content: "\e952";
 }
