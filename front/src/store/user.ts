@@ -1,18 +1,70 @@
 import store from "@/store";
-import { BakuModule, SeenProject, UserState } from './store.types';
+import { BakuModule, SeenProject, UserState } from "./store.types";
 import { deleteProject, getHistory } from "@/api";
 import { MovieService } from "@/utils/movie.service";
 
 // local storage keys
-const lsUsernameKey = 'username';
-const lsSeenProjectsKey = 'seenProjects';
+const lsUsernameKey = "username";
+const lsSeenProjectsKey = "seenProjects";
 
 const yokaiList = [
-  'Akuma', 'Asobibi', 'Bakebi', 'Bakeneko', 'Baku', 'Daki', 'Enkō', 'Fūbo', 'Genbu', 'Hakuba', 'Hinode',
-  'Ikuchi', 'Jashin', 'Kappa', 'Kirin', 'Kitsune', 'Kodama', 'Kowai', 'Mononoke', 'Ninko', 'Ōgama', 'Ōkami',
-  'Oni', 'Raijū', 'Reiki', 'Ryū', 'Saburō', 'Sankai', 'Sankibō', 'Sarugami', 'Satori', 'Shiryō', 'Shisa', 'Sōgenbi',
-  'Sōjōbō', 'Son Gokū', 'Taiba', 'Tanuki', 'Tatsu', 'Tengubi', 'Tenji', 'Tenko', 'Tōtetsu', 'Uba Ga Hi', 'Ubume',
-  'Uryû', 'Uwan', 'Waira', 'Yōko', 'Yōsei', 'Yosuzume', 'Yukinko', 'Yurei', 'Zan', 'Zorigami', 'Zuijin'];
+  { name: "Akuma", icon: "dog" },
+  { name: "Asobibi", icon: "dog" },
+  { name: "Bakebi", icon: "dog" },
+  { name: "Bakeneko", icon: "bear" },
+  { name: "Baku", icon: "bear" },
+  { name: "Daki", icon: "bear" },
+  { name: "Enkō", icon: "ghost" },
+  { name: "Fūbo", icon: "ghost" },
+  { name: "Genbu", icon: "bird" },
+  { name: "Hakuba", icon: "bird" },
+  { name: "Hinode", icon: "bird" },
+  { name: "Ikuchi", icon: "bird" },
+  { name: "Jashin", icon: "bird" },
+  { name: "Kappa", icon: "boar" },
+  { name: "Kirin", icon: "whales" },
+  { name: "Kitsune", icon: "whales" },
+  { name: "Kodama", icon: "boar" },
+  { name: "Kowai", icon: "boar" },
+  { name: "Mononoke", icon: "boar" },
+  { name: "Ninko", icon: "boar" },
+  { name: "Ōgama", icon: "boar" },
+  { name: "Ōkami", icon: "bear" },
+  { name: "Oni", icon: "bear" },
+  { name: "Raijū", icon: "bear" },
+  { name: "Reiki", icon: "bear" },
+  { name: "Ryū", icon: "dog" },
+  { name: "Saburō", icon: "dog" },
+  { name: "Sankai", icon: "turtle" },
+  { name: "Sankibō", icon: "turtle" },
+  { name: "Sarugami", icon: "dog" },
+  { name: "Satori", icon: "dragon" },
+  { name: "Shiryō", icon: "dragon" },
+  { name: "Shisa", icon: "dragon" },
+  { name: "Sōgenbi", icon: "dragon" },
+  { name: "Sōjōbō", icon: "dragon" },
+  { name: "Son Gokū", icon: "dragon" },
+  { name: "Taiba", icon: "dragon" },
+  { name: "Tanuki", icon: "dragon" },
+  { name: "Tatsu", icon: "fox" },
+  { name: "Tengubi", icon: "fox" },
+  { name: "Tenji", icon: "fox" },
+  { name: "Tenko", icon: "fox" },
+  { name: "Tōtetsu", icon: "fox" },
+  { name: "Uba Ga Hi", icon: "fox" },
+  { name: "Ubume", icon: "fox" },
+  { name: "Uryû", icon: "whales" },
+  { name: "Uwan", icon: "fox" },
+  { name: "Waira", icon: "frog" },
+  { name: "Yōko", icon: "frog" },
+  { name: "Yōsei", icon: "frog" },
+  { name: "Yosuzume", icon: "rabbit" },
+  { name: "Yukinko", icon: "rabbit" },
+  { name: "Yurei", icon: "rabbit" },
+  { name: "Zan", icon: "frog" },
+  { name: "Zorigami", icon: "frog" },
+  { name: "Zuijin", icon: "frog" }
+];
 
 const initializeUsername = () => {
   // retrieve last username if exists
@@ -23,13 +75,13 @@ const initializeUsername = () => {
 
   // generate username
   const randIdx = Math.floor(Math.random() * yokaiList.length);
-  const generatedUsername = yokaiList[randIdx];
+  const generatedUsername = yokaiList[randIdx].name;
   localStorage.setItem(lsUsernameKey, generatedUsername);
   return generatedUsername;
 };
 
 const initializeSeenProjects = () => {
-  const seenProjectsJson = localStorage.getItem(lsSeenProjectsKey)
+  const seenProjectsJson = localStorage.getItem(lsSeenProjectsKey);
   if (seenProjectsJson) {
     return JSON.parse(seenProjectsJson);
   }
@@ -40,7 +92,7 @@ export const UserStore: BakuModule<UserState> = {
   namespaced: true,
   state: {
     username: initializeUsername(),
-    seenProjects: initializeSeenProjects(),
+    seenProjects: initializeSeenProjects()
   },
   mutations: {
     updateSeenProjects(state, seenProjects: SeenProject[]) {
@@ -59,7 +111,7 @@ export const UserStore: BakuModule<UserState> = {
         localStorage.setItem(lsSeenProjectsKey, JSON.stringify(state.seenProjects));
       }
     },
-    changeUsername(state, username: string){
+    changeUsername(state, username: string) {
       state.username = username;
     }
   },
@@ -84,23 +136,23 @@ export const UserStore: BakuModule<UserState> = {
           console.log(`Movie ${seenProject.id} not found on server : remove from loca storage`);
         }
       }
-      await context.commit('updateSeenProjects', updatedSeenProjects);
+      await context.commit("updateSeenProjects", updatedSeenProjects);
     },
     async deleteProject(context, projectId: string) {
       const toDelete = context.state.seenProjects.find(s => s.id === projectId);
       if (toDelete) {
         await deleteProject(toDelete.adminId || toDelete.id);
-        await context.commit('deleteSeenProject', toDelete);
+        await context.commit("deleteSeenProject", toDelete);
       }
     },
     async deleteSeenProject(context, projectId: string) {
       const toDelete = context.state.seenProjects.find(s => s.id === projectId);
       if (toDelete) {
-        await context.commit('deleteSeenProject', toDelete);
+        await context.commit("deleteSeenProject", toDelete);
       }
     },
-    async updateUsername(context, name: string){
-      await context.commit('changeUsername', name);
+    async updateUsername(context, name: string) {
+      await context.commit("changeUsername", name);
     },
     async updateCurrentSeenProject(context) {
       let projectId = store.state.project.id;
@@ -125,18 +177,18 @@ export const UserStore: BakuModule<UserState> = {
           fps: movie.fps,
           totalImages: MovieService.getTotalImages(movie),
           lastUpdate: MovieService.getLastUpdate(history)
-        }
+        };
 
-        await context.commit('addSeenProject', project);
+        await context.commit("addSeenProject", project);
       }
-    },
+    }
   },
   getters: {
-    getPersonalisedProjectTitle: (state) => {
+    getPersonalisedProjectTitle: state => {
       const prefix = "Film de " + state.username;
       let suffixNumber = 0;
       let suffix = "";
-      const titles = state.seenProjects.map((p) => p.title).sort();
+      const titles = state.seenProjects.map(p => p.title).sort();
       for (const seenTitle of titles) {
         if (prefix + suffix === seenTitle) {
           suffixNumber += 1;
@@ -144,6 +196,10 @@ export const UserStore: BakuModule<UserState> = {
         }
       }
       return prefix + suffix;
+    },
+
+    getIcon: (state) => {
+      return yokaiList.find(yokai => yokai.name === state.username)?.icon
     }
   }
 };

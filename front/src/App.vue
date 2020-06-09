@@ -127,7 +127,7 @@
         </div>
         <div class="flex-container right-nav" :class="{'right-nav-home': $route.name === 'home'}">
           <div>
-            <i class="icon-user-dragon"/>
+            <i :class="'icon-user-'+getIcon"/>
           </div>
           <div class="pseudo" @click="openRenamePopup()">{{ username }}</div>
         </div>
@@ -202,6 +202,9 @@ export default class App extends Vue {
 
     @UserNS.Getter('getPersonalisedProjectTitle')
     public getPersonalisedProjectTitle!: string;
+
+    @UserNS.Getter('getIcon')
+    public getIcon!: string;
 
     @ProjectNS.Action('createShot')
     private createShotAction!: (name?: string) => Promise<string>;
