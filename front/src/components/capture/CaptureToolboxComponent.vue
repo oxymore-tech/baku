@@ -284,7 +284,7 @@ export default class CaptureToolboxComponent extends Vue {
 @media (max-height: 580px) {
   .toolbox-dropdown.dropdown.is-mobile-modal > .dropdown-menu {
     padding-top: 0px;
-    top: 105px !important;
+    top: 50px !important;
     right: 60px !important;
     left: unset !important;
     width: max-content;

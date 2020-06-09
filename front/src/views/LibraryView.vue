@@ -68,11 +68,11 @@
 
           </div>
 
-          <div class="movie-toolbars">
+          <!-- <div class="movie-toolbars"> -->
 
             <div class="movie-toolbar-1">
 
-              <div v-if="project.lastUpdate">
+              <div v-if="project.lastUpdate" style="margin-right: 10px">
                 <div class="indication">Mise à jour :</div>
                 <div>{{ project.lastUpdate | formatDate }}</div>
               </div>
@@ -120,7 +120,7 @@
 
             </div>
 
-          </div>
+          <!-- </div> -->
 
         </div>
       </div>
