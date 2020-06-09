@@ -251,8 +251,10 @@ i[class^="icon-"] {
     .movie-toolbar-2 {
       width: 100%;
       display: flex;
-      justify-content: space-around;
-      padding: 0 20px;
+      flex-direction: column;
+      flex-wrap: wrap;
+      padding: 20px;
+      max-height: 120px;
     }
   }
 
