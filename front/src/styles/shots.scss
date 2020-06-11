@@ -127,12 +127,12 @@
   }
 
   .dropdown-item-bloc {
-    width: 270px;
+    width: 100%;
   }
 
-  .dropdown.is-active {
-    display: block;
-  }
+  // .dropdown.is-active {
+  //   display: block;
+  // }
 }
 
 .dropdown .dropdown-menu .has-link a {
