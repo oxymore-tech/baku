@@ -54,7 +54,7 @@
         <span>Inverser</span>
       </div>
       <div
-        class="toolbar-button"
+        class="toolbar-button delete-button"
         @click="deleteFrame()"
         :class="{disabled: isFrameLiveView || isPlaying || !canEdit}"
       >
