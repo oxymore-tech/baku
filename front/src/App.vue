@@ -126,7 +126,7 @@
           </div>
         </div>
         <div class="flex-container right-nav" :class="{'right-nav-home': $route.name === 'home'}">
-          <i :class="'icon-user-'+getIcon" :style="{color: usercolor}" />
+          <!-- <i :class="'icon-user-'+getIcon" :style="{color: usercolor}" /> -->
           <div class="pseudo" @click="openRenamePopup()">{{ username }}</div>
         </div>
       </div>

@@ -16,7 +16,7 @@
         :key="`action_${index}`"
         class="action"
       >
-        <i class="icon-user-circle"/>
+        <!-- <i class="icon-user-circle"/> -->
         <div>
           <div>
             <span class="action-user">{{user(event) +" "}}</span>
