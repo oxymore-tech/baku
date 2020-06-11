@@ -148,6 +148,7 @@
   });
 
   const UserNS = namespace('user');
+  const ProjectNS = namespace('project');
 
   @Component({
     components: {VideoButton, InlineInput},
@@ -166,6 +167,12 @@
     @UserNS.Action('deleteSeenProject')
     deleteSeenProject!: Function;
 
+    @ProjectNS.Getter('synchronizing')
+    projectSynchronizing!: boolean;
+
+    @ProjectNS.Action('emptyState')
+    emptyProjectState!: Function;
+
     public url = window.location.origin;
 
     showDemoProjects = false;
@@ -173,6 +180,9 @@
     mounted() {
       this.showDemoProjects = this.seenProjects.length == 0;
       this.refreshSeenProjectsMetadata();
+      if(!this.projectSynchronizing) {
+        this.emptyProjectState();
+      }
     }
 
     get projects() {

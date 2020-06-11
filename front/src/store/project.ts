@@ -74,6 +74,12 @@ export const ProjectStore: BakuModule<ProjectState> = {
         state.pendingActions += count;
       }
     },
+    emptyState(state) {
+      state.id = '';
+      state.activeShotId = null,
+      state.history = [];
+      state.pendingActions = 0;
+    }
   },
   actions: {
     async loadProject(context, projectId: string): Promise<void> {
@@ -156,6 +162,10 @@ export const ProjectStore: BakuModule<ProjectState> = {
     async changeShotStoryboard(context, params: { shotId: string, storyboard: string }) {
       const event = makeEvent(context, BakuAction.SHOT_UPDATE_STORYBOARD, params);
       loadEvents(context, [event]);
+    },
+
+    async emptyState(context) {
+      context.commit('emptyState');
     }
   },
   getters: {
