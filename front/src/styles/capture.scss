@@ -82,6 +82,18 @@
           color: white;
           font-size: 2.4rem;
           text-align: center;
+          padding-top: .5rem;
+
+          .clock-digit {
+            position: relative;
+
+            .clock-digit-indicator {
+              position: absolute;
+              right: 0;
+              top: -.8rem;
+              font-size: 0.9rem;
+            }
+          }
 
           .clock-small {
             font-size: 1.8rem;
@@ -131,8 +143,8 @@
 // Little heights
 @media (max-height: 580px) {
   .preview-bloc {
-    max-height: calc(100% - 105px);
-    min-height: calc(100% - 105px);
+    max-height: calc(100% - 45px);
+    min-height: calc(100% - 45px);
 
     .preview-container {
       margin: auto;
@@ -146,8 +158,10 @@
           flex-direction: column;
           position: absolute;
           right: 0;
-          top: 160px;
+          top: 120px;
           width: 70px;
+          height: 155px;
+          justify-content: center;
 
           * {
             margin-bottom: 15px;
@@ -156,21 +170,21 @@
           i.icon-forward,
           i.icon-backward {
             position: absolute;
-            top: 5px;
+            left: 20px;
           }
 
           i.icon-backward {
-            left: 0;
+            top: 0;
           }
           i.icon-forward {
-            right: 0;
+            bottom: 0;
           }
         }
 
         .toolbox-control {
           position: absolute;
           right: 0;
-          top: 105px;
+          top: 50px;
           width: 70px;
           background-color: white;
           border-radius: 8px 0 0 8px;

@@ -126,10 +126,8 @@
           </div>
         </div>
         <div class="flex-container right-nav" :class="{'right-nav-home': $route.name === 'home'}">
-          <div>
-            <i class="icon-user-dragon"/>
-          </div>
-          <div class="pseudo">{{ username }}</div>
+          <!-- <i :class="'icon-user-'+getIcon" :style="{color: usercolor}" /> -->
+          <div class="pseudo" @click="openRenamePopup()">{{ username }}</div>
         </div>
       </div>
     </nav>
@@ -179,6 +177,7 @@ import { namespace } from 'vuex-class';
 import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
 import { Movie } from '@/utils/movie.service';
 import IssuePopup from '@/components/IssuePopup.vue';
+import RenamePopup from '@/components/RenamePopup.vue';
 import { createProject } from '@/api';
 
 const ProjectNS = namespace('project');
@@ -199,8 +198,14 @@ export default class App extends Vue {
     @UserNS.State
     public username!: string;
 
+    @UserNS.State
+    public usercolor!: string;
+
     @UserNS.Getter('getPersonalisedProjectTitle')
     public getPersonalisedProjectTitle!: string;
+
+    @UserNS.Getter('getIcon')
+    public getIcon!: string;
 
     @ProjectNS.Action('createShot')
     private createShotAction!: (name?: string) => Promise<string>;
@@ -294,6 +299,15 @@ export default class App extends Vue {
         hasModalCard: true,
         canCancel: ['escape', 'outside'],
       });
+    }
+
+    public openRenamePopup() {
+      this.$buefy.modal.open({
+        parent: this,
+        component: RenamePopup,
+        hasModalCard: true,
+        canCancel: ['escape', 'outside']
+      })
     }
 
     public async onCreateProject() {

@@ -11,7 +11,9 @@ export enum BakuAction {
   SHOT_LOCK,
   SHOT_UPDATE_SYNOPSIS,
   SHOT_UPDATE_STORYBOARD,
-  MOVIE_REVERSE_IMAGES
+  MOVIE_REVERSE_IMAGES,
+  DELETE_MOVIE,
+  SHOT_MOVE
 }
 
 export interface BakuEvent {

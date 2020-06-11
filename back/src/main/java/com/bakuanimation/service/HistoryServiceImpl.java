@@ -10,9 +10,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.api.client.util.Lists;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
@@ -25,6 +25,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Executors;
 
@@ -80,8 +82,8 @@ public class HistoryServiceImpl implements HistoryService {
         }
     }
 
-    @VisibleForTesting
-    void writeHistory(String projectId, List<BakuEvent> events) throws IOException {
+    @Override
+    public void writeHistory(String projectId, List<BakuEvent> events) throws IOException {
         Path stackFile = pathService.getStackFile(projectId);
         Path temp = pathService.getStackTempFile(projectId);
         pathService.createDirectory(projectId);
@@ -92,6 +94,24 @@ public class HistoryServiceImpl implements HistoryService {
             Files.delete(stackFile);
         }
         Files.move(temp, stackFile);
+    }
+
+    @Override
+    public Single<Boolean> deleteMovie(Project project) {
+        return interpretHistory(project.getId())
+                .map(movie -> {
+                    try {
+                        permissionService.hasRight(project, movie, new BakuEvent(BakuAction.DELETE_MOVIE.ordinal(),
+                                JsonNodeFactory.instance.objectNode(), "", ""));
+                        LOGGER.debug("Marked project {} to delete", project.getId());
+                        Path newPath = Files.move(pathService.projectDir(project.getId()), pathService.deletePath(project.getId()));
+                        Files.setLastModifiedTime(newPath, FileTime.from(Instant.now()));
+                        return true;
+                    } catch (IOException e) {
+                        LOGGER.warn("Error while marking file to delete", e);
+                        return false;
+                    }
+                });
     }
 
     @Override
@@ -106,6 +126,7 @@ public class HistoryServiceImpl implements HistoryService {
         String synopsis = "";
         int fps = 0;
         boolean movieLocked = false;
+        List<String> shots = new ArrayList<>();
         Map<String, List<Path>> images = new LinkedHashMap<>();
         Set<String> lockedShots = new HashSet<>();
         for (BakuEvent element : history) {
@@ -140,6 +161,7 @@ public class HistoryServiceImpl implements HistoryService {
                 case SHOT_ADD: {
                     String shotId = element.getValue().get("shotId").asText();
                     images.put(shotId, new ArrayList<>());
+                    shots.add(shotId);
                     break;
                 }
                 case CHANGE_FPS:
@@ -154,6 +176,19 @@ public class HistoryServiceImpl implements HistoryService {
                 case SHOT_REMOVE: {
                     String shotId = element.getValue().get("shotId").asText();
                     images.remove(shotId);
+                    shots.remove(shotId);
+                    break;
+                }
+                case SHOT_MOVE: {
+                    String shotId = element.getValue().get("shotId").asText();
+                    int index = element.getValue().get("index").asInt();
+                    if (index < 0) {
+                        index = 0;
+                    } else if (index > shots.size() - 1) {
+                        index = shots.size() - 1;
+                    }
+                    shots.remove(shotId);
+                    shots.set(index, shotId);
                     break;
                 }
                 case MOVIE_LOCK: {
@@ -184,7 +219,6 @@ public class HistoryServiceImpl implements HistoryService {
             }
         }
 
-        ImmutableList<String> shots = ImmutableList.copyOf(images.keySet());
         ImmutableListMultimap.Builder<String, Path> imagesBuilder = ImmutableListMultimap.builder();
         for (Map.Entry<String, List<Path>> imagesEntry : images.entrySet()) {
             String shotId = imagesEntry.getKey();

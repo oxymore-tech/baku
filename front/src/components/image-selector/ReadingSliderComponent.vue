@@ -76,6 +76,10 @@
 .b-slider .b-slider-tick,
 .b-slider .b-slider-track {
   height: 24px !important;
+
+  @media (max-height: 580px) {
+    height: 16px !important;
+  }
 }
 
 .b-slider-tick {
@@ -95,6 +99,16 @@ div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
 
 div.b-slider-thumb-wrapper.active-thumb .liveview {
   background-color: #e66359;
+}
+
+@media (max-height: 580px) {
+  .b-slider .b-slider-tick,
+  .b-slider .b-slider-track {
+    height: 16px !important;
+  }
+  div.b-slider-thumb-wrapper.active-thumb .b-slider-thumb {
+    height: 24px;
+  }
 }
 </style>
 

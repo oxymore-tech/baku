@@ -77,8 +77,8 @@ export class MovieService {
         result.push(item);
       } else {
         result = result.map(olditem => {
-          if(olditem.id === item.id) {
-            return item.adminId ?  item : olditem;
+          if (olditem.id === item.id) {
+            return item.adminId ? item : olditem;
           }
           return olditem;
         })
@@ -171,6 +171,17 @@ export class MovieService {
         case BakuAction.SHOT_REMOVE: {
           const shotIndex = shots.findIndex((shot) => shot.id === event.value.shotId);
           shots.splice(shotIndex, 1);
+          break;
+        }
+        case BakuAction.SHOT_MOVE: {
+          const shotIndex = shots.findIndex((shot) => shot.id === event.value.shotId);
+          let index = event.value.index;
+          if (index < 0) {
+            index = 0;
+          } else if (index > shots.length - 1) {
+            index = shots.length - 1;
+          }
+          shots.splice(index, 0, shots.splice(shotIndex, 1)[0]);
           break;
         }
         case BakuAction.MOVIE_REMOVE_IMAGE: {

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'baku';
-  src:  url('fonts/baku.eot?uh1gs0');
-  src:  url('fonts/baku.eot?uh1gs0#iefix') format('embedded-opentype'),
-    url('fonts/baku.ttf?uh1gs0') format('truetype'),
-    url('fonts/baku.woff?uh1gs0') format('woff'),
-    url('fonts/baku.svg?uh1gs0#baku') format('svg');
+  src:  url('fonts/baku.eot?55jqbl');
+  src:  url('fonts/baku.eot?55jqbl#iefix') format('embedded-opentype'),
+    url('fonts/baku.ttf?55jqbl') format('truetype'),
+    url('fonts/baku.woff?55jqbl') format('woff'),
+    url('fonts/baku.svg?55jqbl#baku') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -233,57 +233,54 @@
 .icon-unlock-solid:before {
   content: "\e941";
 }
-.icon-user-bird .path1:before {
+.icon-user-bear:before {
   content: "\e942";
-  color: rgb(0, 0, 0);
 }
-.icon-user-bird .path2:before {
+.icon-user-bird:before {
   content: "\e943";
-  margin-left: -1em;
-  color: rgb(243, 243, 243);
 }
-.icon-user-bird .path3:before {
+.icon-user-boar:before {
   content: "\e944";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
 }
 .icon-user-circle:before {
   content: "\e945";
 }
-.icon-user-dragon:before {
+.icon-user-dog:before {
   content: "\e946";
 }
-.icon-user-horse .path1:before {
+.icon-user-dragon:before {
   content: "\e947";
-  color: rgb(0, 0, 0);
 }
-.icon-user-horse .path2:before {
+.icon-user-fox:before {
   content: "\e948";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
 }
-.icon-user-horse .path3:before {
+.icon-user-frog:before {
   content: "\e949";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
 }
-.icon-user-kiwi .path1:before {
+.icon-user-ghost:before {
   content: "\e94a";
-  color: rgb(0, 0, 0);
 }
-.icon-user-kiwi .path2:before {
+.icon-user-horse:before {
   content: "\e94b";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
 }
-.icon-user-kiwi .path3:before {
+.icon-user-kiwi:before {
   content: "\e94c";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
 }
-.icon-webcam:before {
+.icon-user-monkey:before {
   content: "\e94d";
 }
-.icon-youtube-brands:before {
+.icon-user-rabbit:before {
   content: "\e94e";
+}
+.icon-user-turtle:before {
+  content: "\e94f";
+}
+.icon-user-whales:before {
+  content: "\e950";
+}
+.icon-webcam:before {
+  content: "\e951";
+}
+.icon-youtube-brands:before {
+  content: "\e952";
 }

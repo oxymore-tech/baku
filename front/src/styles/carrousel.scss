@@ -35,7 +35,7 @@
 .carrousel-container {
   background: white;
   width: 100%;
-  height: 104px;
+  height: calc(100% - 40px);
   display: inline-flex;
   flex-wrap: nowrap;
   padding: 12px 21px;
@@ -50,6 +50,10 @@
     border-radius: 60%;
     font-size: 1.2rem;
     background: rgba(255, 255, 255, 0.8);
+  }
+
+  .previous-shot-images {
+    opacity: 0.4;
   }
 
   .image-container {
@@ -99,10 +103,34 @@
 // Little heights
 @media (max-height: 580px) {
   .carrousel-root-div {
-    height: 105px;
+    height: 45px;
+
+    .carrousel-container {
+      padding: 8px 20px;
+      height: 100%;
+
+      .image-container {
+        width: unset;
+        min-width: unset;
+        height: 35px;
+
+        .carrousel-thumb {
+          align-items: unset;
+        }
+      }
+    }
   }
   .toolbar {
-    display: none;
+    padding: 0;
+    position: absolute;
+    border: 0;
+    bottom: 50px;
+    width: 120px;
+    background-color: transparent;
+
+    .toolbar-button:not(.delete-button) {
+      display: none;
+    }
   }
 }
 

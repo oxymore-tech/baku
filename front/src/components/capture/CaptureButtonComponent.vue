@@ -73,7 +73,9 @@
       window.addEventListener('keyup', (e: KeyboardEvent) => {
         switch (e.keyCode) {
           case KeyCodes.ENTER:
-            this.capture();
+            if(this.canCapture) {
+              this.capture();
+            }
             break;
           default:
             break;

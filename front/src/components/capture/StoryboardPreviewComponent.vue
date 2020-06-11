@@ -14,7 +14,7 @@
       placeholder="Présenter votre plan avec un résumé ..."
       @blur="changeShotSynopsis()"
     ></textarea>
-    <div class="ajout-storyboard">
+    <!-- <div class="ajout-storyboard">
       <div>
         <i class="icon-camera baku-button storyboard-icon"/>
         <i class="icon-attachment baku-button storyboard-icon"/>
@@ -22,7 +22,7 @@
       <div style="margin-top: 10px">
         Ajouter votre storyboard
       </div>
-    </div>
+    </div> -->
   </div>
 
 </template>

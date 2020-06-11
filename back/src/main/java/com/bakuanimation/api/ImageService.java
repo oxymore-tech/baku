@@ -1,6 +1,8 @@
 package com.bakuanimation.api;
 
 import com.bakuanimation.model.Movie;
+import com.bakuanimation.model.Project;
+import io.reactivex.Single;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -13,4 +15,6 @@ public interface ImageService {
     long estimatedExportSize(Movie movie, @Nullable String shotId);
 
     void export(Movie movie, OutputStream outputStream, @Nullable String shotId) throws IOException;
+
+    Single<Project> importMovie(String projectName);
 }

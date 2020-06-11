@@ -32,6 +32,14 @@ body {
   background-repeat: no-repeat;
   background-size: contain;
   background-color: #fff;
+
+  @media (min-width: 1200px) {
+    background-size: auto 50%;
+  }
+
+  @media (max-height: 580px) {
+    background-size: auto 50%;
+  }
 }
 
 .inline-editor {
@@ -141,6 +149,7 @@ nav {
 
 .pseudo {
   padding-left: 5px;
+  cursor: pointer;
 }
 
 .label-menu {
@@ -153,5 +162,19 @@ nav {
   p {
     display: flex;
     align-items: center;
+  }
+}
+
+.spin {
+  animation: spin-animation 0.8s infinite linear;
+  display: inline-block;
+}
+
+@keyframes spin-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
   }
 }

@@ -10,6 +10,7 @@ interface ProjectGetters {
   getActiveShot: Shot;
   getActiveShotIndex: number;
   canLock: boolean;
+  getPreviousShotId: string;
 }
 
 export function computeSeconds(imageNumber: number, fps: number): number {
@@ -73,6 +74,12 @@ export const ProjectStore: BakuModule<ProjectState> = {
         state.pendingActions += count;
       }
     },
+    emptyState(state) {
+      state.id = '';
+      state.activeShotId = null,
+      state.history = [];
+      state.pendingActions = 0;
+    }
   },
   actions: {
     async loadProject(context, projectId: string): Promise<void> {
@@ -124,6 +131,12 @@ export const ProjectStore: BakuModule<ProjectState> = {
       return shotId;
     },
 
+    async moveShot(context, params: { shotId: string, index: number }): Promise<void> {
+      const event = makeEvent(context, BakuAction.SHOT_MOVE, params);
+      loadEvents(context, [event]);
+      await store.dispatch('user/updateCurrentSeenProject');
+    },
+
     async removeShot(context, shotId: string) {
       const event = makeEvent(context, BakuAction.SHOT_REMOVE, {shotId});
       loadEvents(context, [event]);
@@ -149,6 +162,10 @@ export const ProjectStore: BakuModule<ProjectState> = {
     async changeShotStoryboard(context, params: { shotId: string, storyboard: string }) {
       const event = makeEvent(context, BakuAction.SHOT_UPDATE_STORYBOARD, params);
       loadEvents(context, [event]);
+    },
+
+    async emptyState(context) {
+      context.commit('emptyState');
     }
   },
   getters: {
@@ -180,10 +197,16 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     getNoEditId: (state, getters: ProjectGetters): string => getters.canLock ? state.id.slice(0, 36) : state.id,
 
-    getPreviousShotId: (state, getters: ProjectGetters): string => {
+    getPreviousShotId: (state, getters: ProjectGetters): string | undefined => {
       const index = (getters.getActiveShotIndex - 1) % getters.movie.shots.length;
+      if (index === -1) {
+        return undefined;
+      }
       return getters.movie.shots[index].id;
     },
+
+    getPreviousShot: (state, getters: ProjectGetters): Shot | undefined =>
+      getters.movie.shots.find((shot: Shot) => shot.id === getters.getPreviousShotId),
 
     getNextShotId: (state, getters: ProjectGetters): string | undefined => {
       const index = (getters.getActiveShotIndex + 1) % getters.movie.shots.length;

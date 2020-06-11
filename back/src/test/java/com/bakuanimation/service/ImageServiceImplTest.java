@@ -1,6 +1,7 @@
 package com.bakuanimation.service;
 
 import com.bakuanimation.model.Movie;
+import com.bakuanimation.model.Project;
 import com.google.common.collect.ImmutableListMultimap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +23,10 @@ class ImageServiceImplTest {
 
     @BeforeEach
     void setUp(@TempDir Path tempDir) {
-        this.tempDir = tempDir;
-        tested = new ImageServiceImpl(null);
+        this.tempDir = Path.of("/tmp/render");
+        PathService pathService = new PathService(this.tempDir);
+        PermissionServiceImpl permissionService = new PermissionServiceImpl(pathService, "abcdefghijklmnopqrstuvwxyz123456");
+        tested = new ImageServiceImpl(pathService, new HistoryServiceImpl(pathService, permissionService));
     }
 
     @Test
@@ -45,5 +48,11 @@ class ImageServiceImplTest {
 
         double diff = (Math.abs(expectedSize - actualSize) / (double) actualSize) * 100;
         Assertions.assertThat(diff).isEqualTo(0);
+    }
+
+    @Test
+    void shouldImportMovie() {
+        Project paf = tested.importMovie("bonhomme").blockingGet();
+        System.out.println(paf);
     }
 }

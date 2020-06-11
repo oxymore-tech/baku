@@ -1,9 +1,10 @@
 package com.bakuanimation.rest;
 
+import com.bakuanimation.api.ImageService;
 import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.Movie;
+import com.bakuanimation.model.Project;
 import com.bakuanimation.service.HistoryServiceImpl;
-import com.bakuanimation.service.ImageServiceImpl;
 import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
@@ -31,11 +32,11 @@ public class ImageController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
     private final HistoryServiceImpl historyService;
-    private final ImageServiceImpl imageService;
+    private final ImageService imageService;
     private final PathService pathService;
     private final PermissionService permissionService;
 
-    public ImageController(HistoryServiceImpl historyService, ImageServiceImpl imageService,
+    public ImageController(HistoryServiceImpl historyService, ImageService imageService,
                            PathService pathService, PermissionService permissionService) {
         this.historyService = historyService;
         this.imageService = imageService;
@@ -72,6 +73,12 @@ public class ImageController {
         } else {
             return HttpResponse.notFound(imageName + " not found");
         }
+    }
+
+    @Post(value = "/api/{projectId}/import")
+    public Single<String> importMovie(@PathVariable String projectId) {
+        return imageService.importMovie(projectId)
+                .map(Project::getId);
     }
 
     @Get(value = "/api/{projectId}/export.zip")

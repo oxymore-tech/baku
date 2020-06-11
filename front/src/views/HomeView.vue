@@ -17,16 +17,14 @@
             <button class="create-button" @click="onCreateProject">Créer un film</button>
             <div class="create-button-top-right"></div>
           </div>
-          <div id="libandyt">
-            <div class="option-home" @click="onClickMyLibrary">
-              <i class="icon-movie baku-button" />
-              <span class="baku-button">Mes films</span>
-            </div>
-            <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
-              <div class="baku-logo"></div>
-              <span>Tutoriels</span>
-            </a>
+          <div class="option-home" @click="onClickMyLibrary">
+            <i class="icon-movie baku-button" />
+            <span class="baku-button">Mes films</span>
           </div>
+          <a class="option-home" href="https://www.youtube.com/channel/UCpohf5pTeU-lVfl9V3g7v1Q">
+            <div class="baku-logo"></div>
+            <span>Tutoriels</span>
+          </a>
           <!-- <div class="mini-icons-container">
             <a href="https://www.instagram.com/bakuanim/">
               <img src="@/assets/instagram_logo.svg" />
@@ -82,18 +80,18 @@ export default class HomeView extends Vue {
   //   Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous
   //   souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées.`;
 
-  public isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
-  }
+  // public isMobile() {
+  //   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  //     navigator.userAgent,
+  //   );
+  // }
 
   public async created() {
     if (!this.seenProjects) {
     }
-    if (this.isMobile()) {
+    /*if (this.isMobile()) {
       this.$router.push({ name: 'smartphone' });
-    }
+    }*/
     const { projectId } = this.$route.params;
     if (projectId) {
       await this.loadProjectAction(projectId);

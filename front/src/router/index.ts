@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
+import VueRouter, { Route } from 'vue-router';
 
 import store from "@/store";
 import HomeView from '@/views/HomeView.vue';
@@ -28,12 +28,12 @@ const routes = [
   },
   {
     name: 'movie',
-    path: '/movies/:projectId',
+    path: '/movies/:projectId/(admin)?',
     component: MovieView,
   },
   {
     name: 'captureShot',
-    path: '/movies/:projectId/shots/:shotId',
+    path: '/movies/:projectId/shots/:shotId/(admin)?',
     component: Capture,
   },
   {
@@ -50,8 +50,15 @@ const router = new VueRouter({
   routes,
 });
 
-router.afterEach((to, from) => {
+router.beforeEach((to: Route, _from: Route, next: Function) => {
+  if(to.params.projectId && to.params.projectId.length > 36 && !to.fullPath.includes('admin')) {
+    next( to.path + '/admin');
+  }
+  next();
+});
+
+router.afterEach((to: Route, _from: Route) => {
   store.dispatch('user/updateCurrentSeenProject');
-})
+});
 
 export default router;

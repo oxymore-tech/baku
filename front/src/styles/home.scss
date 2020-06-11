@@ -1,6 +1,5 @@
 .main {
   width: 100%;
-  // height: calc(100% + 250px);
   height: calc(100% - 75px);
   display: flex;
   flex-direction: column;
@@ -18,9 +17,7 @@
     width: 100%;
     justify-content: center;
     flex: 1;
-    // align-items: center;
     align-items: flex-end;
-    // position: relative;
     padding-bottom: 10px;
     margin-bottom: 0;
 
@@ -71,37 +68,31 @@
       justify-content: center;
       align-items: center;
 
+      .option-home {
+        margin-top: 20px;
+        font-size: 1rem;
+        text-align: left;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #EEEEEE;
+        border-radius: 44px;
+        height: 6.2rem;
+        width: 34rem;
+        font-size: 1.9rem;
 
-      #libandyt {
-        display: flex;
-        flex-direction: column;
+        i {
+          margin-right: 10px;
+          color: #FE676F;
+        }
 
-        .option-home {
-          margin-top: 20px;
-          font-size: 1rem;
-          text-align: left;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid #EEEEEE;
-          border-radius: 44px;
-          height: 6.2rem;
-          width: 34rem;
-          font-size: 1.9rem;
-
-          i {
-            margin-right: 10px;
-            color: #FE676F;
-          }
-
-          .baku-logo {
-            height: 2rem;
-            width: 2rem;
-            background-image: url(../assets/baku_solo.svg);
-            background-repeat: no-repeat;
-            background-size: contain;
-            margin-right: 10px;
-          }
+        .baku-logo {
+          height: 2rem;
+          width: 2rem;
+          background-image: url(../assets/baku_solo.svg);
+          background-repeat: no-repeat;
+          background-size: contain;
+          margin-right: 10px;
         }
       }
 
@@ -148,6 +139,7 @@
       position: absolute;
       top: -2.2rem;
       right: -3.6rem;
+      z-index: -1;
     }
   }
 }
@@ -176,23 +168,11 @@
       }
 
       .welcome-div-actions {
+        .option-home {
+          font-size: 2rem;
 
-        // .create-button-container {
-
-        //   .create-button-top-right {
-        //     width: 5rem;
-        //     height: 5.4rem;
-        //     top: -1.8rem;
-        //     right: -2.8rem;
-        //   }
-        // }
-        #libandyt {
-          .option-home {
-            font-size: 2rem;
-
-            i {
-              font-size: 2.4rem;
-            }
+          i {
+            font-size: 2.4rem;
           }
         }
       }
@@ -209,7 +189,9 @@
   }
 }
 
-@media (max-height: 580px) {
+
+// Landscape
+@media (max-height: 580px) and (min-width: 425px) {
   .panel.top-panel {
 
     .welcome-div-header {
@@ -223,8 +205,41 @@
     .welcome-div-actions {
       flex-direction: row;
       margin-bottom: 1rem;
+
       .create-button-container {
-        width: 22rem;
+        width: 20rem;
+        margin-right: 1rem;
+
+        .create-button {
+          height: 4rem;
+          font-size: 2.2rem;
+        }
+
+        .create-button-top-right {
+          display: none;
+        }
+      }
+
+      .option-home {
+        width: 18rem;
+        height: 4rem;
+        margin-right: 1rem;
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+
+// Portrait
+@media (max-width: 425px) and (min-height: 500px) {
+  .panel.top-panel {
+    .welcome-div-header .welcome-div-logo {
+      height: 100px;
+    }
+    .welcome-div-actions {
+      .create-button-container {
+        width: 20rem;
         margin-right: 1rem;
 
         .create-button {
@@ -235,15 +250,11 @@
           display: none;
         }
       }
-      #libandyt {
-        flex-direction: row;
 
-        .option-home {
-          width: 20rem;
-          height: 4rem;
-          margin-right: 1rem;
-          margin-top: 0;
-        }
+      .option-home {
+        width: 18rem;
+        height: 4rem;
+        margin-right: 1rem;
       }
     }
   }

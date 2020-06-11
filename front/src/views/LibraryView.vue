@@ -68,11 +68,11 @@
 
           </div>
 
-          <div class="movie-toolbars">
+          <!-- <div class="movie-toolbars"> -->
 
             <div class="movie-toolbar-1">
 
-              <div v-if="project.lastUpdate">
+              <div v-if="project.lastUpdate" style="margin-right: 10px">
                 <div class="indication">Mise à jour :</div>
                 <div>{{ project.lastUpdate | formatDate }}</div>
               </div>
@@ -109,14 +109,18 @@
 
               <video-button :id="project.id"/>
 
-              <div @click="onDelete(project.id)">
+              <div v-if="project.adminId && !project.locked" @click="onDelete(project.id)">
                 <i class="icon-close"/>
-                <span class="baku-button"> {{ project.adminId ? 'Supprimer':'Effacer de l\'historique' }} </span>
+                <span class="baku-button">Supprimer</span>
+              </div>
+              <div v-if="!project.isDemo" @click="onRemoveFromSeenProject(project.id)">
+                <i class="icon-close"/>
+                <span class="baku-button">Effacer de l'historique</span>
               </div>
 
             </div>
 
-          </div>
+          <!-- </div> -->
 
         </div>
       </div>
@@ -144,6 +148,7 @@
   });
 
   const UserNS = namespace('user');
+  const ProjectNS = namespace('project');
 
   @Component({
     components: {VideoButton, InlineInput},
@@ -156,8 +161,17 @@
     @UserNS.Action('refreshSeenProjectsMetadata')
     refreshSeenProjectsMetadata!: Function;
 
+    @UserNS.Action('deleteProject')
+    deleteProject!: Function;
+
     @UserNS.Action('deleteSeenProject')
     deleteSeenProject!: Function;
+
+    @ProjectNS.Getter('synchronizing')
+    projectSynchronizing!: boolean;
+
+    @ProjectNS.Action('emptyState')
+    emptyProjectState!: Function;
 
     public url = window.location.origin;
 
@@ -166,11 +180,14 @@
     mounted() {
       this.showDemoProjects = this.seenProjects.length == 0;
       this.refreshSeenProjectsMetadata();
+      if(!this.projectSynchronizing) {
+        this.emptyProjectState();
+      }
     }
 
     get projects() {
       if (this.showDemoProjects) {
-        return MovieService.removeDoublons([...getDemoProjects(), ...this.seenProjects]);
+        return MovieService.removeDoublons([...getDemoProjects().map(project => ({...project, isDemo: true})), ...this.seenProjects]);
       }
       return this.seenProjects;
     }
@@ -198,6 +215,17 @@
         title: 'Suppression du film',
         message: 'Etes vous sûr de vouloir <b>supprimer</b> votre film ?',
         confirmText: 'Supprimer le film',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => this.deleteProject(projectId),
+      });
+    }
+
+    public onRemoveFromSeenProject(projectId: string) {
+      this.$buefy.dialog.confirm({
+        title: "Retirer de l'historique",
+        message: 'Etes vous sûr de vouloir <b>retirer</b> votre film de votre historique ?',
+        confirmText: "Retirer le film de l'historique",
         type: 'is-danger',
         hasIcon: true,
         onConfirm: () => this.deleteSeenProject(projectId),

@@ -13,8 +13,8 @@
   display: flex;
   flex: 1 1 auto;
   flex-wrap: wrap;
-	align-content: flex-start;
-	justify-content: flex-start;
+  align-content: flex-start;
+  justify-content: flex-start;
 }
 
 .shot-preview {
@@ -26,7 +26,7 @@
 #movie-header {
   display: inline-flex;
   align-items: center;
-  margin-left:0.7vw;
+  margin-left: 0.7vw;
   margin-bottom: 24px;
   font-size: 1.2rem;
 
@@ -34,44 +34,39 @@
     margin-right: 30px;
   }
 
-	.movie-header-container {
-		border-radius: 8px;
-		background-color: #ffffff;
-		margin: auto;
-		max-width: 75%;
-		padding: 18px;
-	}
-
-	.title-and-info {
-		display: flex;
-		justify-content: center;
-
-		.movie-title {
-			font-size: 2.5rem;
-		}
-		.movie-info {
-			margin-top: 9px;
-		}
-	}
-	.synopsis {
-		// margin: auto;
-		// width: 50%;
-		// background-color: #ffffff;
-		// border-radius: 0px 0px 8px 8px;
-		padding-top: 18px;
-
-		font-size: 1.2rem;
-		text-align: center;
-	}
-}
-
-@media (min-width: 1400px) { 
-    
-  #movie-header {
-    font-size: 1.6rem;   
+  .movie-header-container {
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin: auto;
+    max-width: 75%;
+    padding: 18px;
   }
 
+  .title-and-info {
+    display: flex;
+    justify-content: center;
+
+    .movie-title {
+      font-size: 2.5rem;
+    }
+
+    .movie-info {
+      margin-top: 9px;
+    }
+  }
+
+  .synopsis {
+    // margin: auto;
+    // width: 50%;
+    // background-color: #ffffff;
+    // border-radius: 0px 0px 8px 8px;
+    padding-top: 18px;
+
+    font-size: 1.2rem;
+    text-align: center;
+  }
 }
+
 
 .shot-card {
   width: 300px;
@@ -79,14 +74,14 @@
   background-color: #ffffff;
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: top;
   border-radius: 8px;
   opacity: 1;
   margin: 8px;
   font-size: 1.6rem/0.6rem;
   letter-spacing: 0;
   align-items: flex-end;
-  display:flex;
+  display: flex;
   position: relative;
   cursor: pointer;
 
@@ -99,15 +94,18 @@
     align-items: baseline;
     width: 100%;
     padding: 5px;
+    min-height: 75px;
+
     .shot-name {
-        font-size: 1.3rem;
+      font-size: 1.3rem;
     }
 
-    .shot-details{
+    .shot-details {
       font-size: 1.0rem;
       float: right;
       padding-top: 8px;
     }
+
     .shot-storyboard {
       margin-top: 5px;
       font-size: 1.0rem;
@@ -118,7 +116,7 @@
 
   .settings-icon {
     color: gray;
-		font-size: 1.5rem;
+    font-size: 1.5rem;
   }
 
   .shot-menu {
@@ -128,20 +126,21 @@
     right: 5px;
   }
 
-	.dropdown-item-bloc {
-		width: 270px;
-	}
+  .dropdown-item-bloc {
+    width: 100%;
+  }
 
-	.dropdown.is-active {
-		display: block;
-	}
+  // .dropdown.is-active {
+  //   display: block;
+  // }
 }
 
 .dropdown .dropdown-menu .has-link a {
-	padding-left: 8px;
+  padding-left: 8px;
 }
+
 a.dropdown-item {
-	padding-left: 8px;
+  padding-left: 8px;
 }
 
 .create-shot {
@@ -153,8 +152,9 @@ a.dropdown-item {
   background-size: contain;
   background-origin: padding-box, padding-box;
   background-clip: border-box, border-box;
+
   img {
-      width: 35px;
+    width: 35px;
   }
 }
 
@@ -166,6 +166,7 @@ a.dropdown-item {
 
 .shot-card:hover {
   box-shadow: 0 0 20px #00000029;
+
   .shot-menu {
     display: block;
   }
@@ -213,4 +214,26 @@ a.dropdown-item {
   background: white;
   height: 40%;
   color: #FE676F;
+}
+
+
+@media (min-width: 1400px) {
+
+  #movie-header {
+    font-size: 1.6rem;
+  }
+
+}
+
+
+@media (max-height: 580px) {
+
+  .shot-card {
+    width: 200px;
+    height: 200px;
+
+    .shot-menu {
+      display: none;
+    }
+  }
 }
