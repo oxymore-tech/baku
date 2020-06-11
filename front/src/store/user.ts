@@ -5,7 +5,21 @@ import { MovieService } from "@/utils/movie.service";
 
 // local storage keys
 const lsUsernameKey = "username";
+const lsUsercolorKey = "usercolor";
 const lsSeenProjectsKey = "seenProjects";
+
+const colorList = [
+  "#E74C3C",
+  "#FFBD72",
+  "#FFE184",
+  "#8EE4AF",
+  "#7FC6BC",
+  "#CAFAFE",
+  "#3DB6D6",
+  "#04518C",
+  "#553D67",
+  "#FE676F"
+];
 
 const yokaiList = [
   { name: "Akuma", icon: "dog" },
@@ -80,6 +94,19 @@ const initializeUsername = () => {
   return generatedUsername;
 };
 
+const initializeColor = () => {
+  // retrieve last username if exists
+  const usercolor = localStorage.getItem(lsUsercolorKey);
+  if (usercolor) {
+    return usercolor;
+  }
+
+  // generate username
+  const randIdx = Math.floor(Math.random() * colorList.length);
+  localStorage.setItem(lsUsercolorKey,  colorList[randIdx]);
+  return  colorList[randIdx];
+}
+
 const initializeSeenProjects = () => {
   const seenProjectsJson = localStorage.getItem(lsSeenProjectsKey);
   if (seenProjectsJson) {
@@ -92,6 +119,7 @@ export const UserStore: BakuModule<UserState> = {
   namespaced: true,
   state: {
     username: initializeUsername(),
+    usercolor: initializeColor(),
     seenProjects: initializeSeenProjects()
   },
   mutations: {

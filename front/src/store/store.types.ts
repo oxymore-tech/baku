@@ -33,6 +33,7 @@ export interface SeenProject {
 export interface UserState {
   username: string;
   seenProjects: SeenProject[];
+  usercolor: string;
 }
 
 export interface BakuRootState {

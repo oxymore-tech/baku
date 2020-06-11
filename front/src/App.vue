@@ -126,9 +126,7 @@
           </div>
         </div>
         <div class="flex-container right-nav" :class="{'right-nav-home': $route.name === 'home'}">
-          <div>
-            <i :class="'icon-user-'+getIcon"/>
-          </div>
+          <i :class="'icon-user-'+getIcon" :style="{color: usercolor}" />
           <div class="pseudo" @click="openRenamePopup()">{{ username }}</div>
         </div>
       </div>
@@ -199,6 +197,9 @@ export default class App extends Vue {
 
     @UserNS.State
     public username!: string;
+
+    @UserNS.State
+    public usercolor!: string;
 
     @UserNS.Getter('getPersonalisedProjectTitle')
     public getPersonalisedProjectTitle!: string;
