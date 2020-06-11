@@ -279,6 +279,9 @@
       }
       if (!this.animationStartFrame) {
         this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
+        if(this.activeFrame === this.getActiveShotImgCount) {
+          this.animationStartFrame = this.animationBoundaries.left;
+        }
       }
 
       const nextFrame = this.getNextFrame(timestamp);
