@@ -160,6 +160,8 @@
           right: 0;
           top: 120px;
           width: 70px;
+          height: 155px;
+          justify-content: center;
 
           * {
             margin-bottom: 15px;
@@ -168,14 +170,14 @@
           i.icon-forward,
           i.icon-backward {
             position: absolute;
-            top: 5px;
+            left: 20px;
           }
 
           i.icon-backward {
-            left: 0;
+            top: 0;
           }
           i.icon-forward {
-            right: 0;
+            bottom: 0;
           }
         }
 
