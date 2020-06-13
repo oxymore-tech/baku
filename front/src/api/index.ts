@@ -80,105 +80,65 @@ export function getDemoProjects(): SeenProject[] {
       fps: 25,
     },
     {
-      id: '00000000-0000-0000-0000-00000000000a',
-      title: 'bonhomme',
-      posterUrl: "/images/bonhomme/original/bonhomme_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
-      id: '00000000-0000-0000-0000-00000000000b',
-      title: 'danse_002_01',
-      posterUrl: "/images/danse_002_01/original/danse_002_01_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
-      id: '00000000-0000-0000-0000-00000000000c',
-      title: 'DessinAnime_veleda_main_villeneuve1',
-      posterUrl: "/images/DessinAnime_veleda_main_villeneuve1/original/DessinAnime_veleda_main_villeneuve1_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
       id: '00000000-0000-0000-0000-000000000000',
-      title: 'Habillage_Plan03',
-      posterUrl: "/images/Habillage_Plan03/original/Habillage_Plan03_00000.jpg",
+      title: 'Bricole',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000000/original/video_linda_HD_00072.jpg",
       synopsis: "",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000001',
-      title: 'homme',
-      posterUrl: "/images/homme/original/homme_00000.jpg",
+      title: 'La danse',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000001/original/danse_002_01_00000.jpg",
       synopsis: "",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000002',
-      title: 'la_tache_rouge',
-      posterUrl: "/images/la_tache_rouge/original/la_tache_rouge_00000.jpg",
+      title: 'Le loup et lecureuil',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000002/original/images_00000.jpg",
       synopsis: "",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000003',
-      title: 'Lhomme_de_sable',
-      posterUrl: "/images/Lhomme_de_sable/original/Lhomme_de_sable_00000.jpg",
+      title: 'Lhomme marchant',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000003/original/Homme_test_1_00000.jpg",
       synopsis: "",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000004',
-      title: 'marche',
-      posterUrl: "/images/marche/original/marche_00000.jpg",
+      title: 'Lhomme volant',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000004/original/Homme_test_2_00000.jpg",
       synopsis: "",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000005',
-      title: 'Paf',
-      posterUrl: "/images/Paf/original/Paf_00000.jpg",
+      title: 'Mon lapin',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000005/original/DessinAnime_veleda_main_villeneuve1_00000.jpg",
       synopsis: "",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000006',
-      title: 'Sable',
-      posterUrl: "/images/Sable/original/Sable_00000.jpg",
+      title: 'Paf',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000006/original/Paf_00024.jpg",
       synopsis: "",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000007',
-      title: 'The_Villeneuve',
-      posterUrl: "/images/The_Villeneuve/original/The_Villeneuve_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
-      id: '00000000-0000-0000-0000-000000000008',
-      title: 'velo_001_01',
-      posterUrl: "/images/velo_001_01/original/velo_001_01_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
-      id: '00000000-0000-0000-0000-000000000009',
-      title: 'video_linda_HD',
-      posterUrl: "/images/video_linda_HD;/original/video_linda_HD;_00000.jpg",
+      title: 'Sable',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000007/original/Sable_00069.jpg",
       synopsis: "",
       locked: true,
       fps:12
