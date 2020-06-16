@@ -187,7 +187,7 @@
 
     get projects() {
       if (this.showDemoProjects) {
-        return MovieService.removeDoublons([...getDemoProjects().map(project => ({...project, isDemo: true})), ...this.seenProjects]);
+        return getDemoProjects().map(project => ({...project, isDemo: true}));
       }
       return this.seenProjects;
     }
