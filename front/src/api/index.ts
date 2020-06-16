@@ -69,17 +69,6 @@ export function getDemoProjects(): SeenProject[] {
   //   .then(r => r.data);
   return [
     {
-      id: '00000000-0000-0000-0000-00000000000f',
-      title: 'Mes premières fois',
-      posterUrl: "/images/premier_montage/original/shot-000_image-000.jpg",
-      synopsis: "Ce film d’animation a été réalisé par des enfants de l’école de\n" +
-        "Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous\n" +
-        "souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées. Ce film a était créé dans le cadre d'un atelier avec des enfants organisé par la ménagerie",
-      locked: true,
-      totalImages: 3000,
-      fps: 25,
-    },
-    {
       id: '00000000-0000-0000-0000-000000000000',
       title: 'Bricole',
       posterUrl: "/images/00000000-0000-0000-0000-000000000000/original/video_linda_HD_00072.jpg",
