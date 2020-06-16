@@ -343,7 +343,7 @@ export default class CarrouselComponent extends Vue {
     const count = 5 - this.computedLeftCarrousel.length;
     const images = this.previousShot ? (this.previousShot.images || []) : [];
     let leftImagesAvaible = images.slice(-count);
-    if(this.getActiveShotIndex === 0) {
+    if(this.getActiveShotIndex === 0 || count === 0) {
       leftImagesAvaible = [];
     }
     return new Array(Math.max(0, count - leftImagesAvaible.length))
