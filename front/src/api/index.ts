@@ -69,7 +69,7 @@ export function getDemoProjects(): SeenProject[] {
   //   .then(r => r.data);
   return [
     {
-      id: 'premier_montage',
+      id: '00000000-0000-0000-0000-00000000000f',
       title: 'Mes premières fois',
       posterUrl: "/images/premier_montage/original/shot-000_image-000.jpg",
       synopsis: "Ce film d’animation a été réalisé par des enfants de l’école de\n" +
