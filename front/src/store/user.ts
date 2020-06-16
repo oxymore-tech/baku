@@ -184,7 +184,7 @@ export const UserStore: BakuModule<UserState> = {
     },
     async updateCurrentSeenProject(context) {
       let projectId = store.state.project.id;
-      if (projectId) {
+      if (projectId && projectId.search(/[a-zA-Z]/) >= 0) {
         const movie = store.getters["project/movie"];
         const history = store.state.project.history;
 

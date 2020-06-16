@@ -16,19 +16,21 @@
 </style>
 
 <script lang="ts">
-  import { Component, Prop, Vue, Watch, } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import { Howl } from 'howler';
-  import { Device } from '@/utils/device.class';
-  import { KeyCodes } from '@/utils/movie.service';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Howl } from 'howler';
+import { Device } from '@/utils/device.class';
+import { KeyCodes } from '@/utils/movie.service';
 
-  const mp3 = require('@/assets/camera_shutter.mp3');
+const mp3 = require('@/assets/camera_shutter.mp3');
 
-  const CaptureNS = namespace('capture');
-  const WebRTCNS = namespace('webrtc');
+const CaptureNS = namespace('capture');
+const WebRTCNS = namespace('webrtc');
 
   @Component
-  export default class CaptureButtonComponent extends Vue {
+export default class CaptureButtonComponent extends Vue {
     @Prop()
     public projectId!: string;
 
@@ -73,7 +75,7 @@
       window.addEventListener('keyup', (e: KeyboardEvent) => {
         switch (e.keyCode) {
           case KeyCodes.ENTER:
-            if(this.canCapture) {
+            if (this.canCapture) {
               this.capture();
             }
             break;
@@ -82,7 +84,7 @@
         }
       });
       this.sound = new Howl({
-        src: [mp3]
+        src: [mp3],
       });
     }
 
@@ -207,9 +209,9 @@
       this.mediaOk = true;
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: {min: 640, ideal: 1280},
-          height: {min: 480, ideal: 720},
-          deviceId: {exact: this.device.id},
+          width: { min: 640, ideal: 1280 },
+          height: { min: 480, ideal: 720 },
+          deviceId: { exact: this.device.id },
         },
       });
       await this.$store.commit('capture/attachMediaStream', stream);
@@ -232,7 +234,7 @@
       this.$store.commit('project/incAction', 1);
       this.device.capture(
         'video-capture',
-        {scaleX: this.scaleX, scaleY: this.scaleY},
+        { scaleX: this.scaleX, scaleY: this.scaleY },
         this.projectId,
         this.onCaptured,
         this.onUploaded,
@@ -294,7 +296,7 @@
         byteArrays.push(byteArray);
       }
 
-      return new Blob(byteArrays, {type: contentType});
+      return new Blob(byteArrays, { type: contentType });
     }
-  }
+}
 </script>

@@ -36,12 +36,18 @@ export interface UserState {
   usercolor: string;
 }
 
+export interface ClipboardState{
+  images: string[];
+}
+
 export interface BakuRootState {
   webrtc: WebrtcState,
   project: ProjectState,
   capture: CaptureState,
   user: UserState,
+  clipboard: ClipboardState
 }
+
 
 export type SocketStatus = 'opened' | 'closed' | 'error';
 

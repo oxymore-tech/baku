@@ -69,7 +69,7 @@ export function getDemoProjects(): SeenProject[] {
   //   .then(r => r.data);
   return [
     {
-      id: 'premier_montage',
+      id: '00000000-0000-0000-0000-00000000000f',
       title: 'Mes premières fois',
       posterUrl: "/images/premier_montage/original/shot-000_image-000.jpg",
       synopsis: "Ce film d’animation a été réalisé par des enfants de l’école de\n" +
@@ -80,106 +80,81 @@ export function getDemoProjects(): SeenProject[] {
       fps: 25,
     },
     {
-      id: '00000000-0000-0000-0000-00000000000a',
-      title: 'bonhomme',
-      posterUrl: "/images/bonhomme/original/bonhomme_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
-      id: '00000000-0000-0000-0000-00000000000b',
-      title: 'danse_002_01',
-      posterUrl: "/images/danse_002_01/original/danse_002_01_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
-      id: '00000000-0000-0000-0000-00000000000c',
-      title: 'DessinAnime_veleda_main_villeneuve1',
-      posterUrl: "/images/DessinAnime_veleda_main_villeneuve1/original/DessinAnime_veleda_main_villeneuve1_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
       id: '00000000-0000-0000-0000-000000000000',
-      title: 'Habillage_Plan03',
-      posterUrl: "/images/Habillage_Plan03/original/Habillage_Plan03_00000.jpg",
-      synopsis: "",
+      title: 'Bricole',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000000/original/video_linda_HD_00072.jpg",
+      synopsis: "Les matériaux utilisés pour ce film sont du papier découpé et des objets. Les formes sont fixées. " +
+        "Le rouleau de peinture glisse sur une vitre en surplomb des formes découpées pour éviter qu’elles ne bougent.",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000001',
-      title: 'homme',
-      posterUrl: "/images/homme/original/homme_00000.jpg",
-      synopsis: "",
+      title: 'La danse',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000001/original/danse_002_01_00000.jpg",
+      synopsis: "Le papier mâché donne un effet de volume que le papier découpé ne peut rendre. " +
+        "Au-delà de la différence de construction la manipulation de ces deux matériaux est la même. " +
+        "Les éléments qui doivent bouger sont désolidarisés du corps : bras, jambes, … ce qui facilite les animations entre deux captures.",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000002',
-      title: 'la_tache_rouge',
-      posterUrl: "/images/la_tache_rouge/original/la_tache_rouge_00000.jpg",
-      synopsis: "",
+      title: "Le loup et l'écureuil",
+      posterUrl: "/images/00000000-0000-0000-0000-000000000002/original/images_00000.jpg",
+      synopsis: "Ce court métrage est réalisé à partir de couches superposées de papier blanc, " +
+        "disposées sur une vitre. La lumière est projetée par-dessous et donne cet effet de couleur " +
+        "en fonction du nombre de couches de papier. Les personnages sont construits à partir d’éléments en papier articulés.",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000003',
-      title: 'Lhomme_de_sable',
-      posterUrl: "/images/Lhomme_de_sable/original/Lhomme_de_sable_00000.jpg",
-      synopsis: "",
+      title: "L'homme marchant",
+      posterUrl: "/images/00000000-0000-0000-0000-000000000003/original/Homme_test_1_00000.jpg",
+      synopsis: "Ce film mélange les techniques de dessin animé et de découpage. Une fois la silhouette dessinée, " +
+        "elle est découpée et posée sur le fond noir pour la prise de photo. " +
+        "Le léger décalage du personnage entre deux captures donne cet effet de vibration qui ne doit pas être exagéré pour rester réaliste.",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000004',
-      title: 'marche',
-      posterUrl: "/images/marche/original/marche_00000.jpg",
-      synopsis: "",
+      title: "L'homme volant",
+      posterUrl: "/images/00000000-0000-0000-0000-000000000004/original/Homme_test_2_00000.jpg",
+      synopsis: "C’est le classique dessin animé, succession de dessins pris en photo, à raison de 24 images par seconde. " +
+        "Pensez à les numéroter, pour ne pas les mélanger lors de la capture.  " +
+        "Chaque dessin est réalisé à partir du précédent par calque. On recopie ce qui ne bouge pas et on dessine les éléments qui doivent bouger.",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000005',
-      title: 'Paf',
-      posterUrl: "/images/Paf/original/Paf_00000.jpg",
-      synopsis: "",
+      title: 'Mon lapin',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000005/original/DessinAnime_veleda_main_villeneuve1_00000.jpg",
+      synopsis: "Le lapin est dessiné au feutre sur un tableau blanc. Entre deux captures, seules les parties du dessin à modifier sont effacées puis redessinées. " +
+        "Cette technique est donc plus rapide que le dessin animé. Attention au positionnement de la main, pour que l’effet soit réaliste.",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000006',
-      title: 'Sable',
-      posterUrl: "/images/Sable/original/Sable_00000.jpg",
-      synopsis: "",
+      title: 'Paf',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000006/original/Paf_00024.jpg",
+      synopsis: "La pâte à modeler est une matière intéressante pour créer des formes originales en volume. " +
+        "L’animal ou l’objet peut changer de forme à mesure qu’il se déplace. " +
+        "On donne l’illusion de la vitesse en affinant la forme. On donne l’illusion du rebond en épaississant les formes sur la surface d’impact.",
       locked: true,
       fps:12
     },
     {
       id: '00000000-0000-0000-0000-000000000007',
-      title: 'The_Villeneuve',
-      posterUrl: "/images/The_Villeneuve/original/The_Villeneuve_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
-      id: '00000000-0000-0000-0000-000000000008',
-      title: 'velo_001_01',
-      posterUrl: "/images/velo_001_01/original/velo_001_01_00000.jpg",
-      synopsis: "",
-      locked: true,
-      fps:12
-    },
-    {
-      id: '00000000-0000-0000-0000-000000000009',
-      title: 'video_linda_HD',
-      posterUrl: "/images/video_linda_HD;/original/video_linda_HD;_00000.jpg",
-      synopsis: "",
+      title: 'Sable',
+      posterUrl: "/images/00000000-0000-0000-0000-000000000007/original/Sable_00069.jpg",
+      synopsis: "L’utilisation de sable fin demande de la délicatesse. Le moindre souffle et tout est à refaire. " +
+        "La matière est ajoutée, puis déplacée pour rendre le mouvement de la feuille qui s’envole. " +
+        "Des sables de différentes finesses donnent  des effets de couleurs, " +
+        "lorsqu’ils sont posés sur une vitre et que la lumière est projetée par-dessous.",
       locked: true,
       fps:12
     }

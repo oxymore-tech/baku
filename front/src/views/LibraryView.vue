@@ -129,32 +129,32 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import store from '@/store';
-  import * as api from '@/api';
-  import { getDemoProjects } from '@/api';
-  import InlineInput from '@/components/InlineInput.vue';
-  import { SeenProject } from '@/store/store.types';
-  import { computeHours, computeMinutes, computeSeconds } from '@/store/project';
-  import { MovieService } from '@/utils/movie.service';
-  import VideoButton from '@/components/VideoButton.vue';
-  import moment from 'moment';
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import store from '@/store';
+import * as api from '@/api';
+import { getDemoProjects } from '@/api';
+import InlineInput from '@/components/InlineInput.vue';
+import { SeenProject } from '@/store/store.types';
+import { computeHours, computeMinutes, computeSeconds } from '@/store/project';
+import { MovieService } from '@/utils/movie.service';
+import VideoButton from '@/components/VideoButton.vue';
+import moment from 'moment';
 
-  Vue.filter('formatDate', (value: any) => {
-    if (value) {
-      return moment(String(value)).format('MM/DD/YYYY HH:mm');
-    }
-  });
+Vue.filter('formatDate', (value: any) => {
+  if (value) {
+    return moment(String(value)).format('MM/DD/YYYY HH:mm');
+  }
+});
 
-  const UserNS = namespace('user');
-  const ProjectNS = namespace('project');
+const UserNS = namespace('user');
+const ProjectNS = namespace('project');
 
   @Component({
-    components: {VideoButton, InlineInput},
+    components: { VideoButton, InlineInput },
     store,
   })
-  export default class LibraryView extends Vue {
+export default class LibraryView extends Vue {
     @UserNS.State('seenProjects')
     public seenProjects!: SeenProject[];
 
@@ -180,14 +180,14 @@
     mounted() {
       this.showDemoProjects = this.seenProjects.length == 0;
       this.refreshSeenProjectsMetadata();
-      if(!this.projectSynchronizing) {
+      if (!this.projectSynchronizing) {
         this.emptyProjectState();
       }
     }
 
     get projects() {
       if (this.showDemoProjects) {
-        return MovieService.removeDoublons([...getDemoProjects().map(project => ({...project, isDemo: true})), ...this.seenProjects]);
+        return getDemoProjects().map((project) => ({ ...project, isDemo: true }));
       }
       return this.seenProjects;
     }
@@ -252,7 +252,7 @@
           const admin = this.getMovieUrl(s.adminId);
           const share = this.getMovieUrl(s.id);
           return [s.title, admin, share];
-        })
+        }),
       ];
 
       let csvContent = 'data:text/csv;charset=utf-8,';
@@ -271,11 +271,11 @@
         return this.url + this.$router.resolve({
           name: 'movie',
           params: {
-            projectId: id
-          }
+            projectId: id,
+          },
         }).href;
       }
-      return "";
+      return '';
     }
 
     getDurationString(project: SeenProject) {
@@ -295,7 +295,7 @@
       if (event) {
         const newTitle = event;
         if (newTitle !== seenProject.title) {
-          this.$store.dispatch('project/updateTitle', {projectId: seenProject.id, title: newTitle});
+          this.$store.dispatch('project/updateTitle', { projectId: seenProject.id, title: newTitle });
         }
       }
     }
@@ -315,8 +315,8 @@
     setFps(seenProject: SeenProject, event: number) {
       const newFps = event;
       if (newFps !== seenProject.fps) {
-        this.$store.dispatch('project/updateFps', {projectId: seenProject.id, fps: newFps});
+        this.$store.dispatch('project/updateFps', { projectId: seenProject.id, fps: newFps });
       }
     }
-  }
+}
 </script>
