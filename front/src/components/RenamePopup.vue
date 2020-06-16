@@ -16,9 +16,10 @@
 
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-const UserNS = namespace("user");
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+
+const UserNS = namespace('user');
 
 @Component
 export default class SmartphoneSynchroPopupComponent extends Vue {
@@ -29,7 +30,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   public updateUsername!: (username: string) => Promise<void>;
 
   public async changeName() {
-    this.updateUsername((this.$refs['usrname'] as any).value);
+    this.updateUsername((this.$refs.usrname as any).value);
     (this.$parent as any).close();
   }
 }

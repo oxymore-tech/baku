@@ -106,18 +106,18 @@
 
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import { Duration } from '@/utils/types';
-  import { Movie, MovieService, Shot } from '@/utils/movie.service';
-  import * as api from '@/api';
-  import { Spinner } from "@/utils/spinner.class";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Duration } from '@/utils/types';
+import { Movie, MovieService, Shot } from '@/utils/movie.service';
+import * as api from '@/api';
+import { Spinner } from '@/utils/spinner.class';
 
-  const ProjectNS = namespace('project');
+const ProjectNS = namespace('project');
 
   @Component
-  export default class Shots extends Vue {
-    @Prop({required: true})
+export default class Shots extends Vue {
+    @Prop({ required: true })
     public projectId!: string;
 
     @ProjectNS.Getter('canUnLock')
@@ -174,7 +174,7 @@
             value: (shotIndex + 1).toString(),
             maxlength: 2,
             min: 1,
-            max: this.movie.shots.length
+            max: this.movie.shots.length,
           },
           cancelText: 'Annuler',
           confirmText: 'Déplacer',
@@ -184,10 +184,10 @@
             if (index !== shotIndex) {
               await this.$store.dispatch('project/moveShot', {
                 shotId,
-                index: index,
+                index,
               });
             }
-          }
+          },
         });
       }
     }
@@ -218,5 +218,5 @@
     public close() {
       this.$emit('close');
     }
-  }
+}
 </script>

@@ -171,26 +171,26 @@
 </template>
 
 <script lang="ts">
-  import { Component, Watch } from 'vue-property-decorator';
-  import { namespace } from 'vuex-class';
-  import * as _ from 'lodash';
+import { Component, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import * as _ from 'lodash';
 
-  import store from '@/store';
-  import AbstractProjectView from '@/views/AbstractProjectView.vue';
-  import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
-  import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
-  import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
-  import HistoryComponent from '@/components/capture/HistoryComponent.vue';
-  import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
-  import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
-  import { Device } from '@/utils/device.class';
-  import { ImageCacheService } from '@/utils/imageCache.service';
-  import { Movie, ReadingSliderBoundaries, Shot } from '@/utils/movie.service';
-  import { UploadedImage } from '@/utils/uploadedImage.class';
+import store from '@/store';
+import AbstractProjectView from '@/views/AbstractProjectView.vue';
+import CarrouselComponent from '@/components/capture/CarrouselComponent.vue';
+import ImagesSelectorComponent from '@/components/image-selector/ImagesSelectorComponent.vue';
+import CaptureToolboxComponent from '@/components/capture/CaptureToolboxComponent.vue';
+import HistoryComponent from '@/components/capture/HistoryComponent.vue';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewComponent.vue';
+import { Device } from '@/utils/device.class';
+import { ImageCacheService } from '@/utils/imageCache.service';
+import { Movie, ReadingSliderBoundaries, Shot } from '@/utils/movie.service';
+import { UploadedImage } from '@/utils/uploadedImage.class';
 
-  const CaptureNS = namespace('capture');
-  const ProjectNS = namespace('project');
-  const WebRTCNS = namespace('webrtc');
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
+const WebRTCNS = namespace('webrtc');
 
   @Component({
     components: {
@@ -203,7 +203,7 @@
     },
     store,
   })
-  export default class CaptureView extends AbstractProjectView {
+export default class CaptureView extends AbstractProjectView {
     @ProjectNS.State
     public id!: string;
 
@@ -252,7 +252,7 @@
     @WebRTCNS.State
     protected dataChannel!: RTCDataChannel;
 
-    public selectedImages: ReadingSliderBoundaries = {left: 0, right: 0};
+    public selectedImages: ReadingSliderBoundaries = { left: 0, right: 0 };
 
     public animationFrame!: number;
 
@@ -279,7 +279,7 @@
       }
       if (!this.animationStartFrame) {
         this.animationStartFrame = this.activeFrame - this.animationBoundaries.left;
-        if(this.activeFrame === this.getActiveShotImgCount) {
+        if (this.activeFrame === this.getActiveShotImgCount) {
           this.animationStartFrame = this.animationBoundaries.left;
         }
       }
@@ -565,5 +565,5 @@
       ]);
       this.onActiveFrameChange(newActiveFrame + 1);
     }
-  }
+}
 </script>

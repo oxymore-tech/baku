@@ -61,7 +61,7 @@ export default class SmartphoneView extends Vue {
   public mounted() {
     this.isWebRTCSupported = !!navigator.getUserMedia && !!window.RTCPeerConnection;
 
-    if (!this.isWebRTCSupported || !getOsSupport() ) {
+    if (!this.isWebRTCSupported || !getOsSupport()) {
       return;
     }
 
@@ -214,10 +214,10 @@ export default class SmartphoneView extends Vue {
 
 function getOsSupport() : boolean {
   const ua = navigator.userAgent.toLowerCase();
-  var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+  const isAndroid = ua.indexOf('android') > -1; // && ua.indexOf("mobile");
   const match = ua.match(/android\s([0-9\.]*)/i);
-  const androidNumber = match? parseInt(match[1], 10) : undefined;
-  if(isAndroid && androidNumber && androidNumber < 8) {
+  const androidNumber = match ? parseInt(match[1], 10) : undefined;
+  if (isAndroid && androidNumber && androidNumber < 8) {
     return false;
   }
   return true;

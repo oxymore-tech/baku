@@ -89,9 +89,9 @@ export default class HomeView extends Vue {
   public async created() {
     if (!this.seenProjects) {
     }
-    /*if (this.isMobile()) {
+    /* if (this.isMobile()) {
       this.$router.push({ name: 'smartphone' });
-    }*/
+    } */
     const { projectId } = this.$route.params;
     if (projectId) {
       await this.loadProjectAction(projectId);

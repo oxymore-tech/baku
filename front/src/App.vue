@@ -306,8 +306,8 @@ export default class App extends Vue {
         parent: this,
         component: RenamePopup,
         hasModalCard: true,
-        canCancel: ['escape', 'outside']
-      })
+        canCancel: ['escape', 'outside'],
+      });
     }
 
     public async onCreateProject() {

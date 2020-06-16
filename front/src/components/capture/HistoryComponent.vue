@@ -31,33 +31,35 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from "vue-property-decorator";
-  import { namespace } from "vuex-class";
-  import { BakuAction, BakuEvent } from "@/utils/types";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { BakuAction, BakuEvent } from '@/utils/types';
 
-  const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
   @Component
-  export default class HistoryComponent extends Vue {
+export default class HistoryComponent extends Vue {
     @ProjectNS.State
     history!: BakuEvent[];
 
-    @ProjectNS.State("id")
+    @ProjectNS.State('id')
     projectId!: string;
 
     @ProjectNS.Action('loadProject')
     protected loadProjectAction!: (projectId: string) => Promise<void>;
 
     windowHeight = window.innerHeight;
+
     displayed = window.innerHeight > 580;
+
     reloading = false;
 
     mounted() {
-      window.addEventListener("resize", this.onResize);
+      window.addEventListener('resize', this.onResize);
     }
 
     beforeDestroy() {
-      window.removeEventListener("resize", this.onResize);
+      window.removeEventListener('resize', this.onResize);
     }
 
     async reloadProject(projectId: string) {
@@ -76,25 +78,25 @@
     public action(event: BakuEvent): string {
       switch (event.action) {
         case BakuAction.MOVIE_UPDATE_TITLE:
-          return "change le titre du film";
+          return 'change le titre du film';
         case BakuAction.MOVIE_UPDATE_SYNOPSIS:
-          return "change le synopsis du film";
+          return 'change le synopsis du film';
         case BakuAction.MOVIE_UPDATE_POSTER:
-          return "change le poster du film";
+          return 'change le poster du film';
         case BakuAction.MOVIE_INSERT_IMAGE:
-          return "ajoute une photo";
+          return 'ajoute une photo';
         case BakuAction.MOVIE_REMOVE_IMAGE:
-          return "supprime une photo";
+          return 'supprime une photo';
         case BakuAction.SHOT_ADD:
-          return "ajoute un plan";
+          return 'ajoute un plan';
         case BakuAction.SHOT_REMOVE:
-          return "supprime un plan";
+          return 'supprime un plan';
         case BakuAction.SHOT_MOVE:
-          return "déplace un plan";
+          return 'déplace un plan';
         case BakuAction.CHANGE_FPS:
           return `change les fps du film ${event.value}`;
         default:
-          return "";
+          return '';
       }
     }
 
@@ -102,11 +104,11 @@
       if (event.timestamp) {
         return new Date(event.timestamp).toLocaleString();
       }
-      return "";
+      return '';
     }
 
     private onResize(event: any) {
       this.windowHeight = event.target.innerHeight;
     }
-  }
+}
 </script>

@@ -187,10 +187,11 @@ import * as _ from 'lodash';
 import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
 import { Device } from '@/utils/device.class';
 import { ImageRef } from '@/utils/uploadedImage.class';
-import { KeyCodes, ReadingSliderBoundaries } from '@/utils/movie.service';
-import { Shot } from '../../utils/movie.service';
+import { KeyCodes, ReadingSliderBoundaries, Shot } from '@/utils/movie.service';
+
 const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
+const ClipboardNS = namespace('clipboard');
 
 @Component({
   components: {
@@ -240,7 +241,11 @@ export default class CarrouselComponent extends Vue {
   @ProjectNS.Getter('getActiveShotIndex')
   protected getActiveShotIndex!: number;
 
-  private imagesToCopy: string[] = [];
+  @ClipboardNS.State('images')
+  private imagesToCopy!: string[];
+
+  @ClipboardNS.Action('changeClipboard')
+  protected changeClipboard!: (images: string[]) => Promise<void>;
 
   mounted() {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -339,11 +344,11 @@ export default class CarrouselComponent extends Vue {
     return this.images[this.activeImage];
   }
 
-  get computedPreviousShotImages(): ImageRef[]{
+  get computedPreviousShotImages(): ImageRef[] {
     const count = 5 - this.computedLeftCarrousel.length;
     const images = this.previousShot ? (this.previousShot.images || []) : [];
     let leftImagesAvaible = images.slice(-count);
-    if(this.getActiveShotIndex === 0 || count === 0) {
+    if (this.getActiveShotIndex === 0 || count === 0) {
       leftImagesAvaible = [];
     }
     return new Array(Math.max(0, count - leftImagesAvaible.length))
@@ -356,7 +361,7 @@ export default class CarrouselComponent extends Vue {
     const sliceIndex = this.isFrameLiveView
       ? this.activeImage + 1
       : this.activeImage;
-    let leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-count);
+    const leftImagesAvaible = this.images.slice(0, sliceIndex).slice(-count);
     return leftImagesAvaible;
   }
 
@@ -421,9 +426,9 @@ export default class CarrouselComponent extends Vue {
     if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       const tmpImgsToCopy = this.selectedImagesForReal;
       tmpImgsToCopy.sort((a: any, b: any) => a - b);
-      this.imagesToCopy = tmpImgsToCopy.map(
+      this.changeClipboard(tmpImgsToCopy.map(
         (index) => this.images[index].id as string,
-      );
+      ));
     }
   }
 
