@@ -94,7 +94,7 @@
           </div>
         </div>
       </div>
-      <div class="shot-card create-shot" @click="createNewShot()">
+      <div class="shot-card create-shot" v-if="!movie.locked" @click="createNewShot()">
         <div class="add-footer">
           <img src="@/assets/plus.svg" alt="plus"/><br>
           <a class="activate-shot-link">Créer un plan</a>
