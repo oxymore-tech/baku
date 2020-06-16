@@ -181,14 +181,14 @@ public class HistoryServiceImpl implements HistoryService {
                 }
                 case SHOT_MOVE: {
                     String shotId = element.getValue().get("shotId").asText();
+                    shots.remove(shotId);
                     int index = element.getValue().get("index").asInt();
                     if (index < 0) {
                         index = 0;
-                    } else if (index > shots.size() - 1) {
-                        index = shots.size() - 1;
+                    } else if (index > shots.size()) {
+                        index = shots.size();
                     }
-                    shots.remove(shotId);
-                    shots.set(index, shotId);
+                    shots.add(index, shotId);
                     break;
                 }
                 case MOVIE_LOCK: {
