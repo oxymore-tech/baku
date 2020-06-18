@@ -18,7 +18,7 @@ export class WSSocket {
     }
 
     this.socket.addEventListener('error', () => {
-      store.commit('webrtc/setSocketStatus', 'error');
+      // store.commit('webrtc/setSocketStatus', 'error');
     });
     this.socket.addEventListener('open', () => {
       store.commit('webrtc/setSocketStatus', 'opened');
