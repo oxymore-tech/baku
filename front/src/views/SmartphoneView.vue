@@ -235,6 +235,10 @@ export default class SmartphoneView extends Vue {
 </script>
 
 <style lang="scss" scoped>
+h1 {
+  font-display: 18px;
+}
+
 @media screen and (orientation: portrait) {
   .dependsOnOrientation {
     display: block;
