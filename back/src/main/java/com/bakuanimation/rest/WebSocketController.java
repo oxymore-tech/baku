@@ -8,10 +8,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
-import io.micronaut.websocket.annotation.OnClose;
-import io.micronaut.websocket.annotation.OnMessage;
-import io.micronaut.websocket.annotation.OnOpen;
-import io.micronaut.websocket.annotation.ServerWebSocket;
+import io.micronaut.websocket.annotation.*;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +72,11 @@ public final class WebSocketController {
         return broadcaster.broadcast(message, aSession -> Optional.ofNullable(sessions.get(aSession.getId()))
                 .map(destId::equals)
                 .orElse(false));
+    }
 
+    @OnError
+    public void onError(WebSocketSession session, Throwable error) {
+        LOGGER.warn("Error in websocket {}", session.getId(), error);
     }
 
     @OnClose
