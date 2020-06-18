@@ -17,7 +17,7 @@
     <img class="dependsOnOrientation" src="@/assets/rotate_phone.gif" />
     <video id="localVideo" style="opacity:0" autoplay playsinline width="1920" height="1080"></video>
   </div>
-  <div v-else>Synchronisation non supportée par votre navigateur</div>
+  <div v-else>{{ socketStatus === 'error' ? 'Erreur de connexion au serveur' : 'Synchronisation non supportée par votre navigateur'}}</div>
 </template>
 
 <script lang="ts">
@@ -122,6 +122,9 @@ export default class SmartphoneView extends Vue {
     if (this.socketStatus === 'opened') {
       this.progressStatus = 25;
       this.socket.sendWSMessage({ action: 'link', value: this.socketId });
+    }
+    if (this.socketStatus === 'error') {
+      this.progressStatus = 25;
     }
   }
 
