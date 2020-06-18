@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 @ServerWebSocket("/echo")
@@ -33,8 +33,7 @@ public final class WebSocketController {
     private final Map<String, String> sessions = Maps.newConcurrentMap();
 
     // Session Ids generator
-    private final AtomicLong ids = new AtomicLong();
-    private final Supplier<String> idSupplier = () -> Long.toString(ids.getAndIncrement());
+    private final Supplier<String> idSupplier = () -> UUID.randomUUID().toString();
 
     public WebSocketController(WebSocketBroadcaster broadcaster) {
         this.broadcaster = broadcaster;
