@@ -6,6 +6,7 @@
       <span class="has-text-success">OK</span>
     </h1>
     <h1 v-else>Synchronisation en cours...</h1>
+    <b-progress :value="progressStatus" type="is-success"></b-progress>
     <h1 class="dependsOnOrientationOk">
       Orientation
       <span class="has-text-success">OK</span>
@@ -53,6 +54,8 @@ export default class SmartphoneView extends Vue {
 
   public isWebRTCSupported = true;
 
+  public progressStatus: number = 0;
+
   public created() {
     const { socketId } = this.$route.params;
     this.socketId = socketId;
@@ -61,13 +64,14 @@ export default class SmartphoneView extends Vue {
   public mounted() {
     this.isWebRTCSupported = !!navigator.getUserMedia && !!window.RTCPeerConnection;
 
-    if (!this.isWebRTCSupported || !getOsSupport()) {
+    if (!this.isWebRTCSupported) {
       return;
     }
 
     this.socket.messageListenerFunction = (message) => {
       switch (message.action) {
         case 'rtcOffer':
+          this.progressStatus = 50;
           this.startStream(message.value);
           break;
         case 'icecandidate':
@@ -95,6 +99,7 @@ export default class SmartphoneView extends Vue {
 
     this.peerConnection.oniceconnectionstatechange = (_event) => {
       if (this.peerConnection.iceConnectionState === 'connected') {
+        this.progressStatus = 100;
         // CONNECTION OK
         this.$store.commit('webrtc/setupConnection');
       }
@@ -113,6 +118,7 @@ export default class SmartphoneView extends Vue {
   @Watch('socketStatus')
   public onSocketStatusChanged() {
     if (this.socketStatus === 'opened') {
+      this.progressStatus = 25;
       this.socket.sendWSMessage({ action: 'link', value: this.socketId });
     }
   }
@@ -159,6 +165,7 @@ export default class SmartphoneView extends Vue {
     try {
       const answer = await this.peerConnection.createAnswer();
       await this.peerConnection.setLocalDescription(answer);
+      this.progressStatus = 75;
       this.socket.sendWSMessage({ action: 'rtcAnswer', value: answer });
     } catch (e) {
       console.error('Failed sending answer', e);
@@ -212,16 +219,16 @@ export default class SmartphoneView extends Vue {
   }
 }
 
-function getOsSupport() : boolean {
-  const ua = navigator.userAgent.toLowerCase();
-  const isAndroid = ua.indexOf('android') > -1; // && ua.indexOf("mobile");
-  const match = ua.match(/android\s([0-9\.]*)/i);
-  const androidNumber = match ? parseInt(match[1], 10) : undefined;
-  if (isAndroid && androidNumber && androidNumber < 8) {
-    return false;
-  }
-  return true;
-}
+// function getOsSupport() : boolean {
+//   const ua = navigator.userAgent.toLowerCase();
+//   const isAndroid = ua.indexOf('android') > -1; // && ua.indexOf("mobile");
+//   const match = ua.match(/android\s([0-9\.]*)/i);
+//   const androidNumber = match ? parseInt(match[1], 10) : undefined;
+//   if (isAndroid && androidNumber && androidNumber < 8) {
+//     return false;
+//   }
+//   return true;
+// }
 </script>
 
 <style lang="scss" scoped>
