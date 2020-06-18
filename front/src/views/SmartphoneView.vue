@@ -62,7 +62,9 @@ export default class SmartphoneView extends Vue {
   }
 
   public mounted() {
-    this.isWebRTCSupported = !!navigator.getUserMedia && !!window.RTCPeerConnection;
+    this.isWebRTCSupported = (!!navigator.getUserMedia && !!window.RTCPeerConnection) ||
+    (!!navigator['mozGetUserMedia'] && !!window['mozRTCPeerConnection']) ||
+    (!!navigator['webkitGetUserMedia'] && !!window.webkitRTCPeerConnection);
 
     if (!this.isWebRTCSupported) {
       return;
