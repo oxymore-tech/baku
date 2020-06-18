@@ -11,6 +11,7 @@
         <li>Placer votre téléphone en mode paysage (penser à activer la rotation automatique)</li>
       </ul>
       <qrcode :value="qrvalue" :options="options" v-if="qrvalue && status !== 'CONNECTED'"></qrcode>
+      <b-progress :value="progressStatus" type="is-success"></b-progress>
       <h1
         class="title is-4 has-text-warning"
         v-if="status === 'WAITING'"
@@ -63,6 +64,8 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
 
   private dataChannel!: RTCDataChannel;
 
+  public progressStatus: number =  0;
+
   public mounted() {
     this.socket = new WSSocket();
     if (this.socketStatus !== 'opened') {
@@ -91,6 +94,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
           this.qrvalue = `${window.location.origin}/smartphone/${message.value}`;
           break;
         case 'linkEstablished':
+          this.progressStatus = 33;
           this.createOffer().then((offer) => {
             this.socket.sendWSMessage({ action: 'rtcOffer', value: offer });
           });
@@ -101,6 +105,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
           }
           break;
         case 'rtcAnswer':
+          this.progressStatus = 66;
           this.peerConnection
             .setRemoteDescription(message.value)
             .then(() => {});
@@ -133,6 +138,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
 
     this.peerConnection.oniceconnectionstatechange = (_event) => {
       if (this.peerConnection.iceConnectionState === 'connected') {
+        this.progressStatus = 100;
         // CONNECTION OK
         console.log('CONNECTION OK');
         this.status = 'CONNECTED';

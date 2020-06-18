@@ -42,6 +42,9 @@ export const WebrtcStore: BakuModule<WebrtcState> = {
     resetState(context) {
       context.commit('reset');
     },
+    setSocketStatus(context, status: SocketStatus){
+      context.commit('setSocketStatus', status);
+    }
   },
   getters: {},
   modules: {},

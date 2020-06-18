@@ -14,14 +14,14 @@ export class WSSocket {
     try {
       this.socket = new WebSocket(`wss://${window.location.hostname}:${window.location.port}/echo`);
     } catch (e) {
-      store.commit('webrtc/setSocketStatus', 'error');
+      store.dispatch('webrtc/setSocketStatus', 'error');
     }
 
     this.socket.addEventListener('error', () => {
-      store.commit('webrtc/setSocketStatus', 'error');
+      // store.dispatch('webrtc/setSocketStatus', 'error');
     });
     this.socket.addEventListener('open', () => {
-      store.commit('webrtc/setSocketStatus', 'opened');
+      store.dispatch('webrtc/setSocketStatus', 'opened');
       this.sendWSMessage({ action: 'getSocketId' });
     });
 
@@ -39,6 +39,6 @@ export class WSSocket {
 
   public close() {
     this.socket.close();
-    store.commit('webrtc/setSocketStatus', 'closed');
+    store.dispatch('webrtc/setSocketStatus', 'closed');
   }
 }

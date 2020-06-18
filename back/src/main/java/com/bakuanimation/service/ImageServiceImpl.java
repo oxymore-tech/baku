@@ -2,6 +2,7 @@ package com.bakuanimation.service;
 
 import com.bakuanimation.api.HistoryService;
 import com.bakuanimation.api.ImageService;
+import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.BakuAction;
 import com.bakuanimation.model.BakuEvent;
 import com.bakuanimation.model.Movie;
@@ -42,10 +43,12 @@ public class ImageServiceImpl implements ImageService {
 
     private final PathService pathService;
     private final HistoryService historyService;
+    private final PermissionService permissionService;
 
-    public ImageServiceImpl(PathService pathService, HistoryService historyService) {
+    public ImageServiceImpl(PathService pathService, HistoryService historyService, PermissionService permissionService) {
         this.pathService = pathService;
         this.historyService = historyService;
+        this.permissionService = permissionService;
     }
 
     private BufferedImage reduce(BufferedImage sourceImage, int width) throws IOException {
@@ -149,21 +152,29 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Single<Project> importMovie(String projectName) {
+        String projectId = UUID.randomUUID().toString();
+        return importMovie(projectName, projectId);
+    }
+
+    public Single<Project> importMovie(String projectName, String projectId) {
         String user = "baku";
         String timestamp = Instant.now().toString();
         return Single.fromCallable(() -> {
             if (!Files.exists(pathService.projectDir(projectName))) {
-                throw new NoSuchElementException("Project " + projectName + " does not exist");
+                throw new NoSuchElementException("Project " + projectId + " does not exist");
             }
-            if (Files.exists(pathService.getStackFile(projectName))) {
-                LOGGER.debug("Movie {} is already existing, import is skipped", projectName);
-                return new Project(projectName);
+            if (Files.exists(pathService.getStackFile(projectId))) {
+                LOGGER.debug("Movie {} is already existing, import is skipped", projectId);
+                return new Project(projectId);
             }
             Map<String, List<Path>> shots = getShots(projectName);
-            for (List<Path> shot : shots.values()) {
-                for (Path image : shot) {
+            Map<String, List<String>> resultImageNames = new HashMap<>();
+            for (Map.Entry<String, List<Path>> entry : shots.entrySet()) {
+                for (Path image : entry.getValue()) {
                     try (InputStream is = new FileInputStream(image.toFile())) {
-                        writeSmallerImages(projectName, is, image.getFileName().toString());
+                        String newImageName = image.getFileName().toString().trim().replace(" ", "_");
+                        resultImageNames.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).add(newImageName);
+                        writeSmallerImages(projectId, is, newImageName);
                     }
                     Files.delete(image);
                 }
@@ -175,16 +186,16 @@ public class ImageServiceImpl implements ImageService {
             events.add(new BakuEvent(BakuAction.MOVIE_UPDATE_TITLE.ordinal(), jsonNodeFactory.textNode(projectName), user, timestamp));
 
 
-            for (Map.Entry<String, List<Path>> shotEntry : shots.entrySet()) {
+            for (Map.Entry<String, List<String>> shotEntry : resultImageNames.entrySet()) {
                 ObjectNode shotNode = jsonNodeFactory.objectNode();
                 shotNode.set("name", jsonNodeFactory.textNode("Nouveau plan"));
                 shotNode.set("shotId", jsonNodeFactory.textNode(shotEntry.getKey()));
                 events.add(new BakuEvent(BakuAction.SHOT_ADD.ordinal(), shotNode, user, timestamp));
 
                 for (int i = 0; i < shotEntry.getValue().size(); i++) {
-                    Path image = shotEntry.getValue().get(i);
+                    String image = shotEntry.getValue().get(i);
                     ObjectNode imageNode = jsonNodeFactory.objectNode();
-                    imageNode.set("image", jsonNodeFactory.textNode(image.getFileName().toString()));
+                    imageNode.set("image", jsonNodeFactory.textNode(image));
                     imageNode.set("imageIndex", jsonNodeFactory.numberNode(i));
                     imageNode.set("shotId", jsonNodeFactory.textNode(shotEntry.getKey()));
 
@@ -194,8 +205,8 @@ public class ImageServiceImpl implements ImageService {
 
             events.add(new BakuEvent(BakuAction.MOVIE_LOCK.ordinal(), jsonNodeFactory.booleanNode(true), user, timestamp));
 
-            historyService.writeHistory(projectName, events);
-            return new Project(projectName);
+            historyService.writeHistory(projectId, events);
+            return new Project(projectId, permissionService.sign(projectId));
         }).subscribeOn(Schedulers.io());
     }
 

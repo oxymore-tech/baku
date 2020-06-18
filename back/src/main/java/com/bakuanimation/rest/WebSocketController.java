@@ -8,18 +8,15 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
-import io.micronaut.websocket.annotation.OnClose;
-import io.micronaut.websocket.annotation.OnMessage;
-import io.micronaut.websocket.annotation.OnOpen;
-import io.micronaut.websocket.annotation.ServerWebSocket;
-import io.reactivex.Single;
+import io.micronaut.websocket.annotation.*;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
+import java.util.function.Supplier;
 
 @ServerWebSocket("/echo")
 public final class WebSocketController {
@@ -27,9 +24,13 @@ public final class WebSocketController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
 
     private final WebSocketBroadcaster broadcaster;
+    // Map sessionId <-> sessionId between PC & smartphone
     private final BiMap<String, String> links = Maps.synchronizedBiMap(HashBiMap.create());
+    // Map websocketSession.id <-> sessionId
     private final Map<String, String> sessions = Maps.newConcurrentMap();
-    private final AtomicLong ids = new AtomicLong();
+
+    // Session Ids generator
+    private final Supplier<String> idSupplier = () -> UUID.randomUUID().toString();
 
     public WebSocketController(WebSocketBroadcaster broadcaster) {
         this.broadcaster = broadcaster;
@@ -37,7 +38,7 @@ public final class WebSocketController {
 
     @OnOpen
     public void onOpen(WebSocketSession session) {
-        String sessionId = sessions.computeIfAbsent(session.getId(), s -> Long.toString(ids.getAndIncrement()));
+        String sessionId = sessions.computeIfAbsent(session.getId(), s -> idSupplier.get());
         LOGGER.info("new session id {}", sessionId);
     }
 
@@ -55,7 +56,7 @@ public final class WebSocketController {
                 return session.send(p.toString());
             } else if (action.equals("link")) {
                 String socketId = o.get("value").getAsString();
-                links.put(sessionId, socketId);
+                links.forcePut(sessionId, socketId);
                 JsonObject p = new JsonObject();
                 p.add("action", new JsonPrimitive("linkEstablished"));
                 p.add("value", new JsonPrimitive(sessionId));
@@ -71,7 +72,11 @@ public final class WebSocketController {
         return broadcaster.broadcast(message, aSession -> Optional.ofNullable(sessions.get(aSession.getId()))
                 .map(destId::equals)
                 .orElse(false));
+    }
 
+    @OnError
+    public void onError(WebSocketSession session, Throwable error) {
+        LOGGER.warn("Error in websocket {}", session.getId(), error);
     }
 
     @OnClose

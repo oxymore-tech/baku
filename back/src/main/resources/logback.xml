@@ -9,6 +9,7 @@
         </encoder>
     </appender>
 
+    <logger name="com.bakuanimation" level="DEBUG"/>
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
