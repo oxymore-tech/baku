@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 @ServerWebSocket("/echo")
 public final class WebSocketController {
@@ -26,9 +27,14 @@ public final class WebSocketController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
 
     private final WebSocketBroadcaster broadcaster;
+    // Map sessionId <-> sessionId between PC & smartphone
     private final BiMap<String, String> links = Maps.synchronizedBiMap(HashBiMap.create());
+    // Map websocketSession.id <-> sessionId
     private final Map<String, String> sessions = Maps.newConcurrentMap();
+
+    // Session Ids generator
     private final AtomicLong ids = new AtomicLong();
+    private final Supplier<String> idSupplier = () -> Long.toString(ids.getAndIncrement());
 
     public WebSocketController(WebSocketBroadcaster broadcaster) {
         this.broadcaster = broadcaster;
@@ -36,7 +42,7 @@ public final class WebSocketController {
 
     @OnOpen
     public void onOpen(WebSocketSession session) {
-        String sessionId = sessions.computeIfAbsent(session.getId(), s -> Long.toString(ids.getAndIncrement()));
+        String sessionId = sessions.computeIfAbsent(session.getId(), s -> idSupplier.get());
         LOGGER.info("new session id {}", sessionId);
     }
 
@@ -54,7 +60,7 @@ public final class WebSocketController {
                 return session.send(p.toString());
             } else if (action.equals("link")) {
                 String socketId = o.get("value").getAsString();
-                links.put(sessionId, socketId);
+                links.forcePut(sessionId, socketId);
                 JsonObject p = new JsonObject();
                 p.add("action", new JsonPrimitive("linkEstablished"));
                 p.add("value", new JsonPrimitive(sessionId));
