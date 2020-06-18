@@ -18,12 +18,6 @@
     <video id="localVideo" style="opacity:0" autoplay playsinline width="1920" height="1080"></video>
   </div>
   <div v-else>{{ socketStatus === 'error' ? 'Erreur de connexion au serveur' : 'Synchronisation non supportée par votre navigateur'}}
-    <p>{{!!navigator.getUserMedia}}</p>
-    <p>{{!!window.RTCPeerConnection}}</p>
-    <p>{{!!navigator.mozGetUserMedia}}</p>
-    <p>{{!!window.mozRTCPeerConnection}}</p>
-    <p>{{!!navigator.webkitGetUserMedia}}</p>
-    <p>{{!!window.webkitRTCPeerConnection}}</p>
   </div>
 </template>
 
@@ -69,9 +63,7 @@ export default class SmartphoneView extends Vue {
   }
 
   public mounted() {
-    this.isWebRTCSupported = (!!navigator.getUserMedia && !!window.RTCPeerConnection) ||
-    (!!(navigator as any).mozGetUserMedia && !!(window as any).mozRTCPeerConnection) ||
-    (!!(navigator as any).webkitGetUserMedia && !!window.webkitRTCPeerConnection);
+    this.isWebRTCSupported = (!!navigator.mediaDevices.getUserMedia && !!window.RTCPeerConnection);
 
     if (!this.isWebRTCSupported) {
       return;
