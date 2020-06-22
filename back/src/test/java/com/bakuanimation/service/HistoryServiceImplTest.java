@@ -27,7 +27,7 @@ class HistoryServiceImplTest {
     @BeforeEach
     void setUp(@TempDir Path sharedTempDir) {
         PermissionService permissionService = mock(PermissionService.class);
-        tested = new HistoryServiceImpl(new PathService(sharedTempDir), permissionService);
+        tested = new HistoryServiceImpl(new PathService(sharedTempDir), permissionService, new MockCollaborationSyncService());
     }
 
     @Test

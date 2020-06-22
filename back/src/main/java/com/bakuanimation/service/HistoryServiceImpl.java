@@ -1,5 +1,6 @@
 package com.bakuanimation.service;
 
+import com.bakuanimation.api.CollaborationSyncService;
 import com.bakuanimation.api.HistoryService;
 import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.model.BakuAction;
@@ -36,12 +37,14 @@ public class HistoryServiceImpl implements HistoryService {
 
     private final PathService pathService;
     private final PermissionService permissionService;
+    private final CollaborationSyncService collaborationSyncService;
 
     private final Scheduler stackScheduler;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public HistoryServiceImpl(PathService pathService, PermissionService permissionService) {
+    public HistoryServiceImpl(PathService pathService, PermissionService permissionService, CollaborationSyncService collaborationSyncService) {
         this.permissionService = permissionService;
+        this.collaborationSyncService = collaborationSyncService;
         this.stackScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
         this.pathService = pathService;
     }
@@ -60,8 +63,12 @@ public class HistoryServiceImpl implements HistoryService {
                 addEvent(project, movie, history, jsonNode);
             }
             writeHistory(project.getId(), history);
-            return true;
-        }).subscribeOn(stackScheduler);
+            return movie;
+        })
+                .flatMapPublisher(movie -> collaborationSyncService.broadcast("", movie.getProjectId(), new String(stack)))
+                .lastOrError()
+                .map(v -> true)
+                .subscribeOn(stackScheduler);
     }
 
     private void addEvent(Project project, Movie movie, List<BakuEvent> history, JsonNode node) throws JsonProcessingException {
