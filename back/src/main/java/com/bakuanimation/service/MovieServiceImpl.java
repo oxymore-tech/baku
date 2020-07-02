@@ -8,6 +8,7 @@ import com.bakuanimation.model.VideoState;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import org.apache.commons.io.IOUtils;
@@ -25,6 +26,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
@@ -35,11 +37,13 @@ public final class MovieServiceImpl implements MovieService {
     private final HistoryService historyService;
     private final PathService pathService;
 
+    private final Scheduler movieGenerationScheduler;
     private final Set<String> pendingMovieGeneration = Sets.newConcurrentHashSet();
 
     public MovieServiceImpl(HistoryService historyService, PathService pathService) {
         this.historyService = historyService;
         this.pathService = pathService;
+        this.movieGenerationScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
     }
 
     // Check last modified time of movie and stack file
@@ -162,6 +166,6 @@ public final class MovieServiceImpl implements MovieService {
             } else {
                 return new MovieStatus(VideoState.NotGenerated, Instant.EPOCH);
             }
-        }).subscribeOn(Schedulers.io());
+        }).subscribeOn(movieGenerationScheduler);
     }
 }
