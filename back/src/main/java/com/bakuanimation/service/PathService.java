@@ -40,7 +40,7 @@ public class PathService {
 
     public List<Path> toDeleteProject() throws IOException {
         return Files.list(dataPath)
-                .filter(p -> p.getFileName().startsWith(DELETE_PREFIX))
+                .filter(p -> p.getFileName().toString().startsWith(DELETE_PREFIX))
                 .collect(Collectors.toUnmodifiableList());
     }
 
