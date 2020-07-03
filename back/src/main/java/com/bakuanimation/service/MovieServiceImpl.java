@@ -9,6 +9,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.micronaut.http.server.types.files.SystemFile;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
@@ -41,7 +42,7 @@ public final class MovieServiceImpl implements MovieService {
 
     private final Scheduler movieGenerationScheduler;
     private final Set<String> pendingMovieGeneration = Sets.newConcurrentHashSet();
-    private final Map<String, Single<Path>> pendingMoviePlanGeneration = Maps.newConcurrentMap();
+    private final Map<String, Single<Path>> pendingMovieShotGeneration = Maps.newConcurrentMap();
 
     public MovieServiceImpl(HistoryService historyService, PathService pathService) {
         this.historyService = historyService;
@@ -85,7 +86,7 @@ public final class MovieServiceImpl implements MovieService {
     // if not the same -> will generate a movie & lock in memory the generation
     // The goal is for this method to be called many time on the same project id, and the movie plan will only be generated once
     @Override
-    public Single<Path> generatePlan(String projectId, String shotId) {
+    public Single<SystemFile> generateShot(String projectId, String shotId) {
         return historyService.interpretHistory(projectId)
                 .flatMap(wholeMovie -> {
                     int shotIdx = wholeMovie.getShots().indexOf(shotId);
@@ -97,20 +98,22 @@ public final class MovieServiceImpl implements MovieService {
                     Path moviePath = pathService.getMovieFile(projectId, String.valueOf(shotIdx));
                     Path movieTempPath = pathService.getMovieTempFile(projectId, String.valueOf(shotIdx));
                     Instant lastModifiedStackFile = Files.getLastModifiedTime(pathService.getStackFile(projectId)).toInstant();
+                    Single<Path> result;
                     if (!Files.exists(moviePath) ||
                             lastModifiedStackFile.isAfter(Files.getLastModifiedTime(moviePath).toInstant())) {
-                        return pendingMoviePlanGeneration.computeIfAbsent(moviePath.getFileName().toString(), k -> {
+                        result = pendingMovieShotGeneration.computeIfAbsent(moviePath.getFileName().toString(), k -> {
                             // The point is to generate once a movie plan, and if other request the same movie plan while it's generating
                             // it will also wait for the movie to be done generating and will return the same path once it's done
                             return generateMovie_ffmpeg(movie, movieTempPath, moviePath, FileTime.from(lastModifiedStackFile))
                                     .map(v -> moviePath)
-                                    .doAfterTerminate(() -> pendingMoviePlanGeneration.remove(moviePath.getFileName().toString()))
+                                    .doAfterTerminate(() -> pendingMovieShotGeneration.remove(moviePath.getFileName().toString()))
                                     .cache(); // without cache, the Single will be subscribed each time the cache is reached (that would mean another movie generation)
                         });
                     } else {
                         LOGGER.debug("Movie {} ({}) exist and is up-to-date, it can be downloaded", movie.getName(), moviePath);
-                        return Single.just(moviePath);
+                        result = Single.just(moviePath);
                     }
+                    return result.map(p -> new SystemFile(p.toFile()).attach(movie.getName() + "_" + shotIdx + ".mp4"));
                 });
     }
 
