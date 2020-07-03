@@ -30,7 +30,7 @@ public class PathService {
 
     public Path projectDir(String projectId) {
         return dataPath
-            .resolve(projectId);
+                .resolve(projectId);
     }
 
     public Path deletePath(String projectId) {
@@ -50,33 +50,45 @@ public class PathService {
 
     public Path getStackFile(String projectId) {
         return this
-            .projectDir(projectId)
-            .resolve("stack.json");
+                .projectDir(projectId)
+                .resolve("stack.json");
     }
 
     public Path getMovieFile(String projectId) {
         return this
-            .projectDir(projectId)
-            .resolve("movie.mp4");
+                .projectDir(projectId)
+                .resolve("movie.mp4");
+    }
+
+    public Path getMovieFile(String projectId, String shotId) {
+        return this
+                .projectDir(projectId)
+                .resolve("movie_" + shotId + ".mp4");
     }
 
     public Path getMovieTempFile(String projectId) {
         return this
-            .projectDir(projectId)
-            .resolve("movie.tmp.mp4");
+                .projectDir(projectId)
+                .resolve("movie.tmp.mp4");
+    }
+
+    public Path getMovieTempFile(String projectId, String shotId) {
+        return this
+                .projectDir(projectId)
+                .resolve("movie_" + shotId + ".tmp.mp4");
     }
 
     public Path getStackTempFile(String projectId) {
         return this
-            .projectDir(projectId)
-            .resolve("stack.json.tmp");
+                .projectDir(projectId)
+                .resolve("stack.json.tmp");
     }
 
     public Path getImageFile(String projectId, String imageType, String imageId) {
         return this
-            .projectDir(projectId)
-            .resolve("images")
-            .resolve(imageType)
-            .resolve(imageId);
+                .projectDir(projectId)
+                .resolve("images")
+                .resolve(imageType)
+                .resolve(imageId);
     }
 }
