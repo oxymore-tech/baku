@@ -4,7 +4,13 @@ import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.service.HistoryServiceImpl;
 import com.bakuanimation.service.PathService;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Header;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
 import io.micronaut.http.server.types.files.SystemFile;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.reactivex.Single;
@@ -44,7 +50,7 @@ public class HistoryController {
     }
 
     @Get("/api/{projectId}/history")
-    public Single<HttpResponse> stack(@PathVariable String projectId) {
+    public Single<HttpResponse> stack(@PathVariable String projectId, @Header(value = "X-SocketId") String socketId) {
         Path stackFile = pathService.getStackFile(permissionService.getProject(projectId).getId());
         return Single.fromCallable(() -> {
             if (!Files.exists(stackFile)) {
