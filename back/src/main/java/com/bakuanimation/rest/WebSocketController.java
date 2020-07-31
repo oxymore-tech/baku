@@ -1,5 +1,6 @@
 package com.bakuanimation.rest;
 
+import com.bakuanimation.api.CollaborationSyncService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,7 @@ public final class WebSocketController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
 
     private final WebSocketBroadcaster broadcaster;
+    private final CollaborationSyncService collaborationSyncService;
     // Map sessionId <-> sessionId between PC & smartphone
     private final BiMap<String, String> links = Maps.synchronizedBiMap(HashBiMap.create());
     // Map websocketSession.id <-> sessionId
@@ -40,8 +42,9 @@ public final class WebSocketController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public WebSocketController(WebSocketBroadcaster broadcaster) {
+    public WebSocketController(WebSocketBroadcaster broadcaster, CollaborationSyncService collaborationSyncService) {
         this.broadcaster = broadcaster;
+        this.collaborationSyncService = collaborationSyncService;
     }
 
     @OnOpen
@@ -87,10 +90,12 @@ public final class WebSocketController {
     @OnError
     public void onError(WebSocketSession session, Throwable error) {
         LOGGER.warn("Error in websocket {}", session.getId(), error);
+        collaborationSyncService.disconnect(session.getId());
     }
 
     @OnClose
     public void onClose(WebSocketSession session) {
+        collaborationSyncService.disconnect(session.getId());
         Optional.ofNullable(sessions.remove(session.getId()))
                 .ifPresent(sessionId -> {
                     LOGGER.info("Close {}", sessionId);

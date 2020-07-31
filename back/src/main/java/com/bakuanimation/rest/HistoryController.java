@@ -1,5 +1,6 @@
 package com.bakuanimation.rest;
 
+import com.bakuanimation.api.CollaborationSyncService;
 import com.bakuanimation.api.PermissionService;
 import com.bakuanimation.service.HistoryServiceImpl;
 import com.bakuanimation.service.PathService;
@@ -16,6 +17,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
+import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -25,11 +27,14 @@ public class HistoryController {
     private final HistoryServiceImpl historyService;
     private final PathService pathService;
     private final PermissionService permissionService;
+    private final CollaborationSyncService collaborationSyncService;
 
-    public HistoryController(HistoryServiceImpl historyService, PathService pathService, PermissionService permissionService) {
+    public HistoryController(HistoryServiceImpl historyService, PathService pathService,
+                             PermissionService permissionService, CollaborationSyncService collaborationSyncService) {
         this.historyService = historyService;
         this.pathService = pathService;
         this.permissionService = permissionService;
+        this.collaborationSyncService = collaborationSyncService;
     }
 
     @Get(value = "/api/movie")
@@ -50,7 +55,10 @@ public class HistoryController {
     }
 
     @Get("/api/{projectId}/history")
-    public Single<HttpResponse> stack(@PathVariable String projectId, @Header(value = "X-SocketId") String socketId) {
+    public Single<HttpResponse> stack(@PathVariable String projectId, @Nullable @Header("X-SocketId") String socketId) {
+        if (socketId != null) {
+            this.collaborationSyncService.access(socketId, projectId);
+        }
         Path stackFile = pathService.getStackFile(permissionService.getProject(projectId).getId());
         return Single.fromCallable(() -> {
             if (!Files.exists(stackFile)) {
