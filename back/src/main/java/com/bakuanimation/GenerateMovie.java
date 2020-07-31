@@ -1,9 +1,9 @@
 package com.bakuanimation;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.mortennobel.imagescaling.ResampleFilters;
 import com.mortennobel.imagescaling.ResampleOp;
 
@@ -46,7 +46,8 @@ public final class GenerateMovie {
             Files.createDirectories(imageDstPath.resolve(quality.folder));
         }
         Path stackFile = dstPath.resolve("stacks").resolve(projectName + ".stack");
-        JsonArray stack = new JsonArray();
+        JsonNodeFactory jsonNodeFactory = JsonNodeFactory.instance;
+        ArrayNode stack = jsonNodeFactory.arrayNode();
 
         // add shot event only once
         List<Path> shotPaths = Files.list(srcPath)
@@ -55,13 +56,13 @@ public final class GenerateMovie {
         for (int shotIdx = 0; shotIdx < shotPaths.size(); shotIdx++) {
             System.out.println("Generating shot " + shotIdx);
             Path shotPath = shotPaths.get(shotIdx);
-            JsonObject shotEvent = new JsonObject();
-            shotEvent.add("action", new JsonPrimitive(4));
-            shotEvent.add("user", new JsonPrimitive(USERNAME));
-            JsonObject shot = new JsonObject();
-            shot.add("name", new JsonPrimitive("Nouveau plan"));
-            shot.add("shotId", new JsonPrimitive(shotIdx+""));
-            shotEvent.add("value", shot);
+            ObjectNode shotEvent = jsonNodeFactory.objectNode();
+            shotEvent.put("action", 4);
+            shotEvent.put("user", USERNAME);
+            ObjectNode shot = jsonNodeFactory.objectNode();
+            shot.put("name", "Nouveau plan");
+            shot.put("shotId", shotIdx+"");
+            shotEvent.set("value", shot);
             stack.add(shotEvent);
 
             List<Path> images = Files.list(shotPath)
@@ -74,7 +75,7 @@ public final class GenerateMovie {
                     Path output1 = imageDstPath.resolve(quality.folder).resolve(imageName);
                     write(imagePath, output1, quality);
                 }
-                JsonObject imageEvent = addImageEvent(imageName, shotIdx, imageIdx);
+                ObjectNode imageEvent = addImageEvent(imageName, shotIdx, imageIdx);
                 stack.add(imageEvent);
             }
         }
@@ -83,70 +84,17 @@ public final class GenerateMovie {
         }
         Files.createDirectories(stackFile.getParent());
         Files.write(stackFile, stack.toString().getBytes());
-
-
-//        JsonObject shotEvent = new JsonObject();
-//        shotEvent.add("action", new JsonPrimitive(4));
-//        shotEvent.add("user", new JsonPrimitive(USERNAME));
-//        JsonObject shot = new JsonObject();
-//        shot.add("name", new JsonPrimitive("Nouveau plan"));
-//        shot.add("shotId", new JsonPrimitive(0));
-//        shotEvent.add("value", shot);
-//        stack.add(shotEvent);
-//        URL image1 = GenerateTestFolder.class.getResource("/image-1.jpg");
-//        URL image2 = GenerateTestFolder.class.getResource("/image-2.jpg");
-////        Path image1 = Paths.get(GenerateTestFolder.class.getResource("/image-1.jpg").getPath());
-////        Path image2 = Paths.get(GenerateTestFolder.class.getResource("/image-2.jpg").getPath());
-//        String src1Name = "image_" + format(0) + ".jpg";
-//        String src2Name = "image_" + format(1) + ".jpg";
-//        for (Quality quality : qualities) {
-//            Path output1 = imageDstPath.resolve(quality.folder).resolve(src1Name);
-//            Path output2 = imageDstPath.resolve(quality.folder).resolve(src2Name);
-//            write(image1, output1, quality);
-//            write(image2, output2, quality);
-//            JsonObject imageEvent1 = addImageEvent(src1Name, 0);
-//            JsonObject imageEvent2 = addImageEvent(src2Name, 1);
-//            stack.add(imageEvent1);
-//            stack.add(imageEvent2);
-//        }
-//
-//        for (int i = 2; i < count / 2; i++) {
-//            int image1Idx = 2 * i;
-//            int image2Idx = 2 * i + 1;
-//            String image1Name = "image_" + format(image1Idx) + ".jpg";
-//            String image2Name = "image_" + format(image2Idx) + ".jpg";
-//
-//            for (Quality quality : qualities) {
-//                Path src1 = imageDstPath.resolve(quality.folder).resolve(src1Name);
-//                Path src2 = imageDstPath.resolve(quality.folder).resolve(src2Name);
-//                Path output1 = imageDstPath.resolve(quality.folder).resolve(image1Name);
-//                Path output2 = imageDstPath.resolve(quality.folder).resolve(image2Name);
-//                Files.copy(src1, output1, StandardCopyOption.REPLACE_EXISTING);
-//                Files.copy(src2, output2, StandardCopyOption.REPLACE_EXISTING);
-//
-//            }
-//
-//            JsonObject imageEvent1 = addImageEvent(image1Name, image1Idx);
-//            JsonObject imageEvent2 = addImageEvent(image2Name, image2Idx);
-//            stack.add(imageEvent1);
-//            stack.add(imageEvent2);
-//        }
-//        if (Files.exists(stackFile)) {
-//            Files.delete(stackFile);
-//        }
-//        Files.createDirectories(stackFile.getParent());
-//        Files.write(stackFile, stack.toString().getBytes());
     }
 
-    private static JsonObject addImageEvent(String imageName, int shotIdx, int imageIndex) {
-        JsonObject imageEvent = new JsonObject();
-        imageEvent.add("action", new JsonPrimitive(3));
-        imageEvent.add("user", new JsonPrimitive(USERNAME));
-        JsonObject image = new JsonObject();
-        image.add("image", new JsonPrimitive(imageName));
-        image.add("imageIndex", new JsonPrimitive(imageIndex+""));
-        image.add("shotId", new JsonPrimitive(shotIdx+""));
-        imageEvent.add("value", image);
+    private static ObjectNode addImageEvent(String imageName, int shotIdx, int imageIndex) {
+        ObjectNode imageEvent = JsonNodeFactory.instance.objectNode();
+        imageEvent.put("action", 3);
+        imageEvent.put("user", USERNAME);
+        ObjectNode image = JsonNodeFactory.instance.objectNode();
+        image.put("image", imageName);
+        image.put("imageIndex", imageIndex+"");
+        image.put("shotId", shotIdx+"");
+        imageEvent.set("value", image);
         return imageEvent;
     }
 

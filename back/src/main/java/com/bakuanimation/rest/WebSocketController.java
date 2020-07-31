@@ -1,14 +1,20 @@
 package com.bakuanimation.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
-import io.micronaut.websocket.annotation.*;
+import io.micronaut.websocket.annotation.OnClose;
+import io.micronaut.websocket.annotation.OnError;
+import io.micronaut.websocket.annotation.OnMessage;
+import io.micronaut.websocket.annotation.OnOpen;
+import io.micronaut.websocket.annotation.ServerWebSocket;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +38,8 @@ public final class WebSocketController {
     // Session Ids generator
     private final Supplier<String> idSupplier = () -> UUID.randomUUID().toString();
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     public WebSocketController(WebSocketBroadcaster broadcaster) {
         this.broadcaster = broadcaster;
     }
@@ -43,24 +51,26 @@ public final class WebSocketController {
     }
 
     @OnMessage
-    public Publisher<String> onMessage(String message, WebSocketSession session) {
+    public Publisher<String> onMessage(String message, WebSocketSession session) throws JsonProcessingException {
         String sessionId = sessions.get(session.getId());
         LOGGER.debug("message from session id {}: {}", sessionId, message);
-        JsonObject o = JsonParser.parseString(message).getAsJsonObject();
-        if (o.get("action") != null) {
-            String action = o.get("action").getAsString();
+        JsonNode jsonNode = objectMapper.readTree(message);
+        JsonNode actionNode = jsonNode.get("action");
+        JsonNode valueNode = jsonNode.get("value");
+        if (actionNode != null) {
+            String action = actionNode.asText();
             if (action.equals("getSocketId")) {
-                JsonObject p = new JsonObject();
-                p.add("action", new JsonPrimitive("getSocketId"));
-                p.add("value", new JsonPrimitive(sessionId));
-                return session.send(p.toString());
+                ObjectNode response = JsonNodeFactory.instance.objectNode();
+                response.put("action", "getSocketId");
+                response.put("value", sessionId);
+                return session.send(response.toString());
             } else if (action.equals("link")) {
-                String socketId = o.get("value").getAsString();
+                String socketId = valueNode.asText();
                 links.forcePut(sessionId, socketId);
-                JsonObject p = new JsonObject();
-                p.add("action", new JsonPrimitive("linkEstablished"));
-                p.add("value", new JsonPrimitive(sessionId));
-                return broadcaster.broadcast(p.toString(), aSession -> Optional.ofNullable(sessions.get(aSession.getId()))
+                ObjectNode response = JsonNodeFactory.instance.objectNode();
+                response.put("action", "linkEstablished");
+                response.put("value", sessionId);
+                return broadcaster.broadcast(response.toString(), aSession -> Optional.ofNullable(sessions.get(aSession.getId()))
                         .map(socketId::equals)
                         .orElse(false));
             }
