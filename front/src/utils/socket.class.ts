@@ -2,7 +2,7 @@ import store from '@/store';
 
 type WSMessageAction = 'getSocketId' | 'linkEstablished' | 'rtcOffer' | 'icecandidate' | 'rtcAnswer' | 'link';
 
-interface WSMessage {
+export interface WSMessage {
   action: WSMessageAction;
   value?: any;
 }
@@ -14,15 +14,14 @@ export class WSSocket {
     try {
       this.socket = new WebSocket(`wss://${window.location.hostname}:${window.location.port}/echo`);
     } catch (e) {
-      store.dispatch('webrtc/setSocketStatus', 'error');
+      store.dispatch('socket/setSocketStatus', 'error');
     }
 
     this.socket.addEventListener('error', () => {
       // store.dispatch('webrtc/setSocketStatus', 'error');
     });
     this.socket.addEventListener('open', () => {
-      store.dispatch('webrtc/setSocketStatus', 'opened');
-      this.sendWSMessage({ action: 'getSocketId' });
+      store.dispatch('socket/setSocketStatus', 'opened');
     });
 
     this.socket.addEventListener('message', (event) => {
@@ -37,8 +36,12 @@ export class WSSocket {
     this.socket.send(JSON.stringify(msg));
   }
 
+  public addEventListener(category: string, callback: EventListenerOrEventListenerObject){
+    this.socket.addEventListener(category, callback);
+  }
+
   public close() {
     this.socket.close();
-    store.dispatch('webrtc/setSocketStatus', 'closed');
+    store.dispatch('socket/setSocketStatus', 'closed');
   }
 }

@@ -1,6 +1,7 @@
 import { ActionContext, Module } from 'vuex';
 import { Device } from '@/utils/device.class';
 import { BakuEvent } from '@/utils/types';
+import { WSSocket } from '@/utils/socket.class';
 
 export interface CaptureState {
   stream: MediaStream | null;
@@ -56,6 +57,10 @@ export interface WebrtcState {
   dataChannel: null | RTCDataChannel,
   stream: undefined | MediaStream,
   isConnected: boolean,
+}
+
+export interface SocketState {
+  socket: WSSocket,
   socketStatus: SocketStatus,
 }
 
