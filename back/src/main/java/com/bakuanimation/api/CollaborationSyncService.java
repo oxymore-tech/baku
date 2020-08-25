@@ -7,6 +7,4 @@ public interface CollaborationSyncService {
 
     Publisher<String> broadcast(String userId, String movie, String stack);
 
-    void disconnect(String userId);
-
 }

@@ -56,10 +56,11 @@ public class HistoryController {
 
     @Get("/api/{projectId}/history")
     public Single<HttpResponse> stack(@PathVariable String projectId, @Nullable @Header("X-SocketId") String socketId) {
+        String movieId = permissionService.getProject(projectId).getId();
         if (socketId != null) {
-            this.collaborationSyncService.access(socketId, projectId);
+            this.collaborationSyncService.access(socketId, movieId);
         }
-        Path stackFile = pathService.getStackFile(permissionService.getProject(projectId).getId());
+        Path stackFile = pathService.getStackFile(movieId);
         return Single.fromCallable(() -> {
             if (!Files.exists(stackFile)) {
                 return (HttpResponse) HttpResponse.ok("[]".getBytes());
