@@ -17,8 +17,8 @@ export async function deleteProject(projectId: string): Promise<void> {
     .then((response) => response.data);
 }
 
-export function getHistory(projectId: string): Promise<BakuEvent[]> {
-  return axios.get(`/api/${projectId}/history`)
+export function getHistory(projectId: string, socketId?: string): Promise<BakuEvent[]> {
+  return axios.get(`/api/${projectId}/history`, { headers: { 'X-SocketId': socketId }})
     .then((response) => response.data);
 }
 

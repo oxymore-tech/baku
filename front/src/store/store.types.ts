@@ -46,7 +46,8 @@ export interface BakuRootState {
   project: ProjectState,
   capture: CaptureState,
   user: UserState,
-  clipboard: ClipboardState
+  clipboard: ClipboardState,
+  socket: SocketState
 }
 
 
@@ -62,6 +63,7 @@ export interface WebrtcState {
 export interface SocketState {
   socket: WSSocket,
   socketStatus: SocketStatus,
+  socketId: string
 }
 
 export type BakuActionContext<TState> = ActionContext<TState, BakuRootState>;

@@ -83,7 +83,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
   },
   actions: {
     async loadProject(context, projectId: string): Promise<void> {
-      const movieHistory = await api.getHistory(projectId);
+      const movieHistory = await api.getHistory(projectId, context.rootState.socket.socketId);
       await context.commit('setMovie', {projectId, movieHistory});
       await store.dispatch('user/updateCurrentSeenProject');
     },

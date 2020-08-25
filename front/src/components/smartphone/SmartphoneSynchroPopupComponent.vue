@@ -64,6 +64,9 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   @SocketNS.State('socket')
   private socket!: WSSocket;
 
+  @SocketNS.State('socketId')
+  private socketId!: string;
+
   private peerConnection!: RTCPeerConnection;
 
   private dataChannel!: RTCDataChannel;
@@ -74,6 +77,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
     if (this.socketStatus !== 'opened') {
       this.status = 'ERROR';
     }
+    this.qrvalue = `${window.location.origin}/smartphone/${this.socketId}`;
     this.$store.dispatch('socket/addEventListener', {
       message: 'message',
       callback: (event: any) => {
@@ -105,8 +109,6 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
         }
       },
     });
-
-    this.socket.sendWSMessage({ action: 'getSocketId' });
   }
 
   public beforeDestroy() {

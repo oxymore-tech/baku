@@ -8,6 +8,7 @@ export const SocketStore: BakuModule<SocketState> = {
   state: {
     socket: new WSSocket(),
     socketStatus: 'closed' as SocketStatus,
+    socketId: undefined as unknown as string
   },
   mutations: {
     setSocketStatus(state: SocketState, status: SocketStatus) {
@@ -19,7 +20,10 @@ export const SocketStore: BakuModule<SocketState> = {
     },
     sendMessage(state: SocketState, message: WSMessage) {
       state.socket.sendWSMessage(message);
-    }
+    },
+    setSocketId(state: SocketState, socketId: string) {
+      state.socketId = socketId;
+    },
   },
   actions: {
     setSocketStatus(context: any, status: SocketStatus){
@@ -30,6 +34,9 @@ export const SocketStore: BakuModule<SocketState> = {
     },
     sendMessage(context: any, message: WSMessage) {
       context.commit('sendMessage', message)
+    },
+    setSocketId(context: any, socketId: string) {
+      context.commit('setSocketId', socketId)
     }
   },
   getters: {},
