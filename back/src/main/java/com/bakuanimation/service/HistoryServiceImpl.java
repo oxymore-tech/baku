@@ -50,7 +50,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public Single<Boolean> addStack(Project project, byte[] stack) {
+    public Single<Boolean> addStack(Project project, byte[] stack, String userId) {
         return Single.fromCallable(() -> {
             List<BakuEvent> history = readHistory(project.getId());
             Movie movie = composeMovie(project.getId(), history);
@@ -65,7 +65,7 @@ public class HistoryServiceImpl implements HistoryService {
             writeHistory(project.getId(), history);
             return movie;
         })
-                .flatMapPublisher(movie -> collaborationSyncService.broadcast("", movie.getProjectId(), new String(stack)))
+                .flatMapPublisher(movie -> collaborationSyncService.broadcast(userId, movie.getProjectId(), new String(stack)))
                 .lastOrError()
                 .map(v -> true)
                 .subscribeOn(stackScheduler);

@@ -14,4 +14,9 @@ public final class MockCollaborationSyncService implements CollaborationSyncServ
     public Publisher<String> broadcast(String userId, String movie, String stack) {
         return Flowable.just(stack);
     }
+
+    @Override
+    public String getSession(String sessionId) {
+        return null;
+    }
 }

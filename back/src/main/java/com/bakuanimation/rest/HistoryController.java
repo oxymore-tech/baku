@@ -20,6 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 @Controller
 public class HistoryController {
@@ -49,8 +50,12 @@ public class HistoryController {
     }
 
     @Post("/api/{projectId}/stack")
-    public Single<HttpResponse<Void>> stack(@PathVariable String projectId, @Body byte[] stack) {
-        return historyService.addStack(permissionService.getProject(projectId), stack)
+    public Single<HttpResponse<Void>> stack(@PathVariable String projectId, @Body byte[] stack,
+                                            @Nullable @Header("X-SocketId") String socketId) {
+        String user = Optional.ofNullable(socketId)
+                .map(collaborationSyncService::getSession)
+                .orElse("");
+        return historyService.addStack(permissionService.getProject(projectId), stack, user)
                 .map(v -> HttpResponse.ok());
     }
 

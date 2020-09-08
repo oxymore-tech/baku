@@ -42,7 +42,7 @@ public final class WebSocketController {
 
     @OnMessage
     public Publisher<String> onMessage(String message, WebSocketSession session) throws JsonProcessingException {
-        String sessionId = collaborationSyncService.getSession(session);
+        String sessionId = collaborationSyncService.getSession(session.getId());
         LOGGER.debug("message from session id {}: {}", sessionId, message);
         JsonNode jsonNode = objectMapper.readTree(message);
         JsonNode actionNode = jsonNode.get("action");
@@ -60,14 +60,14 @@ public final class WebSocketController {
                 ObjectNode response = JsonNodeFactory.instance.objectNode();
                 response.put("action", "linkEstablished");
                 response.put("value", sessionId);
-                return broadcaster.broadcast(response.toString(), aSession -> Optional.ofNullable(collaborationSyncService.getSession(aSession))
+                return broadcaster.broadcast(response.toString(), aSession -> Optional.ofNullable(collaborationSyncService.getSession(aSession.getId()))
                         .map(socketId::equals)
                         .orElse(false));
             }
         }
         String destId = collaborationSyncService.destinationId(sessionId);
 
-        return broadcaster.broadcast(message, aSession -> Optional.ofNullable(collaborationSyncService.getSession(aSession))
+        return broadcaster.broadcast(message, aSession -> Optional.ofNullable(collaborationSyncService.getSession(aSession.getId()))
                 .map(destId::equals)
                 .orElse(false));
     }

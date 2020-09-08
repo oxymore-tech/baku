@@ -49,10 +49,10 @@ class HistoryServiceImplTest {
         Project project = new Project(projectId);
         String shotId = "87740160-181f-4965-b66c-ac6c71cacc48";
 
-        tested.addStack(project, addShotStack(shotId)).blockingGet();
-        tested.addStack(project, addImageStack(shotId, 0)).blockingGet();
-        tested.addStack(project, addImageStack(shotId, 2)).blockingGet();
-        tested.addStack(project, addImageStack(shotId, 1)).blockingGet();
+        tested.addStack(project, addShotStack(shotId), "").blockingGet();
+        tested.addStack(project, addImageStack(shotId, 0), "").blockingGet();
+        tested.addStack(project, addImageStack(shotId, 2), "").blockingGet();
+        tested.addStack(project, addImageStack(shotId, 1), "").blockingGet();
 
         Movie movie = tested.interpretHistory(projectId).blockingGet();
 
@@ -67,9 +67,9 @@ class HistoryServiceImplTest {
         Project project = new Project(projectId);
         String shotId = "87740160-181f-4965-b66c-ac6c71cacc48";
 
-        tested.addStack(project, addShotStack(shotId)).blockingGet();
-        tested.addStack(project, addImageStack(shotId, 0)).blockingGet();
-        tested.addStack(project, addImageStack(shotId, 2)).blockingGet();
+        tested.addStack(project, addShotStack(shotId), "").blockingGet();
+        tested.addStack(project, addImageStack(shotId, 0), "").blockingGet();
+        tested.addStack(project, addImageStack(shotId, 2), "").blockingGet();
 
         Movie movie = tested.interpretHistory(projectId).blockingGet();
 
@@ -112,7 +112,7 @@ class HistoryServiceImplTest {
         }
         tested.writeHistory(projectId, content);
         BakuEvent toAdd = new BakuEvent(0, JsonNodeFactory.instance.numberNode(11), "user", "Instant.EPOCH");
-        tested.addStack(project, objectMapper.valueToTree(toAdd).toString().getBytes()).blockingGet();
+        tested.addStack(project, objectMapper.valueToTree(toAdd).toString().getBytes(), "").blockingGet();
         List<BakuEvent> actual = tested.readHistory(projectId);
         content.add(toAdd);
         assertThat(actual).isEqualTo(content);
@@ -129,7 +129,7 @@ class HistoryServiceImplTest {
         tested.writeHistory(projectId, content);
         BakuEvent toAdd1 = new BakuEvent(0, JsonNodeFactory.instance.numberNode(11), "user", "Instant.EPOCH");
         BakuEvent toAdd2 = new BakuEvent(0, JsonNodeFactory.instance.numberNode(11), "user", "Instant.EPOCH");
-        tested.addStack(project, objectMapper.valueToTree(ImmutableList.of(toAdd1, toAdd2)).toString().getBytes()).blockingGet();
+        tested.addStack(project, objectMapper.valueToTree(ImmutableList.of(toAdd1, toAdd2)).toString().getBytes(), "").blockingGet();
         List<BakuEvent> actual = tested.readHistory(projectId);
         content.add(toAdd1);
         content.add(toAdd2);

@@ -7,4 +7,6 @@ public interface CollaborationSyncService {
 
     Publisher<String> broadcast(String userId, String movie, String stack);
 
+    String getSession(String sessionId);
+
 }

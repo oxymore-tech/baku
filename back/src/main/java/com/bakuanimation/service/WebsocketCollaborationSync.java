@@ -33,7 +33,7 @@ public final class WebsocketCollaborationSync implements CollaborationSyncServic
 
     public WebsocketCollaborationSync(WebSocketBroadcaster broadcaster) {
         collaborationSync = new AbstractCollaborationSync<>((message, filter) ->
-                broadcaster.broadcast(message, session -> filter.test(getSession(session))));
+                broadcaster.broadcast(message, session -> filter.test(getSession(session.getId()))));
     }
 
     public void openSession(WebSocketSession session) {
@@ -41,8 +41,9 @@ public final class WebsocketCollaborationSync implements CollaborationSyncServic
         LOGGER.info("new session id {}", sessionId);
     }
 
-    public String getSession(WebSocketSession session) {
-        return sessions.get(session.getId());
+    @Override
+    public String getSession(String sessionId) {
+        return sessions.get(sessionId);
     }
 
     public void openLink(String sessionId, String socketId) {
