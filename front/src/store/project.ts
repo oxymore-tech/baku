@@ -165,6 +165,10 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     async emptyState(context) {
       context.commit('emptyState');
+    },
+
+    async addToLocalHistory(context, event: BakuEvent) {
+      context.commit('addToLocalHistory', event);
     }
   },
   getters: {

@@ -32,7 +32,11 @@ export class WSSocket {
 
   }
 
-  public messageListenerFunction: (message: WSMessage) => void = (message: WSMessage) => {
+  public messageListenerFunction: (message: WSMessage) => void = (message: WSMessage | any) => {
+    if(Array.isArray(message)) {
+      message.forEach(event => store.dispatch('project/addToLocalHistory', event));
+      return;
+    }
     switch (message.action) {
       case 'getSocketId':
         store.dispatch('socket/setSocketId', message.value);
