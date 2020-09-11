@@ -31,11 +31,14 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { WSSocket } from '@/utils/socket.class';
+import { WSSocket, WSMessage } from '@/utils/socket.class';
 import { SocketStatus } from '@/store/store.types';
+
 
 const WebrtcNS = namespace('webrtc');
 const CaptureNS = namespace('capture');
+const SocketNS = namespace('socket');
+
 type Status = 'CONNECTED' | 'ERROR' | 'WAITING';
 
 @Component
@@ -49,7 +52,7 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
     scale: 1,
   };
 
-  @WebrtcNS.State
+  @SocketNS.State
   private socketStatus!: SocketStatus;
 
   @WebrtcNS.Action('resetState')
@@ -58,19 +61,54 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
   @CaptureNS.State
   public activeDevice!: boolean;
 
+  @SocketNS.State('socket')
   private socket!: WSSocket;
+
+  @SocketNS.State('socketId')
+  private socketId!: string;
 
   private peerConnection!: RTCPeerConnection;
 
   private dataChannel!: RTCDataChannel;
 
-  public progressStatus: number =  0;
+  public progressStatus: number = 0;
 
   public mounted() {
-    this.socket = new WSSocket();
     if (this.socketStatus !== 'opened') {
       this.status = 'ERROR';
     }
+    this.qrvalue = `${window.location.origin}/smartphone/${this.socketId}`;
+    this.$store.dispatch('socket/addEventListener', {
+      message: 'message',
+      callback: (event: any) => {
+        const message: WSMessage = JSON.parse(event.data);
+        switch (message.action) {
+          case 'getSocketId':
+            this.qrvalue = `${window.location.origin}/smartphone/${message.value}`;
+            break;
+          case 'linkEstablished':
+            this.progressStatus = 33;
+            this.createOffer().then((offer) => {
+              this.socket.sendWSMessage({ action: 'rtcOffer', value: offer });
+            });
+            break;
+          case 'icecandidate':
+            if (message.value) {
+              this.peerConnection.addIceCandidate(message.value);
+            }
+            break;
+          case 'rtcAnswer':
+            this.progressStatus = 66;
+            this.peerConnection
+              .setRemoteDescription(message.value)
+              .then(() => {});
+            break;
+          default:
+            console.log(message);
+            break;
+        }
+      },
+    });
   }
 
   public beforeDestroy() {
@@ -87,34 +125,6 @@ export default class SmartphoneSynchroPopupComponent extends Vue {
       return;
     }
     this.status = 'WAITING';
-
-    this.socket.messageListenerFunction = (message) => {
-      switch (message.action) {
-        case 'getSocketId':
-          this.qrvalue = `${window.location.origin}/smartphone/${message.value}`;
-          break;
-        case 'linkEstablished':
-          this.progressStatus = 33;
-          this.createOffer().then((offer) => {
-            this.socket.sendWSMessage({ action: 'rtcOffer', value: offer });
-          });
-          break;
-        case 'icecandidate':
-          if (message.value) {
-            this.peerConnection.addIceCandidate(message.value);
-          }
-          break;
-        case 'rtcAnswer':
-          this.progressStatus = 66;
-          this.peerConnection
-            .setRemoteDescription(message.value)
-            .then(() => {});
-          break;
-        default:
-          console.log(message);
-          break;
-      }
-    };
   }
 
   public async createOffer() {

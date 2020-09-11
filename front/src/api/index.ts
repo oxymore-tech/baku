@@ -17,13 +17,13 @@ export async function deleteProject(projectId: string): Promise<void> {
     .then((response) => response.data);
 }
 
-export function getHistory(projectId: string): Promise<BakuEvent[]> {
-  return axios.get(`/api/${projectId}/history`)
+export function getHistory(projectId: string, socketId?: string): Promise<BakuEvent[]> {
+  return axios.get(`/api/${projectId}/history`, { headers: { 'X-SocketId': socketId }})
     .then((response) => response.data);
 }
 
-export function stack(projectId: string, events: BakuEvent[]): Promise<void> {
-  return axios.post(`/api/${projectId}/stack`, events);
+export function stack(projectId: string, events: BakuEvent[], socketId?: string): Promise<void> {
+  return axios.post(`/api/${projectId}/stack`, events, { headers: { 'X-SocketId': socketId }});
 }
 
 export function upload(projectId: string, blob: Blob, name: string): Promise<ImageRef> {
@@ -68,17 +68,6 @@ export function getDemoProjects(): SeenProject[] {
   //   .get<SeenProject[]>(`/demo`)
   //   .then(r => r.data);
   return [
-    {
-      id: '00000000-0000-0000-0000-00000000000f',
-      title: 'Mes premières fois',
-      posterUrl: "/images/premier_montage/original/shot-000_image-000.jpg",
-      synopsis: "Ce film d’animation a été réalisé par des enfants de l’école de\n" +
-        "Tournefeuille en collaboration avec la Ménagerie. Vous pouvez faire les modifications que vous\n" +
-        "souhaitez pour vous familiariser avec Baku. Vos modifications ne seront pas sauvegardées. Ce film a était créé dans le cadre d'un atelier avec des enfants organisé par la ménagerie",
-      locked: true,
-      totalImages: 3000,
-      fps: 25,
-    },
     {
       id: '00000000-0000-0000-0000-000000000000',
       title: 'Bricole',

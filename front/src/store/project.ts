@@ -35,8 +35,7 @@ const makeEvent = (context: BakuActionContext<ProjectState>, action: BakuAction,
 }
 
 function loadEvents(context: BakuActionContext<ProjectState>, events: BakuEvent[]): void {
-
-  const promise = api.stack(context.state.id, events);
+  const promise = api.stack(context.state.id, events, context.rootState.socket.socketId);
 
   events.map(event => {
     context.commit('addToLocalHistory', event);
@@ -83,7 +82,7 @@ export const ProjectStore: BakuModule<ProjectState> = {
   },
   actions: {
     async loadProject(context, projectId: string): Promise<void> {
-      const movieHistory = await api.getHistory(projectId);
+      const movieHistory = await api.getHistory(projectId, context.rootState.socket.socketId);
       await context.commit('setMovie', {projectId, movieHistory});
       await store.dispatch('user/updateCurrentSeenProject');
     },
@@ -110,17 +109,17 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     async updateTitle(context, {projectId, title}) {
       const event = makeEvent(context, BakuAction.MOVIE_UPDATE_TITLE, title);
-      await api.stack(projectId, [event]);
+      await api.stack(projectId, [event], context.rootState.socket.socketId);
     },
 
     async updateSynopsis(context, {projectId, synopsis}) {
       const event = makeEvent(context, BakuAction.MOVIE_UPDATE_SYNOPSIS, synopsis);
-      await api.stack(projectId, [event]);
+      await api.stack(projectId, [event], context.rootState.socket.socketId);
     },
 
     async changeFps(context, {projectId, fps}) {
       const event = makeEvent(context, BakuAction.CHANGE_FPS, fps);
-      await api.stack(projectId, [event]);
+      await api.stack(projectId, [event], context.rootState.socket.socketId);
     },
 
     async createShot(context): Promise<string> {
@@ -166,6 +165,10 @@ export const ProjectStore: BakuModule<ProjectState> = {
 
     async emptyState(context) {
       context.commit('emptyState');
+    },
+
+    async addToLocalHistory(context, event: BakuEvent) {
+      context.commit('addToLocalHistory', event);
     }
   },
   getters: {
