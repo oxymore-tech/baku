@@ -53,7 +53,6 @@ public class HistoryController {
     public Single<HttpResponse<Void>> stack(@PathVariable String projectId, @Body byte[] stack,
                                             @Nullable @Header("X-SocketId") String socketId) {
         String user = Optional.ofNullable(socketId)
-                .map(collaborationSyncService::getSession)
                 .orElse("");
         return historyService.addStack(permissionService.getProject(projectId), stack, user)
                 .map(v -> HttpResponse.ok());
