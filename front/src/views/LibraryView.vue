@@ -54,8 +54,6 @@
                             editTitle="Cliquez pour renommer le film" style="flex:1"
                             @input="setTitle(project, $event)"/>
 
-              <span class="movie-card-duration" v-if="project.totalImages">{{getDurationString(project)}}</span>
-
             </div>
 
             <inline-input :value="project.synopsis"
@@ -72,9 +70,15 @@
 
             <div class="movie-toolbar-1">
 
-              <div v-if="project.lastUpdate" style="margin-right: 10px">
-                <div class="indication">Mise à jour :</div>
-                <div>{{ project.lastUpdate | formatDate }}</div>
+              <div style="margin-right: 10px">
+                <div v-if="project.lastUpdate">
+                  <div class="indication">Mise à jour :</div>
+                  <div>{{ project.lastUpdate | formatDate }}</div>
+                </div>
+                <div v-if="project.totalImages">
+                  <div class="indication">Durée :</div>
+                  <div>{{getDurationString(project)}}</div>
+                </div>
               </div>
 
               <div class="button-open">
