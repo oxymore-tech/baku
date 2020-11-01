@@ -107,7 +107,7 @@
           </template>
         </div>
         <div
-          v-if="nbShot > 1 && $route.name === 'captureShot'"
+          v-if="nbShot > 1 && activeShotIndex < (nbShot - 1) && $route.name === 'captureShot'"
           class="next-plan"
           @click="goToNextPlan()"
           title="Plan suivant"
