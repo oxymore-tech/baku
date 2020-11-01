@@ -122,10 +122,6 @@ i[class^="icon-"] {
       font-weight: bold;
     }
 
-    .movie-card-duration {
-      padding: 6px;
-    }
-
     .movie-synopsis {
       font-size: 1.2rem;
       height: 80px;
@@ -152,6 +148,10 @@ i[class^="icon-"] {
     .indication+div, .indication+span {
       font-size: 1.2rem;
       color: #7F7F7F;
+    }
+
+    .movie-card-duration {
+      padding: 6px;
     }
 
     .button-open {
