@@ -23,7 +23,7 @@
       </div>
 
       <div class="toolbar">
-        <b-switch v-model="showDemoProjects">Afficher films démos</b-switch>
+        <b-switch v-model="showDemoProjects">Afficher les films de démo</b-switch>
       </div>
 
     </div>
