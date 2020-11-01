@@ -94,7 +94,7 @@
         v-if="$route.name === 'captureShot' && activeShotIndex >= 0 || $route.name === 'movie'"
       >
         <div
-          v-if="nbShot > 1 && $route.name === 'captureShot'"
+          v-if="nbShot > 1 && activeShotIndex > 0 && $route.name === 'captureShot'"
           class="previous-plan"
           @click="goToPreviousPlan()"
           title="Plan précédent"
