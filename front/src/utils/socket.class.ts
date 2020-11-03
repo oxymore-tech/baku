@@ -2,7 +2,7 @@ import store from '@/store';
 
 type WSMessageAction = 'getSocketId' | 'linkEstablished' | 'rtcOffer' | 'icecandidate' | 'rtcAnswer' | 'link';
 
-interface WSMessage {
+export interface WSMessage {
   action: WSMessageAction;
   value?: any;
 }
@@ -14,14 +14,14 @@ export class WSSocket {
     try {
       this.socket = new WebSocket(`wss://${window.location.hostname}:${window.location.port}/echo`);
     } catch (e) {
-      store.dispatch('webrtc/setSocketStatus', 'error');
+      store.dispatch('socket/setSocketStatus', 'error');
     }
 
     this.socket.addEventListener('error', () => {
       // store.dispatch('webrtc/setSocketStatus', 'error');
     });
     this.socket.addEventListener('open', () => {
-      store.dispatch('webrtc/setSocketStatus', 'opened');
+      store.dispatch('socket/setSocketStatus', 'opened');
       this.sendWSMessage({ action: 'getSocketId' });
     });
 
@@ -29,16 +29,33 @@ export class WSSocket {
       const message: WSMessage = JSON.parse(event.data);
       this.messageListenerFunction(message);
     });
+
   }
 
-  public messageListenerFunction: (message: WSMessage) => void = () => { };
+  public messageListenerFunction: (message: WSMessage) => void = (message: WSMessage | any) => {
+    if(Array.isArray(message)) {
+      message.forEach(event => store.dispatch('project/addToLocalHistory', event));
+      return;
+    }
+    switch (message.action) {
+      case 'getSocketId':
+        store.dispatch('socket/setSocketId', message.value);
+        break;
+      default:
+        break;
+    }
+  }
 
   public sendWSMessage(msg: WSMessage) {
     this.socket.send(JSON.stringify(msg));
   }
 
+  public addEventListener(category: string, callback: EventListenerOrEventListenerObject){
+    this.socket.addEventListener(category, callback);
+  }
+
   public close() {
     this.socket.close();
-    store.dispatch('webrtc/setSocketStatus', 'closed');
+    store.dispatch('socket/setSocketStatus', 'closed');
   }
 }

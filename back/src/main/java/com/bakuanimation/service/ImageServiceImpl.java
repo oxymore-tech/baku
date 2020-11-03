@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-
 @Singleton
 public class ImageServiceImpl implements ImageService {
 

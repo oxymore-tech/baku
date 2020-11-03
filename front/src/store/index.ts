@@ -7,6 +7,7 @@ import { WebrtcStore } from '@/store/webrtc';
 import { UserStore } from '@/store/user';
 import { ClipboardStore } from '@/store/clipboard';
 import { BakuRootState } from './store.types';
+import { SocketStore } from '@/store/socket';
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ const bakuStore: StoreOptions<BakuRootState> = {
     capture: CaptureStore,
     user: UserStore,
     clipboard: ClipboardStore,
+    socket: SocketStore
   },
   strict: process.env.NODE_ENV !== 'production',
 };

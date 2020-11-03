@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface HistoryService {
-    Single<Boolean> addStack(Project project, byte[] stack);
+    Single<Boolean> addStack(Project project, byte[] stack, String userId);
 
     void writeHistory(String projectId, List<BakuEvent> events) throws IOException;
 

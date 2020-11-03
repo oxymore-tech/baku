@@ -27,9 +27,11 @@ import { namespace } from 'vuex-class';
 import store from '@/store';
 import { SocketStatus } from '@/store/store.types';
 import { Device } from '@/utils/device.class';
-import { WSSocket } from '@/utils/socket.class';
+import { WSSocket, WSMessage } from '@/utils/socket.class';
+
 
 const WebrtcNS = namespace('webrtc');
+const SocketNS = namespace('socket');
 
 @Component({
   components: {},
@@ -39,12 +41,13 @@ export default class SmartphoneView extends Vue {
   @WebrtcNS.State
   public isConnected!: boolean;
 
-  @WebrtcNS.State
+  @SocketNS.State
   private socketStatus!: SocketStatus;
 
   public socketId!: string;
 
-  public socket = new WSSocket();
+  @SocketNS.State('socket')
+  private socket!: WSSocket;
 
   public localVideo: any;
 
@@ -68,22 +71,30 @@ export default class SmartphoneView extends Vue {
       return;
     }
 
-    this.socket.messageListenerFunction = (message) => {
-      switch (message.action) {
-        case 'rtcOffer':
-          this.progressStatus = 50;
-          this.startStream(message.value);
-          break;
-        case 'icecandidate':
-          if (message.value) {
-            this.peerConnection.addIceCandidate(message.value);
-          }
-          break;
-        default:
-          console.log('default', message);
-        // this.startStream(message.value);
-      }
-    };
+    this.$store.dispatch('socket/addEventListener', {
+      message: 'message',
+      callback: (event: any) => {
+        const message: WSMessage = JSON.parse(event.data);
+        switch (message.action) {
+          case 'rtcOffer':
+            this.progressStatus = 50;
+            this.startStream(message.value);
+            break;
+          case 'icecandidate':
+            if (message.value) {
+              this.peerConnection.addIceCandidate(message.value);
+            }
+            break;
+          default:
+            console.log('default', message);
+          // this.startStream(message.value);
+        }
+      },
+    });
+    if (this.socketStatus === 'opened') {
+      this.progressStatus = 25;
+      this.socket.sendWSMessage({ action: 'link', value: this.socketId });
+    }
     this.peerConnection = new RTCPeerConnection({
       iceServers: [
         {

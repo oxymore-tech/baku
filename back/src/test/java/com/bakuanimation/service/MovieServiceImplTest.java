@@ -27,7 +27,7 @@ class MovieServiceImplTest {
     @BeforeEach
     void setUp() {
         PermissionService permissionService = mock(PermissionService.class);
-        historyService = new HistoryServiceImpl(new PathService(Path.of("/home/simon/workspace-perso/data")), permissionService);
+        historyService = new HistoryServiceImpl(new PathService(Path.of("/home/simon/workspace-perso/data")), permissionService, new MockCollaborationSyncService());
         tested = new MovieServiceImpl(historyService, new PathService(sharedTempDir));
     }
 

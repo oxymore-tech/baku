@@ -52,18 +52,19 @@ public final class MovieController {
         var moviePath = pathService.getMovieFile(id);
         if (Files.exists(moviePath)) {
             return historyService.interpretHistory(id)
-                    .map(movie -> HttpResponse.ok(new SystemFile(moviePath.toFile()).attach(movie.getName()+".mp4")));
+                    .map(movie -> HttpResponse.ok(new SystemFile(moviePath.toFile()).attach(movie.getName() + ".mp4")));
         } else {
             return Single.just(HttpResponse.notFound(id + " not found"));
         }
     }
 
     @Get(value = "/api/{projectId}/{shotId}/video")
-    public Single<HttpResponse<Object>> download(@PathVariable String projectId,
-                                                 @PathVariable String shotId) {
+    public Single<HttpResponse<SystemFile>> download(@PathVariable String projectId,
+                                                     @PathVariable String shotId) {
         String id = permissionService.getProject(projectId).getId();
-        return movieService.generatePlan(id, shotId)
-                .doOnError(v -> LOGGER.warn("Error", v))
-                .map(movie -> HttpResponse.ok(new SystemFile(movie.toFile()).attach(movie.getFileName().toString())));
+
+        return Single.zip(historyService.interpretHistory(id), movieService.generateShot(id, shotId),
+                (movie, moviePath) -> (HttpResponse<SystemFile>) HttpResponse.ok(moviePath))
+                .doOnError(v -> LOGGER.warn("Error while generating plan", v));
     }
 }

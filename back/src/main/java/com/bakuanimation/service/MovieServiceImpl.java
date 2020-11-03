@@ -7,7 +7,10 @@ import com.bakuanimation.model.MovieStatus;
 import com.bakuanimation.model.VideoState;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.micronaut.http.server.types.files.SystemFile;
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import org.apache.commons.io.IOUtils;
@@ -24,7 +27,9 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
@@ -35,11 +40,14 @@ public final class MovieServiceImpl implements MovieService {
     private final HistoryService historyService;
     private final PathService pathService;
 
+    private final Scheduler movieGenerationScheduler;
     private final Set<String> pendingMovieGeneration = Sets.newConcurrentHashSet();
+    private final Map<String, Single<Path>> pendingMovieShotGeneration = Maps.newConcurrentMap();
 
     public MovieServiceImpl(HistoryService historyService, PathService pathService) {
         this.historyService = historyService;
         this.pathService = pathService;
+        this.movieGenerationScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
     }
 
     // Check last modified time of movie and stack file
@@ -60,13 +68,11 @@ public final class MovieServiceImpl implements MovieService {
                             LOGGER.debug("Movie {} ({}) is being generated", movie.getName(), moviePath);
                             return VideoState.Pending;
                         }
-                        generateMovie_ffmpeg(movie, movieTempPath)
+                        generateMovie_ffmpeg(movie, movieTempPath, moviePath, FileTime.from(lastModifiedStackFile))
                                 .doAfterTerminate(() -> pendingMovieGeneration.remove(projectId))
                                 .subscribe(s -> {
-                                    LOGGER.debug("Movie {} ({}) ready", movie.getName(), moviePath);
-                                    Files.setLastModifiedTime(movieTempPath, FileTime.from(lastModifiedStackFile));
-                                    Files.move(movieTempPath, moviePath, StandardCopyOption.REPLACE_EXISTING);
-                                }, err -> LOGGER.warn("Error while generating movie {} ({})", movie.getName(), moviePath, err));
+                                        },
+                                        err -> LOGGER.warn("Error while generating movie {} ({})", movie.getName(), moviePath, err));
 
                         return exists ? VideoState.NotUpToDate : VideoState.NotGenerated;
                     } else {
@@ -76,25 +82,46 @@ public final class MovieServiceImpl implements MovieService {
                 });
     }
 
+    // Check last modified time of movie and stack file
+    // if not the same -> will generate a movie & lock in memory the generation
+    // The goal is for this method to be called many time on the same project id, and the movie plan will only be generated once
     @Override
-    public Single<Path> generatePlan(String projectId, String shotId) {
+    public Single<SystemFile> generateShot(String projectId, String shotId) {
         return historyService.interpretHistory(projectId)
-                .flatMap(movie -> {
-                    int shotIdx = movie.getShots().indexOf(shotId);
+                .flatMap(wholeMovie -> {
+                    int shotIdx = wholeMovie.getShots().indexOf(shotId);
                     if (shotIdx == -1) {
                         return Single.error(new IllegalArgumentException("Shot " + shotId + " not found"));
                     }
-                    Movie movieShot = new Movie(movie.getProjectId(), movie.getName(), movie.getSynopsis(), movie.getFps(), movie.isLocked(),
-                            movie.getLockedShots(), List.of(shotId), movie.getImages());
-                    Path destMovie = pathService.getMovieFile(projectId).getParent().resolve(movieShot.getName() + "_" + shotIdx + ".mp4");
-                    return Single.using(() -> destMovie,
-                            path -> generateMovie_ffmpeg(movieShot, destMovie),
-                            path1 -> {
-                                LOGGER.info("delete file");
-                                Files.deleteIfExists(path1);
-                            },
-                            false)
-                            .map(v -> destMovie);
+                    Movie movie = new Movie(wholeMovie.getProjectId(), wholeMovie.getName(), wholeMovie.getSynopsis(), wholeMovie.getFps(), wholeMovie.isLocked(),
+                            wholeMovie.getLockedShots(), List.of(shotId), wholeMovie.getImages());
+                    Path moviePath = pathService.getMovieFile(projectId, String.valueOf(shotIdx));
+                    Path movieTempPath = pathService.getMovieTempFile(projectId, String.valueOf(shotIdx));
+                    Instant lastModifiedStackFile = Files.getLastModifiedTime(pathService.getStackFile(projectId)).toInstant();
+                    Single<Path> result;
+                    if (!Files.exists(moviePath) ||
+                            lastModifiedStackFile.isAfter(Files.getLastModifiedTime(moviePath).toInstant())) {
+                        result = pendingMovieShotGeneration.computeIfAbsent(moviePath.getFileName().toString(), k -> {
+                            // The point is to generate once a movie plan, and if other request the same movie plan while it's generating
+                            // it will also wait for the movie to be done generating and will return the same path once it's done
+                            return generateMovie_ffmpeg(movie, movieTempPath, moviePath, FileTime.from(lastModifiedStackFile))
+                                    .map(v -> moviePath)
+                                    .doAfterTerminate(() -> pendingMovieShotGeneration.remove(moviePath.getFileName().toString()))
+                                    .cache(); // without cache, the Single will be subscribed each time the cache is reached (that would mean another movie generation)
+                        });
+                    } else {
+                        LOGGER.debug("Movie {} ({}) exist and is up-to-date, it can be downloaded", movie.getName(), moviePath);
+                        result = Single.just(moviePath);
+                    }
+                    return result.map(p -> new SystemFile(p.toFile()).attach(movie.getName() + "_" + shotIdx + ".mp4"));
+                });
+    }
+
+    private Single<Boolean> generateMovie_ffmpeg(Movie movie, Path movieTempPath, Path moviePath, FileTime fileTime) {
+        return generateMovie_ffmpeg(movie, movieTempPath)
+                .doOnSuccess(v -> {
+                    Files.setLastModifiedTime(movieTempPath, fileTime);
+                    Files.move(movieTempPath, moviePath, StandardCopyOption.REPLACE_EXISTING);
                 });
     }
 
@@ -127,6 +154,7 @@ public final class MovieServiceImpl implements MovieService {
                     }
                 }
                 proc.waitFor();
+
                 LOGGER.info("Generated movie '{}' in {}s", moviePath, timer.elapsed(TimeUnit.SECONDS));
                 return true;
             } finally {
@@ -141,7 +169,7 @@ public final class MovieServiceImpl implements MovieService {
                 }
             }
 
-        }).subscribeOn(Schedulers.io());
+        }).subscribeOn(movieGenerationScheduler);
     }
 
     @Override

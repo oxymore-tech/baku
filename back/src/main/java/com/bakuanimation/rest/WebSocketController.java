@@ -1,22 +1,23 @@
 package com.bakuanimation.rest;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import com.bakuanimation.service.WebsocketCollaborationSync;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
-import io.micronaut.websocket.annotation.*;
+import io.micronaut.websocket.annotation.OnClose;
+import io.micronaut.websocket.annotation.OnError;
+import io.micronaut.websocket.annotation.OnMessage;
+import io.micronaut.websocket.annotation.OnOpen;
+import io.micronaut.websocket.annotation.ServerWebSocket;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Supplier;
 
 @ServerWebSocket("/echo")
 public final class WebSocketController {
@@ -24,52 +25,49 @@ public final class WebSocketController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketController.class);
 
     private final WebSocketBroadcaster broadcaster;
-    // Map sessionId <-> sessionId between PC & smartphone
-    private final BiMap<String, String> links = Maps.synchronizedBiMap(HashBiMap.create());
-    // Map websocketSession.id <-> sessionId
-    private final Map<String, String> sessions = Maps.newConcurrentMap();
+    private final WebsocketCollaborationSync collaborationSyncService;
 
-    // Session Ids generator
-    private final Supplier<String> idSupplier = () -> UUID.randomUUID().toString();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public WebSocketController(WebSocketBroadcaster broadcaster) {
+    public WebSocketController(WebSocketBroadcaster broadcaster, WebsocketCollaborationSync collaborationSyncService) {
         this.broadcaster = broadcaster;
+        this.collaborationSyncService = collaborationSyncService;
     }
 
     @OnOpen
     public void onOpen(WebSocketSession session) {
-        String sessionId = sessions.computeIfAbsent(session.getId(), s -> idSupplier.get());
-        LOGGER.info("new session id {}", sessionId);
+        collaborationSyncService.openSession(session);
+
     }
 
     @OnMessage
-    public Publisher<String> onMessage(String message, WebSocketSession session) {
-        String sessionId = sessions.get(session.getId());
+    public Publisher<String> onMessage(String message, WebSocketSession session) throws JsonProcessingException {
+        String sessionId = collaborationSyncService.getSession(session.getId());
         LOGGER.debug("message from session id {}: {}", sessionId, message);
-        JsonObject o = JsonParser.parseString(message).getAsJsonObject();
-        if (o.get("action") != null) {
-            String action = o.get("action").getAsString();
+        JsonNode jsonNode = objectMapper.readTree(message);
+        JsonNode actionNode = jsonNode.get("action");
+        JsonNode valueNode = jsonNode.get("value");
+        if (actionNode != null) {
+            String action = actionNode.asText();
             if (action.equals("getSocketId")) {
-                JsonObject p = new JsonObject();
-                p.add("action", new JsonPrimitive("getSocketId"));
-                p.add("value", new JsonPrimitive(sessionId));
-                return session.send(p.toString());
+                ObjectNode response = JsonNodeFactory.instance.objectNode();
+                response.put("action", "getSocketId");
+                response.put("value", sessionId);
+                return session.send(response.toString());
             } else if (action.equals("link")) {
-                String socketId = o.get("value").getAsString();
-                links.forcePut(sessionId, socketId);
-                JsonObject p = new JsonObject();
-                p.add("action", new JsonPrimitive("linkEstablished"));
-                p.add("value", new JsonPrimitive(sessionId));
-                return broadcaster.broadcast(p.toString(), aSession -> Optional.ofNullable(sessions.get(aSession.getId()))
+                String socketId = valueNode.asText();
+                collaborationSyncService.openLink(sessionId, socketId);
+                ObjectNode response = JsonNodeFactory.instance.objectNode();
+                response.put("action", "linkEstablished");
+                response.put("value", sessionId);
+                return broadcaster.broadcast(response.toString(), aSession -> Optional.ofNullable(collaborationSyncService.getSession(aSession.getId()))
                         .map(socketId::equals)
                         .orElse(false));
             }
         }
-        String destId = Optional.ofNullable(links.get(sessionId))
-                .orElseGet(() -> Optional.ofNullable(links.inverse().get(sessionId))
-                        .orElse(sessionId));
+        String destId = collaborationSyncService.destinationId(sessionId);
 
-        return broadcaster.broadcast(message, aSession -> Optional.ofNullable(sessions.get(aSession.getId()))
+        return broadcaster.broadcast(message, aSession -> Optional.ofNullable(collaborationSyncService.getSession(aSession.getId()))
                 .map(destId::equals)
                 .orElse(false));
     }
@@ -77,16 +75,11 @@ public final class WebSocketController {
     @OnError
     public void onError(WebSocketSession session, Throwable error) {
         LOGGER.warn("Error in websocket {}", session.getId(), error);
+        collaborationSyncService.cleanSession(session);
     }
 
     @OnClose
     public void onClose(WebSocketSession session) {
-        Optional.ofNullable(sessions.remove(session.getId()))
-                .ifPresent(sessionId -> {
-                    LOGGER.info("Close {}", sessionId);
-
-                    links.remove(sessionId);
-                    links.inverse().remove(sessionId);
-                });
+        collaborationSyncService.cleanSession(session);
     }
 }

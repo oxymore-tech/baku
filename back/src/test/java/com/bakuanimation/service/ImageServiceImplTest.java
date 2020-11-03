@@ -25,7 +25,7 @@ class ImageServiceImplTest {
         this.tempDir = tempDir;
         PathService pathService = new PathService(this.tempDir);
         PermissionServiceImpl permissionService = new PermissionServiceImpl(pathService, "abcdefghijklmnopqrstuvwxyz123456");
-        tested = new ImageServiceImpl(pathService, new HistoryServiceImpl(pathService, permissionService), permissionService);
+        tested = new ImageServiceImpl(pathService, new HistoryServiceImpl(pathService, permissionService, new MockCollaborationSyncService()), permissionService);
     }
 
     @Test

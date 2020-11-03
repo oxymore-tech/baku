@@ -1,4 +1,4 @@
-import { BakuModule, SocketStatus, WebrtcState } from './store.types';
+import { BakuModule, WebrtcState } from './store.types';
 
 export const WebrtcStore: BakuModule<WebrtcState> = {
   namespaced: true,
@@ -7,7 +7,6 @@ export const WebrtcStore: BakuModule<WebrtcState> = {
     dataChannel: null as null | RTCDataChannel,
     stream: undefined as undefined | MediaStream,
     isConnected: false,
-    socketStatus: 'closed' as SocketStatus,
   },
   mutations: {
     setupConnection(state) {
@@ -26,25 +25,17 @@ export const WebrtcStore: BakuModule<WebrtcState> = {
       console.log('setMediaStream', stream);
       state.stream = stream;
     },
-    setSocketStatus(state, status: SocketStatus) {
-      console.log('setSocketStatus', status);
-      state.socketStatus = status;
-    },
     reset(state) {
       state.peerConnection = undefined as undefined | RTCPeerConnection;
       state.dataChannel = null as null | RTCDataChannel;
       state.stream = undefined as undefined | MediaStream;
       state.isConnected = false;
-      state.socketStatus = 'closed' as SocketStatus;
     },
   },
   actions: {
     resetState(context) {
       context.commit('reset');
     },
-    setSocketStatus(context, status: SocketStatus){
-      context.commit('setSocketStatus', status);
-    }
   },
   getters: {},
   modules: {},

@@ -17,13 +17,13 @@ export async function deleteProject(projectId: string): Promise<void> {
     .then((response) => response.data);
 }
 
-export function getHistory(projectId: string): Promise<BakuEvent[]> {
-  return axios.get(`/api/${projectId}/history`)
+export function getHistory(projectId: string, socketId?: string): Promise<BakuEvent[]> {
+  return axios.get(`/api/${projectId}/history`, { headers: { 'X-SocketId': socketId }})
     .then((response) => response.data);
 }
 
-export function stack(projectId: string, events: BakuEvent[]): Promise<void> {
-  return axios.post(`/api/${projectId}/stack`, events);
+export function stack(projectId: string, events: BakuEvent[], socketId?: string): Promise<void> {
+  return axios.post(`/api/${projectId}/stack`, events, { headers: { 'X-SocketId': socketId }});
 }
 
 export function upload(projectId: string, blob: Blob, name: string): Promise<ImageRef> {
