@@ -25,7 +25,7 @@ public class PathService {
 
     public PathService(Path dataPath) {
         this.dataPath = dataPath;
-        LOGGER.info("Data path : {}", dataPath);
+        LOGGER.info("Data path : {}", dataPath.toAbsolutePath());
     }
 
     public Path projectDir(String projectId) {
@@ -39,6 +39,9 @@ public class PathService {
     }
 
     public List<Path> toDeleteProject() throws IOException {
+        if (!Files.isDirectory(dataPath)) {
+            return List.of();
+        }
         return Files.list(dataPath)
                 .filter(p -> p.getFileName().toString().startsWith(DELETE_PREFIX))
                 .collect(Collectors.toUnmodifiableList());
