@@ -5,7 +5,7 @@ BAKU_HOME=/home/lamenagerie/baku
 docker-compose down
 
 # docker run -ti -p 80:80 -v ${BAKU_HOME}/letsencrypt:/etc/letsencrypt certbot/certbot certonly --standalone --email support@bakuanimation.com -d studio.bakuanimation.com
-docker run -ti -p 80:80 -v ${BAKU_HOME}/letsencrypt:/etc/letsencrypt certbot/certbot certonly --renew
+docker run -ti -p 80:80 -v ${BAKU_HOME}/letsencrypt:/etc/letsencrypt certbot/certbot certonly --renew-by-default -d studio.bakuanimation.com
 
 echo Enter password ?
 
