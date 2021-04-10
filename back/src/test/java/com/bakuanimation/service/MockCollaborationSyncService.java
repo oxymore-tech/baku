@@ -6,7 +6,7 @@ import org.reactivestreams.Publisher;
 
 public final class MockCollaborationSyncService implements CollaborationSyncService {
     @Override
-    public void access(String userId, String movie) {
+    public void access(String userId, String username, String movie) {
 
     }
 
