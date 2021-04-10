@@ -59,10 +59,10 @@ public class HistoryController {
     }
 
     @Get("/api/{projectId}/history")
-    public Single<HttpResponse> stack(@PathVariable String projectId, @Nullable @Header("X-SocketId") String socketId) {
+    public Single<HttpResponse> stack(@PathVariable String projectId, @Nullable @Header("X-SocketId") String socketId, @Header("X-UserName") String username) {
         String movieId = permissionService.getProject(projectId).getId();
         if (socketId != null) {
-            this.collaborationSyncService.access(socketId, movieId);
+            this.collaborationSyncService.access(socketId, username, movieId);
         }
         Path stackFile = pathService.getStackFile(movieId);
         return Single.fromCallable(() -> {

@@ -21,7 +21,7 @@ public final class WebsocketCollaborationSync implements CollaborationSyncServic
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketCollaborationSync.class);
 
-    private final AbstractCollaborationSync<String> collaborationSync;
+    private final AbstractCollaborationSync collaborationSync;
 
     // Map sessionId <-> sessionId between PC & smartphone
     private final BiMap<String, String> links = Maps.synchronizedBiMap(HashBiMap.create());
@@ -32,7 +32,7 @@ public final class WebsocketCollaborationSync implements CollaborationSyncServic
     private final Supplier<String> idSupplier = () -> UUID.randomUUID().toString();
 
     public WebsocketCollaborationSync(WebSocketBroadcaster broadcaster) {
-        collaborationSync = new AbstractCollaborationSync<>((message, filter) ->
+        collaborationSync = new AbstractCollaborationSync((message, filter) ->
                 broadcaster.broadcast(message, session -> filter.test(getSession(session.getId()))));
     }
 
@@ -68,8 +68,8 @@ public final class WebsocketCollaborationSync implements CollaborationSyncServic
     }
 
     @Override
-    public void access(String userId, String movie) {
-        collaborationSync.access(userId, movie);
+    public void access(String userId, String userName, String movie) {
+        collaborationSync.access(userId, userName, movie);
     }
 
     @Override
