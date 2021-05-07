@@ -38,18 +38,29 @@
   height: calc(100% - 40px);
   display: inline-flex;
   flex-wrap: nowrap;
-  padding: 12px 21px;
+  padding: 12px 0px;
   align-items: center;
-  justify-content: space-between;
 
   .framenumber-indicator {
-    position: absolute;
-    left: 0;
-    top: 0;
+    left: 3px;
+    position: relative;
     padding: 0px 3px;
     border-radius: 60%;
     font-size: 1.2rem;
+    font-weight: bold;
     background: rgba(255, 255, 255, 0.8);
+  }
+
+  .framenumber-indicator-active {
+    padding: 0px 6px;
+    font-size: 1.2rem;
+    background: #ffbd72;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    left: 5px;
+    position: relative;
+    top: 2px;
   }
 
   .previous-shot-images {
@@ -60,7 +71,8 @@
     border: 2px solid #f2f2f2;
     position: relative;
     width: 8vw;
-    min-width: 90px;
+    min-width: 8vw;
+    margin: 0 0.33vw;
     display: flex;
     justify-content: center;
     height: 78px;
@@ -76,9 +88,16 @@
 
    
     &.active {
-      border: 3px solid #ffbd72;
+      border: 4px solid #ffbd72;
       border-radius: 4px;
       padding: 1px;
+    }
+
+    &.activeSelection {
+      border-top: 3px solid #ffbd72;
+      border-radius: 4px;
+      padding-top: 1px;
+      top: -1px;
     }
 
     &.active-capure{

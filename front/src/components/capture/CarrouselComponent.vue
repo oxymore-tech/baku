@@ -88,21 +88,24 @@
       <!-- LEFT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedLeftCarrousel">
         <template v-if="image !== null">
-          <div
-            :key="'left'+index"
-            class="image-container"
-            :class="{active : selectedImagesForReal.includes(activeImage - (computedLeftCarrousel.length - index))}"
-          >
+          <div :key="'left'+index">
             <span
               class="framenumber-indicator"
-            >{{ activeImage +1 - (computedLeftCarrousel.length - index) }}</span>
-            <img
-              class="carrousel-thumb"
-              :alt="image"
-              :src="ImageCacheService.getThumbnail(image.id)"
-              @click="moveToImage($event, index - computedLeftCarrousel.length)"
-            />
+            >{{ ("" + (activeImage +1 - (computedLeftCarrousel.length - index))).padStart(3, "0") }}
+            </span>
+            <div
+            class="image-container"
+            :class="{activeSelection : selectedImagesForReal.includes(activeImage - (computedLeftCarrousel.length - index))}"
+            >
+              <img
+                class="carrousel-thumb"
+                :alt="image"
+                :src="ImageCacheService.getThumbnail(image.id)"
+                @click="moveToImage($event, index - computedLeftCarrousel.length)"
+              />
+            </div>
           </div>
+
         </template>
         <template v-else>
           <div :key="'left'+index" class="image-container image-container-empty">
@@ -117,15 +120,18 @@
 
       <!-- ACTIVE IMAGE OR CAPTURE FRAME -->
       <template v-if="computedActiveImage">
-        <div class="image-container active" ref="carrouselActiveImg">
-          <span class="framenumber-indicator">{{ activeImage + 1 }}</span>
-          <img
-            v-if="computedActiveImage !== undefined"
-            class="carrousel-thumb previewed"
-            :alt="computedActiveImage"
-            :src="ImageCacheService.getThumbnail(computedActiveImage.id)"
-          />
+        <div>
+          <span class="framenumber-indicator-active">{{ ("" + (activeImage + 1)).padStart(3, "0") }}</span>
+          <div class="image-container active" ref="carrouselActiveImg">
+            <img
+              v-if="computedActiveImage !== undefined"
+              class="carrousel-thumb previewed"
+              :alt="computedActiveImage"
+              :src="ImageCacheService.getThumbnail(computedActiveImage.id)"
+            />
+          </div>
         </div>
+
       </template>
       <div class="image-container active active-capure" style="position:relative" v-else>
         <div class="carrousel-thumb active" :v-if="canEdit">En attente de capture</div>
@@ -134,28 +140,32 @@
       <!-- RIGHT PART OF THE CARROUSEL -->
       <template v-for="(image, index) in computedRightCarrousel">
         <template v-if="image !== null">
-          <div
-            :key="'right'+index"
-            class="image-container"
-            :class="{active : selectedImagesForReal.includes(activeImage + index +1)}"
-          >
+          <div  :key="'right'+index">
             <span
               v-if="image !== 'liveview' || canEdit"
               class="framenumber-indicator"
-            >{{ activeImage + index + 2 }}</span>
-            <img
-              v-if="image !== 'liveview'"
-              class="carrousel-thumb"
-              :alt="image"
-              :src="ImageCacheService.getThumbnail(image.id)"
-              @click="moveToImage($event,index + 1)"
-            />
+            >{{ ("" + ( activeImage + index + 2)).padStart(3, "0") }}
+            </span>
             <div
-              v-else-if="canEdit"
-              @click="moveToImage($event,index + 1)"
-              class="carrousel-thumb active waiting-capture"
-            >En attente de capture</div>
+              class="image-container"
+              :class="{activeSelection : selectedImagesForReal.includes(activeImage + index +1)}"
+            >
+              <img
+                v-if="image !== 'liveview'"
+                class="carrousel-thumb"
+                :alt="image"
+                :src="ImageCacheService.getThumbnail(image.id)"
+                @click="moveToImage($event,index + 1)"
+              />
+              <div
+                v-else-if="canEdit"
+                @click="moveToImage($event,index + 1)"
+                class="carrousel-thumb active waiting-capture"
+              >En attente de capture
+              </div>
+            </div>
           </div>
+
         </template>
         <template v-if="image === null">
           <div :key="'right'+index" class="image-container image-container-empty">
@@ -193,6 +203,7 @@ const CaptureNS = namespace('capture');
 const ProjectNS = namespace('project');
 const ClipboardNS = namespace('clipboard');
 
+
 @Component({
   components: {
     CaptureButtonComponent,
@@ -219,6 +230,9 @@ export default class CarrouselComponent extends Vue {
 
   @Prop()
   public isPlaying!: boolean;
+
+
+  public centerOn = 5;
 
   @CaptureNS.State
   public activeDevice!: Device;
@@ -345,7 +359,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   get computedPreviousShotImages(): ImageRef[] {
-    const count = 5 - this.computedLeftCarrousel.length;
+    const count = 0;
     const images = this.previousShot ? (this.previousShot.images || []) : [];
     let leftImagesAvaible = images.slice(-count);
     if (this.getActiveShotIndex === 0 || count === 0) {
@@ -357,7 +371,7 @@ export default class CarrouselComponent extends Vue {
   }
 
   get computedLeftCarrousel(): ImageRef[] {
-    const count = 5;
+    const count = 0;
     const sliceIndex = this.isFrameLiveView
       ? this.activeImage + 1
       : this.activeImage;
@@ -368,15 +382,12 @@ export default class CarrouselComponent extends Vue {
   get computedRightCarrousel(): ImageRef[] {
     const count = 5;
     const sliceIndex = this.activeImage + 1;
-    const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, count);
-    if (
-      rightImagesAvaible.length < count
-      && this.activeImage !== this.images.length
-    ) {
-      rightImagesAvaible.push(('liveview' as unknown) as ImageRef);
-    }
+    const secondSliceCount = ( 12 - this.activeImage )> 0 ? ( 12 - this.activeImage ) : 5;
+    const rightImagesAvaible = this.images.slice(sliceIndex).slice(0, secondSliceCount);
+    const realRightImagesAvaible = this.images.slice(sliceIndex);
     return rightImagesAvaible.concat(
-      new Array(count - rightImagesAvaible.length).fill(null),
+      new Array(realRightImagesAvaible.length - count - 1).fill(null),
+      [('liveview' as unknown) as ImageRef]
     );
   }
 

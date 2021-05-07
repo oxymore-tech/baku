@@ -47,6 +47,13 @@
                 src="@/assets/baku-cloud-spinner.svg"
                 :class="{hidden: IsFrameLiveView}"
               />
+              <img
+                v-if="draggingPreviewIndex"
+                id="preview-img"
+                ref="previewImg"
+                :src="ImageCacheService.getImage(getActiveShot.images[draggingPreviewIndex].id)"
+                :class="{hidden: IsFrameLiveView}"
+              />
             </div>
           </div>
           <div class="preview-actions">
@@ -59,6 +66,7 @@
               :activeImage="activeFrame"
               :canEdit="canEdit"
               @activeImageChange="onActiveFrameChange"
+              v-on:draggingValueChange="onDraggingFrameChange($event)"
               :activeDevice="activeDevice"
               v-model="selectedImages"
             />
@@ -265,6 +273,8 @@ export default class CaptureView extends AbstractProjectView {
     public isPlaying: 'animation' | 'selection' | null = null;
 
     private previewImg!: HTMLImageElement;
+
+    public draggingPreviewIndex: number | null = null;
 
     public mounted() {
       this.$store
@@ -564,6 +574,11 @@ export default class CaptureView extends AbstractProjectView {
         },
       ]);
       this.onActiveFrameChange(newActiveFrame + 1);
+    }
+
+    public onDraggingFrameChange(value : number|null) {
+      this.draggingPreviewIndex = value;
+      console.log('dragging: ', value);
     }
 }
 </script>
