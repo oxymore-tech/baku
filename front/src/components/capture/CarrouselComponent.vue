@@ -440,7 +440,9 @@ export default class CarrouselComponent extends Vue {
     //  12 - this.activeImage > 0 ? 12 - this.activeImage : 5;
     const rightImagesAvaible = this.images.slice(sliceIndex);
     // const realRightImagesAvaible = this.images.slice(sliceIndex);
-    return rightImagesAvaible.length ? rightImagesAvaible.concat([("liveview" as unknown) as ImageRef]): [];
+    return rightImagesAvaible.length
+      ? rightImagesAvaible.concat([("liveview" as unknown) as ImageRef])
+      : [];
   }
 
   get selectedImagesForReal() {
@@ -553,20 +555,23 @@ export default class CarrouselComponent extends Vue {
   onActiveImageChange() {
     setTimeout(() => {
       const activeImage = document.getElementById("carrouselActiveImg");
-      console.log(activeImage);
       const carousel = this.$refs.carrouselContainer as HTMLElement;
-      // offsetLeft
-      const shouldScrollTo =
-        carousel.scrollLeft > activeImage.offsetLeft ||
-        carousel.clientWidth + carousel.scrollLeft <
-          activeImage.offsetLeft + activeImage.clientWidth;
-      if (shouldScrollTo) {
-        const scrollTo = activeImage.offsetLeft + (activeImage.clientWidth / 2) -( carousel.clientWidth / 2);
-        carousel.scrollTo({
-          left: scrollTo > 0 ? scrollTo : 0,
-          top: 0,
-          behavior: "smooth",
-        });
+      if (activeImage && carousel) {
+        const shouldScrollTo =
+          carousel.scrollLeft > activeImage.offsetLeft ||
+          carousel.clientWidth + carousel.scrollLeft <
+            activeImage.offsetLeft + activeImage.clientWidth;
+        if (shouldScrollTo) {
+          const scrollTo =
+            activeImage.offsetLeft +
+            activeImage.clientWidth / 2 -
+            carousel.clientWidth / 2;
+          carousel.scrollTo({
+            left: scrollTo > 0 ? scrollTo : 0,
+            top: 0,
+            behavior: "smooth",
+          });
+        }
       }
     }, 200);
   }
