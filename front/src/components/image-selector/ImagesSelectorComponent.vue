@@ -5,19 +5,23 @@
       @input="onSliderValueChange"
       ref="slider"
       :min="0"
-      :max="canEdit? images.length : images.length -1"
+      :max="canEdit ? images.length : images.length - 1"
       :step="1"
-      :customFormatter="val => (parseInt(val,10) + 1).toString()"
+      :customFormatter="(val) => (parseInt(val, 10) + 1).toString()"
+      v-on:dragging="dragging($event)"
       class="reading-slider-component"
     ></ReadingSliderComponent>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ImageRef } from '@/utils/uploadedImage.class';
-import ReadingSliderComponent from '@/components/image-selector/ReadingSliderComponent.vue';
-import { ReadingSliderBoundaries, ReadingSliderValue } from '@/utils/movie.service';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { ImageRef } from "@/utils/uploadedImage.class";
+import ReadingSliderComponent from "@/components/image-selector/ReadingSliderComponent.vue";
+import {
+  ReadingSliderBoundaries,
+  ReadingSliderValue,
+} from "@/utils/movie.service";
 
 @Component({
   components: {
@@ -52,17 +56,22 @@ export default class ImagesSelectorComponent extends Vue {
 
   onSliderValueChange(newSliderValue: ReadingSliderValue) {
     if (this.activeImage !== newSliderValue.selected) {
-      this.$emit('activeImageChange', newSliderValue.selected);
+      this.$emit("activeImageChange", newSliderValue.selected);
+      this.$emit("draggingValueChange", null);
     }
     if (
-      this.value.left !== newSliderValue.left
-      || this.value.right !== newSliderValue.right
+      this.value.left !== newSliderValue.left ||
+      this.value.right !== newSliderValue.right
     ) {
-      this.$emit('input', {
+      this.$emit("input", {
         left: newSliderValue.left,
         right: newSliderValue.right,
       });
     }
+  }
+
+  dragging(value: number) {
+    this.$emit("draggingValueChange", value);
   }
 }
 </script>

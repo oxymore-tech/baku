@@ -244,7 +244,7 @@ export default class ReadingSliderComponent extends Vue {
       this.emitValue('input');
     }
     if (this.dragging) {
-      this.$emit('dragging');
+      this.$emit('dragging', this.valueSelected);
     }
   }
 
