@@ -32,6 +32,10 @@
   cursor: not-allowed;
 }
 
+.carrousel-container::-webkit-scrollbar {
+  display: none;
+}
+
 .carrousel-container {
   background: white;
   width: 100%;
@@ -40,6 +44,10 @@
   flex-wrap: nowrap;
   padding: 12px 0px;
   align-items: center;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  overflow-x: scroll;
+  overflow-y: hidden;
 
   .framenumber-indicator {
     left: 3px;
@@ -104,6 +112,7 @@
       border: 3px solid #FE676F;
       color: #FE676F;
       text-align: center;
+      margin-top: 13px;
     }
     
     .carrousel-thumb {

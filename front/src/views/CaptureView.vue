@@ -48,7 +48,7 @@
                 :class="{hidden: IsFrameLiveView}"
               />
               <img
-                v-if="draggingPreviewIndex"
+                v-if="draggingPreviewIndex !== null"
                 id="preview-img"
                 ref="previewImg"
                 :src="ImageCacheService.getImage(getActiveShot.images[draggingPreviewIndex].id)"
