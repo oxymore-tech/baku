@@ -50,7 +50,7 @@ export default class HistoryComponent extends Vue {
 
     windowHeight = window.innerHeight;
 
-    displayed = window.innerHeight > 580;
+    displayed = false;
 
     reloading = false;
 

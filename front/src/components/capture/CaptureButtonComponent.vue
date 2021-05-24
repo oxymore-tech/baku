@@ -209,8 +209,8 @@ export default class CaptureButtonComponent extends Vue {
       this.mediaOk = true;
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: { min: 640, ideal: 1280 },
-          height: { min: 480, ideal: 720 },
+          width: { min: 640, ideal: 3840 },
+          height: { min: 480, ideal: 2160 },
           deviceId: { exact: this.device.id },
         },
       });

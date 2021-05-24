@@ -41,6 +41,10 @@ export class WSSocket {
       case 'getSocketId':
         store.dispatch('socket/setSocketId', message.value);
         break;
+      case 'setActiveUsers':
+        // TODO: socket connection
+        // store.dispatch('socket/setActiveUsers', message.value);
+        break;
       default:
         break;
     }

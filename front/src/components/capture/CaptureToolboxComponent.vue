@@ -53,6 +53,7 @@
 
       <div class="field" style="display:inline-flex;">
         <b-select :value="fps" @input="changeFps({projectId: projectId, fps: $event})">
+          <option :value="8">8</option>
           <option :value="12">12</option>
           <option :value="24">24</option>
           <option :value="25">25</option>

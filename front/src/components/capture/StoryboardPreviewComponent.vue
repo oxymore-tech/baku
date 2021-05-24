@@ -1,9 +1,10 @@
 <style lang="scss" scoped>
-  @import "@/styles/storyboard.scss";
+@import "@/styles/storyboard.scss";
 </style>
 
 <template>
   <div v-if="activeShot" class="box-container storyboard-preview-container">
+    <!--     <h3>Plan</h3> -->
     <textarea
       class="synopsis-storyboard"
       id="shotSynopsis"
@@ -24,17 +25,16 @@
       </div>
     </div> -->
   </div>
-
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { Shot } from '@/utils/movie.service';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import { Shot } from "@/utils/movie.service";
 // import { Spinner } from "@/utils/spinner.class";
 // import { ImageCacheService } from "@/utils/imageCache.service";
 
-const ProjectNS = namespace('project');
+const ProjectNS = namespace("project");
 
 @Component
 export default class StoryboardPreviewComponent extends Vue {
@@ -47,16 +47,13 @@ export default class StoryboardPreviewComponent extends Vue {
   @ProjectNS.State
   public id!: string;
 
-
-  mounted() {
-  }
-
+  mounted() {}
 
   public async changeShotSynopsis() {
     const shotId = this.activeShot?.id;
     const synopsis = (this.$refs.shotSynopsis as any).value;
 
-    await this.$store.dispatch('project/changeShotSynopsis', {
+    await this.$store.dispatch("project/changeShotSynopsis", {
       shotId,
       synopsis,
     });

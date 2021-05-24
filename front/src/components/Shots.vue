@@ -115,7 +115,7 @@ import { Spinner } from '@/utils/spinner.class';
 
 const ProjectNS = namespace('project');
 
-  @Component
+@Component
 export default class Shots extends Vue {
     @Prop({ required: true })
     public projectId!: string;
