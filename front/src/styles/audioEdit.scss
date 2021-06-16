@@ -1,0 +1,30 @@
+#volume {
+	position: absolute;
+	left: 24px;
+	margin: 0 auto;
+	height: 5px;
+	width: 300px;
+	background: #555;
+	border-radius: 15px;
+	
+	.ui-slider-range-min {
+		height: 5px;
+		width: 300px;
+		position: absolute;
+		border: none;
+		border-radius: 10px;
+  	    outline: none;
+	}
+	
+	.ui-slider-handle {
+		width: 20px;
+  	height: 20px;
+		border-radius: 20px;
+  	background: #FFF;
+  	position: absolute;
+  	margin-left: -8px;
+  	margin-top: -8px;
+  	cursor: pointer;
+  	outline: none;
+	}
+}

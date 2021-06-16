@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 
-import { ProjectStore } from '@/store/project';
+import ProjectStore from '@/store/project';
 import { CaptureStore } from '@/store/capture';
 import { WebrtcStore } from '@/store/webrtc';
 import { UserStore } from '@/store/user';

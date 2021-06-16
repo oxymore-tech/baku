@@ -37,13 +37,9 @@
             </p>
           </div>
 
-          <b-dropdown-item
-            class
-            aria-role="listitem"
-            v-if="$route.name !== 'library'"
-          >
+          <b-dropdown-item class aria-role="listitem" v-if="$route.name !== 'library'">
             <div class="option-logo" @click="onClickMyLibrary()">
-              <i class="icon-folder-open-regular baku-button" />
+              <i class="icon-folder-open-regular baku-button"/>
               <span>Mes films</span>
             </div>
           </b-dropdown-item>
@@ -63,14 +59,8 @@
           </b-dropdown-item>
         </b-dropdown>
 
-        <b-dropdown
-          append-to-body
-          aria-role="list"
-          v-if="
-            $route.params.projectId &&
-            ($route.name === 'captureShot' || $route.name === 'movie')
-          "
-        >
+        <b-dropdown append-to-body aria-role="list"
+                    v-if="$route.params.projectId && ($route.name === 'captureShot' || $route.name === 'movie'|| $route.name === 'audio') ">
           <div
             class="label-menu label-menu-sep-left"
             slot="trigger"
@@ -86,26 +76,30 @@
             <!--              class=" icon-angle-down baku-button"/></p>-->
             <!--            <p v-else-if="$route.name === 'library'">Mes films <i-->
             <!--              class=" icon-angle-down baku-button"/></p>-->
-            <p v-else>
-              {{ $route.name }} <i class="icon-angle-down baku-button" />
-            </p>
+            <p v-else-if="$route.name === 'audio'">Audio <i
+              class=" icon-angle-down baku-button"/></p>
+            <p v-else>{{$route.name}} <i class="icon-angle-down baku-button"/></p>
           </div>
 
-          <b-dropdown-item
-            class
-            aria-role="listitem"
-            :disabled="!this.activeShotId || $route.name === 'captureShot'"
-          >
+          <b-dropdown-item class aria-role="listitem"
+                           :disabled="!this.activeShotId || $route.name === 'captureShot'">
             <div class="option-logo" @click="goToShot()">
-              <i class="icon-camera baku-button" />
+              <i class="icon-camera baku-button"/>
               <span>Capture</span>
             </div>
           </b-dropdown-item>
 
           <b-dropdown-item class aria-role="listitem">
             <div class="option-logo" @click="onOpenPlan()">
-              <i class="icon-grid baku-button" />
+              <i class="icon-grid baku-button"/>
               <span>Plans</span>
+            </div>
+          </b-dropdown-item>
+
+          <b-dropdown-item class aria-role="listitem">
+            <div class="option-logo" @click="goToAudio()">
+              <i class="icon-grid baku-button"/>
+              <span>Audio</span>
             </div>
           </b-dropdown-item>
 
@@ -125,10 +119,25 @@
           $route.name === 'movie'
         "
       >
+      <div
+          v-if="nbShot > 1 && $route.name === 'captureShot'"
+          class="previous-plan"
+          @click="goToPreviousPlan()"
+          title="Plan précédent"
+        >&lt;
+        </div>
+
         <div class="baku-button">
           <template v-if="$route.name === 'captureShot' && activeShotIndex >= 0"
             >Plan {{ activeShotIndex + 1 }}
           </template>
+        </div>
+        <div
+          v-if="nbShot > 1 && $route.name === 'captureShot'"
+          class="next-plan"
+          @click="goToNextPlan()"
+          title="Plan suivant"
+        >&gt;
         </div>
       </div>
 
@@ -358,5 +367,30 @@ export default class App extends Vue {
   public async goToShot() {
     await this.moveToShot(this.activeShotId);
   }
+
+    public async goToAudio() {
+      if (this.$route.name === 'captureShot' || 'movie') {
+        await this.$router.push({
+          name: 'audio',
+          params: {
+            projectId: this.id,
+            //shotId: this.activeShotId,
+          },
+        });
+      }
+    }
+
 }
+ if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./service-worker.js').then(function(registration) {
+      // Registration was successful
+      //console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      // registration failed :(
+      //console.log('ServiceWorker registration failed:');
+    });
+  });
+} 
+
 </script>
