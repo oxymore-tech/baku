@@ -7,6 +7,8 @@ import com.bakuanimation.model.BakuAction;
 import com.bakuanimation.model.BakuEvent;
 import com.bakuanimation.model.Movie;
 import com.bakuanimation.model.Project;
+import com.bakuanimation.model.Audio;
+import com.bakuanimation.model.SoundTimeLine;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,6 +32,8 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Executors;
+import org.apache.commons.io.IOUtils;
+import java.lang.*;
 
 @Singleton
 public class HistoryServiceImpl implements HistoryService {
@@ -136,6 +140,8 @@ public class HistoryServiceImpl implements HistoryService {
         List<String> shots = new ArrayList<>();
         Map<String, List<Path>> images = new LinkedHashMap<>();
         Set<String> lockedShots = new HashSet<>();
+        List<Audio> audios = new ArrayList<>();
+        List<SoundTimeLine> soundsTimeline = new ArrayList<>();
         for (BakuEvent element : history) {
             switch (BakuAction.action(element.getAction())) {
                 case MOVIE_UPDATE_TITLE:
@@ -219,6 +225,111 @@ public class HistoryServiceImpl implements HistoryService {
                             .subList(leftIdx, rightIdx + 1));
                     break;
                 }
+                case AUDIO_ADD: {
+                    String audioId = element.getValue().get("audioId").asText();
+                    String title = element.getValue().get("params").get("title").asText();
+                    double duration = element.getValue().get("params").get("duration").asDouble();
+                    InputStream sound = IOUtils.toInputStream(element.getValue().get("params").get("sound").asText());
+                    audios.add(new Audio(audioId, title, sound, sound, 100, duration));
+                    break;
+                }
+                case AUDIO_REMOVE: {
+                    String audioId = element.getValue().get("audioId").asText();
+                    for (Audio audio : audios) {
+                        if (audio.getId().equals(audioId)) {
+                            audios.remove(audio);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case AUDIO_UPDATE_TITLE: {
+                    String audioId = element.getValue().get("audioId").asText();
+                    String title = element.getValue().get("title").asText();
+                    for (Audio audio : audios) {
+                        if (audio.getId().equals(audioId)) {
+                            audio.setTitle(title);
+                            break;
+                        }
+                    }
+                    break;                    
+                }
+                case AUDIO_UPDATE_SOUND: {
+                    String audioId = element.getValue().get("audioId").asText();
+                    InputStream sound = IOUtils.toInputStream(element.getValue().get("sound").asText());
+                    for (Audio audio : audios) {
+                        if (audio.getId().equals(audioId)) {
+                            audio.setSound(sound);
+                            break;
+                        }
+                    }
+                    break;                    
+                }
+                case AUDIO_UPDATE_VOLUME: {
+                    String audioId = element.getValue().get("audioId").asText();
+                    double volume = element.getValue().get("volume").asDouble();
+                    for (Audio audio : audios) {
+                        if (audio.getId().equals(audioId)) {
+                            audio.setVolume(volume);
+                            break;
+                        }
+                    }
+                    break;                    
+                }
+                case AUDIO_UPDATE_DURATION: {
+                    String audioId = element.getValue().get("audioId").asText();
+                    double duration = element.getValue().get("duration").asDouble();
+                    for (Audio audio : audios) {
+                        if (audio.getId().equals(audioId)) {
+                            audio.setDuration(duration);
+                            break;
+                        }
+                    }
+                    break;                    
+                }
+                case AUDIO_UPDATE_WAVEFORM: {
+                    String audioId = element.getValue().get("audioId").asText();
+                    InputStream waveform = IOUtils.toInputStream(element.getValue().get("waveform").asText());
+                    for (Audio audio : audios) {
+                        if (audio.getId().equals(audioId)) {
+                            audio.setWaveform(waveform);
+                            break;
+                        }
+                    }
+                    break;                    
+                }
+                case SOUNDTIMELINE_ADD: {
+                    String soundTimelineId = element.getValue().get("soundTimelineId").asText();
+                    String audioId = element.getValue().get("params").get("audioId").asText();
+                    double pisteNumber = element.getValue().get("params").get("pisteNumber").asDouble();
+                    double start = element.getValue().get("params").get("start").asDouble();
+                    double end = element.getValue().get("params").get("end").asDouble();
+                    soundsTimeline.add(new SoundTimeLine(soundTimelineId, audioId, pisteNumber, start, end));
+                    break;                    
+                }
+                case SOUNDTIMELINE_REMOVE: {
+                    String soundTimelineId = element.getValue().get("soundTimelineId").asText();
+                    for (SoundTimeLine soundTimeline : soundsTimeline) {
+                        if (soundTimeline.getSoundTimelineId().equals(soundTimelineId)) {
+                            soundsTimeline.remove(soundTimeline);
+                            break;
+                        }
+                    }
+                    break;                    
+                }
+                case SOUNDTIMELINE_UPDATE_START: {
+                    String soundTimelineId = element.getValue().get("soundTimelineId").asText();
+                    double start = element.getValue().get("start").asDouble();
+                    double end = element.getValue().get("end").asDouble();
+                    for (SoundTimeLine soundTimeline : soundsTimeline) {
+                        if (soundTimeline.getSoundTimelineId().equals(soundTimelineId)) {
+                            soundTimeline.setStart(start);
+                            soundTimeline.setEnd(end);
+                            break;
+                        }
+                    }
+                    break;                    
+                }
                 default: {
                     // Ignored
                     break;
@@ -241,6 +352,6 @@ public class HistoryServiceImpl implements HistoryService {
             }
             imagesBuilder.putAll(shotId, imagesEntry.getValue());
         }
-        return new Movie(projectId, name, synopsis, fps, movieLocked, lockedShots, shots, imagesBuilder.build());
+        return new Movie(projectId, name, synopsis, fps, movieLocked, lockedShots, shots, imagesBuilder.build(), audios, soundsTimeline);
     }
 }

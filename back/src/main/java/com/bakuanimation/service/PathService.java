@@ -94,4 +94,11 @@ public class PathService {
                 .resolve(imageType)
                 .resolve(imageId);
     }
+    
+    public Path getSoundFile(String projectId, String soundId) {
+        return this
+            .projectDir(projectId)
+            .resolve("sounds")
+            .resolve(soundId);
+    }
 }
