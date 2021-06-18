@@ -14,10 +14,10 @@
         "sizes": "512x512"
       }
     ],
-    "start_url": "/pwa/",
+    "start_url": "/",
     "background_color": "#FFFFFF",
     "display": "standalone",
-    "scope": "/pwa/",
+    "scope": "/",
     "theme_color": "#FFFFFF",
     "description": "Plateforme collaborative de création de film d'animation"
   }

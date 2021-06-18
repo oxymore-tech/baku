@@ -143,7 +143,7 @@
 
       <div class="flex-container">
         <div class="flex-container connect-indicator">
-          <div v-if="this.getConnection()" class="online">
+          <div v-if="this.connectionIndicator" class="online">
           </div>
           <div v-else class="offline">
           </div>
@@ -274,12 +274,18 @@ export default class App extends Vue {
 
   public pageName!: string;
 
+  public connectionIndicator!: boolean;
+
   public mounted() {
     this.pageName = this.$route.name as string;
+    this.getConnection();
   }
 
    public getConnection() {
-    return navigator.onLine
+    setInterval(()=>{
+      this.connectionIndicator = navigator.onLine
+      console.log(this.connectionIndicator)
+    },2000)
   }
 
   public async onPageAccueil() {
