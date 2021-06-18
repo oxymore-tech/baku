@@ -142,6 +142,12 @@
       </div>
 
       <div class="flex-container">
+        <div class="flex-container connect-indicator">
+          <div v-if="this.getConnection()" class="online">
+          </div>
+          <div v-else class="offline">
+          </div>
+        </div>
         <div
           class="flex-container bug"
           :class="{ 'bug-home': $route.name === 'home' }"
@@ -270,6 +276,10 @@ export default class App extends Vue {
 
   public mounted() {
     this.pageName = this.$route.name as string;
+  }
+
+   public getConnection() {
+    return navigator.onLine
   }
 
   public async onPageAccueil() {

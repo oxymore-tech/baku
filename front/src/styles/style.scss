@@ -138,6 +138,22 @@ nav {
   cursor: pointer;
 }
 
+.online{
+  border-radius: 50px;
+  width:26px;
+  padding: 2px 2px 0;
+  margin-right: 10px;
+  background-color: green;
+}
+
+.offline{
+  border-radius: 50px;
+  width:26px;
+  padding: 2px 2px 0;
+  margin-right: 10px;
+  background-color: red;
+}
+
 .bug {
   border-radius: 16px;
   font-size: 1.6rem;
