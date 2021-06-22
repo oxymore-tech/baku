@@ -281,10 +281,10 @@ export default class App extends Vue {
     this.getConnection();
   }
 
-   public getConnection() {
+  public async getConnection() {
     setInterval(()=>{
       this.connectionIndicator = navigator.onLine
-      console.log(this.connectionIndicator)
+      // console.log(this.connectionIndicator)
     },2000)
   }
 
