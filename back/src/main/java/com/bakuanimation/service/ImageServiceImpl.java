@@ -87,7 +87,7 @@ public class ImageServiceImpl implements ImageService {
 
     private void writeSmallerImages(BufferedImage image, String projectId, String filename) {
         try {
-            save(reduce(image, 1280), pathService.getImageFile(projectId, "original", filename), 1f);
+            save(image, pathService.getImageFile(projectId, "original", filename), 1f);
             save(reduce(image, 1280), pathService.getImageFile(projectId, "lightweight", filename), .3f);
             save(reduce(image, 355), pathService.getImageFile(projectId, "thumbnail", filename), .6f);
         } catch (IOException e) {

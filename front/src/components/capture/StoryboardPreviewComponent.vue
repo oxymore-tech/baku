@@ -4,7 +4,7 @@
 
 <template>
   <div v-if="activeShot" class="box-container storyboard-preview-container">
-    <!--     <h3>Plan</h3> -->
+    <div class="planTitle"><span>&#8592;</span><h3>Plan {{ getActiveShotIndex + 1}}</h3></div>
     <textarea
       class="synopsis-storyboard"
       id="shotSynopsis"
@@ -47,7 +47,11 @@ export default class StoryboardPreviewComponent extends Vue {
   @ProjectNS.State
   public id!: string;
 
-  mounted() {}
+  @ProjectNS.Getter("getActiveShotIndex")
+  protected getActiveShotIndex!: number;
+
+  mounted() {
+  }
 
   public async changeShotSynopsis() {
     const shotId = this.activeShot?.id;
