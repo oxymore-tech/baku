@@ -229,17 +229,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import * as _ from "lodash";
-import CaptureButtonComponent from "@/components/capture/CaptureButtonComponent.vue";
-import { Device } from "@/utils/device.class";
-import { ImageRef } from "@/utils/uploadedImage.class";
-import { KeyCodes, ReadingSliderBoundaries, Shot } from "@/utils/movie.service";
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import * as _ from 'lodash';
+import CaptureButtonComponent from '@/components/capture/CaptureButtonComponent.vue';
+import { Device } from '@/utils/device.class';
+import { ImageRef } from '@/utils/uploadedImage.class';
+import { KeyCodes, ReadingSliderBoundaries, Shot } from '@/utils/movie.service';
 
-const CaptureNS = namespace("capture");
-const ProjectNS = namespace("project");
-const ClipboardNS = namespace("clipboard");
+const CaptureNS = namespace('capture');
+const ProjectNS = namespace('project');
+const ClipboardNS = namespace('clipboard');
 
 @Component({
   components: {
@@ -273,86 +275,86 @@ export default class CarrouselComponent extends Vue {
   @CaptureNS.State
   public activeDevice!: Device;
 
-  @ProjectNS.Action("addImagesToShot")
+  @ProjectNS.Action('addImagesToShot')
   protected addImagesToShot!: ({}) => Promise<void>;
 
-  @ProjectNS.Action("removeImagesFromShot")
+  @ProjectNS.Action('removeImagesFromShot')
   protected removeImagesFromShot!: ({}) => Promise<void>;
 
-  @ProjectNS.Action("reverseImages")
+  @ProjectNS.Action('reverseImages')
   protected reverseImages!: ({}) => Promise<void>;
 
-  @ProjectNS.Getter("canEditActiveShot")
+  @ProjectNS.Getter('canEditActiveShot')
   protected canEdit!: boolean;
 
-  @ProjectNS.Getter("getPreviousShot")
+  @ProjectNS.Getter('getPreviousShot')
   protected previousShot!: Shot | undefined;
 
-  @ProjectNS.Getter("getActiveShotIndex")
+  @ProjectNS.Getter('getActiveShotIndex')
   protected getActiveShotIndex!: number;
 
-  @ClipboardNS.State("images")
+  @ClipboardNS.State('images')
   private imagesToCopy!: string[];
 
-  @ClipboardNS.Action("changeClipboard")
+  @ClipboardNS.Action('changeClipboard')
   protected changeClipboard!: (images: string[]) => Promise<void>;
 
   mounted() {
-    window.addEventListener("keydown", (e: KeyboardEvent) => {
-      if ((e as any).target.id != "shotSynopsis") {
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+      if ((e as any).target.id != 'shotSynopsis') {
         switch (e.keyCode) {
           case KeyCodes.HOME:
           case KeyCodes.PAGE_UP:
-            this.$emit("moveHome", e);
+            this.$emit('moveHome', e);
             break;
           case KeyCodes.END:
           case KeyCodes.PAGE_DOWN:
-            this.$emit("moveEnd", e);
+            this.$emit('moveEnd', e);
             break;
           case KeyCodes.LEFT_ARROW:
             if (e.shiftKey) {
               if (
-                this.activeImage - 1 < this.selectedImages.left &&
-                this.isMultiSelect
+                this.activeImage - 1 < this.selectedImages.left
+                && this.isMultiSelect
               ) {
-                this.$emit("increaseSelection", this.activeImage - 1);
+                this.$emit('increaseSelection', this.activeImage - 1);
               } else if (!this.isMultiSelect) {
-                this.$emit("changeSelection", {
+                this.$emit('changeSelection', {
                   left: this.activeImage - 1,
                   right: this.activeImage,
                 });
               }
             } else if (
-              this.isMultiSelect &&
-              this.activeImage - 1 < this.selectedImages.left
+              this.isMultiSelect
+              && this.activeImage - 1 < this.selectedImages.left
             ) {
-              this.$emit("resetSelection");
+              this.$emit('resetSelection');
             }
-            this.$emit("moveFrame", -1);
+            this.$emit('moveFrame', -1);
             break;
           case KeyCodes.RIGHT_ARROW:
             if (e.shiftKey) {
               if (
-                this.activeImage + 1 > this.selectedImages.right &&
-                this.isMultiSelect
+                this.activeImage + 1 > this.selectedImages.right
+                && this.isMultiSelect
               ) {
-                this.$emit("increaseSelection", this.activeImage + 1);
+                this.$emit('increaseSelection', this.activeImage + 1);
               } else if (!this.isMultiSelect) {
-                this.$emit("changeSelection", {
+                this.$emit('changeSelection', {
                   left: this.activeImage,
                   right: this.activeImage + 1,
                 });
               }
             } else if (
-              this.isMultiSelect &&
-              this.activeImage + 1 > this.selectedImages.right
+              this.isMultiSelect
+              && this.activeImage + 1 > this.selectedImages.right
             ) {
-              this.$emit("resetSelection");
+              this.$emit('resetSelection');
             }
-            this.$emit("moveFrame", 1);
+            this.$emit('moveFrame', 1);
             break;
           case KeyCodes.SPACE:
-            this.$emit("togglePlay", e);
+            this.$emit('togglePlay', e);
             break;
           case KeyCodes.DELETE:
             this.deleteFrame();
@@ -373,12 +375,12 @@ export default class CarrouselComponent extends Vue {
       }
     });
 
-    window.addEventListener("keyup", (e: KeyboardEvent) => {
-      if ((e as any).target.id != "shotSynopsis") {
+    window.addEventListener('keyup', (e: KeyboardEvent) => {
+      if ((e as any).target.id != 'shotSynopsis') {
         switch (e.keyCode) {
           case KeyCodes.LEFT_ARROW:
           case KeyCodes.RIGHT_ARROW:
-            this.$emit("stopMovingFrame", e);
+            this.$emit('stopMovingFrame', e);
             break;
           default:
             break;
@@ -401,10 +403,10 @@ export default class CarrouselComponent extends Vue {
         imagesToDelete.map((imgId: number) => ({
           shotId: this.activeShot,
           imageIndex: imgId,
-        }))
+        })),
       );
-      this.$emit("activeImageChange", imagesToDelete[0] - 1);
-      this.$emit("resetSelection");
+      this.$emit('activeImageChange', imagesToDelete[0] - 1);
+      this.$emit('resetSelection');
     }
   }
 
@@ -434,14 +436,14 @@ export default class CarrouselComponent extends Vue {
   }
 
   get computedRightCarrousel(): ImageRef[] {
-    //const count = 5;
+    // const count = 5;
     const sliceIndex = this.activeImage + 1;
-    //const secondSliceCount =
+    // const secondSliceCount =
     //  12 - this.activeImage > 0 ? 12 - this.activeImage : 5;
     const rightImagesAvaible = this.images.slice(sliceIndex);
     // const realRightImagesAvaible = this.images.slice(sliceIndex);
     return rightImagesAvaible.length
-      ? rightImagesAvaible.concat([("liveview" as unknown) as ImageRef])
+      ? rightImagesAvaible.concat([('liveview' as unknown) as ImageRef])
       : [];
   }
 
@@ -463,10 +465,10 @@ export default class CarrouselComponent extends Vue {
 
   public isInSelection(index: number, position: string) {
     let cindex = index;
-    if (position === "right") {
+    if (position === 'right') {
       cindex = this.activeImage + index + 1;
     }
-    if (position === "left") {
+    if (position === 'left') {
       const leftSelectionSize = 5;
       cindex = this.activeImage - (leftSelectionSize - index);
     }
@@ -479,11 +481,11 @@ export default class CarrouselComponent extends Vue {
     if (!this.isFrameLiveView && !this.isPlaying) {
       if (e.shiftKey) {
         // add to selection
-        this.$emit("increaseSelection", this.activeImage + indexToMove);
+        this.$emit('increaseSelection', this.activeImage + indexToMove);
       }
     }
     if (!e.shiftKey && !e.ctrlKey) {
-      this.$emit("activeImageChange", this.activeImage + indexToMove);
+      this.$emit('activeImageChange', this.activeImage + indexToMove);
     }
   }
 
@@ -492,7 +494,7 @@ export default class CarrouselComponent extends Vue {
       const tmpImgsToCopy = this.selectedImagesForReal;
       tmpImgsToCopy.sort((a: any, b: any) => a - b);
       this.changeClipboard(
-        tmpImgsToCopy.map((index) => this.images[index].id as string)
+        tmpImgsToCopy.map((index) => this.images[index].id as string),
       );
     }
   }
@@ -500,7 +502,7 @@ export default class CarrouselComponent extends Vue {
   public async onCut() {
     this.onCopy();
     await this.deleteFrame();
-    this.$emit("resetSelection");
+    this.$emit('resetSelection');
   }
 
   public async onPaste() {
@@ -510,18 +512,18 @@ export default class CarrouselComponent extends Vue {
           shotId: this.activeShot,
           imageIndex: this.activeImage + 1 + index,
           image: imgref,
-        }))
+        })),
       );
-      this.$emit("activeImageChange", this.activeImage + 1);
+      this.$emit('activeImageChange', this.activeImage + 1);
       this.changeSelection(
         this.activeImage + 1,
-        this.activeImage + this.imagesToCopy.length
+        this.activeImage + this.imagesToCopy.length,
       );
     }
   }
 
   public changeSelection(left: number, right: number) {
-    this.$emit("changeSelection", {
+    this.$emit('changeSelection', {
       left,
       right,
     });
@@ -529,10 +531,10 @@ export default class CarrouselComponent extends Vue {
 
   public async onPasteAndReverse() {
     if (
-      !this.isFrameLiveView &&
-      !this.isPlaying &&
-      this.isMultiSelect &&
-      this.canEdit
+      !this.isFrameLiveView
+      && !this.isPlaying
+      && this.isMultiSelect
+      && this.canEdit
     ) {
       this.reverseImages({
         shotId: this.activeShot,
@@ -551,25 +553,23 @@ export default class CarrouselComponent extends Vue {
     }
   }
 
-  @Watch("activeImage")
+  @Watch('activeImage')
   onActiveImageChange() {
     setTimeout(() => {
-      const activeImage = document.getElementById("carrouselActiveImg");
+      const activeImage = document.getElementById('carrouselActiveImg');
       const carousel = this.$refs.carrouselContainer as HTMLElement;
       if (activeImage && carousel) {
-        const shouldScrollTo =
-          carousel.scrollLeft > activeImage.offsetLeft ||
-          carousel.clientWidth + carousel.scrollLeft <
-            activeImage.offsetLeft + activeImage.clientWidth;
+        const shouldScrollTo = carousel.scrollLeft > activeImage.offsetLeft
+          || carousel.clientWidth + carousel.scrollLeft
+            < activeImage.offsetLeft + activeImage.clientWidth;
         if (shouldScrollTo) {
-          const scrollTo =
-            activeImage.offsetLeft +
-            activeImage.clientWidth / 2 -
-            carousel.clientWidth / 2;
+          const scrollTo = activeImage.offsetLeft
+            + activeImage.clientWidth / 2
+            - carousel.clientWidth / 2;
           carousel.scrollTo({
             left: scrollTo > 0 ? scrollTo : 0,
             top: 0,
-            behavior: "smooth",
+            behavior: 'smooth',
           });
         }
       }

@@ -195,16 +195,16 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import ProjectSettingsPopup from "@/components/ProjectSettingsPopup.vue";
-import { Movie } from "@/utils/movie.service";
-import IssuePopup from "@/components/IssuePopup.vue";
-import RenamePopup from "@/components/RenamePopup.vue";
-import { createProject } from "@/api";
+import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
+import { Movie } from '@/utils/movie.service';
+import IssuePopup from '@/components/IssuePopup.vue';
+import RenamePopup from '@/components/RenamePopup.vue';
+import { createProject } from '@/api';
 
-const ProjectNS = namespace("project");
-const UserNS = namespace("user");
+const ProjectNS = namespace('project');
+const UserNS = namespace('user');
 
 @Component({
   components: {
@@ -224,37 +224,37 @@ export default class App extends Vue {
   @UserNS.State
   public usercolor!: string;
 
-  @UserNS.Getter("getPersonalisedProjectTitle")
+  @UserNS.Getter('getPersonalisedProjectTitle')
   public getPersonalisedProjectTitle!: string;
 
-  @UserNS.Getter("getIcon")
+  @UserNS.Getter('getIcon')
   public getIcon!: string;
 
-  @ProjectNS.Action("createShot")
+  @ProjectNS.Action('createShot')
   private createShotAction!: (name?: string) => Promise<string>;
 
-  @ProjectNS.Action("changeFps")
+  @ProjectNS.Action('changeFps')
   protected changeFps!: (fps: number) => Promise<void>;
 
-  @ProjectNS.Action("updateTitle")
+  @ProjectNS.Action('updateTitle')
   protected updateTitle!: (title: string) => Promise<void>;
 
-  @ProjectNS.Getter("getPreviousShotId")
+  @ProjectNS.Getter('getPreviousShotId')
   protected previousShotId!: string;
 
-  @ProjectNS.Getter("getNextShotId")
+  @ProjectNS.Getter('getNextShotId')
   protected nextShotId!: string;
 
-  @ProjectNS.Getter("getActiveShotIndex")
+  @ProjectNS.Getter('getActiveShotIndex')
   public activeShotIndex!: Number;
 
-  @ProjectNS.Getter("getShotCount")
+  @ProjectNS.Getter('getShotCount')
   public nbShot!: Number;
 
   @ProjectNS.State
   public activeShotId!: string;
 
-  @ProjectNS.Action("loadProject")
+  @ProjectNS.Action('loadProject')
   protected loadProjectAction!: (projectId: string) => Promise<void>;
 
   public pageName!: string;
@@ -265,32 +265,32 @@ export default class App extends Vue {
 
   public async onPageAccueil() {
     await this.$router.push({
-      name: "home",
+      name: 'home',
     });
   }
 
   public async onPersoFilm() {
     await this.$router.push({
-      name: "movieEditing",
+      name: 'movieEditing',
     });
   }
 
   public async onOpenLibrary() {
     await this.$router.push({
-      name: "library",
+      name: 'library',
     });
   }
 
   public async onOpenPlan() {
-    if (this.$route.name === "captureShot") {
+    if (this.$route.name === 'captureShot') {
       await this.$router.push({
-        name: "movie",
+        name: 'movie',
       });
     }
   }
 
   public async onCreatePlan() {
-    const shotId = await this.createShotAction("Nouveau plan");
+    const shotId = await this.createShotAction('Nouveau plan');
     await this.moveToShot(shotId);
   }
 
@@ -306,7 +306,7 @@ export default class App extends Vue {
 
   private async moveToShot(shotId: string) {
     return this.$router.push({
-      name: "captureShot",
+      name: 'captureShot',
       params: {
         projectId: this.id,
         shotId,
@@ -320,7 +320,7 @@ export default class App extends Vue {
       parent: this,
       component: IssuePopup,
       hasModalCard: true,
-      canCancel: ["escape", "outside"],
+      canCancel: ['escape', 'outside'],
     });
   }
 
@@ -329,19 +329,19 @@ export default class App extends Vue {
       parent: this,
       component: RenamePopup,
       hasModalCard: true,
-      canCancel: ["escape", "outside"],
+      canCancel: ['escape', 'outside'],
     });
   }
 
   public async onCreateProject() {
     const projectId = await createProject();
     await this.loadProjectAction(projectId);
-    const shotId = await this.createShotAction("Nouveau plan");
+    const shotId = await this.createShotAction('Nouveau plan');
     await this.changeFps(12);
     await this.updateTitle(this.getPersonalisedProjectTitle);
-    await this.$store.dispatch("project/changeActiveShot", shotId);
+    await this.$store.dispatch('project/changeActiveShot', shotId);
     await this.$router.push({
-      name: "captureShot",
+      name: 'captureShot',
       params: {
         projectId,
         shotId,
@@ -351,7 +351,7 @@ export default class App extends Vue {
 
   public async onClickMyLibrary() {
     await this.$router.push({
-      name: "library",
+      name: 'library',
     });
   }
 

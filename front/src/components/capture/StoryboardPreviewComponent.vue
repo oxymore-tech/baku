@@ -4,7 +4,7 @@
 
 <template>
   <div v-if="activeShot" class="box-container storyboard-preview-container">
-    <div class="planTitle"><span>&#8592;</span><h3>Plan {{ getActiveShotIndex + 1}}</h3></div>
+    <div class="planTitle"><h3>Plan {{ getActiveShotIndex + 1}}</h3></div>
     <textarea
       class="synopsis-storyboard"
       id="shotSynopsis"
@@ -28,13 +28,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
-import { Shot } from "@/utils/movie.service";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+import { Shot } from '@/utils/movie.service';
 // import { Spinner } from "@/utils/spinner.class";
 // import { ImageCacheService } from "@/utils/imageCache.service";
 
-const ProjectNS = namespace("project");
+const ProjectNS = namespace('project');
 
 @Component
 export default class StoryboardPreviewComponent extends Vue {
@@ -47,7 +47,7 @@ export default class StoryboardPreviewComponent extends Vue {
   @ProjectNS.State
   public id!: string;
 
-  @ProjectNS.Getter("getActiveShotIndex")
+  @ProjectNS.Getter('getActiveShotIndex')
   protected getActiveShotIndex!: number;
 
   mounted() {
@@ -57,7 +57,7 @@ export default class StoryboardPreviewComponent extends Vue {
     const shotId = this.activeShot?.id;
     const synopsis = (this.$refs.shotSynopsis as any).value;
 
-    await this.$store.dispatch("project/changeShotSynopsis", {
+    await this.$store.dispatch('project/changeShotSynopsis', {
       shotId,
       synopsis,
     });
