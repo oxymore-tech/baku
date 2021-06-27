@@ -7,6 +7,12 @@
   overflow: auto;
 }
 
+.history-container{
+  width: 250px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .history {
   position: relative;
   background: white;

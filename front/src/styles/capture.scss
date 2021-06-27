@@ -4,18 +4,20 @@
   flex: 1;
   justify-content: space-between;
   padding: 0 0 12px 20px;
-  max-height: calc(100% - 145px);
-  min-height: calc(100% - 145px);
+  max-height: calc(100% - 145px - 90px);
+  min-height: calc(100% - 145px - 90px);
 
   .preview-container {
     // width: 70%;
-    width: 100vh;
     display: flex;
-    flex-direction: column;
+    flex-grow: 1;
     margin: 0 10px;
+    justify-content: center;
+    align-items: center;
 
     .preview-content-wrapper {
-      //max-height: calc(100% - 90px);
+      width: 100vh;
+      max-height: calc(100% - 90px);
 
       .preview-content {
         width: 100%;
@@ -60,74 +62,7 @@
       }
     }
 
-    .preview-actions {
-      display: flex;
-      flex-direction: column;
-      height: 90px;
-
-      .media-controls {
-        width: 100%;
-        display: flex;
-        font-size: 1.8rem;
-        align-items: center;
-        justify-content: space-between;
-
-        .clock {
-          width: 8rem;
-          background-color: #455054;
-          border-radius: 8px;
-          height: 36px;
-          min-height: 36px;
-          max-height: 36px;
-          color: white;
-          font-size: 2.4rem;
-          text-align: center;
-          padding-top: .5rem;
-
-          .clock-digit {
-            position: relative;
-
-            .clock-digit-indicator {
-              position: absolute;
-              right: 0;
-              top: -.8rem;
-              font-size: 0.9rem;
-            }
-          }
-
-          .clock-small {
-            font-size: 1.8rem;
-          }
-        }
-
-        .play-controls {
-          display: flex;
-          align-items: center;
-
-          .toolbar-capture-button {
-            margin-left: 100px;
-          }
-
-          .active-capture {
-            color: #e66359;
-          }
-
-          .toolbar-button-big {
-            font-size: 3rem;
-          }
-        }
-
-
-      }
-
-      .primary-button {
-        color: #ffbd72;
-      }
-
-      .disabled-button {
-        color: #cccccc;
-      }
-    }
+    
   }
 
   .hidden {
@@ -140,6 +75,79 @@
   }
 }
 
+.preview-actions {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  height: 90px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 8px 8px 0 0;
+  padding: 0 10px;
+
+  .media-controls {
+    width: 100%;
+    display: flex;
+    font-size: 1.8rem;
+    align-items: center;
+    justify-content: space-between;
+
+    .clock {
+      width: 8rem;
+      background-color: #455054;
+      border-radius: 8px;
+      height: 36px;
+      min-height: 36px;
+      max-height: 36px;
+      color: white;
+      font-size: 2.4rem;
+      text-align: center;
+      padding-top: .5rem;
+
+      .clock-digit {
+        position: relative;
+
+        .clock-digit-indicator {
+          position: absolute;
+          right: 0;
+          top: -.8rem;
+          font-size: 0.9rem;
+        }
+      }
+
+      .clock-small {
+        font-size: 1.8rem;
+      }
+    }
+
+    .play-controls {
+      display: flex;
+      align-items: center;
+
+      .toolbar-capture-button {
+        margin-left: 100px;
+      }
+
+      .active-capture {
+        color: #e66359;
+      }
+
+      .toolbar-button-big {
+        font-size: 3rem;
+      }
+    }
+
+
+  }
+
+  .primary-button {
+    color: #ffbd72;
+  }
+
+  .disabled-button {
+    color: #cccccc;
+  }
+}
 // Little heights
 @media (max-height: 580px) {
   .preview-bloc {
