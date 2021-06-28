@@ -24,41 +24,36 @@ self.addEventListener('fetch', async function(event) {
   // a test, or QA, or production environment).
   // Also check for the existence of the 'X-Mock-Response' header.
   if (!navigator.onLine) {
-    if (path === '/api/movie' || '/api/'+projectId+'/history'){
-      console.log("movie ou history");
+    if (path === '/api/movie' || path === '/api/'+projectId+'/history' || path === '/api/'+projectId+'/stack' || path === '/api/undefined/stack' || path === '/api/'+projectId+'/upload'){
+      console.log("create and send adaptated response");
       createAndSendResponse(event,path);
     }
     // On peut checker si les requête sont GET ou POST
       // Si GET : 
       // si on est online : on va les chercher normalement 
       // si on est hors ligne : implémenter une fonction qui va chercher la réponse dans le cache
-    if (event.request.method === "GET"){
+    else {
       console.log("Requête GET");
       event.respondWith(
         // Stratégie "Cache first" : consiste à aller chercher d'abord la réponse de la requête dans le cache
         // Si elle n'est pas dans le cache, on interroge le serveur et on met la réponse dans le cache
           caches.match(event.request).then(function(response) {
-              return response || fetch(event.request)
+              return response;
           })
       );
-    } else {
-      console.log("Dans le POST")
-      
-      // Si POST :
-      // si on est online : pas de soucis 
-      // si on est hors ligne : implémenter une fonction qui sauvegarde la requête dans la IndexedDB
-          
-      if(!navigator.onLine){
-        console.log("POST hors ligne")
-        var authHeader = event.request.headers.get('Authorization');
-        var reqUrl = event.request.url;
-        console.log(reqUrl)
-        Promise.resolve(event.request.text()).then((payload) => {
-          // Fonction qui sauvegarde les requêtes dans l'indexedDB
-          saveIntoIndexedDb(reqUrl, authHeader, payload)
-        })
-      }
     }
+    //  else {
+    //   // Si POST hors ligne : implémenter une fonction qui sauvegarde la requête dans la IndexedDB
+          
+    //     console.log("POST hors ligne")
+    //     var authHeader = event.request.headers.get('Authorization');
+    //     var reqUrl = event.request.url;
+    //     console.log(reqUrl);
+    //     Promise.resolve(event.request.text()).then((payload) => {
+    //       // Fonction qui sauvegarde les requêtes dans l'indexedDB
+    //       saveIntoIndexedDb(reqUrl, authHeader, payload)
+    //     })
+    // }
 }
 });
 
@@ -116,6 +111,20 @@ function precacheGetRequest(event) {
         '/img/play_sound.7d588e44.png',
         '/img/plus.b71e94f4.svg',
         '/img/rotate_phone.f8f9eaa5.gif',
+        '/media/camera_shutter.db38097d.mp3',
+        '/js/0.js',
+        '/js/app.js',
+        '/js/chunck-vendors.js',
+        '/splashscreens/ipad_splash.png',
+        '/splashscreens/ipadpro1_splash.png',
+        '/splashscreens/ipadpro2_splash.png',
+        '/splashscreens/ipadpro3_splash.png',
+        '/splashscreens/iphone5_splash.png',
+        '/splashscreens/iphone6_splash.png',
+        '/splashscreens/iphoneplus_splash.png',
+        '/splashscreens/iphonex_splash.png',
+        '/splashscreens/iphonexr_splash.png',
+        '/splashscreens/iphonexsmax_splash.png'
       ]);
     })
   );
@@ -210,7 +219,60 @@ function createAndSendResponse(event,path){
 
       console.log(' Responding with a mock response body:', responseBody);
       event.respondWith(mockResponse);
-      fetch('/movies/'+projectId+'/shots/fedcba');
+      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
+      break;
+    case "/api/"+projectId+"/stack":
+      var responseBody = null;
+
+      var responseInit = {
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Mock-Response': 'yes'
+        }
+      };
+
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+
+      console.log(' Responding with a mock response body:', responseBody);
+      event.respondWith(mockResponse);
+      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
+      break;
+      case "/api/undefined/stack":
+      var responseBody = null;
+
+      var responseInit = {
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Mock-Response': 'yes'
+        }
+      };
+
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+
+      console.log(' Responding with a mock response body:', responseBody);
+      event.respondWith(mockResponse);
+      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
+      break;
+    case "/api/"+projectId+"/upload":
+      var responseBody = "Nom du fichier de l'image à aller chercher dans le header";
+
+      var responseInit = {
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Mock-Response': 'yes'
+        }
+      };
+
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+
+      console.log(' Responding with a mock response body:', responseBody);
+      event.respondWith(mockResponse);
       //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
       break;
     default:
