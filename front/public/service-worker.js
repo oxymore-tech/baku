@@ -1,15 +1,22 @@
+import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
+
 var CACHE = {
 	name: 'Baku-cache',
 	version: 'v1'
 };
 
 var projectId;
+var projectIdShortened;
+var currentImgName;
+var currentImgFile;
+
+var tabOfStackPayloads = [];
 
 self.addEventListener('install', (event) => {
-    precacheGetRequest(event);
-    // On va checker toutes les 2 secondes si on est hors ligne ou pas
-    checkNetworkState();
-  });
+  precacheGetRequest(event);
+  // On va checker toutes les 2 secondes si on est hors ligne ou pas
+  checkNetworkState();
+});
 
 
 
@@ -18,43 +25,42 @@ self.addEventListener('fetch', async function(event) {
   var requestUrl = new URL(event.request.url);
   var path = requestUrl.pathname;
 
-  // Determine whether this is a URL Shortener API request that should be mocked.
-  // Matching on just the pathname gives some flexibility in case there are multiple domains that
-  // might host the same RESTful API (imagine this being used to mock responses against what might be
-  // a test, or QA, or production environment).
-  // Also check for the existence of the 'X-Mock-Response' header.
   if (!navigator.onLine) {
-    if (path === '/api/movie' || path === '/api/'+projectId+'/history' || path === '/api/'+projectId+'/stack' || path === '/api/undefined/stack' || path === '/api/'+projectId+'/upload'){
+    
+    // Traitement de toutes les requêtes dynamiquement
+    if (path === '/api/movie'
+     || path === '/api/'+projectId+'/history'
+     || path === '/api/'+projectIdShortened+'/history'
+     || path === '/api/'+projectId+'/stack'
+     || path === '/api/'+projectIdShortened+'/stack'
+     || path === '/api/undefined/stack' 
+     || path === '/api/'+projectId+'/upload' 
+     || path === '/api/'+projectIdShortened+'/video/status' 
+     || path === '/api/'+projectIdShortened+'/stack' 
+     || path === '/api/undefined/stack' 
+     || path === '/api/'+projectId+'/upload' 
+     || path === '/images/'+projectId+'/thumbnail/'+currentImgName 
+     || path === '/images/'+projectId+'/original/'+currentImgName 
+     || path === '/images/'+projectId+'/lightweight/'+currentImgName
+     || path === '/images/'+projectIdShortened+'/original/'+currentImgName){
+       
       console.log("create and send adaptated response");
       createAndSendResponse(event,path);
     }
-    // On peut checker si les requête sont GET ou POST
-      // Si GET : 
-      // si on est online : on va les chercher normalement 
-      // si on est hors ligne : implémenter une fonction qui va chercher la réponse dans le cache
+    // Si GET hors ligne : on va chercher la réponse dans le cache
     else {
       console.log("Requête GET");
       event.respondWith(
-        // Stratégie "Cache first" : consiste à aller chercher d'abord la réponse de la requête dans le cache
+        // -- TO DO --
+        // Stratégie "Cache first" à implémenter : consiste à aller chercher d'abord la réponse de la requête dans le cache
         // Si elle n'est pas dans le cache, on interroge le serveur et on met la réponse dans le cache
           caches.match(event.request).then(function(response) {
               return response;
           })
       );
     }
-    //  else {
-    //   // Si POST hors ligne : implémenter une fonction qui sauvegarde la requête dans la IndexedDB
-          
-    //     console.log("POST hors ligne")
-    //     var authHeader = event.request.headers.get('Authorization');
-    //     var reqUrl = event.request.url;
-    //     console.log(reqUrl);
-    //     Promise.resolve(event.request.text()).then((payload) => {
-    //       // Fonction qui sauvegarde les requêtes dans l'indexedDB
-    //       saveIntoIndexedDb(reqUrl, authHeader, payload)
-    //     })
-    // }
-}
+
+} 
 });
 
 
@@ -84,20 +90,14 @@ function precacheGetRequest(event) {
         '/',
         '/info',
         '/index.html',
-        // '/api/movie',
         '/favicon.png',
-        'https://cdn.materialdesignicons.com/2.5.94/fonts/materialdesignicons-webfont.woff2?v=2.5.94',
+        '/icon_manifest_192.png',
+        '/icon_manifest_512.png',
+        // 'https://cdn.materialdesignicons.com/2.5.94/fonts/materialdesignicons-webfont.woff2?v=2.5.94',  BUG sur cette requête -> ???
         '/fonts/baku.9e89ca24.ttf',
+        'https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kCHKm459Wlhyw.woff2',
         '/fonts/baku.53ae836a.woff',
         '/fonts/baku.d45ef783.eot',
-        // '/api/00000000-0000-0000-0000-000000000000/video/status',
-        // '/api/00000000-0000-0000-0000-000000000001/video/status',
-        // '/api/00000000-0000-0000-0000-000000000002/video/status',
-        // '/api/00000000-0000-0000-0000-000000000003/video/status',
-        // '/api/00000000-0000-0000-0000-000000000004/video/status',
-        // '/api/00000000-0000-0000-0000-000000000005/video/status',
-        // '/api/00000000-0000-0000-0000-000000000006/video/status',
-        // '/api/00000000-0000-0000-0000-000000000007/video/status',
         '/img/baku_logo_solo.225cb0c9.png ',
         '/img/baku_home_bg.b01000af.png',
         '/img/baku_solo_beta.8e984cff.svg',
@@ -114,7 +114,8 @@ function precacheGetRequest(event) {
         '/media/camera_shutter.db38097d.mp3',
         '/js/0.js',
         '/js/app.js',
-        '/js/chunck-vendors.js',
+        '/js/chunk-vendors.js',
+        '/manifest.json',
         '/splashscreens/ipad_splash.png',
         '/splashscreens/ipadpro1_splash.png',
         '/splashscreens/ipadpro2_splash.png',
@@ -133,28 +134,29 @@ function precacheGetRequest(event) {
 
 function saveIntoIndexedDb(url, authHeader, payload) {
   var myRequest = {};
+  var jsonPayLoad;
   if (url.includes("upload") || url.includes("movie")){
     jsonPayLoad = payload;
   } else {
-    jsonPayLoad = JSON.parse(payload)
+    jsonPayLoad = JSON.parse(payload);
   }
 	myRequest.url = url;
 	myRequest.authHeader = authHeader;
-	myRequest.payload = JSON.stringify(jsonPayLoad);
-  console.log("Requête "+myRequest.url+" : "+myRequest.payload)
+	myRequest.payload = jsonPayLoad;
+  console.log("Requête "+myRequest.url+" : "+myRequest.payload);
 	var request = indexedDB.open("PostDB");
 	request.onsuccess = function (event) {
 		var db = event.target.result;
 		var tx = db.transaction('postrequest', 'readwrite');
 		var store = tx.objectStore('postrequest');
-		store.add(myRequest)
+		store.add(myRequest);
 	}
 }
 
 function checkNetworkState() {
 	setInterval(function () {
 		if (navigator.onLine) {
-		  sendOfflinePostRequestsToServer()
+		  sendOfflinePostRequestsToServer();
 		}
 	}, 2000);
 }
@@ -162,124 +164,179 @@ function checkNetworkState() {
 async function sendOfflinePostRequestsToServer()  {
   var request = indexedDB.open("PostDB");
 
-  
   // Si on est en ligne après un laps de temps hors ligne, on envoie les requêtes en attente au serveur
   request.onsuccess = function(event) {
     // console.log("success" +event.target.result)
     // -- TO DO --
-    // Implémenter une fonction qui va chercher les requêtes en attente dans la IndexedDB
-    // Et qui les envoie au serveur
-
+    // Implémenter une fonction qui va chercher les requêtes en attente dans la IndexedDB et qui les envoie au serveur
   }
-
   // Si on est en ligne pour la première fois, on initialise la IndexedDB
   request.onupgradeneeded = function(event) {
-    console.log("upgraden needed"+event.target.result)
+    console.log("upgraden needed"+event.target.result);
     var db = event.target.result;
     var objectStore = db.createObjectStore("postrequest", { keyPath: 'id', autoIncrement: true });
   }
-  
-  
 }
 
 function createAndSendResponse(event,path){
   switch(path){
     case "/api/movie":
+      // Generate a projectId in a UUID format
       generateProjectId();
       var responseBody = projectId;
-
-      var responseInit = {
-        status: 200,
-        statusText: 'OK',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Mock-Response': 'yes'
-        }
-      };
-
+      var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-
       console.log(' Responding with a mock response body:', responseBody);
       event.respondWith(mockResponse);
-      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
+      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),projectId);
       break;
+
     case "/api/"+projectId+"/history":
       var responseBody = [];
-
-      var responseInit = {
-        status: 200,
-        statusText: 'OK',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Mock-Response': 'yes'
-        }
-      };
-
+      for (let i =0;i<tabOfStackPayloads[projectId].length;i++){
+        responseBody.push(tabOfStackPayloads[projectId][i][0]);
+      }
+      console.log(tabOfStackPayloads[projectId]);
+      var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-
       console.log(' Responding with a mock response body:', responseBody);
       event.respondWith(mockResponse);
-      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
       break;
+
+    case "/api/"+projectIdShortened+"/history":
+      var responseBody = [];
+      for (let i =0;i<tabOfStackPayloads[projectId].length;i++){
+        responseBody.push(tabOfStackPayloads[projectId][i][0]);
+      }
+      var responseInit = generateResponseInit();
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      console.log(' Responding with a mock response body:', responseBody);
+      event.respondWith(mockResponse);
+      break;
+
     case "/api/"+projectId+"/stack":
       var responseBody = null;
-
-      var responseInit = {
-        status: 200,
-        statusText: 'OK',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Mock-Response': 'yes'
-        }
-      };
-
+      var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-
       console.log(' Responding with a mock response body:', responseBody);
       event.respondWith(mockResponse);
-      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
+      // On récupère le payload pour le mettre dans un tableau
+      Promise.resolve(event.request.text()).then((payload) => {
+        console.log(JSON.stringify(JSON.parse(payload)));
+        tabOfStackPayloads[projectId].push(JSON.parse(payload));
+        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+      })
       break;
-      case "/api/undefined/stack":
+
+    case "/api/"+projectIdShortened+"/stack":
       var responseBody = null;
-
-      var responseInit = {
-        status: 200,
-        statusText: 'OK',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Mock-Response': 'yes'
-        }
-      };
-
+      var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-
       console.log(' Responding with a mock response body:', responseBody);
       event.respondWith(mockResponse);
-      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
+      // On récupère le payload pour le mettre dans un tableau
+      Promise.resolve(event.request.text()).then((payload) => {
+        console.log(JSON.stringify(JSON.parse(payload)));
+        tabOfStackPayloads[projectId].push(JSON.parse(payload));
+        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+      })
       break;
+
+    case "/api/undefined/stack":
+      var responseBody = null;
+      var responseInit = generateResponseInit();
+      Promise.resolve(event.request.text()).then((payload) => {
+        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+      })
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      console.log(' Responding with a mock response body:', responseBody);
+      event.respondWith(mockResponse);
+      break;
+
     case "/api/"+projectId+"/upload":
-      var responseBody = "Nom du fichier de l'image à aller chercher dans le header";
-
-      var responseInit = {
-        status: 200,
-        statusText: 'OK',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Mock-Response': 'yes'
-        }
-      };
-
+      var responseBody;
+      Promise.resolve(event.request.text()).then((payload) => {
+        let indexFile = payload.search("jpeg");
+        let currentImgString = payload.substring(indexFile+4);
+        currentImgFile = "data:image/jpeg;base64,"+btoa(currentImgString);
+        let indexName = payload.search("filename");
+        currentImgName = payload.substring(indexName+10,indexName+50);
+        responseBody = currentImgName;
+        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+      })
+      var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-
       console.log(' Responding with a mock response body:', responseBody);
       event.respondWith(mockResponse);
-      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
       break;
+
+    case '/images/'+projectId+'/lightweight/'+currentImgName:
+    case '/images/'+projectId+'/original/'+currentImgName:
+    case '/images/'+projectId+'/thumbnail/'+currentImgName:
+      var responseBody = currentImgFile;
+      var responseInit = generateResponseInit();
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      // Promise.resolve(event.request.text()).then((payload) => {
+      //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+      // })
+      console.log(' Responding with a mock response body:', responseBody);
+      event.respondWith(mockResponse);
+      break;
+
+    case "/api/"+projectIdShortened+"/video/status":
+      var responseBody = {"status":"NotGenerated","lastModified":0.0};
+      var responseInit = generateResponseInit();
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      // Utile ou pas ?
+      // Promise.resolve(event.request.text()).then((payload) => {
+      //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+      // })
+      console.log(' Responding with a mock response body:', responseBody);
+      event.respondWith(mockResponse);
+      break;
+
+    case "/images/"+projectIdShortened+"/original/"+currentImgName:
+      var responseBody = currentImgFile;
+      var responseInit = generateResponseInit();
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      // Utile ou pas ?
+      // Promise.resolve(event.request.text()).then((payload) => {
+      //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+      // })
+      console.log(' Responding with a mock response body:', responseBody);
+      event.respondWith(mockResponse);
+      break;
+
     default:
       break;
   }
 }
 
-function generateProjectId() {
-  projectId = "abcdef";
+function generateResponseInit() {
+  return({
+    status: 200,
+    statusText: 'OK',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Mock-Response': 'yes'
+    }
+  });
 }
+
+function generateProjectId() {
+  projectId = uuidv4();
+  // projectId = random_hexa(8).concat("-").concat(random_hexa(4)).concat("-").concat(random_hexa(4)).concat("-").concat(random_hexa(4)).concat("-").concat(random_hexa(8)).concat("-").concat(random(13));
+  projectIdShortened = projectId.substring(0,36);
+  tabOfStackPayloads[projectId] = [];
+  console.log(projectId);
+  console.log(projectIdShortened);
+  console.log(tabOfStackPayloads);
+}
+  
+const random_hexa = (length = 8) => {
+  return Math.random().toString(16).substr(2, length); //créé une chaine de caractère en hexadécimal de longueur length
+};
+
+const random = (length = 8) => {
+  return Math.random().toString(36).substr(2, length); //créé une chaine de caractère alphanumérique
+};
