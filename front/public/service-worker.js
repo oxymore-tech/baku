@@ -25,42 +25,45 @@ self.addEventListener('fetch', async function(event) {
   var requestUrl = new URL(event.request.url);
   var path = requestUrl.pathname;
 
-  if (!navigator.onLine) {
-    
-    // Traitement de toutes les requêtes dynamiquement
-    if (path === '/api/movie'
-     || path === '/api/'+projectId+'/history'
-     || path === '/api/'+projectIdShortened+'/history'
-     || path === '/api/'+projectId+'/stack'
-     || path === '/api/'+projectIdShortened+'/stack'
-     || path === '/api/undefined/stack' 
-     || path === '/api/'+projectId+'/upload' 
-     || path === '/api/'+projectIdShortened+'/video/status' 
-     || path === '/api/'+projectIdShortened+'/stack' 
-     || path === '/api/undefined/stack' 
-     || path === '/api/'+projectId+'/upload' 
-     || path === '/images/'+projectId+'/thumbnail/'+currentImgName 
-     || path === '/images/'+projectId+'/original/'+currentImgName 
-     || path === '/images/'+projectId+'/lightweight/'+currentImgName
-     || path === '/images/'+projectIdShortened+'/original/'+currentImgName){
-       
-      console.log("create and send adaptated response");
-      createAndSendResponse(event,path);
-    }
-    // Si GET hors ligne : on va chercher la réponse dans le cache
-    else {
-      console.log("Requête GET");
-      event.respondWith(
-        // -- TO DO --
-        // Stratégie "Cache first" à implémenter : consiste à aller chercher d'abord la réponse de la requête dans le cache
-        // Si elle n'est pas dans le cache, on interroge le serveur et on met la réponse dans le cache
-          caches.match(event.request).then(function(response) {
-              return response;
-          })
-      );
-    }
+  event.respondWith(
+  caches.open(CACHE.name+CACHE.version).then(function(cache){
 
-} 
+    return cache.match(event.request).then(function(response){
+      if (response){
+        console.log("La réponse est dans le cache");
+        return response;
+      } else if (!navigator.onLine){
+        // Traitement de toutes les requêtes dynamiquement
+        if (path === '/api/movie'
+        || path === '/api/'+projectId+'/history'
+        || path === '/api/'+projectIdShortened+'/history'
+        || path === '/api/'+projectId+'/stack'
+        || path === '/api/'+projectIdShortened+'/stack'
+        || path === '/api/undefined/stack' 
+        || path === '/api/'+projectId+'/upload' 
+        || path === '/api/'+projectIdShortened+'/video/status' 
+        || path === '/api/'+projectIdShortened+'/stack' 
+        || path === '/api/undefined/stack' 
+        || path === '/api/'+projectId+'/upload' 
+        || path === '/images/'+projectId+'/thumbnail/'+currentImgName 
+        || path === '/images/'+projectId+'/original/'+currentImgName 
+        || path === '/images/'+projectId+'/lightweight/'+currentImgName
+        || path === '/images/'+projectIdShortened+'/original/'+currentImgName){
+          
+          console.log("create and send adaptated response");
+          return createAndSendResponse(event,path);
+        }     
+      } else {
+        if(path.includes("stack") && !path.includes("undefined")){
+          projectId = path.substring(5,50);
+        }
+        console.log("No caching response to "+ event.request.url);
+        return fetch(event.request);
+      }
+    })
+
+  })
+  )
 });
 
 
@@ -187,8 +190,8 @@ function createAndSendResponse(event,path){
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
       saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),projectId);
+      return(mockResponse);
       break;
 
     case "/api/"+projectId+"/history":
@@ -200,7 +203,7 @@ function createAndSendResponse(event,path){
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
+      return(mockResponse);
       break;
 
     case "/api/"+projectIdShortened+"/history":
@@ -211,7 +214,7 @@ function createAndSendResponse(event,path){
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
+      return(mockResponse);
       break;
 
     case "/api/"+projectId+"/stack":
@@ -219,13 +222,13 @@ function createAndSendResponse(event,path){
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
       // On récupère le payload pour le mettre dans un tableau
       Promise.resolve(event.request.text()).then((payload) => {
         console.log(JSON.stringify(JSON.parse(payload)));
         tabOfStackPayloads[projectId].push(JSON.parse(payload));
         saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
       })
+      return(mockResponse);
       break;
 
     case "/api/"+projectIdShortened+"/stack":
@@ -233,13 +236,14 @@ function createAndSendResponse(event,path){
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
+      
       // On récupère le payload pour le mettre dans un tableau
       Promise.resolve(event.request.text()).then((payload) => {
         console.log(JSON.stringify(JSON.parse(payload)));
         tabOfStackPayloads[projectId].push(JSON.parse(payload));
         saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
       })
+      return(mockResponse);
       break;
 
     case "/api/undefined/stack":
@@ -250,24 +254,40 @@ function createAndSendResponse(event,path){
       })
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
+      return(mockResponse);
       break;
 
     case "/api/"+projectId+"/upload":
       var responseBody;
-      Promise.resolve(event.request.text()).then((payload) => {
-        let indexFile = payload.search("jpeg");
-        let currentImgString = payload.substring(indexFile+4);
-        currentImgFile = "data:image/jpeg;base64,"+btoa(currentImgString);
-        let indexName = payload.search("filename");
-        currentImgName = payload.substring(indexName+10,indexName+50);
+      Promise.resolve(event.request.clone().arrayBuffer()).then((payload) => {
+        console.log(payload);
+          var binary = '';
+          var bytes = new Uint8Array( payload );
+          var len = bytes.byteLength;
+          for (var i = 0; i < len; i++) {
+              binary += String.fromCharCode( bytes[ i ] );
+          }
+          console.log(binary);
+        let indexFile = binary.search("jpeg");
+        let currentImgContent = binary.substring(indexFile+8,binary.length-46);
+        console.log(currentImgContent);
+        // Base64
+        let currentImgFileData = "data:image/jpeg;base64,"+btoa(currentImgContent);
+        let indexName = binary.search("filename");
+        currentImgName = binary.substring(indexName+10,indexName+50);
         responseBody = currentImgName;
-        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
-      })
+
+        let currentImgFilePromise = urltoFile(currentImgFileData, '/images/'+projectId+'/lightweight/'+currentImgName);
+        
+        Promise.resolve(currentImgFilePromise).then((file)=> {
+          currentImgFile = file;
+        })
+        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),binary);
+      });
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
+      return(mockResponse);
       break;
 
     case '/images/'+projectId+'/lightweight/'+currentImgName:
@@ -275,12 +295,20 @@ function createAndSendResponse(event,path){
     case '/images/'+projectId+'/thumbnail/'+currentImgName:
       var responseBody = currentImgFile;
       var responseInit = generateResponseInit();
-      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      var mockResponse = new Response(responseBody, responseInit);
       // Promise.resolve(event.request.text()).then((payload) => {
       //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
       // })
-      console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
+      // console.log(' Responding with a mock response body:', responseBody);
+      caches.open(CACHE.name+CACHE.version).then((cache) => {
+        cache.match(event.request).then(function(response){
+          if (!response){
+            var cacheResponse = new Response(responseBody, responseInit);
+            cache.put(event.request.clone(),cacheResponse);
+          }
+        })
+      })
+      return(mockResponse);
       break;
 
     case "/api/"+projectIdShortened+"/video/status":
@@ -292,7 +320,7 @@ function createAndSendResponse(event,path){
       //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
       // })
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
+      return(mockResponse);
       break;
 
     case "/images/"+projectIdShortened+"/original/"+currentImgName:
@@ -304,13 +332,22 @@ function createAndSendResponse(event,path){
       //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
       // })
       console.log(' Responding with a mock response body:', responseBody);
-      event.respondWith(mockResponse);
+      return(mockResponse);
       break;
 
     default:
       break;
   }
 }
+
+function urltoFile(url, filename, mimeType){
+  mimeType = mimeType || (url.match(/^data:([^;]+);/)||'')[1];
+  return (fetch(url)
+      .then(function(res){return res.arrayBuffer();})
+      .then(function(buf){return new File([buf], filename, {type:mimeType});})
+  );
+}
+
 
 function generateResponseInit() {
   return({
