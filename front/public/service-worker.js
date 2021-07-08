@@ -29,7 +29,7 @@ self.addEventListener('fetch', async function(event) {
   caches.open(CACHE.name+CACHE.version).then(function(cache){
 
     return cache.match(event.request).then(function(response){
-      if (response){
+      if (response && (!path.includes("history") || !event.request.referrer.includes("movies"))){
         console.log("La réponse est dans le cache");
         return response;
       } else if (!navigator.onLine){
@@ -48,7 +48,8 @@ self.addEventListener('fetch', async function(event) {
         || path === '/images/'+projectId+'/thumbnail/'+currentImgName 
         || path === '/images/'+projectId+'/original/'+currentImgName 
         || path === '/images/'+projectId+'/lightweight/'+currentImgName
-        || path === '/images/'+projectIdShortened+'/original/'+currentImgName){
+        || path === '/images/'+projectIdShortened+'/original/'+currentImgName
+        || path === '/undefined'){
           
           console.log("create and send adaptated response");
           return createAndSendResponse(event,path);
@@ -186,6 +187,7 @@ function createAndSendResponse(event,path){
     case "/api/movie":
       // Generate a projectId in a UUID format
       generateProjectId();
+      cacheStatusResponse();
       var responseBody = projectId;
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
@@ -200,6 +202,7 @@ function createAndSendResponse(event,path){
         responseBody.push(tabOfStackPayloads[projectId][i][0]);
       }
       console.log(tabOfStackPayloads[projectId]);
+      cacheHistoryRequest(responseBody,event.request);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
@@ -335,9 +338,42 @@ function createAndSendResponse(event,path){
       return(mockResponse);
       break;
 
+    case '/undefined':
+      var responseBody = null;
+      var responseInit = generateResponseInit();
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      console.log(' Responding with a mock response body:', responseBody);
+      return(mockResponse);
+      break;
+
     default:
       break;
   }
+}
+
+function cacheStatusResponse(){
+  const request = new Request('https://localhost/api/'+projectId+'/video/status', {method:'GET'});
+  var responseBody = {"status":"NotGenerated","lastModified":0.0};
+  var responseInit = generateResponseInit();
+  var cacheResponse = new Response(JSON.stringify(responseBody), responseInit);
+  caches.open(CACHE.name+CACHE.version).then((cache) => {
+    cache.put(request,cacheResponse);
+  })
+}
+
+function cacheHistoryRequest(responseBody,request){
+  var responseInit = generateResponseInit();
+  var cacheResponse = new Response(JSON.stringify(responseBody), responseInit);
+  caches.open(CACHE.name+CACHE.version).then((cache) => {
+    cache.match(request).then(function(response){
+      if (!response){
+        cache.put(request,cacheResponse);
+      } else {
+        cache.delete(request);
+        cache.put(request,cacheResponse);
+      }
+    })
+  })
 }
 
 function urltoFile(url, filename, mimeType){
