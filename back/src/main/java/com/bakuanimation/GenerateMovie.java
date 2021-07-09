@@ -41,11 +41,11 @@ public final class GenerateMovie {
         Path srcPath = Paths.get(args[0]);
         String projectName = srcPath.getFileName().toString();
         Path dstPath = Paths.get(args[1]);
-        Path imageDstPath = dstPath.resolve("images").resolve(projectName);
+        Path imageDstPath = dstPath.resolve("images");
         for (Quality quality : qualities) {
             Files.createDirectories(imageDstPath.resolve(quality.folder));
         }
-        Path stackFile = dstPath.resolve("stacks").resolve(projectName + ".stack");
+        Path stackFile = dstPath.resolve("stack.json");
         JsonNodeFactory jsonNodeFactory = JsonNodeFactory.instance;
         ArrayNode stack = jsonNodeFactory.arrayNode();
 
@@ -53,6 +53,21 @@ public final class GenerateMovie {
         List<Path> shotPaths = Files.list(srcPath)
                 .sorted()
                 .collect(Collectors.toList());
+
+        // Changin movie name
+        ObjectNode movieNameEvent = jsonNodeFactory.objectNode();
+        movieNameEvent.put("action", 0);
+        movieNameEvent.put("user", USERNAME);
+        movieNameEvent.put("value", projectName);
+        stack.add(movieNameEvent);
+
+        //locking movie
+        ObjectNode movieLockEvent = jsonNodeFactory.objectNode();
+        movieLockEvent.put("action", 8);
+        movieLockEvent.put("user", USERNAME);
+        movieLockEvent.put("value", true);
+        stack.add(movieLockEvent);
+
         for (int shotIdx = 0; shotIdx < shotPaths.size(); shotIdx++) {
             System.out.println("Generating shot " + shotIdx);
             Path shotPath = shotPaths.get(shotIdx);
@@ -70,7 +85,7 @@ public final class GenerateMovie {
                     .collect(Collectors.toList());
             for (int imageIdx = 0; imageIdx < images.size(); imageIdx++) {
                 Path imagePath = images.get(imageIdx);
-                String imageName = shotPath.getFileName().toString() + "_" + imagePath.getFileName().toString();
+                String imageName = imagePath.getFileName().toString();
                 for (Quality quality : qualities) {
                     Path output1 = imageDstPath.resolve(quality.folder).resolve(imageName);
                     write(imagePath, output1, quality);
