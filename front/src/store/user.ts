@@ -8,6 +8,11 @@ const lsUsernameKey = "username";
 const lsUsercolorKey = "usercolor";
 const lsSeenProjectsKey = "seenProjects";
 
+var CACHE = {
+	name: 'Baku-cache',
+	version: 'v1'
+};
+
 const colorList = [
   "#E74C3C",
   "#FFBD72",
@@ -168,15 +173,25 @@ export const UserStore: BakuModule<UserState> = {
     },
     async deleteProject(context: { state: { seenProjects: any[]; }; commit: (arg0: string, arg1: any) => any; }, projectId: string) {
       const toDelete = context.state.seenProjects.find((s: { id: string; }) => s.id === projectId);
+      
       if (toDelete) {
         await deleteProject(toDelete.adminId || toDelete.id);
         await context.commit("deleteSeenProject", toDelete);
+        caches.delete("/api/"+projectId+"/history");   
+
       }
     },
     async deleteSeenProject(context: { state: { seenProjects: any[]; }; commit: (arg0: string, arg1: any) => any; }, projectId: string) {
       const toDelete = context.state.seenProjects.find((s: { id: string; }) => s.id === projectId);
+      
       if (toDelete) {
         await context.commit("deleteSeenProject", toDelete);
+        caches.open(CACHE.name+CACHE.version).then((cache) => {
+          cache.delete("/api/"+projectId+"/history");
+          cache.delete("/api/"+projectId+"/video/status");        //Deleting cached files in related to project      
+                 
+        }
+        )
       }
     },
     async updateUsername(context: { commit: (arg0: string, arg1: string) => any; }, name: string) {

@@ -241,6 +241,11 @@ const CaptureNS = namespace("capture");
 const ProjectNS = namespace("project");
 const ClipboardNS = namespace("clipboard");
 
+var CACHE = {
+	name: 'Baku-cache',
+	version: 'v1'
+};
+
 @Component({
   components: {
     CaptureButtonComponent,
@@ -397,12 +402,25 @@ export default class CarrouselComponent extends Vue {
     if (!this.isFrameLiveView && !this.isPlaying && this.canEdit) {
       const imagesToDelete = this.selectedImagesForReal;
       imagesToDelete.sort((a: any, b: any) => b - a);
+      var projectId = this.projectId;
+      var imgId = this.images[this.activeImage].id;
+      
+      console.log(imgId);
+      caches.open(CACHE.name+CACHE.version).then((cache) => {          
+          cache.delete("/images/"+projectId+"/lightweight/"+imgId); //Deleting all images in cache
+          cache.delete("/images/"+projectId+"/original/"+imgId); 
+          cache.delete("/images/"+projectId+"/thumbnail/"+imgId);          
+                 
+        }
+        )
       this.removeImagesFromShot(
-        imagesToDelete.map((imgId: number) => ({
+        imagesToDelete.map((imgId: number) => ({          
           shotId: this.activeShot,
           imageIndex: imgId,
         }))
+        
       );
+      console.log()
       this.$emit("activeImageChange", imagesToDelete[0] - 1);
       this.$emit("resetSelection");
     }
