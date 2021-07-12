@@ -29,35 +29,65 @@ self.addEventListener('fetch', async function(event) {
   caches.open(CACHE.name+CACHE.version).then(function(cache){
 
     return cache.match(event.request).then(function(response){
-      if (response && (!path.includes("history") || !event.request.referrer.includes("movies"))){
+      if (response && (!path.includes("history") || !event.request.referrer.includes("movies/"+projectIdShortened))){
         console.log("La réponse est dans le cache");
         return response;
       } else if (!navigator.onLine){
-        // Traitement de toutes les requêtes dynamiquement
+        // OFFLINE
         if (path === '/api/movie'
         || path === '/api/'+projectId+'/history'
         || path === '/api/'+projectIdShortened+'/history'
         || path === '/api/'+projectId+'/stack'
         || path === '/api/'+projectIdShortened+'/stack'
         || path === '/api/undefined/stack' 
-        || path === '/api/'+projectId+'/upload' 
-        || path === '/api/'+projectIdShortened+'/video/status' 
-        || path === '/api/'+projectIdShortened+'/stack' 
+        || path === '/api/'+projectId+'/upload'
+        || path === '/api/'+projectIdShortened+'/upload'
         || path === '/api/undefined/stack' 
-        || path === '/api/'+projectId+'/upload' 
         || path === '/images/'+projectId+'/thumbnail/'+currentImgName 
         || path === '/images/'+projectId+'/original/'+currentImgName 
         || path === '/images/'+projectId+'/lightweight/'+currentImgName
-        || path === '/images/'+projectIdShortened+'/original/'+currentImgName
+        || path === '/images/'+projectIdShortened+'/thumbnail/'+currentImgName 
+        || path === '/images/'+projectIdShortened+'/original/'+currentImgName 
+        || path === '/images/'+projectIdShortened+'/lightweight/'+currentImgName
         || path === '/undefined'){
           
           console.log("create and send adaptated response");
           return createAndSendResponse(event,path);
-        }     
-      } else {
-        if(path.includes("stack") && !path.includes("undefined")){
-          projectId = path.substring(5,50);
+        } else if(path.includes("stack") &&  event.request.referrer.includes("library")){
+            projectIdShortened = path.substring(5,41);
+            console.log(projectIdShortened);
+            return createAndSendResponse(event,path);
+        } else if (path.includes("stack") && event.request.referrer.includes("movie")){
+            projectId = path.substring(5,50);
+            projectIdShortened = path.substring(5,41);
+            console.log(projectId);
+            console.log(projectIdShortened);
+            return createAndSendResponse(event,path);
         }
+      } else {
+        // ONLINE
+        if (path.includes("stack") && !path.includes("undefined")){
+          projectId = path.substring(5,50);
+          projectIdShortened = path.substring(5,41);
+          console.log(projectId);
+          console.log(projectIdShortened);
+          fillTabOfStackPayloads(event); 
+          console.log(projectId);
+        } else if (path.includes("history") && event.request.referrer === "https://localhost/"){
+          projectId = path.substring(5,50);
+          projectIdShortened = path.substring(5,41);
+          console.log(projectId);
+          tabOfStackPayloads[projectIdShortened] = [];
+          console.log(tabOfStackPayloads);
+          cacheStatusResponse();
+        } else if (path.includes("history")){
+          cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
+        } else if(path.includes("upload")){
+          createImgFile(event);
+        } else if (path.includes("images")){
+          cacheImgResponse();
+        }
+
         console.log("No caching response to "+ event.request.url);
         return fetch(event.request);
       }
@@ -188,32 +218,24 @@ function createAndSendResponse(event,path){
       // Generate a projectId in a UUID format
       generateProjectId();
       cacheStatusResponse();
-      var responseBody = projectId;
+      var responseBody = projectIdShortened;
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),projectId);
+      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
       return(mockResponse);
       break;
 
     case "/api/"+projectId+"/history":
-      var responseBody = [];
-      for (let i =0;i<tabOfStackPayloads[projectId].length;i++){
-        responseBody.push(tabOfStackPayloads[projectId][i][0]);
-      }
-      console.log(tabOfStackPayloads[projectId]);
-      cacheHistoryRequest(responseBody,event.request);
-      var responseInit = generateResponseInit();
-      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-      console.log(' Responding with a mock response body:', responseBody);
-      return(mockResponse);
-      break;
-
     case "/api/"+projectIdShortened+"/history":
       var responseBody = [];
-      for (let i =0;i<tabOfStackPayloads[projectId].length;i++){
-        responseBody.push(tabOfStackPayloads[projectId][i][0]);
+      projectIdShortened = path.substring(5,41);
+      console.log(projectIdShortened);
+      for (let i =0;i<tabOfStackPayloads[projectIdShortened].length;i++){
+        responseBody.push(tabOfStackPayloads[projectIdShortened][i]);
       }
+      console.log(tabOfStackPayloads[projectIdShortened]);
+      cacheHistoryRequest(responseBody);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
@@ -221,31 +243,14 @@ function createAndSendResponse(event,path){
       break;
 
     case "/api/"+projectId+"/stack":
-      var responseBody = null;
-      var responseInit = generateResponseInit();
-      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-      console.log(' Responding with a mock response body:', responseBody);
-      // On récupère le payload pour le mettre dans un tableau
-      Promise.resolve(event.request.text()).then((payload) => {
-        console.log(JSON.stringify(JSON.parse(payload)));
-        tabOfStackPayloads[projectId].push(JSON.parse(payload));
-        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
-      })
-      return(mockResponse);
-      break;
-
     case "/api/"+projectIdShortened+"/stack":
       var responseBody = null;
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      
       // On récupère le payload pour le mettre dans un tableau
-      Promise.resolve(event.request.text()).then((payload) => {
-        console.log(JSON.stringify(JSON.parse(payload)));
-        tabOfStackPayloads[projectId].push(JSON.parse(payload));
-        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
-      })
+      
+      fillTabOfStackPayloads(event,projectIdShortened);
       return(mockResponse);
       break;
 
@@ -261,32 +266,11 @@ function createAndSendResponse(event,path){
       break;
 
     case "/api/"+projectId+"/upload":
+    case "/api/"+projectIdShortened+"/upload":
       var responseBody;
-      Promise.resolve(event.request.clone().arrayBuffer()).then((payload) => {
-        console.log(payload);
-          var binary = '';
-          var bytes = new Uint8Array( payload );
-          var len = bytes.byteLength;
-          for (var i = 0; i < len; i++) {
-              binary += String.fromCharCode( bytes[ i ] );
-          }
-          console.log(binary);
-        let indexFile = binary.search("jpeg");
-        let currentImgContent = binary.substring(indexFile+8,binary.length-46);
-        console.log(currentImgContent);
-        // Base64
-        let currentImgFileData = "data:image/jpeg;base64,"+btoa(currentImgContent);
-        let indexName = binary.search("filename");
-        currentImgName = binary.substring(indexName+10,indexName+50);
-        responseBody = currentImgName;
-
-        let currentImgFilePromise = urltoFile(currentImgFileData, '/images/'+projectId+'/lightweight/'+currentImgName);
-        
-        Promise.resolve(currentImgFilePromise).then((file)=> {
-          currentImgFile = file;
-        })
-        saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),binary);
-      });
+      createImgFile(event);
+      responseBody = currentImgName;
+      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),currentImgFile);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
@@ -297,44 +281,24 @@ function createAndSendResponse(event,path){
     case '/images/'+projectId+'/original/'+currentImgName:
     case '/images/'+projectId+'/thumbnail/'+currentImgName:
       var responseBody = currentImgFile;
+      projectId = path.substring(8,53);
+      console.log(projectId);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(responseBody, responseInit);
-      // Promise.resolve(event.request.text()).then((payload) => {
-      //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
-      // })
-      // console.log(' Responding with a mock response body:', responseBody);
-      caches.open(CACHE.name+CACHE.version).then((cache) => {
-        cache.match(event.request).then(function(response){
-          if (!response){
-            var cacheResponse = new Response(responseBody, responseInit);
-            cache.put(event.request.clone(),cacheResponse);
-          }
-        })
-      })
+      cacheImgResponse();
       return(mockResponse);
       break;
 
-    case "/api/"+projectIdShortened+"/video/status":
-      var responseBody = {"status":"NotGenerated","lastModified":0.0};
-      var responseInit = generateResponseInit();
-      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-      // Utile ou pas ?
-      // Promise.resolve(event.request.text()).then((payload) => {
-      //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
-      // })
-      console.log(' Responding with a mock response body:', responseBody);
-      return(mockResponse);
-      break;
-
-    case "/images/"+projectIdShortened+"/original/"+currentImgName:
+    case '/images/'+projectIdShortened+'/lightweight/'+currentImgName:
+    case '/images/'+projectIdShortened+'/original/'+currentImgName:
+    case '/images/'+projectIdShortened+'/thumbnail/'+currentImgName:
       var responseBody = currentImgFile;
+      projectIdShortened = path.substring(8,44);
+      console.log(projectIdShortened);
       var responseInit = generateResponseInit();
-      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-      // Utile ou pas ?
-      // Promise.resolve(event.request.text()).then((payload) => {
-      //   saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
-      // })
-      console.log(' Responding with a mock response body:', responseBody);
+      var mockResponse = new Response(responseBody, responseInit);
+      
+      cacheImgResponse();
       return(mockResponse);
       break;
 
@@ -351,29 +315,102 @@ function createAndSendResponse(event,path){
   }
 }
 
-function cacheStatusResponse(){
-  const request = new Request('https://localhost/api/'+projectId+'/video/status', {method:'GET'});
-  var responseBody = {"status":"NotGenerated","lastModified":0.0};
-  var responseInit = generateResponseInit();
-  var cacheResponse = new Response(JSON.stringify(responseBody), responseInit);
-  caches.open(CACHE.name+CACHE.version).then((cache) => {
-    cache.put(request,cacheResponse);
+function fillTabOfStackPayloads(event){
+  Promise.resolve(event.request.clone().text()).then((payload) => {
+    console.log(JSON.stringify(JSON.parse(payload)));
+    tabOfStackPayloads[projectIdShortened].push(JSON.parse(payload)[0]);
+    if (JSON.parse(payload)[0].action === 1 || JSON.parse(payload)[0].action === 0){
+      var req = new Request('https://localhost/api/'+projectIdShortened+'/history');
+      cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
+    }
+    saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
   })
 }
 
-function cacheHistoryRequest(responseBody,request){
+function cacheStatusResponse(){
+  const request = new Request('https://localhost/api/'+projectId+'/video/status', {method:'GET'});
+  const requestShortened = new Request('https://localhost/api/'+projectIdShortened+'/video/status', {method:'GET'});
+  var responseBody = {"status":"NotGenerated","lastModified":0.0};
   var responseInit = generateResponseInit();
   var cacheResponse = new Response(JSON.stringify(responseBody), responseInit);
+  var cacheResponseShortened = new Response(JSON.stringify(responseBody), responseInit);
   caches.open(CACHE.name+CACHE.version).then((cache) => {
-    cache.match(request).then(function(response){
+    cache.put(request,cacheResponse);
+    cache.put(requestShortened,cacheResponseShortened);
+  })
+}
+
+function cacheHistoryRequest(response){
+  var reqShortened = new Request('https://localhost/api/'+projectIdShortened+'/history');
+  var req = new Request('https://localhost/api/'+projectId+'/history');
+  var responseInit = generateResponseInit();
+  var cacheResponse = new Response(JSON.stringify(response), responseInit);
+  caches.open(CACHE.name+CACHE.version).then((cache) => {
+    cache.match(req).then(function(response){
       if (!response){
-        cache.put(request,cacheResponse);
+        cache.put(req,cacheResponse);
       } else {
-        cache.delete(request);
-        cache.put(request,cacheResponse);
+        cache.delete(req);
+        cache.put(req,cacheResponse);
+      }
+    })
+  var cacheResponseShortened = new Response(JSON.stringify(response), responseInit);
+    cache.match(reqShortened).then(function(response){
+      if (!response){
+        cache.put(reqShortened,cacheResponseShortened);
+      } else {
+        cache.delete(reqShortened);
+        cache.put(reqShortened,cacheResponseShortened);
       }
     })
   })
+}
+
+function cacheImgResponse(){
+  var reqThumb = new Request('https://localhost/images/'+projectId+'/thumbnail/'+currentImgName);
+  var reqThumbShortened = new Request('https://localhost/images/'+projectIdShortened+'/thumbnail/'+currentImgName);
+  var reqOrig = new Request('https://localhost/images/'+projectId+'/original/'+currentImgName);
+  var reqOrigShortened = new Request('https://localhost/images/'+projectIdShortened+'/original/'+currentImgName);
+  var reqLight = new Request('https://localhost/images/'+projectId+'/lightweight/'+currentImgName);
+  var reqLightShortened = new Request('https://localhost/images/'+projectIdShortened+'/lightweight/'+currentImgName);
+  caches.open(CACHE.name+CACHE.version).then((cache) => {
+    putInCache(cache,reqThumb);
+    putInCache(cache,reqThumbShortened);
+    putInCache(cache,reqOrig);
+    putInCache(cache,reqOrigShortened);
+    putInCache(cache,reqLight);
+    putInCache(cache,reqLightShortened);
+  }) 
+}
+
+function putInCache(cache,req){
+  cache.match(req).then(function(response){
+    if (!response){
+      var cacheResponse = new Response(currentImgFile, generateResponseInit());
+      cache.put(req,cacheResponse);
+    }
+  })
+}
+
+function createImgFile(event){
+  Promise.resolve(event.request.clone().arrayBuffer()).then((payload) => {
+    var binary = '';
+    var bytes = new Uint8Array( payload );
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+  let indexFile = binary.search("jpeg");
+  let currentImgContent = binary.substring(indexFile+8,binary.length-46);
+  let currentImgFileData = "data:image/jpeg;base64,"+btoa(currentImgContent);
+  let indexName = binary.search("filename");
+  currentImgName = binary.substring(indexName+10,indexName+50);
+  let currentImgFilePromise = urltoFile(currentImgFileData, '/images/'+projectId+'/lightweight/'+currentImgName);
+  Promise.resolve(currentImgFilePromise).then((file)=> {
+    currentImgFile = file;
+  })
+  
+});
 }
 
 function urltoFile(url, filename, mimeType){
@@ -397,19 +434,9 @@ function generateResponseInit() {
 }
 
 function generateProjectId() {
-  projectId = uuidv4();
-  // projectId = random_hexa(8).concat("-").concat(random_hexa(4)).concat("-").concat(random_hexa(4)).concat("-").concat(random_hexa(4)).concat("-").concat(random_hexa(8)).concat("-").concat(random(13));
-  projectIdShortened = projectId.substring(0,36);
-  tabOfStackPayloads[projectId] = [];
+  projectIdShortened = uuidv4();
+  tabOfStackPayloads[projectIdShortened] = [];
   console.log(projectId);
   console.log(projectIdShortened);
   console.log(tabOfStackPayloads);
 }
-  
-const random_hexa = (length = 8) => {
-  return Math.random().toString(16).substr(2, length); //créé une chaine de caractère en hexadécimal de longueur length
-};
-
-const random = (length = 8) => {
-  return Math.random().toString(36).substr(2, length); //créé une chaine de caractère alphanumérique
-};
