@@ -24,6 +24,7 @@ self.addEventListener('fetch', async function(event) {
   console.log('Handling fetch event for', event.request.url);
   var requestUrl = new URL(event.request.url);
   var path = requestUrl.pathname;
+  console.log(tabOfStackPayloads);
 
   event.respondWith(
   caches.open(CACHE.name+CACHE.version).then(function(cache){
@@ -31,6 +32,11 @@ self.addEventListener('fetch', async function(event) {
     return cache.match(event.request).then(function(response){
       if (response && (!path.includes("history") || !event.request.referrer.includes("movies/"+projectIdShortened))){
         console.log("La réponse est dans le cache");
+        
+        if (path.includes("status")){
+          projectIdShortened = path.substring(5,41);
+          cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
+        }
         return response;
       } else if (!navigator.onLine){
         // OFFLINE
@@ -52,6 +58,10 @@ self.addEventListener('fetch', async function(event) {
         || path === '/undefined'){
           
           console.log("create and send adaptated response");
+          if (tabOfStackPayloads[projectIdShortened]){
+            console.log("On remplit le Tab avec le projectId : "+projectIdShortened+" pour la requête "+event.request.url)
+            cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
+          }
           return createAndSendResponse(event,path);
         } else if(path.includes("stack") &&  event.request.referrer.includes("library")){
             projectIdShortened = path.substring(5,41);
@@ -73,21 +83,26 @@ self.addEventListener('fetch', async function(event) {
           console.log(projectIdShortened);
           fillTabOfStackPayloads(event); 
           console.log(projectId);
-        } else if (path.includes("history") && event.request.referrer === "https://localhost/"){
+        } else if (path.includes("history")){
           projectId = path.substring(5,50);
           projectIdShortened = path.substring(5,41);
           console.log(projectId);
-          tabOfStackPayloads[projectIdShortened] = [];
+          console.log(tabOfStackPayloads[projectIdShortened] === true);
+          if (!tabOfStackPayloads[projectIdShortened]){
+            console.log("tab inexistant : initialisation");
+            tabOfStackPayloads[projectIdShortened] = [];
+          }
           console.log(tabOfStackPayloads);
-          cacheStatusResponse();
-        } else if (path.includes("history")){
           cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
+          cacheStatusResponse();
         } else if(path.includes("upload")){
           createImgFile(event);
         } else if (path.includes("images")){
           cacheImgResponse();
         }
-
+        if (tabOfStackPayloads[projectIdShortened]){
+          cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
+        }
         console.log("No caching response to "+ event.request.url);
         return fetch(event.request);
       }
@@ -320,7 +335,7 @@ function fillTabOfStackPayloads(event){
     console.log(JSON.stringify(JSON.parse(payload)));
     tabOfStackPayloads[projectIdShortened].push(JSON.parse(payload)[0]);
     if (JSON.parse(payload)[0].action === 1 || JSON.parse(payload)[0].action === 0){
-      var req = new Request('https://localhost/api/'+projectIdShortened+'/history');
+      console.log(tabOfStackPayloads[projectIdShortened]);
       cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
     }
     saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
