@@ -30,17 +30,18 @@ self.addEventListener('fetch', async function(event) {
   caches.open(CACHE.name+CACHE.version).then(function(cache){
 
     return cache.match(event.request).then(function(response){
-      if (response && (!path.includes("history") || !event.request.referrer.includes("movies/"+projectIdShortened))){
-        console.log("La réponse est dans le cache");
-        
-        if (path.includes("status")){
-          projectIdShortened = path.substring(5,41);
-          cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
-        }
-        return response;
-      } else if (!navigator.onLine){
+      
+      if (!navigator.onLine){
         // OFFLINE
-        if (path === '/api/movie'
+        if (response && (!path.includes("history") || !event.request.referrer.includes("movies/"+projectIdShortened))){
+          console.log("La réponse est dans le cache");
+          
+          if (path.includes("status")){
+            projectIdShortened = path.substring(5,41);
+            cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
+          }
+          return response;
+        } else if (path === '/api/movie'
         || path === '/api/'+projectId+'/history'
         || path === '/api/'+projectIdShortened+'/history'
         || path === '/api/'+projectId+'/stack'
@@ -99,6 +100,9 @@ self.addEventListener('fetch', async function(event) {
           createImgFile(event);
         } else if (path.includes("images")){
           cacheImgResponse();
+          if (response){
+            return response;
+          }
         }
         if (tabOfStackPayloads[projectIdShortened]){
           cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
@@ -184,14 +188,16 @@ function precacheGetRequest(event) {
 function saveIntoIndexedDb(url, authHeader, payload) {
   var myRequest = {};
   var jsonPayLoad;
-  if (url.includes("upload") || url.includes("movie")){
-    jsonPayLoad = payload;
+  if (url.includes("upload")){
+    console.log(payload);
+    myRequest.payload = payload;
   } else {
     jsonPayLoad = JSON.parse(payload);
+    myRequest.payload = JSON.stringify(jsonPayLoad);
   }
 	myRequest.url = url;
 	myRequest.authHeader = authHeader;
-	myRequest.payload = jsonPayLoad;
+  
   console.log("Requête "+myRequest.url+" : "+myRequest.payload);
 	var request = indexedDB.open("PostDB");
 	request.onsuccess = function (event) {
@@ -204,7 +210,9 @@ function saveIntoIndexedDb(url, authHeader, payload) {
 
 function checkNetworkState() {
 	setInterval(function () {
+    // console.log("check if online");
 		if (navigator.onLine) {
+      // console.log("Online");
 		  sendOfflinePostRequestsToServer();
 		}
 	}, 2000);
@@ -215,9 +223,49 @@ async function sendOfflinePostRequestsToServer()  {
 
   // Si on est en ligne après un laps de temps hors ligne, on envoie les requêtes en attente au serveur
   request.onsuccess = function(event) {
-    // console.log("success" +event.target.result)
-    // -- TO DO --
-    // Implémenter une fonction qui va chercher les requêtes en attente dans la IndexedDB et qui les envoie au serveur
+    console.log("success" +event.target.result)
+    var db = event.target.result;
+		var tx = db.transaction('postrequest', 'readwrite');
+		var store = tx.objectStore('postrequest');
+		var allRecords = store.getAll();
+		allRecords.onsuccess = function () {
+
+			if (allRecords.result && allRecords.result.length > 0) {
+        
+
+				var records = allRecords.result
+        console.log(records)
+				for (var i = 0; i < records.length; i++){
+        
+          if (records[i].url.includes("stack")){
+            // fetch(records[i].url, {
+            //   method: "POST",
+            //   headers: {
+            //     'Accept': 'application/json',
+            //     'Content-Type': 'application/json',
+            //     'Authorization': records[i].authHeader
+            //   },
+            //   body: records[i].payload
+            // }}
+          } else if (records[i].url.includes("upload")){
+            var formData = new FormData();
+            var blob = imagetoblob(records[i].payload.data)
+            formData.set("file",blob,records[i].payload.name);
+            for (var [key, value] of formData.entries()) { 
+              console.log(key, value);
+            }
+            console.log(records[i].payload);
+            fetch(records[i].url, {
+              method: "POST",
+              body: formData
+            })
+            var req = new Request(records[i].payload.data);
+            fetch(req);
+          }
+					store.delete(allRecords.result[i].id)
+        }
+			}
+		};
   }
   // Si on est en ligne pour la première fois, on initialise la IndexedDB
   request.onupgradeneeded = function(event) {
@@ -226,6 +274,39 @@ async function sendOfflinePostRequestsToServer()  {
     var objectStore = db.createObjectStore("postrequest", { keyPath: 'id', autoIncrement: true });
   }
 }
+
+function imagetoblob(base64String){
+    // Split the base64 string in data and contentType
+    const block = base64String.split(';');
+    // Get the content type of the image
+    const contentType = block[0].split(':')[1]; // In this case "image/gif"
+    // get the real base64 content of the file
+    const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
+
+    // Convert it to a blob to upload
+    return b64toBlob(realData, contentType);
+  }
+
+function b64toBlob(b64Data,contentType = '',sliceSize = 512){
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType });
+}
+
 
 function createAndSendResponse(event,path){
   switch(path){
@@ -237,10 +318,10 @@ function createAndSendResponse(event,path){
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
-      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
+      // saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
       return(mockResponse);
       break;
-
+      
     case "/api/"+projectId+"/history":
     case "/api/"+projectIdShortened+"/history":
       var responseBody = [];
@@ -259,9 +340,8 @@ function createAndSendResponse(event,path){
 
     case "/api/"+projectId+"/stack":
     case "/api/"+projectIdShortened+"/stack":
-      var responseBody = null;
       var responseInit = generateResponseInit();
-      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      var mockResponse = new Response('null', responseInit);
       console.log(' Responding with a mock response body:', responseBody);
       // On récupère le payload pour le mettre dans un tableau
       
@@ -270,12 +350,11 @@ function createAndSendResponse(event,path){
       break;
 
     case "/api/undefined/stack":
-      var responseBody = null;
       var responseInit = generateResponseInit();
       Promise.resolve(event.request.text()).then((payload) => {
         saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
       })
-      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
+      var mockResponse = new Response('null', responseInit);
       console.log(' Responding with a mock response body:', responseBody);
       return(mockResponse);
       break;
@@ -285,7 +364,6 @@ function createAndSendResponse(event,path){
       var responseBody;
       createImgFile(event);
       responseBody = currentImgName;
-      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),currentImgFile);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       console.log(' Responding with a mock response body:', responseBody);
@@ -338,7 +416,9 @@ function fillTabOfStackPayloads(event){
       console.log(tabOfStackPayloads[projectIdShortened]);
       cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
     }
-    saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+    if (!navigator.onLine){
+      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
+    }
   })
 }
 
@@ -415,17 +495,27 @@ function createImgFile(event){
     for (var i = 0; i < len; i++) {
         binary += String.fromCharCode( bytes[ i ] );
     }
-  let indexFile = binary.search("jpeg");
-  let currentImgContent = binary.substring(indexFile+8,binary.length-46);
-  let currentImgFileData = "data:image/jpeg;base64,"+btoa(currentImgContent);
-  let indexName = binary.search("filename");
-  currentImgName = binary.substring(indexName+10,indexName+50);
-  let currentImgFilePromise = urltoFile(currentImgFileData, '/images/'+projectId+'/lightweight/'+currentImgName);
-  Promise.resolve(currentImgFilePromise).then((file)=> {
-    currentImgFile = file;
-  })
+    let indexFile = binary.search("jpeg");
+    let currentImgContent = binary.substring(indexFile+8,binary.length-46);
+    let currentImgFileData = "data:image/jpeg;base64,"+btoa(currentImgContent);
+    let indexName = binary.search("filename");
+    currentImgName = binary.substring(indexName+10,indexName+50);
+    let imgPayload = {
+      data : currentImgFileData,
+      name : currentImgName
+    }
+    if (!navigator.onLine){
+      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),imgPayload);
+    } 
+    // let currentImgFilePromise = urltoFile(currentImgFileData, '/images/'+projectId+'/lightweight/'+currentImgName);
+    // Promise.resolve(currentImgFilePromise).then((file)=> {
+    //   currentImgFile = file;
+    // })
   
-});
+  });
+  Promise.resolve(event.request.clone().formData()).then((formData) => {
+    currentImgFile = formData.get("file");
+  })
 }
 
 function urltoFile(url, filename, mimeType){
