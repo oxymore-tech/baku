@@ -5,26 +5,30 @@ var CACHE = {
 	version: 'v1'
 };
 
+// projectId : projet créé online
 var projectId;
+//projectIdShortened : projet créé offline
 var projectIdShortened;
 var currentImgName;
 var currentImgFile;
 
+// Tableau récapitulatif des stacks de chaque projet (utile pour les requêtes history)
 var tabOfStackPayloads = [];
 
+// Installation du service worker
 self.addEventListener('install', (event) => {
   precacheGetRequest(event);
-  // On va checker toutes les 2 secondes si on est hors ligne ou pas
   checkNetworkState();
 });
 
 
-
+// Interception de toutes les requêtes pour les traiter dynamiquement en offline
 self.addEventListener('fetch', async function(event) {
-  console.log('Handling fetch event for', event.request.url);
+  // On récupère l'url de la requête à traiter
   var requestUrl = new URL(event.request.url);
+
+  // On récupère le chemin (après https://localhost)
   var path = requestUrl.pathname;
-  console.log(tabOfStackPayloads);
 
   event.respondWith(
   caches.open(CACHE.name+CACHE.version).then(function(cache){
@@ -33,8 +37,8 @@ self.addEventListener('fetch', async function(event) {
       
       if (!navigator.onLine){
         // OFFLINE
+        // Si la réponse est déjà dans le cache et qu'on est en dehors du cas "Requête history depuis un projet créé hors ligne", on renvoie cette réponse
         if (response && (!path.includes("history") || !event.request.referrer.includes("movies/"+projectIdShortened))){
-          console.log("La réponse est dans le cache");
           
           if (path.includes("status")){
             projectIdShortened = path.substring(5,41);
@@ -58,42 +62,36 @@ self.addEventListener('fetch', async function(event) {
         || path === '/images/'+projectIdShortened+'/lightweight/'+currentImgName
         || path === '/undefined'){
           
-          console.log("create and send adaptated response");
+          // Si le projet est intialisé, on met la requête history en cache
           if (tabOfStackPayloads[projectIdShortened]){
-            console.log("On remplit le Tab avec le projectId : "+projectIdShortened+" pour la requête "+event.request.url)
             cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
           }
           return createAndSendResponse(event,path);
+          // Si on est dans le cas "Requête stack depuis la bibliothèque", on met à jour le projectIdShortened
         } else if(path.includes("stack") &&  event.request.referrer.includes("library")){
             projectIdShortened = path.substring(5,41);
-            console.log(projectIdShortened);
             return createAndSendResponse(event,path);
+          // Si on est dans le cas "Requête stack depuis le projet", on met à jour le projectId et le projectIdShortened
         } else if (path.includes("stack") && event.request.referrer.includes("movie")){
             projectId = path.substring(5,50);
             projectIdShortened = path.substring(5,41);
-            console.log(projectId);
-            console.log(projectIdShortened);
             return createAndSendResponse(event,path);
         }
       } else {
         // ONLINE
+        // Si on est dans le cas "Requête stack sans undefined", on met à jour le projectId et le projectIdShortened et on remplit le tableau
         if (path.includes("stack") && !path.includes("undefined")){
           projectId = path.substring(5,50);
           projectIdShortened = path.substring(5,41);
-          console.log(projectId);
-          console.log(projectIdShortened);
           fillTabOfStackPayloads(event); 
-          console.log(projectId);
+          // Si c'est une requête history, on met à jour les projectId
         } else if (path.includes("history")){
           projectId = path.substring(5,50);
           projectIdShortened = path.substring(5,41);
-          console.log(projectId);
-          console.log(tabOfStackPayloads[projectIdShortened] === true);
           if (!tabOfStackPayloads[projectIdShortened]){
             console.log("tab inexistant : initialisation");
             tabOfStackPayloads[projectIdShortened] = [];
           }
-          console.log(tabOfStackPayloads);
           cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
           cacheStatusResponse();
         } else if(path.includes("upload")){
@@ -107,7 +105,6 @@ self.addEventListener('fetch', async function(event) {
         if (tabOfStackPayloads[projectIdShortened]){
           cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
         }
-        console.log("No caching response to "+ event.request.url);
         return fetch(event.request);
       }
     })
@@ -116,9 +113,8 @@ self.addEventListener('fetch', async function(event) {
   )
 });
 
-
+// Activation : Mise à jour du cache
 self.addEventListener('activate', (event) => {
-	console.info('Event: Activate');
 	event.waitUntil(
 		self.clients.claim(),
 		caches.keys().then((cacheNames) => {
@@ -185,11 +181,11 @@ function precacheGetRequest(event) {
 
 }
 
+// On sauvegarde toutes les requêtes post dans la IndexedDB de notre navigateur
 function saveIntoIndexedDb(url, authHeader, payload) {
   var myRequest = {};
   var jsonPayLoad;
   if (url.includes("upload")){
-    console.log(payload);
     myRequest.payload = payload;
   } else {
     jsonPayLoad = JSON.parse(payload);
@@ -197,8 +193,6 @@ function saveIntoIndexedDb(url, authHeader, payload) {
   }
 	myRequest.url = url;
 	myRequest.authHeader = authHeader;
-  
-  console.log("Requête "+myRequest.url+" : "+myRequest.payload);
 	var request = indexedDB.open("PostDB");
 	request.onsuccess = function (event) {
 		var db = event.target.result;
@@ -208,11 +202,10 @@ function saveIntoIndexedDb(url, authHeader, payload) {
 	}
 }
 
+// On vérifie toutes les 2 secondes si on est online ou offline
 function checkNetworkState() {
 	setInterval(function () {
-    // console.log("check if online");
 		if (navigator.onLine) {
-      // console.log("Online");
 		  sendOfflinePostRequestsToServer();
 		}
 	}, 2000);
@@ -236,17 +229,18 @@ async function sendOfflinePostRequestsToServer()  {
 				var records = allRecords.result
         console.log(records)
 				for (var i = 0; i < records.length; i++){
-        
+          // Traitement de la requête stack
           if (records[i].url.includes("stack")){
-            // fetch(records[i].url, {
-            //   method: "POST",
-            //   headers: {
-            //     'Accept': 'application/json',
-            //     'Content-Type': 'application/json',
-            //     'Authorization': records[i].authHeader
-            //   },
-            //   body: records[i].payload
-            // }}
+            fetch(records[i].url, {
+              method: "POST",
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': records[i].authHeader
+              },
+              body: records[i].payload
+            })
+            // Traitement de la requête upload
           } else if (records[i].url.includes("upload")){
             var formData = new FormData();
             var blob = imagetoblob(records[i].payload.data)
@@ -317,8 +311,6 @@ function createAndSendResponse(event,path){
       var responseBody = projectIdShortened;
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-      console.log(' Responding with a mock response body:', responseBody);
-      // saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),responseBody);
       return(mockResponse);
       break;
       
@@ -334,7 +326,6 @@ function createAndSendResponse(event,path){
       cacheHistoryRequest(responseBody);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-      console.log(' Responding with a mock response body:', responseBody);
       return(mockResponse);
       break;
 
@@ -342,7 +333,6 @@ function createAndSendResponse(event,path){
     case "/api/"+projectIdShortened+"/stack":
       var responseInit = generateResponseInit();
       var mockResponse = new Response('null', responseInit);
-      console.log(' Responding with a mock response body:', responseBody);
       // On récupère le payload pour le mettre dans un tableau
       
       fillTabOfStackPayloads(event,projectIdShortened);
@@ -355,7 +345,6 @@ function createAndSendResponse(event,path){
         saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),payload);
       })
       var mockResponse = new Response('null', responseInit);
-      console.log(' Responding with a mock response body:', responseBody);
       return(mockResponse);
       break;
 
@@ -366,7 +355,6 @@ function createAndSendResponse(event,path){
       responseBody = currentImgName;
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-      console.log(' Responding with a mock response body:', responseBody);
       return(mockResponse);
       break;
 
@@ -399,7 +387,6 @@ function createAndSendResponse(event,path){
       var responseBody = null;
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
-      console.log(' Responding with a mock response body:', responseBody);
       return(mockResponse);
       break;
 
@@ -408,12 +395,11 @@ function createAndSendResponse(event,path){
   }
 }
 
+// Remplissage du tableau de stacks
 function fillTabOfStackPayloads(event){
   Promise.resolve(event.request.clone().text()).then((payload) => {
-    console.log(JSON.stringify(JSON.parse(payload)));
     tabOfStackPayloads[projectIdShortened].push(JSON.parse(payload)[0]);
     if (JSON.parse(payload)[0].action === 1 || JSON.parse(payload)[0].action === 0){
-      console.log(tabOfStackPayloads[projectIdShortened]);
       cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
     }
     if (!navigator.onLine){
@@ -507,25 +493,11 @@ function createImgFile(event){
     if (!navigator.onLine){
       saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),imgPayload);
     } 
-    // let currentImgFilePromise = urltoFile(currentImgFileData, '/images/'+projectId+'/lightweight/'+currentImgName);
-    // Promise.resolve(currentImgFilePromise).then((file)=> {
-    //   currentImgFile = file;
-    // })
-  
   });
   Promise.resolve(event.request.clone().formData()).then((formData) => {
     currentImgFile = formData.get("file");
   })
 }
-
-function urltoFile(url, filename, mimeType){
-  mimeType = mimeType || (url.match(/^data:([^;]+);/)||'')[1];
-  return (fetch(url)
-      .then(function(res){return res.arrayBuffer();})
-      .then(function(buf){return new File([buf], filename, {type:mimeType});})
-  );
-}
-
 
 function generateResponseInit() {
   return({
@@ -541,7 +513,4 @@ function generateResponseInit() {
 function generateProjectId() {
   projectIdShortened = uuidv4();
   tabOfStackPayloads[projectIdShortened] = [];
-  console.log(projectId);
-  console.log(projectIdShortened);
-  console.log(tabOfStackPayloads);
 }
