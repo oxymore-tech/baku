@@ -10,7 +10,10 @@ var projectId;
 //projectIdShortened : projet créé offline
 var projectIdShortened;
 var currentImgName;
+var currentSoundName;
+var currentSoundFile;
 var currentImgFile;
+var currentSoundContent2;
 
 // Tableau récapitulatif des stacks de chaque projet (utile pour les requêtes history)
 var tabOfStackPayloads = [];
@@ -60,6 +63,8 @@ self.addEventListener('fetch', async function(event) {
         || path === '/images/'+projectIdShortened+'/thumbnail/'+currentImgName 
         || path === '/images/'+projectIdShortened+'/original/'+currentImgName 
         || path === '/images/'+projectIdShortened+'/lightweight/'+currentImgName
+        || path === "/api/"+projectIdShortened+"/uploadSound"
+        || path === '/api/'+projectId+'/uploadSound'
         || path === '/undefined'){
           
           // Si le projet est intialisé, on met la requête history en cache
@@ -75,7 +80,12 @@ self.addEventListener('fetch', async function(event) {
         } else if (path.includes("stack") && event.request.referrer.includes("movie")){
             projectId = path.substring(5,50);
             projectIdShortened = path.substring(5,41);
-            return createAndSendResponse(event,path);
+          return createAndSendResponse(event,path);
+        }else if(path.includes("sounds") && event.request.referrer.includes("audio")){
+           var currentSoundName2 =  path.substring(path.search("/sounds/")+8);
+           console.log("we are here" );
+           console.log(currentSoundName2+" currentsoundName ");
+           return asyncCallerFunction(currentSoundName2) ;
         }
       } else {
         // ONLINE
@@ -130,6 +140,36 @@ self.addEventListener('activate', (event) => {
 	);
 })
 
+ async function asyncCallerFunction(currentSoundName2){
+  console.log(" got here ");
+  await promiseFunction(currentSoundName2);
+  console.log(currentSoundContent2);
+  return new Response(currentSoundContent2,generateResponseInit());
+
+}
+function promiseFunction(currentSoundName2){
+  return new Promise((resolve,reject)=>{
+    const request = indexedDB.open("PostDB");  
+    request.onsuccess =  function(event){
+    var db = event.target.result;
+    var tx = db.transaction('postrequest', 'readwrite');
+    var store = tx.objectStore('postrequest');
+    var allRecords = store.getAll();
+      allRecords.onsuccess = function() {
+      var records = allRecords.result;
+      //var currentSoundName2 = path.substring(path.search("/sounds/")+8); 
+      for (var i = 0; i < records.length; i++){
+        //console.log(records[i].payload.name+" avec le payload");
+        if(records[i].payload.name == currentSoundName2){
+          currentSoundContent2 = records[i].payload.data;
+          console.log(currentSoundContent2);
+          resolve();
+        }
+      }
+    }
+  }
+    });
+}
 function precacheGetRequest(event) {
   
   event.waitUntil(
@@ -216,7 +256,7 @@ async function sendOfflinePostRequestsToServer()  {
 
   // Si on est en ligne après un laps de temps hors ligne, on envoie les requêtes en attente au serveur
   request.onsuccess = function(event) {
-    console.log("success" +event.target.result)
+    //console.log("success" +event.target.result)
     var db = event.target.result;
 		var tx = db.transaction('postrequest', 'readwrite');
 		var store = tx.objectStore('postrequest');
@@ -227,7 +267,7 @@ async function sendOfflinePostRequestsToServer()  {
         
 
 				var records = allRecords.result
-        console.log(records)
+        //console.log(records)
 				for (var i = 0; i < records.length; i++){
           // Traitement de la requête stack
           if (records[i].url.includes("stack")){
@@ -318,11 +358,11 @@ function createAndSendResponse(event,path){
     case "/api/"+projectIdShortened+"/history":
       var responseBody = [];
       projectIdShortened = path.substring(5,41);
-      console.log(projectIdShortened);
+      //console.log(projectIdShortened);
       for (let i =0;i<tabOfStackPayloads[projectIdShortened].length;i++){
         responseBody.push(tabOfStackPayloads[projectIdShortened][i]);
       }
-      console.log(tabOfStackPayloads[projectIdShortened]);
+      //console.log(tabOfStackPayloads[projectIdShortened]);
       cacheHistoryRequest(responseBody);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
@@ -389,6 +429,29 @@ function createAndSendResponse(event,path){
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       return(mockResponse);
       break;
+
+    case "/api/"+projectId+"/uploadSound":  
+    case "/api/"+projectIdShortened+"/uploadSound":
+      var responseBody;
+      createSoundFile(event);
+      responseBody = projectIdShortened;
+      var responseInit = generateResponseInit();         
+      //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),currentSoundFile);
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);  
+      return(mockResponse);
+
+     case "/api/"+projectIdShortened+"/sounds/"+currentSoundName:
+        
+      var responseInit = generateResponseInit();       
+      var mockResponse = new Response(responseBodySound, responseInit);  
+      return (mockResponse); 
+      
+    case "/api/"+projectId+"/sounds/"+currentSoundName:        
+        var responseBody = currentSoundFile;      
+        var responseInit = generateResponseInit();
+        var mockResponse = new Response(responseBody, responseInit);     
+       
+        return (mockResponse);
 
     default:
       break;
@@ -497,6 +560,41 @@ function createImgFile(event){
   Promise.resolve(event.request.clone().formData()).then((formData) => {
     currentImgFile = formData.get("file");
   })
+}
+
+function createSoundFile(event){
+  Promise.resolve(event.request.clone().arrayBuffer()).then((payload) => {
+    var binary = '';
+    var bytes = new Uint8Array( payload );
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }    
+  let indexFile = binary.search("wav");  
+  let currentSoundContent = binary.substring(indexFile+7,binary.length);
+  //let currentSoundFileData = currentSoundContent;
+  let indexName = binary.search("filename");
+  currentSoundName = binary.substring(indexName+10,indexName+46);  
+  
+  Promise.resolve(event.request.clone().formData()).then((formData)=> {
+    currentSoundFile = formData.get("file");
+    
+    let soundFileCache ={
+      data : currentSoundFile,
+      name : currentSoundName
+    };
+
+    if(!navigator.onLine){
+      saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),soundFileCache);
+     /* caches.open(CACHE.name+CACHE.version).then((cache) => {
+        cache.add(currentSoundFile);*/
+      };
+  
+    })  
+    //soundpayloads[soundpayloads.length] = soundFileCache;
+    //console.log(soundpayloads);
+  })
+
 }
 
 function generateResponseInit() {
