@@ -242,13 +242,13 @@ function saveIntoIndexedDb(url, authHeader, payload) {
 	}
 }
 
-// On vérifie toutes les 2 secondes si on est online ou offline
+// On vérifie toutes les 1/2 secondes si on est online ou offline
 function checkNetworkState() {
 	setInterval(function () {
 		if (navigator.onLine) {
 		  sendOfflinePostRequestsToServer();
 		}
-	}, 2000);
+	}, 500);
 }
 
 async function sendOfflinePostRequestsToServer()  {
@@ -281,7 +281,7 @@ async function sendOfflinePostRequestsToServer()  {
               body: records[i].payload
             })
             // Traitement de la requête upload
-          } else if (records[i].url.includes("upload")){
+          } else if (records[i].url.includes("upload") && !records[i].url.includes("uploadSound") ){
             var formData = new FormData();
             var blob = imagetoblob(records[i].payload.data)
             formData.set("file",blob,records[i].payload.name);
@@ -289,6 +289,16 @@ async function sendOfflinePostRequestsToServer()  {
               console.log(key, value);
             }
             console.log(records[i].payload);
+            fetch(records[i].url, {
+              method: "POST",
+              body: formData
+            })
+            var req = new Request(records[i].payload.data);
+            fetch(req);
+          }else if (records[i].url.includes("uploadSound")){
+            var formData = new FormData();
+            var blob = records[i].payload.data;
+            formData.set("file",blob,records[i].payload.name);
             fetch(records[i].url, {
               method: "POST",
               body: formData
