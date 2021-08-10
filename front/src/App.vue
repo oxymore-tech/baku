@@ -133,6 +133,12 @@
       </div>
 
       <div class="flex-container">
+        <div class="flex-container connect-indicator">
+          <div v-if="this.connectionIndicator" class="online">
+          </div>
+          <div v-else class="offline">
+          </div>
+        </div>
         <div
           class="flex-container bug"
           :class="{ 'bug-home': $route.name === 'home' }"
@@ -259,8 +265,16 @@ export default class App extends Vue {
 
   public pageName!: string;
 
+  public connectionIndicator!: boolean;
+
   public mounted() {
     this.pageName = this.$route.name as string;
+  }
+
+  public async getConnection() {
+    setInterval(()=>{
+      this.connectionIndicator = navigator.onLine
+    },2000)
   }
 
   public async onPageAccueil() {
@@ -359,4 +373,15 @@ export default class App extends Vue {
     await this.moveToShot(this.activeShotId);
   }
 }
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./service-worker.js',{type:'module',}).then(function(registration) {
+      // Registration was successful
+      //console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      console.error(err);
+      //console.log('ServiceWorker registration failed:');
+    });
+  });
+} 
 </script>
