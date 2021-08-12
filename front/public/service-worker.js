@@ -21,9 +21,8 @@ var tabOfStackPayloads = [];
 // Installation du service worker
 self.addEventListener('install', (event) => {
   precacheGetRequest(event);
-  checkNetworkState();
+  createIndexedDB();
 });
-
 
 // Interception de toutes les requêtes pour les traiter dynamiquement en offline
 self.addEventListener('fetch', async function(event) {
@@ -36,7 +35,7 @@ self.addEventListener('fetch', async function(event) {
   event.respondWith(
   caches.open(CACHE.name+CACHE.version).then(function(cache){
 
-    return cache.match(event.request).then(function(response){
+    return cache.match(event.request).then(async function(response){
       
       if (!navigator.onLine){
         // OFFLINE
@@ -44,7 +43,8 @@ self.addEventListener('fetch', async function(event) {
         if (response && (!path.includes("history") || !event.request.referrer.includes("movies/"+projectIdShortened))){
           
           if (path.includes("status")){
-            projectIdShortened = path.substring(5,41);
+            projectIdShortened = path.substring(path.search("/api/")+5,path.search("/api/")+41);
+            var currentSoundName2 = path.substring(path.search("/status/")+8); 
             cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
           }
           return response;
@@ -74,43 +74,42 @@ self.addEventListener('fetch', async function(event) {
           return createAndSendResponse(event,path);
           // Si on est dans le cas "Requête stack depuis la bibliothèque", on met à jour le projectIdShortened
         } else if(path.includes("stack") &&  event.request.referrer.includes("library")){
-            projectIdShortened = path.substring(5,41);
+            projectIdShortened = path.substring(path.search("/api/")+5,path.search("/api/")+41);
             return createAndSendResponse(event,path);
           // Si on est dans le cas "Requête stack depuis le projet", on met à jour le projectId et le projectIdShortened
         } else if (path.includes("stack") && event.request.referrer.includes("movie")){
-            projectId = path.substring(5,50);
-            projectIdShortened = path.substring(5,41);
+            projectId = path.substring(path.search("/api/")+5,path.search("/api/")+50);
+            projectIdShortened = path.substring(path.search("/api/")+5,path.search("/api/")+41);
           return createAndSendResponse(event,path);
         }else if(path.includes("sounds") && event.request.referrer.includes("audio")){
            var currentSoundName2 =  path.substring(path.search("/sounds/")+8);
-           console.log("we are here" );
-           console.log(currentSoundName2+" currentsoundName ");
            return asyncCallerFunction(currentSoundName2) ;
         }
       } else {
         // ONLINE
         // Si on est dans le cas "Requête stack sans undefined", on met à jour le projectId et le projectIdShortened et on remplit le tableau
         if (path.includes("stack") && !path.includes("undefined")){
-          projectId = path.substring(5,50);
-          projectIdShortened = path.substring(5,41);
+          projectId = path.substring(path.search("/api/")+5,path.search("/api/")+50);
+          projectIdShortened = path.substring(path.search("/api/")+5,path.search("/api/")+41);
           fillTabOfStackPayloads(event); 
           // Si c'est une requête history, on met à jour les projectId
         } else if (path.includes("history")){
-          projectId = path.substring(5,50);
+          projectId = path.substring(path.search("/api/")+5,path.search("/api/")+41);
           projectIdShortened = path.substring(5,41);
           if (!tabOfStackPayloads[projectIdShortened]){
-            console.log("tab inexistant : initialisation");
             tabOfStackPayloads[projectIdShortened] = [];
           }
           cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
           cacheStatusResponse();
-        } else if(path.includes("upload")){
+        } else if(path.includes("upload")&&!path.includes("uploadSound")){
           createImgFile(event);
         } else if (path.includes("images")){
           cacheImgResponse();
           if (response){
             return response;
           }
+        }else if(path.includes("upload")&&!path.includes("uploadSound")){
+          createSoundFile(event);
         }
         if (tabOfStackPayloads[projectIdShortened]){
           cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
@@ -139,14 +138,13 @@ self.addEventListener('activate', (event) => {
 		})
 	);
 })
-
+//Fonction appelante pour répondre à la requete get d'un son 
  async function asyncCallerFunction(currentSoundName2){
-  console.log(" got here ");
   await promiseFunction(currentSoundName2);
-  console.log(currentSoundContent2);
   return new Response(currentSoundContent2,generateResponseInit());
 
 }
+//Fonction promesse
 function promiseFunction(currentSoundName2){
   return new Promise((resolve,reject)=>{
     const request = indexedDB.open("PostDB");  
@@ -157,12 +155,9 @@ function promiseFunction(currentSoundName2){
     var allRecords = store.getAll();
       allRecords.onsuccess = function() {
       var records = allRecords.result;
-      //var currentSoundName2 = path.substring(path.search("/sounds/")+8); 
       for (var i = 0; i < records.length; i++){
-        //console.log(records[i].payload.name+" avec le payload");
         if(records[i].payload.name == currentSoundName2){
           currentSoundContent2 = records[i].payload.data;
-          console.log(currentSoundContent2);
           resolve();
         }
       }
@@ -170,6 +165,16 @@ function promiseFunction(currentSoundName2){
   }
     });
 }
+
+function createIndexedDB(){
+  var request = indexedDB.open("PostDB");
+  // Si on est en ligne pour la première fois, on initialise la IndexedDB
+  request.onupgradeneeded = function(event) {
+    var db = event.target.result;
+    db.createObjectStore("postrequest", { keyPath: 'id', autoIncrement: true });
+  }
+}
+
 function precacheGetRequest(event) {
   
   event.waitUntil(
@@ -241,117 +246,7 @@ function saveIntoIndexedDb(url, authHeader, payload) {
 		store.add(myRequest);
 	}
 }
-
-// On vérifie toutes les 1/2 secondes si on est online ou offline
-function checkNetworkState() {
-	setInterval(function () {
-		if (navigator.onLine) {
-		  sendOfflinePostRequestsToServer();
-		}
-	}, 500);
-}
-
-async function sendOfflinePostRequestsToServer()  {
-  var request = indexedDB.open("PostDB");
-
-  // Si on est en ligne après un laps de temps hors ligne, on envoie les requêtes en attente au serveur
-  request.onsuccess = function(event) {
-    //console.log("success" +event.target.result)
-    var db = event.target.result;
-		var tx = db.transaction('postrequest', 'readwrite');
-		var store = tx.objectStore('postrequest');
-		var allRecords = store.getAll();
-		allRecords.onsuccess = function () {
-
-			if (allRecords.result && allRecords.result.length > 0) {
-        
-
-				var records = allRecords.result
-        //console.log(records)
-				for (var i = 0; i < records.length; i++){
-          // Traitement de la requête stack
-          if (records[i].url.includes("stack")){
-            fetch(records[i].url, {
-              method: "POST",
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': records[i].authHeader
-              },
-              body: records[i].payload
-            })
-            // Traitement de la requête upload
-          } else if (records[i].url.includes("upload") && !records[i].url.includes("uploadSound") ){
-            var formData = new FormData();
-            var blob = imagetoblob(records[i].payload.data)
-            formData.set("file",blob,records[i].payload.name);
-            for (var [key, value] of formData.entries()) { 
-              console.log(key, value);
-            }
-            console.log(records[i].payload);
-            fetch(records[i].url, {
-              method: "POST",
-              body: formData
-            })
-            var req = new Request(records[i].payload.data);
-            fetch(req);
-          }else if (records[i].url.includes("uploadSound")){
-            var formData = new FormData();
-            var blob = records[i].payload.data;
-            formData.set("file",blob,records[i].payload.name);
-            fetch(records[i].url, {
-              method: "POST",
-              body: formData
-            })
-            var req = new Request(records[i].payload.data);
-            fetch(req);
-          }
-					store.delete(allRecords.result[i].id)
-        }
-			}
-		};
-  }
-  // Si on est en ligne pour la première fois, on initialise la IndexedDB
-  request.onupgradeneeded = function(event) {
-    console.log("upgraden needed"+event.target.result);
-    var db = event.target.result;
-    var objectStore = db.createObjectStore("postrequest", { keyPath: 'id', autoIncrement: true });
-  }
-}
-
-function imagetoblob(base64String){
-    // Split the base64 string in data and contentType
-    const block = base64String.split(';');
-    // Get the content type of the image
-    const contentType = block[0].split(':')[1]; // In this case "image/gif"
-    // get the real base64 content of the file
-    const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
-
-    // Convert it to a blob to upload
-    return b64toBlob(realData, contentType);
-  }
-
-function b64toBlob(b64Data,contentType = '',sliceSize = 512){
-  const byteCharacters = atob(b64Data);
-  const byteArrays = [];
-
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-    const byteNumbers = new Array(slice.length);
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-
-    byteArrays.push(byteArray);
-  }
-
-  return new Blob(byteArrays, { type: contentType });
-}
-
-
+//Fonction répondant aux requete offline
 function createAndSendResponse(event,path){
   switch(path){
     case "/api/movie":
@@ -367,12 +262,12 @@ function createAndSendResponse(event,path){
     case "/api/"+projectId+"/history":
     case "/api/"+projectIdShortened+"/history":
       var responseBody = [];
-      projectIdShortened = path.substring(5,41);
-      //console.log(projectIdShortened);
+      
+      projectIdShortened = path.substring(path.search("/api/")+5,path.search("/api/")+41)
+      
       for (let i =0;i<tabOfStackPayloads[projectIdShortened].length;i++){
         responseBody.push(tabOfStackPayloads[projectIdShortened][i]);
       }
-      //console.log(tabOfStackPayloads[projectIdShortened]);
       cacheHistoryRequest(responseBody);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
@@ -412,8 +307,7 @@ function createAndSendResponse(event,path){
     case '/images/'+projectId+'/original/'+currentImgName:
     case '/images/'+projectId+'/thumbnail/'+currentImgName:
       var responseBody = currentImgFile;
-      projectId = path.substring(8,53);
-      console.log(projectId);
+      projectId = (path.substring(path.search("/images/")+8,path.search("/images/")+53));
       var responseInit = generateResponseInit();
       var mockResponse = new Response(responseBody, responseInit);
       cacheImgResponse();
@@ -424,8 +318,7 @@ function createAndSendResponse(event,path){
     case '/images/'+projectIdShortened+'/original/'+currentImgName:
     case '/images/'+projectIdShortened+'/thumbnail/'+currentImgName:
       var responseBody = currentImgFile;
-      projectIdShortened = path.substring(8,44);
-      console.log(projectIdShortened);
+      projectIdShortened = path.substring(path.search("/images/")+8,path.search("/images/")+44);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(responseBody, responseInit);
       
@@ -451,7 +344,6 @@ function createAndSendResponse(event,path){
       return(mockResponse);
 
      case "/api/"+projectIdShortened+"/sounds/"+currentSoundName:
-        
       var responseInit = generateResponseInit();       
       var mockResponse = new Response(responseBodySound, responseInit);  
       return (mockResponse); 
@@ -571,7 +463,7 @@ function createImgFile(event){
     currentImgFile = formData.get("file");
   })
 }
-
+//fonction créant un soundFile et le stockant dand l'IndexedDb  
 function createSoundFile(event){
   Promise.resolve(event.request.clone().arrayBuffer()).then((payload) => {
     var binary = '';
@@ -580,9 +472,7 @@ function createSoundFile(event){
     for (var i = 0; i < len; i++) {
         binary += String.fromCharCode( bytes[ i ] );
     }    
-  let indexFile = binary.search("wav");  
-  let currentSoundContent = binary.substring(indexFile+7,binary.length);
-  //let currentSoundFileData = currentSoundContent;
+  
   let indexName = binary.search("filename");
   currentSoundName = binary.substring(indexName+10,indexName+46);  
   
@@ -596,17 +486,15 @@ function createSoundFile(event){
 
     if(!navigator.onLine){
       saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),soundFileCache);
-     /* caches.open(CACHE.name+CACHE.version).then((cache) => {
-        cache.add(currentSoundFile);*/
+     
       };
   
     })  
-    //soundpayloads[soundpayloads.length] = soundFileCache;
-    //console.log(soundpayloads);
+    
   })
 
 }
-
+//Header pour mockResponse
 function generateResponseInit() {
   return({
     status: 200,

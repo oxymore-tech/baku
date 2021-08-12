@@ -8,6 +8,7 @@ import { UserStore } from '@/store/user';
 import { ClipboardStore } from '@/store/clipboard';
 import { BakuRootState } from './store.types';
 import { SocketStore } from '@/store/socket';
+import { ConnectionLightStore} from '@/store/connectionlight';
 
 Vue.use(Vuex);
 
@@ -20,9 +21,11 @@ const bakuStore: StoreOptions<BakuRootState> = {
     capture: CaptureStore,
     user: UserStore,
     clipboard: ClipboardStore,
-    socket: SocketStore
+    socket: SocketStore,
+    connection: ConnectionLightStore
   },
   strict: process.env.NODE_ENV !== 'production',
+  getters : {}, 
 };
 
 export default new Vuex.Store(bakuStore);

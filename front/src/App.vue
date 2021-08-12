@@ -143,9 +143,8 @@
 
       <div class="flex-container">
         <div class="flex-container connect-indicator">
-          <div v-if="this.connectionIndicator" class="online">
-          </div>
-          <div v-else class="offline">
+          <div>
+            <connection-light></connection-light>
           </div>
         </div>
         <div
@@ -217,6 +216,7 @@ import { Movie } from "@/utils/movie.service";
 import IssuePopup from "@/components/IssuePopup.vue";
 import RenamePopup from "@/components/RenamePopup.vue";
 import { createProject } from "@/api";
+import ConnectionLight from '@/components/ConnectionLight.vue';
 
 const ProjectNS = namespace("project");
 const UserNS = namespace("user");
@@ -224,6 +224,7 @@ const UserNS = namespace("user");
 @Component({
   components: {
     ProjectSettingsPopup,
+    ConnectionLight,
   },
 })
 export default class App extends Vue {
@@ -275,7 +276,7 @@ export default class App extends Vue {
   public pageName!: string;
 
   public connectionIndicator!: boolean;
-
+  
   public mounted() {
     this.pageName = this.$route.name as string;
     this.getConnection();
@@ -284,7 +285,7 @@ export default class App extends Vue {
   public async getConnection() {
     setInterval(()=>{
       this.connectionIndicator = navigator.onLine
-      // console.log(this.connectionIndicator)
+      
     },2000)
   }
 
@@ -399,14 +400,127 @@ export default class App extends Vue {
 }
  if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./service-worker.js',{type:'module',}).then(function(registration) {
+    navigator.serviceWorker.register('./service-worker.js',{type:'module',}).then(function() {
+        return navigator.serviceWorker.ready
+    }).then(function(registration) {
+      window.addEventListener('online',async function() {
+        await sendOfflinePostRequestsToServer();
+      })
       // Registration was successful
-      //console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }, function(err) {
+          }, function(err) {
+      console.error(err);
       // registration failed :(
-      //console.log('ServiceWorker registration failed:');
-    });
+         });
   });
 } 
+
+async function sendOfflinePostRequestsToServer()  {
+  // Si on est en ligne après un laps de temps hors ligne, on envoie les requêtes en attente au serveur
+  var request = window.indexedDB.open("PostDB");
+  request.onsuccess =function(e) { 
+  var db = request.result;
+  var tx = db.transaction('postrequest', 'readwrite');
+  var store = tx.objectStore('postrequest');
+  sendAndDelete(store);
+  store.clear();
+  }
+}
+function sendAndDelete(store:IDBObjectStore){
+  var PromiseArray = new Array;
+  var allRecords = store.getAll();
+		allRecords.onsuccess = async () => {
+			if (allRecords.result && allRecords.result.length > 0) {
+				var records = allRecords.result
+          for (var i = 0; i < records.length; i++){
+          // Traitement de la requête stack
+          if (records[i].url.includes("stack")){
+           PromiseArray.push(await postStack(records[i]));
+            // Traitement de la requête upload
+          } else if (records[i].url.includes("upload") && !records[i].url.includes("uploadSound") ){
+            PromiseArray.push(await postImgFile(records[i]));
+            var req = new Request(records[i].payload.data);
+           PromiseArray.push( await fetchReq(req));
+           //Traitement de la requete son 
+          }else if (records[i].url.includes("uploadSound")){
+            PromiseArray.push(await postSoundFile(records[i]));
+            var req = new Request(records[i].payload.data);
+            PromiseArray.push(await fetchReq(req));
+          }
+        }
+			}
+      await Promise.all(PromiseArray);
+      var synced = new CustomEvent('synced');
+      window.dispatchEvent(synced);
+		}
+    
+}
+ async function postStack(records:any){
+  return fetch(records.url, {
+              method: "POST",
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': records.authHeader
+              },
+              body: records.payload
+            });
+   
+}
+async function postImgFile(records:any) {
+  var blob = new Blob;
+  var formData = new FormData();
+            var base64String = records.payload.data;
+            blob = imagetoblob(base64String);
+            formData.set("file",blob,records.payload.name);
+  return  fetch(records.url, {
+              method: "POST",
+              body: formData
+            })
+}
+async function fetchReq(req:Request){
+  return  fetch(req);
+}
+async function postSoundFile(records:any){
+  var blob = new Blob;
+ var formData = new FormData();
+            blob = records.payload.data;
+            formData.set("file",blob,records.payload.name);
+            return  fetch(records.url, {
+              method: "POST",
+              body: formData
+            })
+}
+function imagetoblob( base64String:string ){
+    // Split the base64 string in data and contentType
+    const block = base64String.split(';');
+    // Get the content type of the image
+    const contentType = block[0].split(':')[1]; // In this case "image/gif"
+    // get the real base64 content of the file
+    const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
+
+    // Convert it to a blob to upload
+    return b64toBlob(realData, contentType);
+  }
+
+function b64toBlob(b64Data:string,contentType = '',sliceSize = 512){
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType });
+}
+
 
 </script>
