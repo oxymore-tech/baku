@@ -215,6 +215,7 @@ import ProjectSettingsPopup from '@/components/ProjectSettingsPopup.vue';
 import { Movie } from '@/utils/movie.service';
 import IssuePopup from '@/components/IssuePopup.vue';
 import RenamePopup from '@/components/RenamePopup.vue';
+import ConnectionLight from '@/components/ConnectionLight.vue';
 import { createProject } from '@/api';
 
 const ProjectNS = namespace('project');
@@ -287,11 +288,6 @@ export default class App extends Vue {
     },2000)
   }
 
-  public async getConnection() {
-    setInterval(()=>{
-      this.connectionIndicator = navigator.onLine
-    },2000)
-  }
 
   public async onPageAccueil() {
     await this.$router.push({
