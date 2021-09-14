@@ -123,7 +123,7 @@ export class MovieService {
   }
 
   public static merge(projectId: string, events: BakuEvent[]): Movie {
-    let title = 'Projet sans nom';
+    let title = 'Film sans nom';
     let synopsis = 'Synopsis vide';
     let poster;
     let fps = 12;
