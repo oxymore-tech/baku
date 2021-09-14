@@ -1,0 +1,61 @@
+.audio-list {
+    width: 200px;
+    padding: 10px 0;
+    height: 75%;
+}
+
+.audio-list-container {
+    width: 200px;
+    flex-direction: column;
+    overflow: auto;
+    display: flex;
+}
+
+.create-button-modify {
+    background-image: url("../../assets/modify_sound.png");
+    width: 20px;
+}
+
+.create-button-play {
+    background-image: url("../../assets/play_sound.png");
+}
+
+.create-button-delete {
+    background-image: url("../../assets/delete_sound.png");
+
+}
+
+.record-Button {
+    position: relative;
+    bottom: 0;
+}
+
+.horizontal-align {
+    display: inline-block;
+    margin: 0px 10px;
+}
+
+.sounds {
+    padding: 5px 0;
+    .border {
+        border-style: solid;
+        border-color: #e66359;
+        padding: 5px 0;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+    }
+}
+
+.tool{
+    background-size: contain;
+    background-position: top;
+    background-repeat: no-repeat;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+.tools{
+    width: 80px;
+    display: flex;
+}

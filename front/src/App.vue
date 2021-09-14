@@ -37,13 +37,9 @@
             </p>
           </div>
 
-          <b-dropdown-item
-            class
-            aria-role="listitem"
-            v-if="$route.name !== 'library'"
-          >
+          <b-dropdown-item class aria-role="listitem" v-if="$route.name !== 'library'">
             <div class="option-logo" @click="onClickMyLibrary()">
-              <i class="icon-folder-open-regular baku-button" />
+              <i class="icon-folder-open-regular baku-button"/>
               <span>Mes films</span>
             </div>
           </b-dropdown-item>
@@ -63,14 +59,8 @@
           </b-dropdown-item>
         </b-dropdown>
 
-        <b-dropdown
-          append-to-body
-          aria-role="list"
-          v-if="
-            $route.params.projectId &&
-            ($route.name === 'captureShot' || $route.name === 'movie')
-          "
-        >
+        <b-dropdown append-to-body aria-role="list"
+                    v-if="$route.params.projectId && ($route.name === 'captureShot' || $route.name === 'movie'|| $route.name === 'audio') ">
           <div
             class="label-menu label-menu-sep-left"
             slot="trigger"
@@ -86,26 +76,30 @@
             <!--              class=" icon-angle-down baku-button"/></p>-->
             <!--            <p v-else-if="$route.name === 'library'">Mes films <i-->
             <!--              class=" icon-angle-down baku-button"/></p>-->
-            <p v-else>
-              {{ $route.name }} <i class="icon-angle-down baku-button" />
-            </p>
+            <p v-else-if="$route.name === 'audio'">Audio <i
+              class=" icon-angle-down baku-button"/></p>
+            <p v-else>{{$route.name}} <i class="icon-angle-down baku-button"/></p>
           </div>
 
-          <b-dropdown-item
-            class
-            aria-role="listitem"
-            :disabled="!this.activeShotId || $route.name === 'captureShot'"
-          >
+          <b-dropdown-item class aria-role="listitem"
+                           :disabled="!this.activeShotId || $route.name === 'captureShot'">
             <div class="option-logo" @click="goToShot()">
-              <i class="icon-camera baku-button" />
+              <i class="icon-camera baku-button"/>
               <span>Capture</span>
             </div>
           </b-dropdown-item>
 
           <b-dropdown-item class aria-role="listitem">
             <div class="option-logo" @click="onOpenPlan()">
-              <i class="icon-grid baku-button" />
+              <i class="icon-grid baku-button"/>
               <span>Plans</span>
+            </div>
+          </b-dropdown-item>
+
+          <b-dropdown-item class aria-role="listitem">
+            <div class="option-logo" @click="goToAudio()">
+              <i class="icon-grid baku-button"/>
+              <span>Audio</span>
             </div>
           </b-dropdown-item>
 
@@ -125,18 +119,32 @@
           $route.name === 'movie'
         "
       >
+      <div
+          v-if="nbShot > 1 && $route.name === 'captureShot'"
+          class="previous-plan"
+          @click="goToPreviousPlan()"
+          title="Plan précédent"
+        >&lt;
+        </div>
+
         <div class="baku-button">
           <template v-if="$route.name === 'captureShot' && activeShotIndex >= 0"
             >Plan {{ activeShotIndex + 1 }}
           </template>
         </div>
+        <div
+          v-if="nbShot > 1 && $route.name === 'captureShot'"
+          class="next-plan"
+          @click="goToNextPlan()"
+          title="Plan suivant"
+        >&gt;
+        </div>
       </div>
 
       <div class="flex-container">
         <div class="flex-container connect-indicator">
-          <div v-if="this.connectionIndicator" class="online">
-          </div>
-          <div v-else class="offline">
+          <div>
+            <connection-light></connection-light>
           </div>
         </div>
         <div
@@ -215,6 +223,7 @@ const UserNS = namespace('user');
 @Component({
   components: {
     ProjectSettingsPopup,
+    ConnectionLight,
   },
 })
 export default class App extends Vue {
@@ -266,9 +275,16 @@ export default class App extends Vue {
   public pageName!: string;
 
   public connectionIndicator!: boolean;
-
   public mounted() {
     this.pageName = this.$route.name as string;
+    this.getConnection();
+  }
+
+  public async getConnection() {
+    setInterval(()=>{
+      this.connectionIndicator = navigator.onLine
+
+    },2000)
   }
 
   public async getConnection() {
@@ -372,16 +388,143 @@ export default class App extends Vue {
   public async goToShot() {
     await this.moveToShot(this.activeShotId);
   }
+
+    public async goToAudio() {
+      if (this.$route.name === 'captureShot' || 'movie') {
+        await this.$router.push({
+          name: 'audio',
+          params: {
+            projectId: this.id,
+            //shotId: this.activeShotId,
+          },
+        });
+      }
+    }
+
 }
-if ('serviceWorker' in navigator) {
+ if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./service-worker.js',{type:'module',}).then(function(registration) {
+    navigator.serviceWorker.register('./service-worker.js',{type:'module',}).then(function() {
+        return navigator.serviceWorker.ready
+    }).then(function(registration) {
+      window.addEventListener('online',async function() {
+        await sendOfflinePostRequestsToServer();
+      })
       // Registration was successful
-      //console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }, function(err) {
+          }, function(err) {
       console.error(err);
-      //console.log('ServiceWorker registration failed:');
-    });
+      // registration failed :(
+         });
   });
-} 
+}
+
+async function sendOfflinePostRequestsToServer()  {
+  // Si on est en ligne après un laps de temps hors ligne, on envoie les requêtes en attente au serveur
+  var request = window.indexedDB.open("PostDB");
+  request.onsuccess =function(e) {
+  var db = request.result;
+  var tx = db.transaction('postrequest', 'readwrite');
+  var store = tx.objectStore('postrequest');
+  sendAndDelete(store);
+  store.clear();
+  }
+}
+function sendAndDelete(store:IDBObjectStore){
+  var PromiseArray = new Array;
+  var allRecords = store.getAll();
+		allRecords.onsuccess = async () => {
+			if (allRecords.result && allRecords.result.length > 0) {
+				var records = allRecords.result
+          for (var i = 0; i < records.length; i++){
+          // Traitement de la requête stack
+          if (records[i].url.includes("stack")){
+           PromiseArray.push(await postStack(records[i]));
+            // Traitement de la requête upload
+          } else if (records[i].url.includes("upload") && !records[i].url.includes("uploadSound") ){
+            PromiseArray.push(await postImgFile(records[i]));
+            var req = new Request(records[i].payload.data);
+           PromiseArray.push( await fetchReq(req));
+           //Traitement de la requete son
+          }else if (records[i].url.includes("uploadSound")){
+            PromiseArray.push(await postSoundFile(records[i]));
+            var req = new Request(records[i].payload.data);
+            PromiseArray.push(await fetchReq(req));
+          }
+        }
+			}
+      await Promise.all(PromiseArray);
+      var synced = new CustomEvent('synced');
+      window.dispatchEvent(synced);
+		}
+
+}
+ async function postStack(records:any){
+  return fetch(records.url, {
+              method: "POST",
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': records.authHeader
+              },
+              body: records.payload
+            });
+
+}
+async function postImgFile(records:any) {
+  var blob = new Blob;
+  var formData = new FormData();
+            var base64String = records.payload.data;
+            blob = imagetoblob(base64String);
+            formData.set("file",blob,records.payload.name);
+  return  fetch(records.url, {
+              method: "POST",
+              body: formData
+            })
+}
+async function fetchReq(req:Request){
+  return  fetch(req);
+}
+async function postSoundFile(records:any){
+  var blob = new Blob;
+ var formData = new FormData();
+            blob = records.payload.data;
+            formData.set("file",blob,records.payload.name);
+            return  fetch(records.url, {
+              method: "POST",
+              body: formData
+            })
+}
+function imagetoblob( base64String:string ){
+    // Split the base64 string in data and contentType
+    const block = base64String.split(';');
+    // Get the content type of the image
+    const contentType = block[0].split(':')[1]; // In this case "image/gif"
+    // get the real base64 content of the file
+    const realData = block[1].split(',')[1]; // In this case "R0lGODlhPQBEAPeoAJosM...."
+
+    // Convert it to a blob to upload
+    return b64toBlob(realData, contentType);
+  }
+
+function b64toBlob(b64Data:string,contentType = '',sliceSize = 512){
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType });
+}
+
+
 </script>

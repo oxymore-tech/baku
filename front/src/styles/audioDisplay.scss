@@ -1,0 +1,126 @@
+.audioDisplay-root-div {
+    z-index: 2;
+    height: 40%;
+}
+
+.toolbar {
+    display: inline-flex;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #f2f2f2;
+    padding: 6px 28px;
+}
+
+.movie-container {
+    background: white;
+    width: 100%;
+    height: 80%;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.horizontal-align {
+    .padding-button {
+        display: inline-flex;
+        padding: 10px 20px
+    }
+}
+
+.dropdown-menu {
+    width: 25rem;
+}
+
+.collapse-content {
+    background-color: white;
+    padding: 6px;
+}
+
+.settings-header {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+    h4 {
+        font-size: 2.8rem;
+        font-weight: lighter;
+    }
+    i {
+        font-size: 2.8rem;
+        padding-right: 10px;
+    }
+}
+
+.item-title {
+    margin-left: 5px;
+    font-size: 1.6rem;
+}
+
+.icon-chevron-right {
+    display: inline-flex;
+    &.menu-up {
+        transform: rotate(90deg);
+    }
+    &.menu-down {
+        transform: rotate(-90deg);
+    }
+}
+
+.onionSkinInput {
+    height: 27px;
+    display: flex;
+    align-items: center;
+    .switch {
+        float: left;
+    }
+    .b-numberinput {
+        margin-left: 20px;
+        // float: right;
+        width: 90px;
+    }
+}
+
+.field {
+    font-size: 1.2rem;
+    i {
+        font-size: 2rem;
+        color: #707070;
+        margin: 3px 5px 3px 0px;
+    }
+    .control {
+        margin-right: 5px;
+    }
+}
+
+@media (max-height: 580px) {
+    .toolbox-dropdown.dropdown.is-mobile-modal>.dropdown-menu {
+        padding-top: 0px;
+        top: 50px !important;
+        right: 60px !important;
+        left: unset !important;
+        width: max-content;
+        transform: unset !important;
+    }
+    .dropdown .background {
+        background-color: unset;
+    }
+    .navbar-item {
+        padding: 0;
+        .icon-webcam {
+            font-size: 2.2rem;
+            margin-right: 5px;
+        }
+        .item-title {
+            display: none;
+        }
+        .icon-chevron-right {
+            font-size: 2.2rem;
+            &.menu-up {
+                transform: rotate(0deg);
+            }
+            &.menu-down {
+                transform: rotate(180deg);
+            }
+        }
+    }
+}

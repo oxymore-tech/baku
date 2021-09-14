@@ -12,6 +12,12 @@ export interface CaptureState {
   onionSkinValue: number;
 }
 
+export interface ConnectionState{
+  connected: boolean;
+  offline : boolean;
+  synced : boolean;
+}
+
 export interface ProjectState {
   id: string;
   activeShotId: string | null;
@@ -48,6 +54,7 @@ export interface BakuRootState {
   user: UserState,
   clipboard: ClipboardState,
   socket: SocketState
+  connection : ConnectionState,
 }
 
 

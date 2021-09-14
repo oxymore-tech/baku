@@ -1,0 +1,23 @@
+{
+    "short_name": "Baku",
+    "name": "Baku",
+    "icons": [
+      {
+        "src": "./icon_manifest_192.png",
+        "type": "image/png",
+        "sizes": "192x192",
+        "purpose":"any maskable"
+      },
+      {
+        "src": "./icon_manifest_512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#FFFFFF",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#FFFFFF",
+    "description": "Plateforme collaborative de création de film d'animation"
+  }

@@ -33,6 +33,9 @@ export interface Movie {
   readonly synopsis: string;
   readonly poster?: ImageRef;
   readonly shots: Shot[];
+  readonly audios: Audio[];
+  readonly dataTimeline: any;
+  readonly soundsTimeline: SoundTimeline[];
   readonly fps: number;
   readonly locked: boolean;
 }
@@ -43,6 +46,24 @@ export interface Shot {
   readonly locked: boolean;
   readonly synopsis: string;
   readonly storyboard?: ImageRef;
+}
+
+export interface Audio {
+  readonly id: string;
+  readonly title?: string;
+  readonly sound?: Blob;
+  readonly waveform?: Blob;
+  readonly volume?: number;
+  readonly duration?: number;
+}
+
+export interface SoundTimeline {
+  readonly id: string;
+  readonly audioId: string;
+  readonly pisteNumber : number;
+  readonly start : number;
+  readonly end : number;
+  readonly title : String;
 }
 
 export interface ReadingSliderBoundaries {
@@ -129,6 +150,9 @@ export class MovieService {
     let fps = 12;
     let locked = false;
     const shots: Shot[] = [];
+    const audios: Audio[] = [];
+    let dataTimeline : any = [];
+    const soundsTimeline : SoundTimeline[] = [];
 
     const updateShot = (shotId: string, updateFn: (shot: Shot) => Shot) => {
       const shotIndex = shots.findIndex((p) => p.id === shotId);
@@ -137,6 +161,24 @@ export class MovieService {
         throw new Error(`shot ${shotId} should exist for project ${title}`);
       }
       shots.splice(shotIndex, 1, updateFn(shot));
+    };
+
+    const updateAudio = (audioId: string, updateFn: (audio: Audio) => Audio) => {
+      const audioIndex = audios.findIndex((p) => p.id === audioId);
+      const audio = audios.find((p) => p.id === audioId);
+      if (!audio) {
+        throw new Error(`audio ${audioId} should exist for project ${title}`);
+      }
+      audios.splice(audioIndex, 1, updateFn(audio));
+    };
+
+    const updateSoundTimeline = (soundTimelineId: string, updateFn: (soundTimeline: SoundTimeline) => SoundTimeline) => {
+      const soundTimelineIndex = soundsTimeline.findIndex((p) => p.id === soundTimelineId);
+      const soundTimeline = soundsTimeline.find((p) => p.id === soundTimelineId);
+      if (!soundTimeline) {
+        throw new Error(`soundTimeline ${soundTimeline} should exist for project ${title}`);
+      }
+      soundsTimeline.splice(soundTimelineIndex, 1, updateFn(soundTimeline));
     };
 
     events.forEach((event) => {
@@ -228,14 +270,86 @@ export class MovieService {
           })
           break;
         }
-        default:
-          break;
-      }
-    });
-    return {
-      title, synopsis, poster, shots, fps, locked
-    };
-  }
+          case BakuAction.AUDIO_ADD: {
+            const {title, sound, duration} = event.value.params as { title: string, sound: Blob, duration : number };
+            audios.push({
+              id: event.value.audioId,
+              title: title,
+              sound: sound,
+              volume: 100,
+              duration: duration,
+            });
+            break;
+          }
+          case BakuAction.AUDIO_REMOVE: {
+            const audioIndex = audios.findIndex((audio) => audio.id === event.value.audioId);
+            audios.splice(audioIndex, 1);
+            break;
+          }
+          case BakuAction.AUDIO_UPDATE_SOUND: {
+            updateAudio(event.value.audioId, (audio: Audio) =>
+              ({...audio, sound: event.value.sound})
+            )
+            break;
+          }
+          case BakuAction.AUDIO_UPDATE_TITLE: {
+            updateAudio(event.value.audioId, (audio: Audio) =>
+              ({...audio, title: event.value.title})
+            )
+            break;
+          }
+          case BakuAction.AUDIO_UPDATE_VOLUME: {
+            updateAudio(event.value.audioId, (audio: Audio) =>
+              ({...audio, volume: event.value.volume})
+            )
+            break;
+          }
+          case BakuAction.AUDIO_UPDATE_DURATION: {
+            updateAudio(event.value.audioId, (audio: Audio) =>
+              ({...audio, duration: event.value.duration})
+            )
+            break;
+          }
+          case BakuAction.AUDIO_UPDATE_WAVEFORM: {
+            updateAudio(event.value.audioId, (audio: Audio) =>
+              ({...audio, waveform: event.value.waveform})
+            )
+            break;
+          }
+          case BakuAction.SOUNDTIMELINE_ADD: {
+            const {audioId, start, end, pisteNumber, title} = event.value.params as { audioId: string, start: number, end : number; pisteNumber : number, title : String };
+            soundsTimeline.push({
+              id: event.value.soundTimelineId,
+              audioId: audioId,
+              start : start,
+              end : end,
+              pisteNumber : pisteNumber,
+              title : title,
+            });
+            break;
+          }
+          case BakuAction.SOUNDTIMELINE_REMOVE: {
+            const soundTimelineIndex = soundsTimeline.findIndex((soundTimeline) => soundTimeline.id === event.value.soundTimelineId);
+            soundsTimeline.splice(soundTimelineIndex, 1);
+            break;
+          }
+          case BakuAction.SOUNDTIMELINE_UPDATE_START: {
+            updateSoundTimeline(event.value.soundTimelineId, (soundTimeline: SoundTimeline) =>
+              ({...soundTimeline, start: event.value.start})
+            )
+            updateSoundTimeline(event.value.soundTimelineId, (soundTimeline: SoundTimeline) =>
+              ({...soundTimeline, end: event.value.end})
+            )
+            break;
+          }
+          default:
+            break;
+        }
+      });
+      return {
+        title, synopsis, poster, shots, audios, dataTimeline, soundsTimeline, fps, locked
+      };
+    }
 
   public static getPosterUrl(movie: Movie) {
     if (movie.poster) {
@@ -243,5 +357,8 @@ export class MovieService {
     } else if (movie && movie.shots && movie.shots.length > 0 && movie.shots[0].images && movie.shots[0].images.length > 0) {
       return movie.shots[0].images[0].getUrl(Quality.Original);
     }
+  }
+  public static getAudio(movie:Movie, index: number) {
+    return movie.audios[index];
   }
 }

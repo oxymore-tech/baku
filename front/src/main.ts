@@ -9,6 +9,7 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 
+
 Vue.config.productionTip = false;
 
 Vue.use(VueAnalytics, {
@@ -36,4 +37,21 @@ new Vue({
   router,
   render: (h) => h(App),
   store,
+  created () {
+    window.addEventListener('offline', () => {
+      store.dispatch('setConnected', false),
+      store.dispatch('setOffline', true),
+      store.dispatch('setSynced', true)
+    })
+    window.addEventListener('online', () => {
+      store.dispatch('setConnected', false),
+      store.dispatch('setOffline', false),
+      store.dispatch('setSynced',false)
+    })
+    window.addEventListener('synced', () =>{
+      store.dispatch('setSynced',true),
+      store.dispatch('setConnected',true),
+      store.dispatch('setOffline',false)
+    })
+  }
 }).$mount('#app');

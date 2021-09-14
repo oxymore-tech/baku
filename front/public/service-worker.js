@@ -37,16 +37,16 @@ self.addEventListener('fetch', async function(event) {
   caches.open(CACHE.name+CACHE.version).then(function(cache){
 
     return cache.match(event.request).then(function(response){
-      
+
       if (!navigator.onLine){
         // OFFLINE
         // Si la réponse est déjà dans le cache et qu'on est en dehors du cas "Requête history depuis un projet créé hors ligne", on renvoie cette réponse
         if (response && (!path.includes("history") || !event.request.referrer.includes("movies/"+projectIdShortened))){
-          
+
           if (path.includes("status")){
             projectIdShortened = path.substring(5,41);
             console.log(path.substring(path.search("/status/")+8));
-            var currentSoundName2 = path.substring(path.search("/status/")+8); 
+            var currentSoundName2 = path.substring(path.search("/status/")+8);
             cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
           }
           return response;
@@ -55,20 +55,20 @@ self.addEventListener('fetch', async function(event) {
         || path === '/api/'+projectIdShortened+'/history'
         || path === '/api/'+projectId+'/stack'
         || path === '/api/'+projectIdShortened+'/stack'
-        || path === '/api/undefined/stack' 
+        || path === '/api/undefined/stack'
         || path === '/api/'+projectId+'/upload'
         || path === '/api/'+projectIdShortened+'/upload'
-        || path === '/api/undefined/stack' 
-        || path === '/images/'+projectId+'/thumbnail/'+currentImgName 
-        || path === '/images/'+projectId+'/original/'+currentImgName 
+        || path === '/api/undefined/stack'
+        || path === '/images/'+projectId+'/thumbnail/'+currentImgName
+        || path === '/images/'+projectId+'/original/'+currentImgName
         || path === '/images/'+projectId+'/lightweight/'+currentImgName
-        || path === '/images/'+projectIdShortened+'/thumbnail/'+currentImgName 
-        || path === '/images/'+projectIdShortened+'/original/'+currentImgName 
+        || path === '/images/'+projectIdShortened+'/thumbnail/'+currentImgName
+        || path === '/images/'+projectIdShortened+'/original/'+currentImgName
         || path === '/images/'+projectIdShortened+'/lightweight/'+currentImgName
         || path === "/api/"+projectIdShortened+"/uploadSound"
         || path === '/api/'+projectId+'/uploadSound'
         || path === '/undefined'){
-          
+
           // Si le projet est intialisé, on met la requête history en cache
           if (tabOfStackPayloads[projectIdShortened]){
             cacheHistoryRequest(tabOfStackPayloads[projectIdShortened]);
@@ -94,10 +94,10 @@ self.addEventListener('fetch', async function(event) {
         if (path.includes("stack") && !path.includes("undefined")){
           projectId = path.substring(path.search("/api/")+5,path.search("/api/")+50);
           projectIdShortened = path.substring(path.search("/api/")+5,path.search("/api/")+41);
-          fillTabOfStackPayloads(event); 
+          fillTabOfStackPayloads(event);
           // Si c'est une requête history, on met à jour les projectId
         } else if (path.includes("history")){
-          
+
           projectId = path.substring(path.search("/api/")+5,path.search("/api/")+50);
           projectIdShortened = path.substring(path.search("/api/")+5,path.search("/api/")+41);
           if (!tabOfStackPayloads[projectIdShortened]){
@@ -151,7 +151,7 @@ self.addEventListener('activate', (event) => {
 }
 function promiseFunction(currentSoundName2){
   return new Promise((resolve,reject)=>{
-    const request = indexedDB.open("PostDB");  
+    const request = indexedDB.open("PostDB");
     request.onsuccess =  function(event){
     var db = event.target.result;
     var tx = db.transaction('postrequest', 'readwrite');
@@ -159,7 +159,7 @@ function promiseFunction(currentSoundName2){
     var allRecords = store.getAll();
       allRecords.onsuccess = function() {
       var records = allRecords.result;
-      //var currentSoundName2 = path.substring(path.search("/sounds/")+8); 
+      //var currentSoundName2 = path.substring(path.search("/sounds/")+8);
       for (var i = 0; i < records.length; i++){
         //console.log(records[i].payload.name+" avec le payload");
         if(records[i].payload.name == currentSoundName2){
@@ -173,7 +173,7 @@ function promiseFunction(currentSoundName2){
     });
 }
 function precacheGetRequest(event) {
-  
+
   event.waitUntil(
     // On precache tous les éléments statiques de notre site
     caches.open(CACHE.name+CACHE.version).then((cache) => {
@@ -266,7 +266,7 @@ async function sendOfflinePostRequestsToServer()  {
 		allRecords.onsuccess = function () {
 
 			if (allRecords.result && allRecords.result.length > 0) {
-        
+
 
 				var records = allRecords.result
         //console.log(records)
@@ -287,7 +287,7 @@ async function sendOfflinePostRequestsToServer()  {
             var formData = new FormData();
             var blob = imagetoblob(records[i].payload.data)
             formData.set("file",blob,records[i].payload.name);
-            for (var [key, value] of formData.entries()) { 
+            for (var [key, value] of formData.entries()) {
               console.log(key, value);
             }
             console.log(records[i].payload);
@@ -365,7 +365,7 @@ function createAndSendResponse(event,path){
       var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       return(mockResponse);
       break;
-      
+
     case "/api/"+projectId+"/history":
     case "/api/"+projectIdShortened+"/history":
       var responseBody = [];
@@ -386,7 +386,7 @@ function createAndSendResponse(event,path){
       var responseInit = generateResponseInit();
       var mockResponse = new Response('null', responseInit);
       // On récupère le payload pour le mettre dans un tableau
-      
+
       fillTabOfStackPayloads(event,projectIdShortened);
       return(mockResponse);
       break;
@@ -431,7 +431,7 @@ function createAndSendResponse(event,path){
       console.log(projectIdShortened);
       var responseInit = generateResponseInit();
       var mockResponse = new Response(responseBody, responseInit);
-      
+
       cacheImgResponse();
       return(mockResponse);
       break;
@@ -443,27 +443,27 @@ function createAndSendResponse(event,path){
       return(mockResponse);
       break;
 
-    case "/api/"+projectId+"/uploadSound":  
+    case "/api/"+projectId+"/uploadSound":
     case "/api/"+projectIdShortened+"/uploadSound":
       var responseBody;
       createSoundFile(event);
       responseBody = projectIdShortened;
-      var responseInit = generateResponseInit();         
+      var responseInit = generateResponseInit();
       //saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),currentSoundFile);
-      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);  
+      var mockResponse = new Response(JSON.stringify(responseBody), responseInit);
       return(mockResponse);
 
      case "/api/"+projectIdShortened+"/sounds/"+currentSoundName:
-        
-      var responseInit = generateResponseInit();       
-      var mockResponse = new Response(responseBodySound, responseInit);  
-      return (mockResponse); 
-      
-    case "/api/"+projectId+"/sounds/"+currentSoundName:        
-        var responseBody = currentSoundFile;      
+
+      var responseInit = generateResponseInit();
+      var mockResponse = new Response(responseBodySound, responseInit);
+      return (mockResponse);
+
+    case "/api/"+projectId+"/sounds/"+currentSoundName:
+        var responseBody = currentSoundFile;
         var responseInit = generateResponseInit();
-        var mockResponse = new Response(responseBody, responseInit);     
-       
+        var mockResponse = new Response(responseBody, responseInit);
+
         return (mockResponse);
 
     default:
@@ -537,7 +537,7 @@ function cacheImgResponse(){
     putInCache(cache,reqOrigShortened);
     putInCache(cache,reqLight);
     putInCache(cache,reqLightShortened);
-  }) 
+  })
 }
 
 function putInCache(cache,req){
@@ -568,7 +568,7 @@ function createImgFile(event){
     }
     if (!navigator.onLine){
       saveIntoIndexedDb(event.request.url,event.request.headers.get('Authorization'),imgPayload);
-    } 
+    }
   });
   Promise.resolve(event.request.clone().formData()).then((formData) => {
     currentImgFile = formData.get("file");
@@ -582,16 +582,16 @@ function createSoundFile(event){
     var len = bytes.byteLength;
     for (var i = 0; i < len; i++) {
         binary += String.fromCharCode( bytes[ i ] );
-    }    
-  let indexFile = binary.search("wav");  
+    }
+  let indexFile = binary.search("wav");
   let currentSoundContent = binary.substring(indexFile+7,binary.length);
   //let currentSoundFileData = currentSoundContent;
   let indexName = binary.search("filename");
-  currentSoundName = binary.substring(indexName+10,indexName+46);  
-  
+  currentSoundName = binary.substring(indexName+10,indexName+46);
+
   Promise.resolve(event.request.clone().formData()).then((formData)=> {
     currentSoundFile = formData.get("file");
-    
+
     let soundFileCache ={
       data : currentSoundFile,
       name : currentSoundName
@@ -602,8 +602,8 @@ function createSoundFile(event){
      /* caches.open(CACHE.name+CACHE.version).then((cache) => {
         cache.add(currentSoundFile);*/
       };
-  
-    })  
+
+    })
     //soundpayloads[soundpayloads.length] = soundFileCache;
     //console.log(soundpayloads);
   })
