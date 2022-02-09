@@ -1,5 +1,5 @@
 <script>
-import { SpeechSynthesisUtterance } from 'speech-synthesis';
+import { SpeechSynthesisUtterance, SpeechSynthesis } from 'speech-synthesis';
 
 
 export default {
