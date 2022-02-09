@@ -1,6 +1,4 @@
 <script>
-import { SpeechSynthesisUtterance, SpeechSynthesis } from 'speech-synthesis';
-
 
 export default {
   name: "ZoneTTS.vue",
@@ -9,7 +7,8 @@ export default {
       currentMsg: "",
       pitch: null,
       rate: null,
-      voiceSelected: null
+      voiceSelected: null,
+      voicesList: undefined
     }
   },
 
@@ -25,7 +24,31 @@ export default {
       if(this.currentMsg !== "") {
         // TODO
       }
+    },
+
+    populateVoiceList() {
+      this.voicesList = [];
+      if(!window.speechSynthesis) {
+        console.error("Speech Synthesis is not supported in your navigator.");
+      }
+      let voices = window.speechSynthesis.getVoices();
+      voices.forEach(voice => {
+        const option = document.createElement('option'); // pour chaque langue on crée un élément
+        option.textContent = voice.name + '(' + voice.lang + ')'; // chaque voix = nom + langue
+
+        /* Attributs */
+        option.setAttribute('langue', voice.lang);
+        option.setAttribute('nom', voice.name);
+
+        this.voicesList.push(option);
+      })
     }
+  },
+
+  mounted() {
+    this.$nextTick(function () {
+      this.populateVoiceList();
+    });
   }
 
 }
@@ -48,16 +71,18 @@ export default {
         <p class="param">Paramètres audio</p>
         <div class='centered'>
             <input type="range" min="0" max="2" step="0.1" v-model="pitch">
-            <label class="ranges" for="volume">Ton : {{pitch}}</label>
+            <label class="ranges">Ton : {{pitch}}</label>
         </div>
         <div class='centered'>
             <input type="range" min="0.1" max="10" step="0.1" v-model="rate">
-            <label class="ranges" for="volume">Vitesse : {{rate}} </label>
+            <label class="ranges">Vitesse : {{rate}} </label>
         </div>
       </div>
 
   <!-- Saisie de la voix -->
-      <select class="voice-selector" v-model="voiceSelected"></select>
+      <select class="voice-selector" v-model="voiceSelected">
+          <option v-for="v in voicesList" :value="v.textContent"> {{v.textContent}} </option>
+      </select>
 
   <!-- Boutons pour valider -->
       <div class="wrapper centered">
@@ -114,7 +139,7 @@ export default {
   }
 
   .buttonTTS {
-    background-color: d9cece;
+    background-color: #d9cece;
     padding: 2px 10px;
     text-align: center;
     color: #455054;
