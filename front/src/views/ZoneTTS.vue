@@ -135,6 +135,7 @@ export default {
 
   label {
       font: 1rem 'Fira Sans', sans-serif;
+      width: 75px;
   }
 
   .text-center {
