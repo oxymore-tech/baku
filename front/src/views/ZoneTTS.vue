@@ -8,7 +8,8 @@ export default {
     return {
       currentMsg: "",
       pitch: null,
-      rate: null
+      rate: null,
+      voiceSelected: null
     }
   },
 
@@ -39,7 +40,7 @@ export default {
     <div class="wrapper main-component">
 
   <!-- Zone de saisie du texte -->
-      <textarea class="textTTS centered" placeholder="Insérez votre texte ici..." v-model="currentMsg"></textarea>
+      <textarea class="textTTS centered" placeholder="Insérez votre texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
 
 
   <!-- Pitch et vitesse -->
@@ -47,13 +48,16 @@ export default {
         <p class="param">Paramètres audio</p>
         <div class='centered'>
             <input type="range" min="0" max="2" step="0.1" v-model="pitch">
-            <label class="ranges" for="volume">Pitch : {{pitch}}</label>
+            <label class="ranges" for="volume">Ton : {{pitch}}</label>
         </div>
         <div class='centered'>
             <input type="range" min="0.1" max="10" step="0.1" v-model="rate">
-            <label class="ranges" for="volume">Rate : {{rate}} </label>
+            <label class="ranges" for="volume">Vitesse : {{rate}} </label>
         </div>
       </div>
+
+  <!-- Saisie de la voix -->
+      <select class="voice-selector" v-model="voiceSelected"></select>
 
   <!-- Boutons pour valider -->
       <div class="wrapper centered">
@@ -119,7 +123,7 @@ export default {
     font-size: 1.8rem;
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     cursor: pointer;
-    margin: 5px;
+    margin: 10px;
     border-style: solid;
     border: #bfb4ac
   }
@@ -142,6 +146,12 @@ export default {
       flex-direction: row-reverse;
       margin: 5px;
       justify-content:center
+  }
+
+  .voice-selector {
+    width: 50%;
+    height: 30px;
+    border-radius: 16px;
   }
 
 
