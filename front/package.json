@@ -23,6 +23,7 @@
     "lodash": "^4.17.15",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
+    "speech-synthesis": "^0.3.2",
     "timelines-chart": "^2.11.1",
     "uuid": "^3.3.3",
     "vue": "^2.6.10",
