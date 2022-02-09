@@ -8,6 +8,7 @@ import LibraryView from '@/views/LibraryView.vue';
 import MovieView from '@/views/MovieView.vue';
 import SmartphoneView from '@/views/SmartphoneView.vue';
 import AudioView from '@/views/AudioView.vue';
+import ZoneTTS from '@/views/ZoneTTS.vue';
 const Capture = () => import('@/views/CaptureView.vue');
 
 const routes = [
@@ -46,6 +47,11 @@ const routes = [
     path: '/movies/:projectId/audio/(admin)?',
     component: AudioView,
   },
+  {
+    name: 'tts',
+    path: '/tts',
+    component: ZoneTTS
+  }
 ];
 
 Vue.use(VueRouter);
