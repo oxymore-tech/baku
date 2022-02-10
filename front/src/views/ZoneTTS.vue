@@ -6,7 +6,7 @@ export default {
     return {
       currentMsg: "",
       pitch: 1,
-      rate: 5,
+      rate: 1,
       voiceSelected: null,
       voicesList: undefined
     }
@@ -80,7 +80,7 @@ export default {
           <label class="ranges">Ton : {{pitch}}</label>
         </div>
         <div class='centered'>
-          <input type="range" min="0.1" max="10" step="0.1" v-model="rate">
+          <input type="range" min="0.1" max="2" step="0.1" v-model="rate">
           <label class="ranges">Vitesse : {{rate}} </label>
         </div>
       </div>
