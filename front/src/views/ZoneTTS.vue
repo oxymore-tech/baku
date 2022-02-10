@@ -5,8 +5,8 @@ export default {
   data() { // Données du composant
     return {
       currentMsg: "",
-      pitch: null,
-      rate: null,
+      pitch: 1,
+      rate: 5,
       voiceSelected: null,
       voicesList: undefined
     }
@@ -22,7 +22,17 @@ export default {
 
     listenAudio() {
       if(this.currentMsg !== "") {
-        // TODO
+        const utterThis = new SpeechSynthesisUtterance(this.currentMsg);
+
+        /* Gestion des evenements */
+        utterThis.onend = e => console.log("Fin synthèse vocale");
+        utterThis.onerror = e => console.log("Erreur de synthèse vocale");
+
+        /* Appel à l'API */
+        utterThis.voice = this.voiceSelected;
+        utterThis.pitch = this.pitch;
+        utterThis.rate = this.rate;
+        window.speechSynthesis.speak(utterThis);
       }
     },
 
@@ -35,6 +45,7 @@ export default {
       voices.forEach(voice => {
         this.voicesList.push(voice);
       })
+      this.voicesList.sort((v1, v2) => v1.name.localeCompare(v2.name));
       this.voiceSelected = this.voicesList[0];
     }
   },
@@ -42,6 +53,7 @@ export default {
   mounted() {
     this.$nextTick(function () {
       this.populateVoiceList();
+      if(window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = this.populateVoiceList;
     });
   }
 
@@ -58,7 +70,7 @@ export default {
 
       <!-- Zone de saisie du texte -->
       <textarea class="textTTS centered" placeholder="Insérez votre texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
-
+      <span> {{currentMsg}}</span>
 
       <!-- Pitch et vitesse -->
       <div class="text-center wrapper">
