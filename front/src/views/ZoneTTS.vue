@@ -1,5 +1,9 @@
 <script>
 
+import meSpeak from 'mespeak';
+import config from '../mespeak/config/mespeak'
+import voice from '../mespeak/voices/fr'
+
 export default {
   name: "ZoneTTS.vue",
   data() { // Données du composant
@@ -21,40 +25,25 @@ export default {
     },
 
     listenAudio() {
-      if(this.currentMsg !== "") {
-        const utterThis = new SpeechSynthesisUtterance(this.currentMsg);
-
-        /* Gestion des evenements */
-        utterThis.onend = e => console.log("Fin synthèse vocale");
-        utterThis.onerror = e => console.log("Erreur de synthèse vocale");
-
-        /* Appel à l'API */
-        utterThis.voice = this.voiceSelected;
-        utterThis.pitch = this.pitch;
-        utterThis.rate = this.rate;
-        window.speechSynthesis.speak(utterThis);
+      if (meSpeak.isConfigLoaded()) {
+        meSpeak.loadVoice(voice);
+        meSpeak.speak(this.currentMsg);
+      }
+      else {
+        console.log(config);
+        console.log(voice);
+        console.error("No audio.");
       }
     },
 
-    populateVoiceList() {
-      this.voicesList = [];
-      if(!window.speechSynthesis) {
-        console.error("Speech Synthesis is not supported in your navigator.");
-      }
-      let voices = window.speechSynthesis.getVoices();
-      voices.forEach(voice => {
-        this.voicesList.push(voice);
-      })
-      this.voicesList.sort((v1, v2) => v1.name.localeCompare(v2.name));
-      this.voiceSelected = this.voicesList[0];
-    }
+
   },
 
+
   mounted() {
-    this.$nextTick(function () {
-      this.populateVoiceList();
-      if(window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = this.populateVoiceList;
-    });
+    this.$nextTick( function () {
+      meSpeak.loadConfig(config);
+      });
   }
 
 }
@@ -70,7 +59,6 @@ export default {
 
       <!-- Zone de saisie du texte -->
       <textarea class="textTTS centered" placeholder="Insérez votre texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
-      <span> {{currentMsg}}</span>
 
       <!-- Pitch et vitesse -->
       <div class="text-center wrapper">
@@ -86,10 +74,9 @@ export default {
       </div>
 
       <!-- Saisie de la voix -->
-      <select class="voice-selector" v-model="voiceSelected">
-        <option v-for="v in voicesList" :value="v"> {{v.name + '(' + v.lang + ')'}} </option>
+      <select class="voice-selector">
+
       </select>
-      <span>Selected : {{voiceSelected.name}}</span>
 
 
       <!-- Boutons pour valider -->
