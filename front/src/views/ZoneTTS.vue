@@ -3,6 +3,7 @@
 import meSpeak from 'mespeak';
 import config from '../mespeak/config/mespeak'
 import voice from '../mespeak/voices/fr'
+import options from '../mespeak/voices/options'
 
 export default {
   name: "ZoneTTS.vue",
@@ -12,7 +13,7 @@ export default {
       pitch: 50,
       rate: 100,
       voiceSelected: null,
-      voicesList: undefined
+      voicesOptions: {}
     }
   },
 
@@ -27,7 +28,7 @@ export default {
     listenAudio() {
       if (meSpeak.isConfigLoaded()) {
         meSpeak.loadVoice(voice);
-        meSpeak.speak(this.currentMsg, { 'pitch': this.pitch, 'speed': this.rate });
+        meSpeak.speak(this.currentMsg, { 'pitch': this.pitch, 'speed': this.rate, 'variant': this.voiceSelected.voix});
       }
       else {
         console.log(config);
@@ -43,6 +44,7 @@ export default {
   mounted() {
     this.$nextTick( function () {
       meSpeak.loadConfig(config);
+      this.voicesOptions = options;
       });
   }
 
@@ -74,8 +76,9 @@ export default {
       </div>
 
       <!-- Saisie de la voix -->
-      <select class="voice-selector">
-
+      <p class ="param">Sélection de la voix</p>
+      <select class="voice-selector" v-model="voiceSelected">
+        <option v-for="v in voicesOptions" :value="v"> {{v.id}} </option>
       </select>
 
 
