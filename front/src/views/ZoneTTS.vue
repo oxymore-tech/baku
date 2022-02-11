@@ -9,8 +9,8 @@ export default {
   data() { // Données du composant
     return {
       currentMsg: "",
-      pitch: 1,
-      rate: 1,
+      pitch: 50,
+      rate: 100,
       voiceSelected: null,
       voicesList: undefined
     }
@@ -27,7 +27,7 @@ export default {
     listenAudio() {
       if (meSpeak.isConfigLoaded()) {
         meSpeak.loadVoice(voice);
-        meSpeak.speak(this.currentMsg);
+        meSpeak.speak(this.currentMsg, { 'pitch': this.pitch, 'speed': this.rate });
       }
       else {
         console.log(config);
@@ -64,11 +64,11 @@ export default {
       <div class="text-center wrapper">
         <p class="param">Paramètres audio</p>
         <div class='centered'>
-          <input type="range" min="0" max="2" step="0.1" v-model="pitch">
+          <input type="range" min="0" max="100" step="5" v-model="pitch">
           <label class="ranges">Ton : {{pitch}}</label>
         </div>
         <div class='centered'>
-          <input type="range" min="0.1" max="2" step="0.1" v-model="rate">
+          <input type="range" min="0" max="200" step="10" v-model="rate">
           <label class="ranges">Vitesse : {{rate}} </label>
         </div>
       </div>
