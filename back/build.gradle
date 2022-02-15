@@ -37,6 +37,7 @@ dependencies {
     annotationProcessor "io.micronaut:micronaut-graal" // <1>
     //end::graal[]
 
+    compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'
     compile group: 'de.dfki.mary', name: 'voice-upmc-pierre-hsmm', version: '5.2'
     compile group: 'de.dfki.mary', name: 'voice-upmc-jessica-hsmm', version: '5.2'
     compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
