@@ -56,7 +56,7 @@ public class SoundController {
 
     @Get("/tts/test/save")
     public HttpResponse<Object> getWav()
-        return HttpResponse.ok(new SystemFile("/tts/test/save".toFile()).attach(test));
+        return HttpResponse.ok(new SystemFile("/tts/test/save".toFile()).attach("test"));
         
     }
 
