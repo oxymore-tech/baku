@@ -40,6 +40,8 @@ dependencies {
     compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'
     compile group: 'de.dfki.mary', name: 'voice-upmc-pierre-hsmm', version: '5.2'
     compile group: 'de.dfki.mary', name: 'voice-upmc-jessica-hsmm', version: '5.2'
+    compile group: 'de.dfki.mary', name: 'voice-enst-camille-hsmm', version: '5.2'
+    compile group: 'de.dfki.mary', name: 'voice-enst-dennys-hsmm', version: '5.2'
     compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'org.kohsuke', name: 'github-api', version: '1.111'
