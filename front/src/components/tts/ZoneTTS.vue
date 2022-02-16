@@ -9,7 +9,12 @@ export default {
       pitch: 50,
       rate: 100,
       voiceSelected: null,
-      voicesOptions: {}
+      voicesOptions: {
+        pierre: 'voice-upmc-pierre-hsmm',
+        jessica: 'voice-upmc-jessica-hsmm',
+        dennys: 'voice-enst-dennys-hsmm',
+        camille: 'voice-enst-camille-hsmm'
+      }
     }
   },
 
@@ -30,7 +35,7 @@ export default {
 
 
   mounted() {
-
+    this.voiceSelected = this.voicesOptions[0];
   }
 
 }
@@ -62,7 +67,9 @@ export default {
 
       <!-- Saisie de la voix -->
       <p class ="param">Sélection de la voix</p>
-      <select class="voice-selector" > </select>
+      <select class="voice-selector" v-model="voiceSelected">
+        <option v-for="(voice, name) in voicesOptions" :value="voice"> {{name}} </option>
+      </select>
 
 
       <!-- Boutons pour valider -->
@@ -130,7 +137,6 @@ export default {
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
   cursor: pointer;
   margin: 10px;
-  border-style: solid;
   border: #bfb4ac
 }
 
