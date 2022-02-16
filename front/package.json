@@ -21,7 +21,6 @@
     "core-js": "^3.3.2",
     "howler": "^2.2.0",
     "lodash": "^4.17.15",
-    "mespeak": "^2.0.2",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
     "timelines-chart": "^2.11.1",
