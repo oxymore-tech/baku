@@ -28,7 +28,7 @@ import java.io.*;
 import java.nio.file.Files;
 
 @Controller("/tts")
-public class SoundController {
+public class TTSController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SoundController.class);
 
