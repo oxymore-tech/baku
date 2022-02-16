@@ -50,12 +50,10 @@ public class TTSController {
         this.ttsService.generateVoice("Ceci est un test","test","upmc-pierre-hsmm");
         return HttpResponse.status(HttpStatus.CREATED).body(new Message(HttpStatus.getCode(),"Saved Successfully !"));
     }
-       
-    }
 
 
     @Get("/tts/test/save")
-    public HttpResponse<Object> getWav()
+    public HttpResponse<Object> getWav() {
         return HttpResponse.ok(new SystemFile("/tts/test/save".toFile()).attach("test"));
         
     }
