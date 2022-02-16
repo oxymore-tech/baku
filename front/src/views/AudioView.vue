@@ -1,5 +1,5 @@
 <style lang="scss" scoped>
-  @import "@/styles/audio.scss"; 
+  @import "@/styles/audio.scss";
 </style>
 
 <template>
@@ -7,18 +7,15 @@
     <template>
       <div class="preview-bloc">
 
-        <AudioListComponent
-          :isPlaying="isPlaying"
-          :projectId="id"
-        />
-        
+        <TTSListComponent/>
+
         <div class="preview-container">
 
           <div class="preview-content-wrapper">
 
             <div class="preview-side-content-wrapper">
               <div class="small-preview-content">
-                
+
                 <template>
                   <img
                     v-if="this.allImages && this.allImages[activeFrame-1.0]  > 0"
@@ -52,13 +49,13 @@
                   ref="previewImg"
                   src="@/assets/baku-cloud-spinner.svg"
                 />
-                  
+
               </div>
             </div>
 
             <div class="preview-side-content-wrapper">
               <div class="small-preview-content">
-                
+
                 <template>
                   <img
                     v-if="this.allImages && this.allImages[activeFrame+1.0]  > 0"
@@ -132,7 +129,7 @@
 
             </div>
           </div>
-              
+
         </div>
 
 
@@ -169,12 +166,14 @@ import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewCo
 import { ImageCacheService } from '@/utils/imageCache.service';
 import { Movie, ReadingSliderBoundaries, Shot, SoundTimeline } from '@/utils/movie.service';
 import { Howl } from 'howler';
+import TTSListComponent from "@/components/tts/TTSListComponent.vue";
 
 const ProjectNS = namespace('project');
 
 
 @Component({
     components: {
+      TTSListComponent,
       ProjectSettingsPopup,
       HistoryComponent,
       AudioListComponent,
@@ -277,7 +276,7 @@ export default class AudioView extends AbstractProjectView {
 
 
       //this.loadProject(this.$route.params.projectId);
-      await this.$store.dispatch('project/loadProject', this.$route.params.projectId); 
+      await this.$store.dispatch('project/loadProject', this.$route.params.projectId);
 
       const audioDisplay = this.$refs.audioDisplay as AudioDisplayComponent;
       audioDisplay.setAllShots(this.getAllShots);
@@ -346,7 +345,7 @@ export default class AudioView extends AbstractProjectView {
 
       const audioDisplay = this.$refs.audioDisplay as AudioDisplayComponent;
       audioDisplay.actualizeDateMarker(timeCode+1);
-      
+
       if (this.allImages) {
 
         let image = undefined;
@@ -402,7 +401,7 @@ export default class AudioView extends AbstractProjectView {
     // private getCurrentShot(timestamp: number) {
     //   const totalImageNumber = this.allImages.length;
     //   let imageNumberCalculation = totalImageNumber;
-      
+
     //   const allShots = this.getAllShots;
 
     //   let shotLengths = Array();
