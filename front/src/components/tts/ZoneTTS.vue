@@ -10,10 +10,10 @@ export default {
       rate: 100,
       voiceSelected: null,
       voicesOptions: {
-        pierre: 'voice-upmc-pierre-hsmm',
-        jessica: 'voice-upmc-jessica-hsmm',
-        dennys: 'voice-enst-dennys-hsmm',
-        camille: 'voice-enst-camille-hsmm'
+        pierre: 'upmc-pierre-hsmm',
+        jessica: 'upmc-jessica-hsmm',
+        dennys: 'enst-dennys-hsmm',
+        camille: 'enst-camille-hsmm'
       }
     }
   },
