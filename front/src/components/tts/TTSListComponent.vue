@@ -23,6 +23,10 @@ export default {
           "projectId": this.projectId
         }
       });
+    },
+
+    getSoundUrl(soundId : string): string {
+      return `/api/${this.projectId}/sounds/${soundId}`;
     }
   }
 
@@ -38,11 +42,22 @@ export default {
 
 <template>
 
-
+  <!-- Boutons pour générer de l'audio -->
   <div class="wrapper centered">
     <button class="buttonTTS" v-on:click="openTTSPopup(projectId)">Enregistrer un son</button>
     <button class="buttonTTS">Stopper la lecture des sons</button>
   </div>
+
+  <!-- Audios enregistrés -->
+  <div class="wrapper centered">
+    <figure>
+      <figcaption>Liste des audios</figcaption>
+      <audio controls> </audio>
+      <!--TODO <audio controls v-for="audio in audioList" src="getSoundUrl(audio.id)"></audio> -->
+    </figure>
+  </div>
+
+
 </template>
 
 
