@@ -7,7 +7,9 @@
     <template>
       <div class="preview-bloc">
 
-        <TTSListComponent/>
+        <TTSListComponent
+          :projectId="id"
+        />
 
         <div class="preview-container">
 

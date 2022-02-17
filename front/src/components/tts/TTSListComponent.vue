@@ -5,24 +5,28 @@ export default {
   name: "TTSListComponent",
   data() {
     return {
-      audioList: []
+      audioList: [],
+      projectId: undefined
     }
   },
 
 
   methods: {
-    async openTTSPopup(projectId) {
+
+    async openTTSPopup() {
       this.$buefy.modal.open({
         parent: this,
         component: ZoneTTS,
         //hasModalCard: true,
         //canCancel: ['escape', 'outside'],
         props: {
-          "projectId": projectId
+          "projectId": this.projectId
         }
       });
     }
   }
+
+
 
 }
 
