@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.file.Files;
 
-@Controller("/tts")
+@Controller
 public class TTSController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SoundController.class);
@@ -45,14 +45,14 @@ public class TTSController {
         this.permissionService = permissionService;
     }
 
-    @Post(value = "/tts/test/save", consumes = MediaType.MULTIPART_FORM_DATA)
+    @Post(value = "/api/{projectId}/saveWav", consumes = MediaType.APPLICATION_JSON)
     public HttpResponse<?> saveWav(){
         this.ttsService.generateVoice("Ceci est un test","test","upmc-pierre-hsmm");
         return HttpResponse.status(HttpStatus.CREATED).body(new Message(HttpStatus.getCode(),"Saved Successfully !"));
     }
 
 
-    @Get("/tts/test/save")
+    @Get("\"/api/{projectId}/getWav\"")
     public HttpResponse<Object> getWav() {
         return HttpResponse.ok(new SystemFile("/tts/test/save".toFile()).attach("test"));
         
