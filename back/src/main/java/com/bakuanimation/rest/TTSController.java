@@ -52,7 +52,7 @@ public class TTSController {
     }
 
 
-    @Get("\"/api/{projectId}/getWav\"")
+    @Get("/api/{projectId}/getWav")
     public HttpResponse<Object> getWav() {
         return HttpResponse.ok(new SystemFile("/tts/test/save".toFile()).attach("test"));
         
