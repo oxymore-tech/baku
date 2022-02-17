@@ -1,44 +1,57 @@
 <script>
 
+  import axios from 'axios';
 
-export default {
-  name: "ZoneTTS.vue",
-  data() { // Données du composant
-    return {
-      currentMsg: "",
-      pitch: 50,
-      rate: 100,
-      voiceSelected: null,
-      voicesOptions: {
-        pierre: 'upmc-pierre-hsmm',
-        jessica: 'upmc-jessica-hsmm',
-        dennys: 'enst-dennys-hsmm',
-        camille: 'enst-camille-hsmm'
+
+  export default {
+    name: "ZoneTTS.vue",
+    data() { // Données du composant
+      return {
+        currentMsg: "",
+        pitch: 50,
+        rate: 100,
+        projectId: undefined,
+        voiceSelected: null,
+        voicesOptions: {
+          pierre: 'upmc-pierre-hsmm',
+          jessica: 'upmc-jessica-hsmm',
+          dennys: 'enst-dennys-hsmm',
+          camille: 'enst-camille-hsmm'
+        }
       }
+    },
+
+    methods:  {
+      generateAudio() {
+        if(this.currentMsg !== "") {
+          console.log(this.currentMsg, this.currentMsg, this.projectId);
+          axios.post('/api/${projectId}/saveWav', {
+            text: this.currentMsg,
+            voice: this.voiceSelected,
+            projectId: this.projectId
+          }).then(response => {
+            console.log(response);
+            //TODO : utiliser la réponse
+          }).catch(error => {
+            console.log(error);
+          })
+          this.currentMsg = "";
+        }
+      },
+
+      listenAudio() {
+
+      },
+
+
+    },
+
+
+    mounted() {
+      this.voiceSelected = this.voicesOptions[0];
     }
-  },
 
-  methods:  {
-    generateAudio() {
-      if(this.currentMsg !== "") {
-        // TODO
-        this.currentMsg = "";
-      }
-    },
-
-    listenAudio() {
-
-    },
-
-
-  },
-
-
-  mounted() {
-    this.voiceSelected = this.voicesOptions[0];
   }
-
-}
 </script>
 
 
@@ -70,6 +83,7 @@ export default {
       <select class="voice-selector" v-model="voiceSelected">
         <option v-for="(voice, name) in voicesOptions" :value="voice"> {{name}} </option>
       </select>
+      <span>Voice : {{voiceSelected}}</span>
 
 
       <!-- Boutons pour valider -->
