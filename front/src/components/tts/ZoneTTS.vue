@@ -7,6 +7,7 @@
     name: "ZoneTTS.vue",
     data() { // Données du composant
       return {
+        //previewCreated: false,
         currentMsg: "",
         pitch: 50,
         rate: 100,
@@ -27,7 +28,7 @@
             fileName: this.fileName,
           }).then(response => {
             console.log(response.data);
-            this.$parent.audioList.push(response.data);
+            //this.$parent.audioList.push(response.data);
             this.fileName++;
             //TODO : utiliser la réponse
           }).catch(error => {
@@ -38,7 +39,20 @@
       },
 
       listenAudio() {
-
+        if (this.currentMsg !== "") {
+          console.log(this.currentMsg, this.voiceSelected, this.projectId);
+          axios.post(`/api/${this.projectId}/saveWav`, {
+            text: this.currentMsg,
+            voice: this.voiceSelected,
+            fileName: 'preview',
+          }).then(response => {
+            console.log(response.data);
+            //this.previewCreated = true;
+            //TODO : utiliser la réponse
+          }).catch(error => {
+            console.log(error);
+          })
+        }
       },
 
 
@@ -95,6 +109,14 @@
         <button class="buttonTTS" v-on:click="listenAudio"> Ecouter l'audio </button>
         <button class="buttonTTS" v-on:click="generateAudio"> Enregistrer l'audio </button>
       </div>
+
+      <!-- TODO Ecouter réellememnt l'audio
+      <div class="wrapper centered">
+        <figure>
+          <audio controls v-if="previewCreated === true"></audio>
+        </figure>
+      </div>
+      -->
 
     </div>
   </div>
