@@ -13,12 +13,7 @@
         projectId: this.$route.params.projectId,
         voiceSelected: null,
         fileName: 0,
-        voicesOptions: {
-          pierre: 'upmc-pierre-hsmm',
-          jessica: 'upmc-jessica-hsmm',
-          dennys: 'enst-dennys-hsmm',
-          camille: 'enst-camille-hsmm'
-        }
+        voicesOptions: undefined
       }
     },
 
@@ -31,7 +26,8 @@
             voice: this.voiceSelected,
             fileName: this.fileName,
           }).then(response => {
-            console.log(response);
+            console.log(response.data);
+            this.$parent.audioList.push(response.data);
             this.fileName++;
             //TODO : utiliser la réponse
           }).catch(error => {
@@ -50,7 +46,13 @@
 
 
     mounted() {
-      this.voiceSelected = this.voicesOptions[0];
+      this.voicesOptions =  {
+        pierre: 'upmc-pierre-hsmm',
+        jessica: 'upmc-jessica-hsmm',
+        dennys: 'enst-dennys-hsmm',
+        camille: 'enst-camille-hsmm'
+      }
+      this.voiceSelected = this.voicesOptions.pierre;
     }
 
   }

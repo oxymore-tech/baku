@@ -50,8 +50,7 @@ export default {
   <!-- Audios enregistrés -->
     <figure>
       <figcaption>Liste des audios</figcaption>
-      <audio controls> </audio>
-      <!--TODO <audio controls v-for="audio in audioList" src="getSoundUrl(audio.id)"></audio> -->
+        <audio controls v-for="audio in audioList" > {{audio}} </audio>
     </figure>
   </div>
 
