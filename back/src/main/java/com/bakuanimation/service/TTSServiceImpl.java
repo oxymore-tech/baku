@@ -1,48 +1,33 @@
 package com.bakuanimation.service;
 
+import com.bakuanimation.api.TTSService;
 import com.bakuanimation.api.HistoryService;
-import com.bakuanimation.api.ImageService;
 import com.bakuanimation.api.PermissionService;
-import com.bakuanimation.model.BakuAction;
-import com.bakuanimation.model.BakuEvent;
-import com.bakuanimation.model.Movie;
-import com.bakuanimation.model.Project;
-import com.bakuanimation.api.SoundService;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableListMultimap;
-import com.mortennobel.imagescaling.ResampleFilters;
-import com.mortennobel.imagescaling.ResampleOp;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
+import com.bakuanimation.service.PathService;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.sound.sampled.AudioInputStream;
+import java.io.*;
+import javax.inject.Singleton;
+import java.nio.file.Path;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.FileImageOutputStream;
-import javax.imageio.stream.ImageOutputStream;
-import javax.inject.Singleton;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import marytts.MaryInterface;
+import marytts.LocalMaryInterface;
+import marytts.exceptions.MaryConfigurationException;
+import marytts.exceptions.SynthesisException;
+import marytts.util.data.audio.MaryAudioUtils;
 
-import org.apache.commons.io.IOUtils;
-import javax.sound.sampled.*;
 
 @Singleton
-public class TTSServiceImpl implements TTSService {
+public class TTSServiceImpl implements TTSService{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SoundServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TTSServiceImpl.class);
 
     private final PathService pathService;
     private final HistoryService historyService;
@@ -55,44 +40,24 @@ public class TTSServiceImpl implements TTSService {
     }
 
 
-    public void save(String projectId, InputStream inputStream, String filename){
-        Path path = pathService.getSoundFile(projectId, filename);
+    public void generateWav(String inputText, String voice, String projectId, String filename) {
+
+        /* Path où sera stocké le wav */
+        String file = filename + ".wav";
+        Path path = pathService.getWavFile(projectId, file);
+        String outputFileName = path.toString();
+
+        /* Appel a MaryTTS */
+        MaryInterface marytts = null;
         try {
-            Files.createDirectories(path.getParent());
-            //byte buffer[] = IOUtils.toByteArray(inputStream);
-            try(OutputStream outputStream = new FileOutputStream(path.toFile())){
-                IOUtils.copy(inputStream, outputStream);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+             marytts = new LocalMaryInterface();
+        } catch (MaryConfigurationException e) {
+            System.err.println("Could not initialize MaryTTS interface: " + e.getMessage());
+            System.exit(1);
         }
+        marytts.setVoice(voice);
 
-
-    }
-
-    public void delete(String projectId, String filename){
-        Path path = pathService.getSoundFile(projectId, filename);
-        try {
-            Files.deleteIfExists(path);
-        } catch (IOException e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void generateVoice(String inputText, String filename, String voiceUsed) throws Exception {
-
-        /* Initialisation de la voix */
-        if (voiceUsed.equals("upmc-pierre-hsmm")
-                || voiceUsed.equals("upmc-jessica-hsmm")
-                || voiceUsed.equals("enst-dennys-hsmm")
-                || voiceUsed.equals("enst-camille-hsmm")) marytts.setVoice(voiceUsed);
-
-
-        else throw new IllegalArgumentException("La voix n'est pas enregistrée");
-
-        /* Synthèse */
+        /* Synthèse vocale */
         AudioInputStream audio = null;
         try {
             audio = marytts.generateAudio(inputText);
@@ -104,12 +69,13 @@ public class TTSServiceImpl implements TTSService {
         /* Ecriture dans le .wav */
         double[] samples = MaryAudioUtils.getSamplesAsDoubleArray(audio);
         try {
-            MaryAudioUtils.writeWavFile(samples, fileName, audio.getFormat());
-            System.out.println("Output written to " + fileName);
+            MaryAudioUtils.writeWavFile(samples, outputFileName, audio.getFormat());
+            System.out.println("Output written to " + outputFileName);
         } catch (IOException e) {
-            System.err.println("Could not write to file: " +fileName + "\n" + e.getMessage());
+            System.err.println("Could not write to file: " + outputFileName + "\n" + e.getMessage());
             System.exit(1);
         }
 
     }
+
 }

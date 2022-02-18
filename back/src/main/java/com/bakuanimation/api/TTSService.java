@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+
 public interface TTSService {
-    public void save(String projectId, InputStream inputStream, String filename);
 
-    public void delete(String projectId, String filename);
+    public void generateWav(String input, String voice, String projectId, String filename);
 
-    public void generateVoice(String inputText, String filename, String voiceUsed) throws Exception;
+    //public void getWav(String projectId, String wavId);
 }

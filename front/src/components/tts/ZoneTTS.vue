@@ -10,8 +10,9 @@
         currentMsg: "",
         pitch: 50,
         rate: 100,
-        projectId: undefined,
+        projectId: this.$route.params.projectId,
         voiceSelected: null,
+        fileName: 0,
         voicesOptions: {
           pierre: 'upmc-pierre-hsmm',
           jessica: 'upmc-jessica-hsmm',
@@ -24,13 +25,14 @@
     methods:  {
       generateAudio() {
         if(this.currentMsg !== "") {
-          console.log(this.currentMsg, this.currentMsg, this.projectId);
+          console.log(this.currentMsg, this.voiceSelected, this.projectId);
           axios.post('/api/${projectId}/saveWav', {
             text: this.currentMsg,
             voice: this.voiceSelected,
-            projectId: this.projectId
+            fileName: this.fileName,
           }).then(response => {
             console.log(response);
+            this.fileName++;
             //TODO : utiliser la réponse
           }).catch(error => {
             console.log(error);

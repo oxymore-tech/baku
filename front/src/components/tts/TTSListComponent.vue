@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       audioList: [],
-      projectId: undefined
+      projectId: this.$route.params.projectId
     }
   },
 
@@ -19,15 +19,14 @@ export default {
         component: ZoneTTS,
         //hasModalCard: true,
         //canCancel: ['escape', 'outside'],
-        props: {
-          "projectId": this.projectId
-        }
       });
     },
 
+      /* TODO : récuperer l'audio
     getSoundUrl(soundId : string): string {
       return `/api/${this.projectId}/sounds/${soundId}`;
     }
+     */
   }
 
 
@@ -46,10 +45,9 @@ export default {
   <div class="wrapper centered">
     <button class="buttonTTS" v-on:click="openTTSPopup(projectId)">Enregistrer un son</button>
     <button class="buttonTTS">Stopper la lecture des sons</button>
-  </div>
+
 
   <!-- Audios enregistrés -->
-  <div class="wrapper centered">
     <figure>
       <figcaption>Liste des audios</figcaption>
       <audio controls> </audio>
