@@ -26,7 +26,7 @@
       generateAudio() {
         if(this.currentMsg !== "") {
           console.log(this.currentMsg, this.voiceSelected, this.projectId);
-          axios.post('/api/${projectId}/saveWav', {
+          axios.post(`/api/${this.projectId}/saveWav`, {
             text: this.currentMsg,
             voice: this.voiceSelected,
             fileName: this.fileName,
