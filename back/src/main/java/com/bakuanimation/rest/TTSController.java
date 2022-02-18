@@ -47,11 +47,12 @@ public class TTSController {
     public HttpResponse<Object> saveWav(@PathVariable String projectId, @Body TTSdata data) {
 
         /* Génération du fichier wav*/
-        this.ttsService.generateWav(data.getText(), data.getVoice(), this.permissionService.getProject(projectId).getId(), data.getFileName());
+        this.ttsService.generateWav(data.getText(), data.getVoice(), projectId, data.getFileName());
 
         /* Vérification */
         Path path = this.pathService.getWavFile(projectId, data.getFileName());
         if (Files.exists(path)) return HttpResponse.status(HttpStatus.OK).body(path);
+        System.out.println("No file at" + path.toString());
         return HttpResponse.status(HttpStatus.NO_RESPONSE).body("Failed to create wav file");
 
     }
