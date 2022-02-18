@@ -8,11 +8,12 @@ import com.bakuanimation.service.PathService;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.sound.sampled.AudioInputStream;
 import java.io.*;
-import javax.inject.Singleton;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
+import javax.inject.Singleton;
+import javax.sound.sampled.AudioInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,11 @@ public class TTSServiceImpl implements TTSService{
         /* Path où sera stocké le wav */
         String file = filename + ".wav";
         Path path = pathService.getWavFile(projectId, file);
+        try {
+            Files.createDirectories(path.getParent());
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
         String outputFileName = path.toString();
 
         /* Appel a MaryTTS */
