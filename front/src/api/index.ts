@@ -69,6 +69,48 @@ export function getSoundUrl(projectId: string, soundId : string): string {
   return `/api/${projectId}/sounds/${soundId}`;
 }
 
+export function generateAudio(projectId: string, text: string, voice: any, fileName: string) {
+  console.log(text, voice, projectId);
+  return axios.post(`/api/${projectId}/saveWav`, {
+    text: text,
+    voice: voice,
+    fileName: fileName,
+  }).then(response => {
+    console.log(response.data);
+    //TODO : utiliser la réponse
+  }).catch(error => {
+    console.log(error);
+  })
+}
+
+export function generateWav(projectId: string, inputText: string, inputVoice: any, inputFileName: string) {
+  console.log(inputText, inputVoice, projectId);
+  return axios.post(`/api/${projectId}/saveWav`, {
+    text: inputText,
+    voice: inputVoice,
+    fileName: inputFileName,
+  }).then(response => {
+    console.log(response.data);
+    //TODO : utiliser la réponse
+  }).catch(error => {
+    console.log(error);
+  })
+}
+
+export function listenWav(projectId: string, inputText: string, inputVoice: any) {
+  console.log(inputText, inputVoice, projectId);
+  return axios.post(`/api/${projectId}/saveWav`, {
+    text: inputText,
+    voice: inputVoice,
+    fileName: 'preview',
+  }).then(response => {
+    console.log(response.data);
+    //TODO : utiliser la réponse
+  }).catch(error => {
+    console.log(error);
+  })
+}
+
 export function getVideoStatus(projectId: string): Promise<VideoStatus> {
   return axios
     .get<VideoStatus>(`/api/${projectId}/video/status`)
