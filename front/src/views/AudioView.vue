@@ -7,7 +7,10 @@
     <template>
       <div class="preview-bloc">
 
-        <TTSListComponent/>
+        <AudioListComponent
+          :isPlaying="isPlaying"
+          :projectId="id"
+        />
 
         <div class="preview-container">
 
@@ -166,14 +169,12 @@ import StoryboardPreviewComponent from '@/components/capture/StoryboardPreviewCo
 import { ImageCacheService } from '@/utils/imageCache.service';
 import { Movie, ReadingSliderBoundaries, Shot, SoundTimeline } from '@/utils/movie.service';
 import { Howl } from 'howler';
-import TTSListComponent from "@/components/tts/TTSListComponent.vue";
 
 const ProjectNS = namespace('project');
 
 
 @Component({
     components: {
-      TTSListComponent,
       ProjectSettingsPopup,
       HistoryComponent,
       AudioListComponent,

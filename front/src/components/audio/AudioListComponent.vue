@@ -12,13 +12,13 @@
           @dragstart="handleDragStart($event,audio.id);"
         >
           <div class="border">
-          
+
             <div
               class="horizontal-align"
             >
                 {{ audio.title }}
             </div>
-            
+
             <span class="tools">
               <div class="tool create-button-modify" @click="openEditSoundPopup(audio.id,projectId)">
               </div>
@@ -36,6 +36,7 @@
 
     <div class="record-Button">
       <button class="button is-primary" @click="openRecordPopup(projectId)">Enregistrer un son</button>
+      <button class="button is-primary" @click="openTTSPopup(projectId)">Convertir un texte en son</button>
       <button class="button is-primary" @click="stopPlayer()">Stopper la lecture des sons</button>
     </div>
   </div>
@@ -49,13 +50,14 @@ import { Howl } from 'howler';
 // import { Spinner } from "@/utils/spinner.class";
 // import { ImageCacheService } from "@/utils/imageCache.service";
 import RecordPopup from '@/components/RecordPopup.vue';
+import TTSPopup from '@/components/tts/TTSPopup.vue';
 import EditSoundPopup from '@/components/EditSoundPopup.vue';
 import * as api from '@/api';
 
 const ProjectNS = namespace('project');
 @Component
 export default class AudioListComponent extends Vue {
-    
+
     @Prop()
     public activeShot!: Shot;
 
@@ -79,7 +81,7 @@ export default class AudioListComponent extends Vue {
     private alreadyPlayedOnce: boolean = false;
 
     public async mounted() {
-      await this.$store.dispatch('project/loadProject', this.$route.params.projectId); 
+      await this.$store.dispatch('project/loadProject', this.$route.params.projectId);
       await this.loadSounds();
     }
 
@@ -94,6 +96,18 @@ export default class AudioListComponent extends Vue {
 
     handleDragStart(event: any, id: string) {
       event.dataTransfer.setData("text", id);
+    }
+
+    public async openTTSPopup(projectId:string) {
+      this.$buefy.modal.open({
+        parent: this,
+        component: TTSPopup,
+        //hasModalCard: true, TODO regarder pourquoi le composant devient gris
+        canCancel: ['escape', 'outside'],
+        props: {
+          "projectId": projectId
+        }
+      });
     }
 
     public async openRecordPopup(projectId:string) {
@@ -156,10 +170,10 @@ export default class AudioListComponent extends Vue {
       }
     }
 
-    public async deleteSound(audioId: string) {   
+    public async deleteSound(audioId: string) {
       if (!this.isPlaying) {
         await this.$store.dispatch('project/removeAudio', audioId);
-      }   
+      }
     }
 
     public stopPlayer() {
