@@ -41,11 +41,10 @@ public class TTSServiceImpl implements TTSService{
     }
 
 
-    public void generateWav(String inputText, String voice, String projectId, String filename) {
+    public void generateWav(String inputText, String voice, String projectId, String file) {
 
         /* Path où sera stocké le wav */
-        String file = filename + ".wav";
-        Path path = pathService.getWavFile(projectId, file);
+        Path path = pathService.getSoundFile(projectId, file);
         try {
             Files.createDirectories(path.getParent());
         } catch(IOException e) {

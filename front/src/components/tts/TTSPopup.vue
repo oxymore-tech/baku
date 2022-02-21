@@ -32,11 +32,17 @@ export default class RecordPopup extends Vue {
     }
   }
 
-  public generateAudio() {
+  public async generateAudio() {
     if (this.currentMsg !== "") {
-      api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, this.fileName.toString());
+      await this.$store.dispatch('project/createWav', {
+        title : this.fileName.toString(),
+        text: this.currentMsg,
+        voice: this.voiceSelected,
+        projectId : this.projectId,
+        path : ""
+      });
       this.fileName++;
-      this.currentMsg = "";
+      (this.$parent as any).close();
     }
   }
 
@@ -74,8 +80,6 @@ export default class RecordPopup extends Vue {
       <select class="voice-selector" v-model="voiceSelected">
         <option v-for="(voice, name) in voicesOptions" :value="voice"> {{name}} </option>
       </select>
-      <span>Voice : {{voiceSelected}}</span>
-
 
       <!-- Boutons pour valider -->
       <div class="wrapper centered">
@@ -83,13 +87,6 @@ export default class RecordPopup extends Vue {
         <button class="buttonTTS" @click="generateAudio"> Enregistrer l'audio </button>
       </div>
 
-      <!-- TODO Ecouter réellememnt l'audio
-      <div class="wrapper centered">
-        <figure>
-          <audio controls v-if="previewCreated === true"></audio>
-        </figure>
-      </div>
-      -->
 
     </div>
   </div>

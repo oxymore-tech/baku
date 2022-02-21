@@ -183,12 +183,22 @@ const ProjectStore: BakuModule<ProjectState> = {
     async addToLocalHistory(context: { commit: (arg0: string, arg1: BakuEvent) => void; }, event: BakuEvent) {
       context.commit('addToLocalHistory', event);
     },
+
     async createAudio(context: any, params: {title : string, sound : Blob, duration : number, projectId : string}) {
       const audioId = uuid.v4();
       const event = makeEvent(context, BakuAction.AUDIO_ADD, {audioId, params});
       loadEvents(context, [event]);
       await store.dispatch('user/updateCurrentSeenProject');
       await api.uploadSound(params.projectId, params.sound,  audioId);
+    },
+
+    async createWav(context: any, params: {title : string, text : string, voice : string, projectId : string, path : any}) {
+      const audioId = uuid.v4();
+      console.log(audioId);
+      params.path = await api.generateWav(params.projectId, params.text, params.voice, audioId);
+      const event = makeEvent(context, BakuAction.AUDIO_ADD_WAV, {audioId, params});
+      loadEvents(context, [event]);
+      await store.dispatch('user/updateCurrentSeenProject');
     },
 
     async removeAudio(context: any, audioId: string) {
@@ -234,8 +244,8 @@ const ProjectStore: BakuModule<ProjectState> = {
       loadEvents(context, [event]);
       await store.dispatch('user/updateCurrentSeenProject');
       return soundTimelineId;
-    },    
-    
+    },
+
     async removeSoundTimeline(context: any, soundTimelineId: string) {
       const event = makeEvent(context, BakuAction.SOUNDTIMELINE_REMOVE, {soundTimelineId});
       loadEvents(context, [event]);
@@ -354,7 +364,7 @@ const ProjectStore: BakuModule<ProjectState> = {
     },
     getAudioRecord: (state, getters: ProjectGetters): Audio[] | undefined =>
       getters.movie.audios,
-   
+
     getSoundTimeline: (state, getters: ProjectGetters): SoundTimeline[] | undefined =>
       getters.movie.soundsTimeline,
   },

@@ -102,10 +102,4 @@ public class PathService {
             .resolve(soundId);
     }
 
-    public Path getWavFile(String projectId, String soundId) {
-        return this
-                .projectDir(projectId)
-                .resolve("wav")
-                .resolve(soundId);
-    }
 }
