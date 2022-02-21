@@ -72,16 +72,19 @@ export function getSoundUrl(projectId: string, soundId : string): string {
 
 export function generateWav(projectId: string, inputText: string, inputVoice: any, inputFileName: string) {
   console.log(inputText, inputVoice, projectId);
-  return axios.post(`/api/${projectId}/saveWav`, {
+  let value = undefined;
+  axios.post(`/api/${projectId}/saveWav`, {
     text: inputText,
     voice: inputVoice,
     fileName: inputFileName,
   }).then(response => {
     console.log(response.data);
-    //TODO : utiliser la réponse
+    value = response.data;
   }).catch(error => {
     console.log(error);
+    value = 'error';
   })
+  return value;
 }
 
 export function listenWav(projectId: string, inputText: string, inputVoice: any) {

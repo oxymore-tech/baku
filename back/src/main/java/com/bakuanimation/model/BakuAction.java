@@ -22,6 +22,7 @@ public enum BakuAction {
     DELETE_MOVIE,
     SHOT_MOVE,
     AUDIO_ADD,
+    AUDIO_ADD_WAV,
     AUDIO_REMOVE,
     AUDIO_UPDATE_TITLE,
     AUDIO_UPDATE_SOUND,
