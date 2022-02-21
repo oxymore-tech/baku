@@ -24,6 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -230,6 +234,39 @@ public class HistoryServiceImpl implements HistoryService {
                     String title = element.getValue().get("params").get("title").asText();
                     double duration = element.getValue().get("params").get("duration").asDouble();
                     InputStream sound = IOUtils.toInputStream(element.getValue().get("params").get("sound").asText());
+                    audios.add(new Audio(audioId, title, sound, sound, 100, duration));
+                    break;
+                }
+                case AUDIO_ADD_WAV: {
+                    String audioId = element.getValue().get("audioId").asText();
+                    String title = element.getValue().get("params").get("title").asText();
+                    //String projectId = element.getValue().get("params").get("projectId").asText();
+
+                    // Obtention du fichier
+                    String id = permissionService.getProject(projectId).getId();
+                    Path path = this.pathService.getSoundFile(id, audioId);
+                    File file = new File(path.toString());
+                    InputStream sound = null;
+                    try {
+                        sound = new FileInputStream(file);
+                    } catch (IOException e) {
+                        System.err.println("Error in AUDIO_ADD_WAV (sound = new FileInputStream(file)) : " + e);
+                    }
+
+                    // Obtention de la durée
+                    AudioInputStream audioInputStream = null;
+                    try {
+                        audioInputStream = AudioSystem.getAudioInputStream(file);
+                    } catch (UnsupportedAudioFileException e1) {
+                        System.err.println("Error in AUDIO_ADD_WAV : " + e1);
+                        System.exit(1);
+                    } catch (IOException e2) {
+                        System.err.println("Error in AUDIO_ADD_WAV : " + e2);
+                        System.exit(1);
+                    }
+                    AudioFormat format = audioInputStream.getFormat();
+                    long frames = audioInputStream.getFrameLength();
+                    double duration = (frames+0.0) / format.getFrameRate();
                     audios.add(new Audio(audioId, title, sound, sound, 100, duration));
                     break;
                 }
