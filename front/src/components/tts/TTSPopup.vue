@@ -38,8 +38,7 @@ export default class RecordPopup extends Vue {
         title : this.fileName.toString(),
         text: this.currentMsg,
         voice: this.voiceSelected,
-        projectId : this.projectId,
-        path : ""
+        projectId : this.projectId
       });
       this.fileName++;
       (this.$parent as any).close();
