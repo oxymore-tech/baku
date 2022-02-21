@@ -12,7 +12,7 @@ import java.io.OutputStream;
 
 public interface TTSService {
 
-    public void generateWav(String input, String voice, String projectId, String filename);
+    public void generateWav(String inputText, String voice, String projectId, String filename);
 
     //public void getWav(String projectId, String wavId);
 }
