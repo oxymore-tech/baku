@@ -41,7 +41,7 @@ public class TTSServiceImpl implements TTSService{
     }
 
 
-    public void generateWav(String inputText, String voice, String projectId, String file) {
+    public void generateWav(String inputText, String voice, String projectId, String file, float voiceRate) {
 
         /* Path où sera stocké le wav */
         Path path = pathService.getSoundFile(projectId, file);
@@ -60,6 +60,8 @@ public class TTSServiceImpl implements TTSService{
             System.err.println("Could not initialize MaryTTS interface: " + e.getMessage());
             System.exit(1);
         }
+        String s = Float.toString(voiceRate);
+        maryTts.setAudioEffects("Rate(durScale:"+s+")");
         marytts.setVoice(voice);
 
         /* Synthèse vocale */
