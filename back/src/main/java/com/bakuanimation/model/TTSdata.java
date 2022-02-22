@@ -8,13 +8,13 @@ public final class TTSdata {
     private final String voice;
     private final String text;
     private final String fileName;
-    private final Float voiceRate;
+    private final String voiceRate;
 
     @JsonCreator
     public TTSdata( @JsonProperty("voice") String voice,
                     @JsonProperty("text") String text,
                     @JsonProperty("fileName") String fileName,
-		    @JsonProperty("voiceRate") Float voiceRate) {
+		    @JsonProperty("voiceRate") String voiceRate) {
 
         this.voice = voice;
         this.text = text;
@@ -35,7 +35,7 @@ public final class TTSdata {
     }
 
 
-    public float getVoiceRate() {
+    public String getVoiceRate() {
         return voiceRate;
     }
 
