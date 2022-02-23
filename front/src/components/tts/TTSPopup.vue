@@ -75,7 +75,7 @@ export default class RecordPopup extends Vue {
 
 
       <!-- Boutons pour valider/annuler -->
-      <div class="wrapper centeredbis">
+      <div class="centeredbis">
         <button class="buttonTTS" @click="generateAudio"> Enregistrer la voix </button> 
         <button class="buttonannuler"> Annuler </button>    
       </div>
@@ -157,7 +157,7 @@ export default class RecordPopup extends Vue {
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     cursor: pointer;
     margin: 12px;
-    text-align: right;
+    width : 30%;
   }
 
   .buttonTTS:hover {
@@ -204,9 +204,8 @@ export default class RecordPopup extends Vue {
 
   .centeredbis {
     display: flex;
-    flex-direction: row;
-    margin: 10px;
     justify-content: flex-end;
+    width : 100%;
   }
 
   .voice-selector {
