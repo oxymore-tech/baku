@@ -53,25 +53,33 @@ export default class RecordPopup extends Vue {
   <div class="TTS">
     <div class="wrapper main-component">
 
-      <!-- Zone de saisie du texte -->
+      
+      <div class="right">
       <p class ="parametre">Créer une voix a partir d'un texte</p>
-      <textarea class="textTTS centered" placeholder="Tapez votre texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
-      <button class="buttonaudio" @click="listenAudio"> Ecouter l'audio </button>
+      </div>
+
+      <!-- Zone de saisie du texte -->
+      <textarea class="textTTS centered" placeholder="Taper le texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
+      
+      <div class="centeredbisbis">
+        <i class="icon-play":class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"/>
+        <p class ="ecouter">Ecouter le texte </p>
+      </div>
+
 
       <!-- Pitch et vitesse -->
       <div class="text-center wrapper">
         <div class='range_bar'>
           <input type="range" min="0" max="2" step="1" v-model="rate">
-          <label class="ranges">Vitesse : {{rate}} </label>
+          <label class="ranges">Vitesse </label>
         </div>
       </div>
 
       <!-- Saisie de la voix -->
-      <p class ="param">Sélection de la voix</p>
+      <p class ="param">Sélectionner la voix souhaitée</p>
       <select class="voice-selector" v-model="voiceSelected">
         <option v-for="(voice, name) in voicesOptions" :value="voice"> {{name}} </option>
       </select>
-      <span>Voice : {{voiceSelected}}</span>
 
 
       <!-- Boutons pour valider/annuler -->
@@ -114,6 +122,7 @@ export default class RecordPopup extends Vue {
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     text-align: left;
     font-weight: 900;
+    padding: 10px 10px;
   }
 
   .main-component {
@@ -126,8 +135,9 @@ export default class RecordPopup extends Vue {
   }
 
   .param {
-    font-size: 16px;
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    height: 10%;
   }
 
   .ranges {
@@ -144,7 +154,30 @@ export default class RecordPopup extends Vue {
     background-color: #f5f5f5;
     font-size: 20px;
     width: 95%;
-    height: 175px;
+    height: 200px;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+  }
+
+  .icon-play {
+    color: #ffbd72;
+    font-family: 'baku' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 2;
+    font-size: xx-large;
+  }
+
+  .ecouter {
+    padding: 4px;
+    text-align: center;
+    color: #ffbd72;
+    font-size: 25px;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    margin: 12px;
   }
 
   .buttonTTS {
@@ -188,8 +221,7 @@ export default class RecordPopup extends Vue {
   }
 
   label {
-    font: 1rem 'Fira Sans', sans-serif;
-    width: 75px;
+    width: fit-content;
   }
 
   .text-center {
@@ -210,22 +242,41 @@ export default class RecordPopup extends Vue {
     flex-direction: row-reverse;
   }
 
+  .right {
+    display: flex;
+    justify-content: flex-start;
+    width : 100%;
+  }
+
   .centeredbis {
     display: flex;
     justify-content: flex-end;
     width : 100%;
   }
 
+  .centeredbisbis {
+    display: flex;
+    justify-content: center;
+    width : 100%;
+    flex-direction: row;
+  }
+
   .voice-selector {
-    width: 50%;
-    height: 30px;
-    border-radius: 16px;
+    width: 15%;
+    height: 10%;
+    border-radius: 6px;
+    justify-content: center;
+    display: flex;
+    font-size: 17px;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    cursor: pointer;
   }
 
   input[type=range] {
     -webkit-appearance: none;
     margin: 18px 0;
     width: 100%;
+    cursor: pointer;
   }
   input[type=range]:focus {
     outline: none;
