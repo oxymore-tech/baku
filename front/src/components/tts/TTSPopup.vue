@@ -244,7 +244,7 @@ export default class RecordPopup extends Vue {
     background: #ffbd72;
     cursor: pointer;
     -webkit-appearance: none;
-    margin-top: -14px;
+    margin-top: -0.25em;
   }
   input[type=range]:focus::-webkit-slider-runnable-track {
     background: #c0bcbc;
