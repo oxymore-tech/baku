@@ -11,19 +11,19 @@ export default class RecordPopup extends Vue {
   //previewCreated: false,
   public currentMsg: string ="";
   public pitch: number = 50;
-  public rate: number = 100;
+  public rate: number = 1;
   public voiceSelected: any = null;
   public fileName: number = 0;
   public voicesOptions: any = null;
 
   public async mounted() {
     this.voicesOptions =  {
-      pierre: 'upmc-pierre-hsmm',
-      jessica: 'upmc-jessica-hsmm',
-      dennys: 'enst-dennys-hsmm',
-      camille: 'enst-camille-hsmm'
+      Pierre: 'upmc-pierre-hsmm',
+      Jessica: 'upmc-jessica-hsmm',
+      Dennys: 'enst-dennys-hsmm',
+      Camille: 'enst-camille-hsmm'
     }
-    this.voiceSelected = this.voicesOptions.pierre;
+    this.voiceSelected = this.voicesOptions.Pierre;
   }
 
   public listenAudio() {
@@ -32,17 +32,11 @@ export default class RecordPopup extends Vue {
     }
   }
 
-  public async generateAudio() {
+  public generateAudio() {
     if (this.currentMsg !== "") {
-      await this.$store.dispatch('project/createWav', {
-        title : this.fileName.toString(),
-        text: this.currentMsg,
-        voice: this.voiceSelected,
-        projectId : this.projectId,
-        path : ""
-      });
+      api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, this.fileName.toString());
       this.fileName++;
-      (this.$parent as any).close();
+      this.currentMsg = "";
     }
   }
 
@@ -60,17 +54,14 @@ export default class RecordPopup extends Vue {
     <div class="wrapper main-component">
 
       <!-- Zone de saisie du texte -->
-      <textarea class="textTTS centered" placeholder="Insérez votre texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
+      <p class ="parametre">Créer une voix a partir d'un texte</p>
+      <textarea class="textTTS centered" placeholder="Tapez votre texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
+      <button class="buttonaudio" @click="listenAudio"> Ecouter l'audio </button>
 
       <!-- Pitch et vitesse -->
       <div class="text-center wrapper">
-        <p class="param">Paramètres audio</p>
         <div class='centered'>
-          <input type="range" min="0" max="100" step="5" v-model="pitch">
-          <label class="ranges">Ton : {{pitch}}</label>
-        </div>
-        <div class='centered'>
-          <input type="range" min="0" max="200" step="10" v-model="rate">
+          <input type="range" min="0" max="2" step="1" v-model="rate">
           <label class="ranges">Vitesse : {{rate}} </label>
         </div>
       </div>
@@ -80,13 +71,23 @@ export default class RecordPopup extends Vue {
       <select class="voice-selector" v-model="voiceSelected">
         <option v-for="(voice, name) in voicesOptions" :value="voice"> {{name}} </option>
       </select>
+      <span>Voice : {{voiceSelected}}</span>
 
-      <!-- Boutons pour valider -->
-      <div class="wrapper centered">
-        <button class="buttonTTS" @click="listenAudio"> Ecouter l'audio </button>
-        <button class="buttonTTS" @click="generateAudio"> Enregistrer l'audio </button>
+
+      <!-- Boutons pour valider/annuler -->
+      <div class="wrapper centeredbis">
+        <button class="buttonTTS" @click="generateAudio"> Enregistrer la voix </button> 
+        <button class="buttonannuler"> Annuler </button>    
       </div>
 
+      
+      <!-- TODO Ecouter réellememnt l'audio
+      <div class="wrapper centered">
+        <figure>
+          <audio controls v-if="previewCreated === true"></audio>
+        </figure>
+      </div>
+      -->
 
     </div>
   </div>
@@ -104,55 +105,85 @@ export default class RecordPopup extends Vue {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px;
+    margin: 50px;
+  }
+
+  .parametre {
+    font-size: 25px;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    text-align: left;
+    font-weight: 900;
   }
 
   .main-component {
-    width: 600px;
-    border: #ffbd72;
+    width: 1500px;
+    border: white;
     border-style: solid;
     padding: 10px;
-    background: #ffebd3;
-    border-radius: 16px;
+    background: white;
+    border-radius: 6px;
   }
 
   .param {
     font-size: 16px;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
   }
 
   .ranges {
-    font-size: 13px;
+    font-size: 20px;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
   }
 
   .textTTS {
     padding: 12px 20px;
     box-sizing: border-box;
     border: 2px solid #ccc;
-    border-radius: 16px;
-    border-color: black;
-    background-color: #ffffff;
-    font-size: 16px;
-    width: 80%;
+    border-radius: 6px;
+    border-color: #f5f5f5;
+    background-color: #f5f5f5;
+    font-size: 20px;
+    width: 95%;
     height: 175px;
   }
 
   .buttonTTS {
-    background-color: #d9cece;
-    padding: 2px 10px;
+    background-color: #FE676F;
+    padding: 5px 20px;
     text-align: center;
-    color: #455054;
-    border: 2px solid white;
-    border-radius: 16px;
+    color: white;
+    border: 4px solid #FE676F;
+    border-radius: 5px;
     font-size: 1.8rem;
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     cursor: pointer;
-    margin: 10px;
-    border: #bfb4ac
+    margin: 12px;
+    text-align: right;
   }
 
   .buttonTTS:hover {
-    background-color: #dcdcdc;
-    color: black;
+    background-color: #ff515a; 
+    color: white;
+    border: 4px solid #ff515a;
+  }
+
+  .buttonannuler {
+    background-color: #f5f5f5;
+    padding: 5px 20px;
+    text-align: center;
+    color: #717171;
+    border: 4px solid #f5f5f5;
+    border-radius: 5px;
+    font-size: 1.8rem;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    margin: 12px;
+    text-align: right;
+  }
+
+  .buttonannuler:hover {
+    background-color: #d9d6d6; 
+    color: #717171;
+    border: 4px solid #d9d6d6;
   }
 
   label {
@@ -168,7 +199,14 @@ export default class RecordPopup extends Vue {
     display: flex;
     flex-direction: row-reverse;
     margin: 5px;
-    justify-content:center
+    justify-content: center;
+  }
+
+  .centeredbis {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+    justify-content: flex-end;
   }
 
   .voice-selector {
