@@ -60,7 +60,7 @@ export default class RecordPopup extends Vue {
 
       <!-- Pitch et vitesse -->
       <div class="text-center wrapper">
-        <div class='centered'>
+        <div class='range_bar'>
           <input type="range" min="0" max="2" step="1" v-model="rate">
           <label class="ranges">Vitesse : {{rate}} </label>
         </div>
@@ -106,6 +106,7 @@ export default class RecordPopup extends Vue {
     flex-direction: column;
     align-items: center;
     margin: 50px;
+    width:100%;
   }
 
   .parametre {
@@ -202,6 +203,13 @@ export default class RecordPopup extends Vue {
     justify-content: center;
   }
 
+  .range_bar{
+    display: flex;
+    justify-content: center;
+    width:80%;
+    flex-direction: row-reverse;
+  }
+
   .centeredbis {
     display: flex;
     justify-content: flex-end;
@@ -224,79 +232,63 @@ export default class RecordPopup extends Vue {
   }
   input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
-    height: 8.4px;
+    height: 1.5em;
     cursor: pointer;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-    background: #7f7f7f;
+    background: #c0bcbc;
     border-radius: 1.3px;
-    border: 0.2px solid #010101;
   }
   input[type=range]::-webkit-slider-thumb {
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-    border: 1px solid #000000;
-    height: 36px;
-    width: 16px;
-    border-radius: 3px;
+    height: 30px;
+    width: 12px;
+    border-radius: 5px;
     background: #ffbd72;
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -14px;
   }
   input[type=range]:focus::-webkit-slider-runnable-track {
-    background: #7f7f7f;
+    background: #c0bcbc;
   }
   input[type=range]::-moz-range-track {
     width: 100%;
-    height: 8.4px;
+    height: 1.5em;
     cursor: pointer;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-    background: #7f7f7f;
-    border-radius: 1.3px;
-    border: 0.2px solid #010101;
+    background: #c0bcbc;
+    border-radius: 3px;
   }
   input[type=range]::-moz-range-thumb {
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-    border: 1px solid #000000;
-    height: 36px;
-    width: 16px;
-    border-radius: 3px;
+    height: 30px;
+    width: 12px;
+    border-radius: 5px;
     background: #ffbd72;
     cursor: pointer;
   }
   input[type=range]::-ms-track {
     width: 100%;
-    height: 8.4px;
+    height: 1.5em;
     cursor: pointer;
     background: transparent;
-    border-color: transparent;
-    border-width: 16px 0;
     color: transparent;
   }
   input[type=range]::-ms-fill-lower {
     background: #2a6495;
-    border: 0.2px solid #010101;
     border-radius: 2.6px;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   }
   input[type=range]::-ms-fill-upper {
-    background: #7f7f7f;
-    border: 0.2px solid #010101;
+    background: #c0bcbc;
     border-radius: 2.6px;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   }
   input[type=range]::-ms-thumb {
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-    border: 1px solid #000000;
-    height: 36px;
-    width: 16px;
-    border-radius: 3px;
+    height: 30px;
+    width: 12px;
+    border-radius: 5px;
     background: #ffbd72;
     cursor: pointer;
   }
   input[type=range]:focus::-ms-fill-lower {
-    background: #7f7f7f;
+    background: #c0bcbc;
   }
   input[type=range]:focus::-ms-fill-upper {
-    background: #7f7f7f;
+    background: #c0bcbc;
   }
 </style>
