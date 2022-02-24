@@ -41,7 +41,7 @@ export default class RecordPopup extends Vue {
 
   
 
-}
+
 }
 
 
