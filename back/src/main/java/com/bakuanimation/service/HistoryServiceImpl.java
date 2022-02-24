@@ -24,10 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -60,19 +56,19 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public Single<Boolean> addStack(Project project, byte[] stack, String userId) {
         return Single.fromCallable(() -> {
-            List<BakuEvent> history = readHistory(project.getId());
-            Movie movie = composeMovie(project.getId(), history);
-            JsonNode jsonNode = objectMapper.readTree(stack);
-            if (jsonNode.isArray()) {
-                for (JsonNode node : jsonNode) {
-                    addEvent(project, movie, history, node);
-                }
-            } else {
-                addEvent(project, movie, history, jsonNode);
-            }
-            writeHistory(project.getId(), history);
-            return movie;
-        })
+                    List<BakuEvent> history = readHistory(project.getId());
+                    Movie movie = composeMovie(project.getId(), history);
+                    JsonNode jsonNode = objectMapper.readTree(stack);
+                    if (jsonNode.isArray()) {
+                        for (JsonNode node : jsonNode) {
+                            addEvent(project, movie, history, node);
+                        }
+                    } else {
+                        addEvent(project, movie, history, jsonNode);
+                    }
+                    writeHistory(project.getId(), history);
+                    return movie;
+                })
                 .flatMapPublisher(movie -> collaborationSyncService.broadcast(userId, movie.getProjectId(), new String(stack)))
                 .lastOrError()
                 .map(v -> true)
@@ -239,34 +235,10 @@ public class HistoryServiceImpl implements HistoryService {
                 }
                 case AUDIO_ADD_WAV: {
                     String audioId = element.getValue().get("audioId").asText();
-                    String title = element.getValue().get("params").get("title").asText();
+                    String title = element.getValue().get("title").asText();
                     //String projectId = element.getValue().get("params").get("projectId").asText();
-
-                    // Obtention du fichier
-                    String id = permissionService.getProject(projectId).getId();
-                    Path path = this.pathService.getSoundFile(id, audioId);
-                    File file = new File(path.toString());
-                    InputStream sound = null;
-                    try {
-                        sound = new FileInputStream(file);
-                    } catch (IOException e) {
-                        System.err.println("Error in AUDIO_ADD_WAV (sound = new FileInputStream(file)) : " + e);
-                    }
-
-                    // Obtention de la durée
-                    AudioInputStream audioInputStream = null;
-                    try {
-                        audioInputStream = AudioSystem.getAudioInputStream(file);
-                    } catch (UnsupportedAudioFileException e1) {
-                        System.err.println("Error in AUDIO_ADD_WAV : " + e1);
-                        System.exit(1);
-                    } catch (IOException e2) {
-                        System.err.println("Error in AUDIO_ADD_WAV : " + e2);
-                        System.exit(1);
-                    }
-                    AudioFormat format = audioInputStream.getFormat();
-                    long frames = audioInputStream.getFrameLength();
-                    double duration = (frames+0.0) / format.getFrameRate();
+                    double duration = element.getValue().get("duration").asDouble();
+                    InputStream sound = IOUtils.toInputStream(element.getValue().get("sound").asText());
                     audios.add(new Audio(audioId, title, sound, sound, 100, duration));
                     break;
                 }
@@ -289,7 +261,7 @@ public class HistoryServiceImpl implements HistoryService {
                             break;
                         }
                     }
-                    break;                    
+                    break;
                 }
                 case AUDIO_UPDATE_SOUND: {
                     String audioId = element.getValue().get("audioId").asText();
@@ -300,7 +272,7 @@ public class HistoryServiceImpl implements HistoryService {
                             break;
                         }
                     }
-                    break;                    
+                    break;
                 }
                 case AUDIO_UPDATE_VOLUME: {
                     String audioId = element.getValue().get("audioId").asText();
@@ -311,7 +283,7 @@ public class HistoryServiceImpl implements HistoryService {
                             break;
                         }
                     }
-                    break;                    
+                    break;
                 }
                 case AUDIO_UPDATE_DURATION: {
                     String audioId = element.getValue().get("audioId").asText();
@@ -322,7 +294,7 @@ public class HistoryServiceImpl implements HistoryService {
                             break;
                         }
                     }
-                    break;                    
+                    break;
                 }
                 case AUDIO_UPDATE_WAVEFORM: {
                     String audioId = element.getValue().get("audioId").asText();
@@ -333,7 +305,7 @@ public class HistoryServiceImpl implements HistoryService {
                             break;
                         }
                     }
-                    break;                    
+                    break;
                 }
                 case SOUNDTIMELINE_ADD: {
                     String soundTimelineId = element.getValue().get("soundTimelineId").asText();
@@ -342,7 +314,7 @@ public class HistoryServiceImpl implements HistoryService {
                     double start = element.getValue().get("params").get("start").asDouble();
                     double end = element.getValue().get("params").get("end").asDouble();
                     soundsTimeline.add(new SoundTimeLine(soundTimelineId, audioId, pisteNumber, start, end));
-                    break;                    
+                    break;
                 }
                 case SOUNDTIMELINE_REMOVE: {
                     String soundTimelineId = element.getValue().get("soundTimelineId").asText();
@@ -352,7 +324,7 @@ public class HistoryServiceImpl implements HistoryService {
                             break;
                         }
                     }
-                    break;                    
+                    break;
                 }
                 case SOUNDTIMELINE_UPDATE_START: {
                     String soundTimelineId = element.getValue().get("soundTimelineId").asText();
@@ -365,7 +337,7 @@ public class HistoryServiceImpl implements HistoryService {
                             break;
                         }
                     }
-                    break;                    
+                    break;
                 }
                 default: {
                     // Ignored
