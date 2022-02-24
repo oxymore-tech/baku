@@ -15,7 +15,6 @@ export default class RecordPopup extends Vue {
   public voiceSelected: any = null;
   public fileName: number = 0;
   public voicesOptions: any = null;
-
   public async mounted() {
     this.voicesOptions =  {
       Pierre: 'upmc-pierre-hsmm',
@@ -40,7 +39,12 @@ export default class RecordPopup extends Vue {
     }
   }
 
+  
+
 }
+}
+
+
 
 
 
@@ -73,6 +77,11 @@ export default class RecordPopup extends Vue {
           <input type="range" min="0" max="2" step="1" v-model="rate">
           <label class="ranges">Vitesse </label>
         </div>
+      </div>
+
+      <div class="vitesse">
+        <p>Lent</p>
+        <p>Rapide</p>
       </div>
 
       <!-- Saisie de la voix -->
@@ -113,8 +122,19 @@ export default class RecordPopup extends Vue {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 50px;
     width:100%;
+  }
+
+  .vitesse{
+    display: flex;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    width:70%;
+    margin-left : 5em;
+    justify-content: space-between;
+    margin-bottom : 3em;
+    padding-top : 0em;
+    margin-top:-1em;
   }
 
   .parametre {
@@ -141,6 +161,8 @@ export default class RecordPopup extends Vue {
   }
 
   .ranges {
+    padding-top: 0.5em;
+    padding-right : 0.5em;
     font-size: 20px;
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
   }
@@ -252,6 +274,7 @@ export default class RecordPopup extends Vue {
     display: flex;
     justify-content: flex-end;
     width : 100%;
+    margin-top:1em;
   }
 
   .centeredbisbis {
@@ -270,6 +293,7 @@ export default class RecordPopup extends Vue {
     font-size: 17px;
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     cursor: pointer;
+    margin-bottom: 1em;
   }
 
   input[type=range] {
@@ -286,7 +310,7 @@ export default class RecordPopup extends Vue {
     height: 1.5em;
     cursor: pointer;
     background: #c0bcbc;
-    border-radius: 1.3px;
+    border-radius: 5px;
   }
   input[type=range]::-webkit-slider-thumb {
     height: 30px;
