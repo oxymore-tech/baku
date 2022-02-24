@@ -2,6 +2,7 @@ import { BakuAction, BakuEvent, Duration } from '@/utils/types';
 import { ImageRef, Quality, UploadedImage } from '@/utils/uploadedImage.class';
 import * as _ from 'lodash';
 import { SeenProject } from '@/store/store.types';
+// import * as api from "@/api";
 
 export enum KeyCodes {
   BACKSPACE = 8,
@@ -274,6 +275,19 @@ export class MovieService {
             const {title, sound, duration} = event.value.params as { title: string, sound: Blob, duration : number };
             audios.push({
               id: event.value.audioId,
+              title: title,
+              sound: sound,
+              volume: 100,
+              duration: duration,
+            });
+            break;
+          }
+          case BakuAction.AUDIO_ADD_WAV: {
+            console.log("Test", event.value);
+            const {title, sound, duration, audioId} = event.value as { title: string, sound: Blob, duration : number, audioId : string};
+            console.log("On est dans movie.service", sound);
+            audios.push({
+              id: audioId,
               title: title,
               sound: sound,
               volume: 100,

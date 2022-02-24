@@ -1,9 +1,18 @@
 <script lang="ts">
 import { Component,Prop,Vue } from 'vue-property-decorator';
 import * as api from '@/api';
+import uuid from 'uuid';
+import { namespace } from 'vuex-class';
+
+
+const ProjectNS = namespace('project');
+
 
 @Component
 export default class RecordPopup extends Vue {
+
+  @ProjectNS.Getter
+  protected getAudioRecord!: any;
 
   @Prop()
   public projectId! : string;
@@ -34,11 +43,18 @@ export default class RecordPopup extends Vue {
 
   public async generateAudio() {
     if (this.currentMsg !== "") {
+      this.fileName = this.getAudioRecord.length+1
+      let audioId = uuid.v4();
+      let response = await api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, audioId);
+      let blob = await fetch(api.getSoundUrl(this.projectId, audioId))
+        .then(res => res.blob())
+        .then(data => new Blob ([data], { type: 'audio/wav' }));
       await this.$store.dispatch('project/createWav', {
-        title : this.fileName.toString(),
-        text: this.currentMsg,
-        voice: this.voiceSelected,
-        projectId : this.projectId
+        title : "Son " + this.fileName.toString(),
+        sound: blob,
+        duration: response.duration,
+        projectId: this.projectId,
+        audioId: audioId
       });
       this.fileName++;
       (this.$parent as any).close();
