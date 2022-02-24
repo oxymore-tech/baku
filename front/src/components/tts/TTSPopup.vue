@@ -149,11 +149,13 @@ export default class RecordPopup extends Vue {
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     font-size: 15px;
     width:70%;
-    margin-left : 5em;
+    margin-left : 5.1em;
     justify-content: space-between;
     margin-bottom : 3em;
     padding-top : 0em;
     margin-top:-1em;
+    color:#c0bcbc;
+    
   }
 
   .parametre {
@@ -177,6 +179,7 @@ export default class RecordPopup extends Vue {
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     font-size: 20px;
     height: 10%;
+    magin-top:-1em;
   }
 
   .ranges {
