@@ -210,6 +210,22 @@ export class MovieService {
           });
           break;
         }
+        case BakuAction.AUDIO_ADD_WAV: {
+          const {
+            title,
+            sound,
+            duration,
+            audioId
+          } = event.value as { title: string, sound: Blob, duration: number, audioId: string };
+          audios.push({
+            id: audioId,
+            title: title,
+            sound: sound,
+            volume: 100,
+            duration: duration,
+          });
+          break;
+        }
         case BakuAction.SHOT_REMOVE: {
           const shotIndex = shots.findIndex((shot) => shot.id === event.value.shotId);
           shots.splice(shotIndex, 1);

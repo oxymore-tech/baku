@@ -1,9 +1,16 @@
 <script lang="ts">
 import { Component,Prop,Vue } from 'vue-property-decorator';
 import * as api from '@/api';
+import uuid from 'uuid';
+import { namespace } from 'vuex-class';
+
+const ProjectNS = namespace('project');
 
 @Component
 export default class RecordPopup extends Vue {
+
+  @ProjectNS.Getter
+  protected getAudioRecord!: any;
 
   @Prop()
   public projectId! : string;
@@ -31,15 +38,27 @@ export default class RecordPopup extends Vue {
     }
   }
 
-  public generateAudio() {
+  public async generateAudio() {
     if (this.currentMsg !== "") {
-      api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, this.fileName.toString());
+      this.fileName = this.getAudioRecord.length+1;
+      let audioId = uuid.v4();
+      let response = await api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, audioId, this.rate.toString());
+      let blob = await fetch(api.getSoundUrl(this.projectId, audioId))
+        .then(res => res.blob())
+        .then(data => new Blob ([data], { type: 'audio/wav' }));
+      await this.$store.dispatch('project/createWav', {
+        title : "Son " + this.fileName.toString(),
+        sound: blob,
+        duration: response.duration,
+        projectId: this.projectId,
+        audioId: audioId
+      });
       this.fileName++;
-      this.currentMsg = "";
+      (this.$parent as any).close();
     }
   }
 
-  
+
 
 
 }
@@ -57,14 +76,14 @@ export default class RecordPopup extends Vue {
   <div class="TTS">
     <div class="wrapper main-component">
 
-      
+
       <div class="right">
       <p class ="parametre">Créer une voix a partir d'un texte</p>
       </div>
 
       <!-- Zone de saisie du texte -->
       <textarea class="textTTS centered" placeholder="Taper le texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
-      
+
       <div class="centeredbisbis">
         <i class="icon-play":class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"/>
         <p class ="ecouter">Ecouter le texte </p>
@@ -93,11 +112,11 @@ export default class RecordPopup extends Vue {
 
       <!-- Boutons pour valider/annuler -->
       <div class="centeredbis">
-        <button class="buttonTTS" @click="generateAudio"> Enregistrer la voix </button> 
-        <button class="buttonannuler"> Annuler </button>    
+        <button class="buttonTTS" @click="generateAudio"> Enregistrer la voix </button>
+        <button class="buttonannuler"> Annuler </button>
       </div>
 
-      
+
       <!-- TODO Ecouter réellememnt l'audio
       <div class="wrapper centered">
         <figure>
@@ -217,7 +236,7 @@ export default class RecordPopup extends Vue {
   }
 
   .buttonTTS:hover {
-    background-color: #ff515a; 
+    background-color: #ff515a;
     color: white;
     border: 4px solid #ff515a;
   }
@@ -237,7 +256,7 @@ export default class RecordPopup extends Vue {
   }
 
   .buttonannuler:hover {
-    background-color: #d9d6d6; 
+    background-color: #d9d6d6;
     color: #717171;
     border: 4px solid #d9d6d6;
   }

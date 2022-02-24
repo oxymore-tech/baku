@@ -192,11 +192,8 @@ const ProjectStore: BakuModule<ProjectState> = {
       await api.uploadSound(params.projectId, params.sound,  audioId);
     },
 
-    async createWav(context: any, params: {title : string, text : string, voice : string, projectId : string, path : any}) {
-      const audioId = uuid.v4();
-      console.log(audioId);
-      params.path = await api.generateWav(params.projectId, params.text, params.voice, audioId);
-      const event = makeEvent(context, BakuAction.AUDIO_ADD_WAV, {audioId, params});
+    async createWav(context: any, params: {title : string, sound : Blob, duration : number, projectId : string, audioId : string}) {
+      const event = makeEvent(context, BakuAction.AUDIO_ADD_WAV, params);
       loadEvents(context, [event]);
       await store.dispatch('user/updateCurrentSeenProject');
     },
