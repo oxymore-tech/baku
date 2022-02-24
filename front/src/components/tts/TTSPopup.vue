@@ -96,7 +96,7 @@ export default class RecordPopup extends Vue {
       <div class="text-center wrapper">
         <div class='range_bar'>
           <input type="range" min="0" max="2" step="1" v-model="rate">
-          <label class="ranges">Vitesse </label>
+          <label class="ranges">Vitesse : {{rate}} </label>
         </div>
       </div>
 
@@ -188,14 +188,15 @@ export default class RecordPopup extends Vue {
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     font-size: 20px;
     height: 10%;
-    magin-top:-1em;
+    margin-top:-1em;
   }
 
   .ranges {
     padding-top: 0.5em;
-    padding-right : 0.5em;
+    margin-right : 0.2em;
     font-size: 20px;
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    width:8em;
   }
 
   .textTTS {
