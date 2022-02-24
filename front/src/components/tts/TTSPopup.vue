@@ -81,6 +81,8 @@ export default class RecordPopup extends Vue {
       <p class ="parametre">Créer une voix a partir d'un texte</p>
       </div>
 
+      <div class="close"><i @click="$emit('close')" class="icon-close baku-button"></i></div>
+
       <!-- Zone de saisie du texte -->
       <textarea class="textTTS centered" placeholder="Taper le texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
 
@@ -143,6 +145,13 @@ export default class RecordPopup extends Vue {
     align-items: center;
     width:100%;
   }
+
+  .close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 4;
+}
 
   .vitesse{
     display: flex;
