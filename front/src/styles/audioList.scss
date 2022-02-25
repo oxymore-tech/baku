@@ -7,8 +7,9 @@
 .audio-list-container {
     width: 200px;
     flex-direction: column;
-    overflow: auto;
     display: flex;
+    overflow-y: auto;
+    max-height:100%;
 }
 
 .create-button-modify {
@@ -44,6 +45,9 @@
         display: flex;
         justify-content: space-between;
         flex-direction: row;
+        flex: 1 1 auto;
+        overflow-y: auto;
+        min-height: 0px;
     }
 }
 
