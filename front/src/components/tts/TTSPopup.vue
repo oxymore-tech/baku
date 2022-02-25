@@ -22,6 +22,7 @@ export default class RecordPopup extends Vue {
   public voiceSelected: any = null;
   public fileName: number = 0;
   public voicesOptions: any = null;
+  
   public async mounted() {
     this.voicesOptions =  {
       Pierre: 'upmc-pierre-hsmm',
@@ -116,15 +117,6 @@ export default class RecordPopup extends Vue {
         <button class="buttonTTS" @click="generateAudio"> Enregistrer la voix </button>
         <button class="buttonannuler" @click="$emit('close')"> Annuler </button>
       </div>
-
-
-      <!-- TODO Ecouter réellememnt l'audio
-      <div class="wrapper centered">
-        <figure>
-          <audio controls v-if="previewCreated === true"></audio>
-        </figure>
-      </div>
-      -->
 
     </div>
   </div>
