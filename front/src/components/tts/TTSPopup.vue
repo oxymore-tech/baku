@@ -22,7 +22,8 @@ export default class RecordPopup extends Vue {
   public voiceSelected: any = null;
   public fileName: number = 0;
   public voicesOptions: any = null;
-  
+  private buttonListenActive: boolean = true;
+
   public async mounted() {
     this.voicesOptions =  {
       Pierre: 'upmc-pierre-hsmm',
@@ -34,12 +35,19 @@ export default class RecordPopup extends Vue {
   }
 
   public async listenAudio() {
-    if (this.currentMsg !== "") {
+    if (this.currentMsg !== "" && this.buttonListenActive) {
+      this.buttonListenActive = false;
       let response = await api.listenWav(this.projectId, this.currentMsg, this.voiceSelected, this.rate.toString())
-      if (response.path === 'error') return;
+      if (response.path === 'error') {
+        this.buttonListenActive = true
+        return;
+      }
       let url = api.getSoundUrl(this.projectId, 'preview') + "?cb=" + new Date().getTime();
       let audio = new Audio(url);
       await audio.play();
+      audio.onended = () => {
+        this.buttonListenActive = true;
+      }
     }
   }
 
