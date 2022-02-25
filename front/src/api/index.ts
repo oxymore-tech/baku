@@ -83,15 +83,14 @@ export function generateWav(projectId: string, inputText: string, inputVoice: an
   })
 }
 
-export function listenWav(projectId: string, inputText: string, inputVoice: any) {
-  console.log(inputText, inputVoice, projectId);
+export function listenWav(projectId: string, inputText: string, inputVoice: any, inputRate: string) {
   return axios.post(`/api/${projectId}/saveWav`, {
     text: inputText,
     voice: inputVoice,
-    fileName: 'preview',
+    fileName: "preview",
+    voiceRate: inputRate
   }).then(response => {
-    console.log(response.data);
-    //TODO : utiliser la réponse
+    return response.data;
   }).catch(error => {
     console.log(error);
   })
