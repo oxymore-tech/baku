@@ -183,3 +183,31 @@ export default class AudioListComponent extends Vue {
     }
 }
 </script>
+
+<style scoped>
+
+  .is-primary {
+    background-color: white;
+    padding: 2px 10px;
+    color: #717171;
+    border: 4px solid #f5f5f5;
+    border-radius: 8px;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    width: 250px;
+    height: 50px; 
+    text-align: center;
+    line-height: 1.2;
+    font-size: 16px;
+    white-space: normal;
+  }
+
+  .is-primary:hover {
+    background-color: #e7e6e6;
+    color: #717171;
+    cursor: pointer;
+  }
+  
+
+  
+</style>
