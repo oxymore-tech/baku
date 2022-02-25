@@ -4,40 +4,38 @@
 
 <template>
   <div class="audio-list">
-    <div class="audio-list-container">
-        <div
-          v-for="audio in getAudioRecord"
-          class="sounds"
-          draggable="true"
-          @dragstart="handleDragStart($event,audio.id);"
-        >
-          <div class="border">
-
-            <div
-              class="horizontal-align"
-            >
-                {{ audio.title }}
-            </div>
-
-            <span class="tools">
-              <div class="tool create-button-modify" @click="openEditSoundPopup(audio.id,projectId)">
-              </div>
-
-
-              <div class="tool create-button-play" @click="playSound(audio.id)">
-              </div>
-
-              <div class="tool create-button-delete" @click="deleteSound(audio.id)">
-              </div>
-            </span>
-          </div>
-        </div>
-    </div>
 
     <div class="record-Button">
       <button class="button is-primary" @click="openRecordPopup(projectId)">Enregistrer un son</button>
       <button class="button is-primary" @click="openTTSPopup(projectId)">Convertir un texte en son</button>
       <button class="button is-primary" @click="stopPlayer()">Stopper la lecture des sons</button>
+    </div>
+
+    <div class="audio-list-container">
+      <div
+        v-for="audio in getAudioRecord"
+        class="sounds"
+        draggable="true"
+        @dragstart="handleDragStart($event,audio.id);"
+      >
+
+        <div class="border">
+
+          <div class="horizontal-align">
+            {{ audio.title }}
+          </div>
+
+          <span class="tools">
+              <div class="tool create-button-modify" @click="openEditSoundPopup(audio.id,projectId)"/>
+
+
+              <div class="tool create-button-play" @click="playSound(audio.id)"/>
+
+              <div class="tool create-button-delete" @click="deleteSound(audio.id)"/>
+            </span>
+
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -195,7 +193,7 @@ export default class AudioListComponent extends Vue {
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     cursor: pointer;
     width: 250px;
-    height: 50px; 
+    height: 50px;
     text-align: center;
     line-height: 1.2;
     font-size: 16px;
@@ -207,7 +205,7 @@ export default class AudioListComponent extends Vue {
     color: #717171;
     cursor: pointer;
   }
-  
 
-  
+
+
 </style>
