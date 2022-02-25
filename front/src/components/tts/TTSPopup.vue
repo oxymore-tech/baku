@@ -32,9 +32,13 @@ export default class RecordPopup extends Vue {
     this.voiceSelected = this.voicesOptions.Pierre;
   }
 
-  public listenAudio() {
+  public async listenAudio() {
     if (this.currentMsg !== "") {
-      api.listenWav(this.projectId, this.currentMsg, this.voiceSelected);
+      let response = await api.listenWav(this.projectId, this.currentMsg, this.voiceSelected, this.rate.toString())
+      if (response.path === 'error') return;
+      let url = api.getSoundUrl(this.projectId, 'preview') + "?cb=" + new Date().getTime();
+      let audio = new Audio(url);
+      await audio.play();
     }
   }
 
@@ -58,12 +62,7 @@ export default class RecordPopup extends Vue {
     }
   }
 
-
-
-
 }
-
-
 
 
 
@@ -87,8 +86,8 @@ export default class RecordPopup extends Vue {
       <textarea class="textTTS centered" placeholder="Taper le texte ici..." maxlength="32760" v-model="currentMsg"></textarea>
 
       <div class="centeredbisbis">
-        <i class="icon-play":class="{'baku-button primary-button': isPlaying !== 'selection', 'disabled-button': isPlaying === 'selection'}"/>
-        <p class ="ecouter">Ecouter le texte </p>
+        <i class="icon-play"/>
+        <p class ="ecouter" @click="listenAudio">Ecouter le texte </p>
       </div>
 
 
@@ -115,7 +114,7 @@ export default class RecordPopup extends Vue {
       <!-- Boutons pour valider/annuler -->
       <div class="centeredbis">
         <button class="buttonTTS" @click="generateAudio"> Enregistrer la voix </button>
-        <button class="buttonannuler"> Annuler </button>
+        <button class="buttonannuler" @click="$emit('close')"> Annuler </button>
       </div>
 
 
@@ -164,7 +163,7 @@ export default class RecordPopup extends Vue {
     padding-top : 0em;
     margin-top:-1em;
     color:#c0bcbc;
-    
+
   }
 
   .parametre {
