@@ -15,6 +15,7 @@ import io.micronaut.http.annotation.Consumes;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -53,6 +54,7 @@ public class TTSController {
 
     @Post("/api/{projectId}/saveWav")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public TTSResponse saveWav(@PathVariable String projectId, @Body TTSdata data) {
 
         /* Génération du fichier wav*/
