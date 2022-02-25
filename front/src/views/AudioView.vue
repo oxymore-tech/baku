@@ -129,6 +129,7 @@
                   @click="moveFrame(1)"
                 />
               </div>
+            <div class="div3"></div>
 
             </div>
           </div>
