@@ -23,6 +23,7 @@ export default class RecordPopup extends Vue {
   public fileName: number = 0;
   public voicesOptions: any = null;
   private buttonListenActive: boolean = true;
+  private buttonGenerateActive: boolean = true;
 
   public async mounted() {
     this.voicesOptions =  {
@@ -52,10 +53,15 @@ export default class RecordPopup extends Vue {
   }
 
   public async generateAudio() {
-    if (this.currentMsg !== "") {
+    if (this.currentMsg !== "" && this.buttonGenerateActive) {
+      this.buttonGenerateActive = false
       this.fileName = this.getAudioRecord.length+1;
       let audioId = uuid.v4();
       let response = await api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, audioId, this.rate.toString());
+      if (response.duration === 'error') {
+        this.buttonGenerateActive = true
+        return;
+      }
       let blob = await fetch(api.getSoundUrl(this.projectId, audioId))
         .then(res => res.blob())
         .then(data => new Blob ([data], { type: 'audio/wav' }));
