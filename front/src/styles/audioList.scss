@@ -6,10 +6,11 @@
 
 .audio-list-container {
     width: 200px;
+    height: 80%;
     flex-direction: column;
     display: flex;
     overflow-y: auto;
-    max-height:100%;
+    max-height:80%;
 }
 
 .create-button-modify {
@@ -18,7 +19,8 @@
 }
 
 .create-button-play {
-    background-image: url("../../assets/play_sound.png");
+    background-image: url("../../assets/play.png");
+    background-size:200%;
 }
 
 .create-button-delete {
@@ -38,9 +40,12 @@
 
 .sounds {
     padding: 5px 0;
+    
     .border {
-        border-style: solid;
-        border-color: #e66359;
+        border-style: none;
+        border-bottom-style:solid;
+        border-bottom-width: 0.2em;
+        border-color: #313131;
         padding: 5px 0;
         display: flex;
         justify-content: space-between;
@@ -58,8 +63,11 @@
     width: 20px;
     height: 20px;
     margin-right: 5px;
+    
 }
 .tools{
     width: 80px;
     display: flex;
+    align-items: baseline;
+
 }
