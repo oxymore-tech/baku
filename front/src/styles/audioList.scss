@@ -14,7 +14,7 @@
 }
 
 .create-button-modify {
-    background-image: url("../../assets/modify_sound.png");
+    background-image: url("../../assets/cut.png");
     width: 20px;
 }
 
@@ -24,7 +24,12 @@
 }
 
 .create-button-delete {
-    background-image: url("../../assets/delete_sound.png");
+    background-image: url("../../assets/trash-alt.png");
+
+}
+
+.create-button-bars {
+    background-image: url("../../assets/bars-solid.png");
 
 }
 

@@ -20,6 +20,7 @@
       >
 
         <div class="border">
+          <div class="tool create-button-bars"/>
 
           <div class="horizontal-align">
             {{ audio.title }}
