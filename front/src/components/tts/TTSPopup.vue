@@ -58,7 +58,7 @@ export default class RecordPopup extends Vue {
       this.fileName = this.getAudioRecord.length+1;
       let audioId = uuid.v4();
       let response = await api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, audioId, this.rate.toString());
-      if (response.duration === 'error') {
+      if (response.path === 'error') {
         this.buttonGenerateActive = true
         return;
       }
