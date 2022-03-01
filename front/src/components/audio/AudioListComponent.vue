@@ -6,8 +6,9 @@
   <div class="audio-list">
 
     <div class="record-Button">
-      <button class="button is-primary" @click="openRecordPopup(projectId)">Enregistrer un son</button>
-      <button class="button is-primary" @click="openTTSPopup(projectId)">Convertir un texte en son</button>
+      
+      <button class="button is-primary" @click="openRecordPopup(projectId)"><div class="tool mic-icon"/>Enregistrer un son</button>
+      <button class="button is-primary" @click="openTTSPopup(projectId)"><div class="tool text-icon"/>Convertir un texte en son</button>
       <button class="button is-primary" @click="stopPlayer()">Stopper la lecture des sons</button>
     </div>
 
