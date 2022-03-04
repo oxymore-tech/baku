@@ -189,15 +189,12 @@ case AUDIO_ADD_WAV: {
 
 ## Improvements
 
-Even though most of the TTS functionality that was required has been added, there is still some improvements
-that can be made, for example :
-* most of the design of the audio page was updated but the feature linking and synchronizing an audio with a
-movie still needs to be worked on.
-* another upgrade could be changing how an audio is stored. We currently cannot tell in our audioList if an
-item is either a TTS or a recorded audio file. If we can find a way to tell the difference, having for example two
-objects AudioTTS and AudioRecord that extend our actual Audio object; then we can store in our AudioTTS
-object the text that was converted, and allow the user change it without having to delete the audio 
-and create another one.
+Although the TTS functionality was added as requested, some improvements may be included in future projects, such as:
+* The majority of the audio page's design has been updated, but the feature of linking and synchronizing an audio with a movie still needs to be worked on
+* Changing the way an audio file is stored could be another upgrade. In our audioList, we can't tell the difference between a TTS file and a recorded audio file right now. We could, for example, extend our Audio object with two new objects, AudioTTS and AudioRecord, and then store the converted text in the AudioTTS object, allowing the user to change it without having to delete and recreate the audio.
+
+
+
 
 
 
