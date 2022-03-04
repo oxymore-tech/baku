@@ -59,7 +59,7 @@ public class TTSController {
 
         /* Génération du fichier wav*/
         String id = permissionService.getProject(projectId).getId();
-        this.ttsService.generateWav(data.getText(), data.getVoice(), id, data.getFileName(), data.getVoiceRate());
+        this.ttsService.generateWav(data.getText(), data.getVoice(), id, data.getFileName());
 
         /* Vérification */
         Path path = this.pathService.getSoundFile(id, data.getFileName());

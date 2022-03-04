@@ -17,8 +17,6 @@ export default class RecordPopup extends Vue {
 
   //previewCreated: false,
   public currentMsg: string ="";
-  public pitch: number = 50;
-  public rate: number = 1;
   public voiceSelected: any = null;
   public fileName: number = 0;
   public voicesOptions: any = null;
@@ -38,7 +36,7 @@ export default class RecordPopup extends Vue {
   public async listenAudio() {
     if (this.currentMsg !== "" && this.buttonListenActive) {
       this.buttonListenActive = false;
-      let response = await api.listenWav(this.projectId, this.currentMsg, this.voiceSelected, this.rate.toString())
+      let response = await api.listenWav(this.projectId, this.currentMsg, this.voiceSelected);
       if (response.path === 'error') {
         this.buttonListenActive = true
         return;
@@ -57,7 +55,7 @@ export default class RecordPopup extends Vue {
       this.buttonGenerateActive = false
       this.fileName = this.getAudioRecord.length+1;
       let audioId = uuid.v4();
-      let response = await api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, audioId, this.rate.toString());
+      let response = await api.generateWav(this.projectId, this.currentMsg, this.voiceSelected, audioId);
       if (response.path === 'error') {
         this.buttonGenerateActive = true
         return;
@@ -72,7 +70,6 @@ export default class RecordPopup extends Vue {
         projectId: this.projectId,
         audioId: audioId
       });
-      this.fileName++;
       (this.$parent as any).close();
     }
   }
@@ -103,20 +100,6 @@ export default class RecordPopup extends Vue {
       <div class="centeredbisbis">
         <i class="icon-play"/>
         <p class ="ecouter" @click="listenAudio">Ecouter le texte </p>
-      </div>
-
-
-      <!-- Pitch et vitesse -->
-      <div class="text-center wrapper">
-        <div class='range_bar'>
-          <input type="range" min="0" max="2" step="1" v-model="rate">
-          <label class="ranges">Vitesse : {{rate}} </label>
-        </div>
-      </div>
-
-      <div class="vitesse">
-        <p>Lent</p>
-        <p>Rapide</p>
       </div>
 
       <!-- Saisie de la voix -->
@@ -319,6 +302,7 @@ export default class RecordPopup extends Vue {
     justify-content: center;
     width : 100%;
     flex-direction: row;
+    padding: 8px;
   }
 
   .voice-selector {
