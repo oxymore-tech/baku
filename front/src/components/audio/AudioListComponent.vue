@@ -6,7 +6,6 @@
   <div class="audio-list">
 
     <div class="record-Button">
-      
       <button class="button is-primary" @click="openRecordPopup(projectId)"><div class="tool mic-icon"/>Enregistrer un son</button>
       <button class="button is-primary" @click="openTTSPopup(projectId)"><div class="tool text-icon"/>Convertir un texte en son</button>
       <button class="button is-primary" @click="stopPlayer()">Stopper la lecture des sons</button>
@@ -194,7 +193,7 @@ export default class AudioListComponent extends Vue {
     border-radius: 8px;
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
     cursor: pointer;
-    width: 250px;
+    width: 30vh;
     height: 50px;
     text-align: center;
     line-height: 1.2;

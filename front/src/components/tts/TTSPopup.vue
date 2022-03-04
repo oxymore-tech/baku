@@ -177,6 +177,7 @@ export default class RecordPopup extends Vue {
     font-size: 20px;
     height: 10%;
     margin-top:-1em;
+    padding: 8px;
   }
 
   .ranges {

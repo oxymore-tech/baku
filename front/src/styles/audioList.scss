@@ -1,11 +1,12 @@
 .audio-list {
-    width: 200px;
+    width: 30vh;
     padding: 10px 0;
     height: 75%;
+    padding-right: 16px;
 }
 
 .audio-list-container {
-    width: 200px;
+    width: 30vh;
     height: 80%;
     flex-direction: column;
     display: flex;
@@ -40,7 +41,6 @@
 
 .text-icon {
     background-image: url("../../assets/dialog-dots-solid.png");
-    margin-left:1.75em;
 }
 
 .record-Button {
